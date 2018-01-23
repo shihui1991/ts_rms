@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

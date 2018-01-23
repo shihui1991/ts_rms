@@ -4,9 +4,7 @@
 | 功能与菜单 模型
 |--------------------------------------------------------------------------
 */
-
 namespace App\Http\Model;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -29,10 +27,11 @@ class Menu extends Model
         'icon'=>'图标',
         'url'=>'路由地址',
         'method'=>'限制请求方法',
-        'auth'=>'限制访问',
+        'login'=>'限制登陆访问',
+        'auth'=>'限制操作访问',
         'display'=>'状态',
         'sort'=>'排序',
-        'infos'=>'说明',
+        'infos'=>'说明'
     ];
 
     /* ++++++++++ 名称去空 ++++++++++ */
