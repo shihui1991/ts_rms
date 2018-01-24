@@ -9,6 +9,7 @@ namespace App\Http\Controllers\Gov;
 use App\Http\Model\Dept;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class DeptController extends BaseController
 {
@@ -25,7 +26,6 @@ class DeptController extends BaseController
         /* ++++++++++ 上级 ID ++++++++++ */
         $id=$request->input('id')?$request->input('id'):0;
         $where[]=['parent_id',$id];
-
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -41,30 +41,19 @@ class DeptController extends BaseController
             if(blank($depts)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-
-            $error=0;
             $code='success';
             $msg='查询成功';
             $data=$depts;
-            $url='';
         }catch (\Exception $exception){
             $depts=collect();
-
-            $error=1;
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$depts;
-            $url='';
         }
         DB::commit();
         $infos['depts']=$depts;
-
         /* ++++++++++ 结果 ++++++++++ */
-        if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
-        }else{
-            return view('gov.dept.index',$infos);
-        }
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 全列表 ========== */
@@ -118,101 +107,68 @@ class DeptController extends BaseController
             if(blank($depts)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-
-            $error=1;
             $code='error';
             $msg='查询成功';
             $data=$depts;
-            $url='';
         }catch (\Exception $exception){
             $depts=collect();
-
-            $error=1;
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$depts;
-            $url='';
         }
         DB::commit();
         $infos['depts']=$depts;
         $infos[$code]=$msg;
 
         /* ********** 结果 ********** */
-        if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
-        }else{
-            return view('gov.dept.all',$infos);
-        }
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 添加 ========== */
-    public function add(Request $request,$id=0){
+    public function add(Request $request){
         $model=new Dept();
         /* ********** 保存 ********** */
-        if($request->isMethod('post')){
-            /* ++++++++++ 表单验证 ++++++++++ */
-            $rules=[
-                'parent_id'=>['required','regex:/^[0-9]+$/'],
-                'name'=>'required|unique:dept',
-                'type'=>'required'
-            ];
-            $messages=[
-                'required'=>':attribute 为必须项',
-                'parent_id.regex'=>'选择正确的上级菜单',
-                'unique'=>':attribute 已存在'
-            ];
-
-            $this->validate($request,$rules,$messages,$model->columns);
-
-            /* ++++++++++ 新增 ++++++++++ */
-            DB::beginTransaction();
-            try{
-                /* ++++++++++ 批量赋值 ++++++++++ */
-                $dept=$model;
-                $dept->fill($request->input());
-                $dept->setOther($request);
-                $dept->save();
-
-                $error=0;
-                $code='success';
-                $msg='添加成功';
-                $data=$dept;
-                $url='';
-                DB::commit();
-            }catch (\Exception $exception){
-                $error=1;
-                $code='error';
-                $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-                $data=[];
-                $url='';
-                DB::rollBack();
-            }
-            /* ++++++++++ 结果 ++++++++++ */
-            if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
+        /* ++++++++++ 表单验证 ++++++++++ */
+        $rules=[
+            'parent_id'=>['required','regex:/^[0-9]+$/'],
+            'name'=>'required|unique:dept',
+            'type'=>'required'
+        ];
+        $messages=[
+            'required'=>':attribute 为必须项',
+            'parent_id.regex'=>'选择正确的上级菜单',
+            'unique'=>':attribute 已存在'
+        ];
+        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+        if($validator->fails()){
+            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
         }
-        /* ********** 视图 ********** */
-        else{
-            /* ++++++++++ 当前上级 ++++++++++ */
-            $parent=['id'=>$id,'name'=>''];
-            if($id){
-                DB::beginTransaction();
-                $parent['name']=dept::withTrashed()->where('id',$id)->sharedLock()->value('name');
-                DB::commit();
-            }
-            $infos['parent']=$parent;
 
-            /* ++++++++++ 输出视图 ++++++++++ */
-            return view('gov.dept.add',$infos);
+        /* ++++++++++ 新增 ++++++++++ */
+        DB::beginTransaction();
+        try{
+            /* ++++++++++ 批量赋值 ++++++++++ */
+            $dept=$model;
+            $dept->fill($request->input());
+            $dept->setOther($request);
+            $dept->save();
+
+            $code='success';
+            $msg='添加成功';
+            $data=$dept;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
+            $data=[];
+            DB::rollBack();
         }
+        /* ++++++++++ 结果 ++++++++++ */
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request,$id){
-
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $dept=Dept::withTrashed()
@@ -221,127 +177,74 @@ class DeptController extends BaseController
             }])
             ->sharedLock()
             ->find($id);
-
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($dept)){
-            $error=1;
             $code='warning';
             $msg='数据不存在';
             $data=[];
-            $url='';
+           
         }else{
-            $error=0;
             $code='success';
             $msg='获取成功';
             $data=$dept;
-            $url='';
         }
-        $infos=[
-            'error'=>$error,
-            'code'=>$code,
-            'msg'=>$msg,
-            'data'=>$data,
-            'url'=>$url,
-        ];
-
-        /* ********** 输出视图 ********** */
-        return view('gov.dept.info',$infos);
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request,$id){
         $model=new Dept();
-        if($request->isMethod('post')){
-            /* ********** 表单验证 ********** */
-            $rules=[
-                'parent_id'=>['required','regex:/^[0-9]+$/'],
-                'name'=>'required|unique:dept',
-                'type'=>'required'
-            ];
-            $messages=[
-                'required'=>':attribute 为必须项',
-                'parent_id.regex'=>'选择正确的上级菜单',
-                'unique'=>':attribute 已存在'
-            ];
-            $this->validate($request,$rules,$messages,$model->columns);
-
-            /* ********** 更新 ********** */
-            DB::beginTransaction();
-            try{
-                if($request->input('parent_id')){
-                    throw new \Exception('非法操作',404404);
-                }
-                /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $dept=Dept::withTrashed()
-                    ->withCount(['childs'=>function($query){
-                        $query->withTrashed();
-                    }])
-                    ->lockForUpdate()
-                    ->find($id);
-
-                if(blank($dept)){
-                    throw new \Exception('指定数据项不存在',404404);
-                }
-                /* ++++++++++ 处理其他数据 ++++++++++ */
-                $dept->fill($request->input());
-                $dept->setOther($request);
-                $dept->save();
-
-                $error=0;
-                $code='success';
-                $msg='修改成功';
-                $data=$dept;
-                $url='';
-                DB::commit();
-            }catch (\Exception $exception){
-                $error=1;
-                $code='error';
-                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-                $data=[];
-                $url='';
-                DB::rollBack();
-            }
-            /* ********** 结果 ********** */
-            if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
-        }else{
-            /* ********** 当前数据 ********** */
-            DB::beginTransaction();
-            $dept=dept::withTrashed()
-                ->with(['father'=>function($query){
-                    $query->withTrashed()->select(['id','name']);
-                }])
-                ->sharedLock()
-                ->find($id);
-            DB::commit();
-            /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($dept)){
-                $error=1;
-                $code='warning';
-                $msg='数据不存在';
-                $data=[];
-                $url='';
-            }else{
-                $error=0;
-                $code='success';
-                $msg='获取成功';
-                $data=$dept;
-                $url='';
-            }
-            $infos=[
-                'error'=>$error,
-                'code'=>$code,
-                'msg'=>$msg,
-                'data'=>$data,
-                'url'=>$url,
-            ];
-            /* ********** 输出视图 ********** */
-            return view('gov.dept.edit',$infos);
+        /* ********** 表单验证 ********** */
+        $rules=[
+            'parent_id'=>['required','regex:/^[0-9]+$/'],
+            'name'=>'required|unique:dept',
+            'type'=>'required'
+        ];
+        $messages=[
+            'required'=>':attribute 为必须项',
+            'parent_id.regex'=>'选择正确的上级菜单',
+            'unique'=>':attribute 已存在'
+        ];
+        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+        if($validator->fails()){
+            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
         }
+        /* ********** 更新 ********** */
+        DB::beginTransaction();
+        try{
+            if($request->input('parent_id')){
+                throw new \Exception('禁止修改上级部门',404404);
+            }
+            /* ++++++++++ 锁定数据模型 ++++++++++ */
+            $dept=Dept::withTrashed()
+                ->withCount(['childs'=>function($query){
+                    $query->withTrashed();
+                }])
+                ->lockForUpdate()
+                ->find($id);
+            if(blank($dept)){
+                throw new \Exception('指定数据项不存在',404404);
+            }
+            /* ++++++++++ 处理其他数据 ++++++++++ */
+            $dept->fill($request->input());
+            $dept->setOther($request);
+            $dept->save();
+            
+            $code='success';
+            $msg='修改成功';
+            $data=$dept;
+           
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $data=[];
+           
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 删除 ========== */
@@ -349,13 +252,12 @@ class DeptController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
             $code='warning';
             $msg='至少选择一项';
             $data=[];
-            $url='';
+           
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -392,19 +294,19 @@ class DeptController extends BaseController
                 $msg='部分存在子级，禁止删除';
             }
             $data=$success_ids;
-            $url='';
+           
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+           
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
-            $url='';
+           
             DB::rollBack();
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -415,13 +317,13 @@ class DeptController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+           
             $code='warning';
             $msg='至少选择一项';
             $data=[];
-            $url='';
+           
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -441,19 +343,19 @@ class DeptController extends BaseController
             $code='success';
             $msg='恢复成功';
             $data=$dept_ids;
-            $url='';
+           
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+           
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
-            $url='';
+           
             DB::rollBack();
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -464,13 +366,13 @@ class DeptController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+           
             $code='warning';
             $msg='至少选择一项';
             $data=[];
-            $url='';
+           
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -490,19 +392,19 @@ class DeptController extends BaseController
             $code='success';
             $msg='销毁成功';
             $data=$dept_ids;
-            $url='';
+           
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+           
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
-            $url='';
+           
             DB::rollBack();
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
