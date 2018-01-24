@@ -313,7 +313,7 @@ class DeptController extends BaseController
             DB::beginTransaction();
             $dept=dept::withTrashed()
                 ->with(['father'=>function($query){
-                    $query->withTrashed()->select(['id','name','icon']);
+                    $query->withTrashed()->select(['id','name']);
                 }])
                 ->sharedLock()
                 ->find($id);

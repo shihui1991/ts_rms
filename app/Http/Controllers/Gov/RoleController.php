@@ -71,7 +71,7 @@ class RoleController extends BaseController
 
     /* ========== 全列表 ========== */
     public function all(Request $request){
-        $select=['id','parent_id','name','type','deleted_at'];
+        $select=['id','parent_id','name','admin','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -315,7 +315,7 @@ class RoleController extends BaseController
             DB::beginTransaction();
             $role=role::withTrashed()
                 ->with(['father'=>function($query){
-                    $query->withTrashed()->select(['id','name','icon']);
+                    $query->withTrashed()->select(['id','name']);
                 }])
                 ->sharedLock()
                 ->find($id);

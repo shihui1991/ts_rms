@@ -71,7 +71,7 @@ class UserController extends BaseController
 
     /* ========== 全列表 ========== */
     public function all(Request $request){
-        $select=['id','parent_id','name','type','deleted_at'];
+        $select=['id','parent_id','name','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -321,7 +321,7 @@ class UserController extends BaseController
             DB::beginTransaction();
             $user=user::withTrashed()
                 ->with(['father'=>function($query){
-                    $query->withTrashed()->select(['id','name','icon']);
+                    $query->withTrashed()->select(['id','name']);
                 }])
                 ->sharedLock()
                 ->find($id);
