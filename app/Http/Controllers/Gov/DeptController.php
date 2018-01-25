@@ -124,6 +124,24 @@ class DeptController extends BaseController
         return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
+    /* ========== 添加(查询上级部门) ========== */
+    public function select_parent(Request $request){
+        $parent_id = $request->input('id');
+        if($parent_id){
+            DB::beginTransaction();
+            $parent['name']=Dept::withTrashed()->where('id',$parent_id)->sharedLock()->value('name');
+            DB::commit();
+            $code = 'success';
+            $msg = '查询上级部门成功';
+            $data = $parent;
+        }else{
+            $code = 'error';
+            $msg = '暂无上级部门信息';
+            $data = [];
+        }
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+    }
+
     /* ========== 添加 ========== */
     public function add(Request $request){
         $model=new Dept();
@@ -240,7 +258,6 @@ class DeptController extends BaseController
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
-           
             DB::rollBack();
         }
         /* ********** 结果 ********** */
@@ -255,12 +272,7 @@ class DeptController extends BaseController
             $code='warning';
             $msg='至少选择一项';
             $data=[];
-           
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
         }
         /* ********** 删除 ********** */
         DB::beginTransaction();
@@ -284,8 +296,6 @@ class DeptController extends BaseController
             }
             /* ++++++++++ 批量删除 ++++++++++ */
             Dept::whereIn('id',$success_ids)->delete();
-
-            $error=0;
             if(blank($fail_ids)){
                 $code='success';
                 $msg='全部删除成功';
@@ -294,22 +304,15 @@ class DeptController extends BaseController
                 $msg='部分存在子级，禁止删除';
             }
             $data=$success_ids;
-           
             DB::commit();
         }catch (\Exception $exception){
-           
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
-           
             DB::rollBack();
         }
         /* ********** 结果 ********** */
-        if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
-        }else{
-            return redirect()->back()->withInput()->with($code,$msg);
-        }
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 恢复 ========== */
@@ -317,16 +320,10 @@ class DeptController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-           
             $code='warning';
             $msg='至少选择一项';
             $data=[];
-           
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
         }
         /* ********** 恢复 ********** */
         DB::beginTransaction();
@@ -338,27 +335,19 @@ class DeptController extends BaseController
             }
             /* ++++++++++ 批量恢复 ++++++++++ */
             Dept::whereIn('id',$dept_ids)->restore();
-
-            $error=0;
             $code='success';
             $msg='恢复成功';
             $data=$dept_ids;
            
             DB::commit();
         }catch (\Exception $exception){
-           
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
-           
             DB::rollBack();
         }
         /* ********** 结果 ********** */
-        if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
-        }else{
-            return redirect()->back()->withInput()->with($code,$msg);
-        }
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 销毁 ========== */
@@ -366,16 +355,10 @@ class DeptController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-           
             $code='warning';
             $msg='至少选择一项';
             $data=[];
-           
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
         }
         /* ********** 销毁 ********** */
         DB::beginTransaction();
@@ -387,26 +370,17 @@ class DeptController extends BaseController
             }
             /* ++++++++++ 批量销毁 ++++++++++ */
             Dept::whereIn('id',$dept_ids)->forceDelete();
-
-            $error=0;
             $code='success';
             $msg='销毁成功';
             $data=$dept_ids;
-           
             DB::commit();
         }catch (\Exception $exception){
-           
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
-           
             DB::rollBack();
         }
         /* ********** 结果 ********** */
-        if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
-        }else{
-            return redirect()->back()->withInput()->with($code,$msg);
-        }
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 }
