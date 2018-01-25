@@ -20,6 +20,21 @@ class ProcessController extends BaseController
 
     /* ++++++++++ 首页 ++++++++++ */
     public function index(Request $request){
+        /* ++++++++++ 项目进度 ID ++++++++++ */
+        $schedule_id=$request->input('schedule_id')?$request->input('schedule_id'):'';
+        if(!$schedule_id){
+            $code = 'error';
+            $msg = '请先选择项目流程';
+            $data = '';
+            if($request->ajax()){
+                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
+            }else{
+                $infos[$code]=$msg;
+                return view('system.process.all',$infos);
+            }
+        }
+        $where[]=['schedule_id',$schedule_id];
+
         $model=new Process();
         $select = ['id','name','sort','infos'];
         /* ********** 查询条件 ********** */

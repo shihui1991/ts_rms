@@ -42,4 +42,10 @@ Route::namespace('system')->prefix('system')->group(function (){
     Route::any('schedule_destroy','ScheduleController@destroy')->name('sys_schedule_destroy');
     /*----- 项目流程 -----*/
     Route::any('process','ProcessController@index')->name('sys_process');
+    Route::any('process_add','ProcessController@add')->name('sys_process_add');
+    Route::any('process_info','ProcessController@info')->name('sys_process_info');
+    Route::any('process_edit','ProcessController@edit')->name('sys_process_edit');
+    Route::any('process_delete','ProcessController@delete')->name('sys_process_delete');
+    Route::any('process_restore','ProcessController@restore')->name('sys_process_restore');
+    Route::any('process_destroy','ProcessController@destroy')->name('sys_process_destroy');
 });

@@ -13,6 +13,7 @@ class Schedule extends Model
     protected $table='a_schedule';
     protected $primaryKey='id';
     protected $guarded=[];
+    protected $dates=['created_at','updated_at'];
     protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */

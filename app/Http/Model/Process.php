@@ -13,6 +13,7 @@ class Process extends Model
     protected $table='a_process';
     protected $primaryKey='id';
     protected $guarded=[];
+    protected $dates=['created_at','updated_at'];
     protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
