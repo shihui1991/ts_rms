@@ -48,4 +48,5 @@ Route::namespace('system')->prefix('system')->group(function (){
     Route::any('process_delete','ProcessController@delete')->name('sys_process_delete');
     Route::any('process_restore','ProcessController@restore')->name('sys_process_restore');
     Route::any('process_destroy','ProcessController@destroy')->name('sys_process_destroy');
+    /*----- 项目流程-功能菜单 -----*/
 });
