@@ -188,6 +188,11 @@ class RoleController extends BaseController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $role=Role::withTrashed()
@@ -214,7 +219,13 @@ class RoleController extends BaseController
     }
 
     /* ========== 修改 ========== */
-    public function edit(Request $request,$id){
+    public function edit(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new Role();
         /* ********** 表单验证 ********** */
         $rules=[

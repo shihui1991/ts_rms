@@ -1,17 +1,16 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 建筑结构类型
+| 房源社区
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
 
-use App\Http\Model\Buildingstruct;
+use App\Http\Model\Housecommunity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-
-class BuildingstructController extends BaseController
+class HousecommunityController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -21,7 +20,7 @@ class BuildingstructController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','deleted_at'];
+        $select=['id','name','address','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -30,6 +29,12 @@ class BuildingstructController extends BaseController
         if($name){
             $where[]=['name','like','%'.$name.'%'];
             $infos['name']=$name;
+        }
+        /* ++++++++++ 地址 ++++++++++ */
+        $address=$request->input('address');
+        if($address){
+            $where[]=['address',$address];
+            $infos['address']=$address;
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
@@ -46,7 +51,7 @@ class BuildingstructController extends BaseController
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
-        $model=new Buildingstruct();
+        $model=new Housecommunity();
         if(is_numeric($deleted) && in_array($deleted,[0,1])){
             $infos['deleted']=$deleted;
             if($deleted){
@@ -58,31 +63,33 @@ class BuildingstructController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $building_structs=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
-            if(blank($building_structs)){
+            $house_communitys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            if(blank($house_communitys)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-            $code='success';
+            $code='error';
             $msg='查询成功';
-            $data=$building_structs;
+            $data=$house_communitys;
         }catch (\Exception $exception){
-            $building_structs=collect();
+            $house_communitys=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$building_structs;
+            $data=$house_communitys;
         }
         DB::commit();
+
         /* ********** 结果 ********** */
         return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $model=new Buildingstruct();
+        $model=new Housecommunity();
         /* ********** 保存 ********** */
         /* ++++++++++ 表单验证 ++++++++++ */
         $rules=[
-            'name'=>'required|unique:building_struct'
+            'name'=>'required|unique:house_community',
+            'address'=>'required'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -97,14 +104,14 @@ class BuildingstructController extends BaseController
         DB::beginTransaction();
         try{
             /* ++++++++++ 批量赋值 ++++++++++ */
-            $building_struct=$model;
-            $building_struct->fill($request->input());
-            $building_struct->setOther($request);
-            $building_struct->save();
+            $house_community=$model;
+            $house_community->fill($request->input());
+            $house_community->setOther($request);
+            $house_community->save();
 
             $code='success';
             $msg='添加成功';
-            $data=$building_struct;
+            $data=$house_community;
             DB::commit();
         }catch (\Exception $exception){
             $code='error';
@@ -126,12 +133,12 @@ class BuildingstructController extends BaseController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $building_struct=Buildingstruct::withTrashed()
+        $house_community=Housecommunity::withTrashed()
             ->sharedLock()
             ->find($id);
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($building_struct)){
+        if(blank($house_community)){
             $code='warning';
             $msg='数据不存在';
             $data=[];
@@ -139,7 +146,7 @@ class BuildingstructController extends BaseController
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$building_struct;
+            $data=$house_community;
         }
         return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
@@ -152,10 +159,10 @@ class BuildingstructController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-        $model=new Buildingstruct();
+        $model=new Housecommunity();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:building_struct'
+            'name'=>'required|unique:house_community'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -169,20 +176,20 @@ class BuildingstructController extends BaseController
         DB::beginTransaction();
         try{
             /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $building_struct=Buildingstruct::withTrashed()
+            $house_community=Housecommunity::withTrashed()
                 ->lockForUpdate()
                 ->find($id);
-            if(blank($building_struct)){
+            if(blank($house_community)){
                 throw new \Exception('指定数据项不存在',404404);
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
-            $building_struct->fill($request->input());
-            $building_struct->setOther($request);
-            $building_struct->save();
+            $house_community->fill($request->input());
+            $house_community->setOther($request);
+            $house_community->save();
 
             $code='success';
             $msg='修改成功';
-            $data=$building_struct;
+            $data=$house_community;
 
             DB::commit();
         }catch (\Exception $exception){

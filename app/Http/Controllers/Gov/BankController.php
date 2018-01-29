@@ -86,7 +86,8 @@ class BankController extends BaseController
             'name'=>'required|unique:bank'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -119,6 +120,11 @@ class BankController extends BaseController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $bank=Bank::withTrashed()
@@ -141,13 +147,20 @@ class BankController extends BaseController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new Bank();
         /* ********** 表单验证 ********** */
         $rules=[
             'name'=>'required|unique:bank'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -156,7 +169,6 @@ class BankController extends BaseController
         /* ********** 更新 ********** */
         DB::beginTransaction();
         try{
-            $id=$request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $bank=Bank::withTrashed()
                 ->lockForUpdate()

@@ -86,7 +86,8 @@ class BuildinguseController extends BaseController
             'name'=>'required|unique:building_use'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -119,6 +120,11 @@ class BuildinguseController extends BaseController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $building_use=Buildinguse::withTrashed()
@@ -141,13 +147,20 @@ class BuildinguseController extends BaseController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new Buildinguse();
         /* ********** 表单验证 ********** */
         $rules=[
             'name'=>'required|unique:building_use'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -156,7 +169,6 @@ class BuildinguseController extends BaseController
         /* ********** 更新 ********** */
         DB::beginTransaction();
         try{
-            $id=$request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $building_use=Buildinguse::withTrashed()
                 ->lockForUpdate()

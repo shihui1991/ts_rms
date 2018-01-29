@@ -81,4 +81,9 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::any('nation_add','NationController@add')->name('gov_nation_add');
     Route::any('nation_info','NationController@info')->name('gov_nation_info');
     Route::any('nation_edit','NationController@edit')->name('gov_nation_edit');
+    /*----- 房源社区 -----*/
+    Route::any('housecommunity','HousecommunityController@index')->name('gov_housecommunity');
+    Route::any('housecommunity_add','HousecommunityController@add')->name('gov_housecommunity_add');
+    Route::any('housecommunity_info','HousecommunityController@info')->name('gov_housecommunity_info');
+    Route::any('housecommunity_edit','HousecommunityController@edit')->name('gov_housecommunity_edit');
 });

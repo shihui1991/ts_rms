@@ -142,6 +142,11 @@ class UserController extends BaseController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $user=User::withTrashed()
@@ -172,6 +177,12 @@ class UserController extends BaseController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
+        $id = $request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new User();
         /* ********** 表单验证 ********** */
         $rules=[
@@ -193,7 +204,6 @@ class UserController extends BaseController
         /* ********** 更新 ********** */
         DB::beginTransaction();
         try{
-            $id = $request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $user=User::withTrashed()
                 ->lockForUpdate()
@@ -407,7 +417,7 @@ class UserController extends BaseController
             if(blank($user)){
                 throw new \Exception('指定数据项不存在',404404);
             }
-            $new_password = 'a'.rand(1000,9999);
+            $new_password = 'a'.rand(10000,99999);
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $user->fill(['password'=>$new_password]);
             $user->save();

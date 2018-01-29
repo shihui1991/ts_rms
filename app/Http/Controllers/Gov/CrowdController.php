@@ -89,7 +89,8 @@ class CrowdController extends BaseController
             'name'=>'required|unique:crowd_cate'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -135,7 +136,8 @@ class CrowdController extends BaseController
             'name'=>'required|unique:crowd'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -168,6 +170,11 @@ class CrowdController extends BaseController
     /* ========== 详情(特殊人群分类) ========== */
     public function info(Request $request){
         $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $crowd=Crowdcate::withTrashed()
@@ -190,6 +197,11 @@ class CrowdController extends BaseController
     /* ========== 详情(特殊人群) ========== */
     public function info_childs(Request $request){
         $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $crowd=Crowd::withTrashed()
@@ -211,13 +223,20 @@ class CrowdController extends BaseController
 
     /* ========== 修改(特殊人群分类) ========== */
     public function edit(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new Crowdcate();
         /* ********** 表单验证 ********** */
         $rules=[
             'name'=>'required|unique:crowd_cate'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -226,7 +245,6 @@ class CrowdController extends BaseController
         /* ********** 更新 ********** */
         DB::beginTransaction();
         try{
-            $id=$request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $crowd=Crowdcate::withTrashed()
                 ->lockForUpdate()
@@ -256,13 +274,20 @@ class CrowdController extends BaseController
 
     /* ========== 修改(特殊人群) ========== */
     public function edit_childs(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new Crowd();
         /* ********** 表单验证 ********** */
         $rules=[
             'name'=>'required|unique:crowd'
         ];
         $messages=[
-            'required'=>':attribute 为必须项'
+            'required'=>':attribute 为必须项',
+            'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
@@ -271,7 +296,6 @@ class CrowdController extends BaseController
         /* ********** 更新 ********** */
         DB::beginTransaction();
         try{
-            $id=$request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $crowd=Crowd::withTrashed()
                 ->lockForUpdate()

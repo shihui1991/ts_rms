@@ -183,6 +183,11 @@ class DeptController extends BaseController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $dept=Dept::withTrashed()
@@ -208,6 +213,12 @@ class DeptController extends BaseController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new Dept();
         /* ********** 表单验证 ********** */
         $rules=[
@@ -230,7 +241,6 @@ class DeptController extends BaseController
             if($request->input('parent_id')){
                 throw new \Exception('禁止修改上级部门',404404);
             }
-            $id=$request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $dept=Dept::withTrashed()
                 ->withCount(['childs'=>function($query){
