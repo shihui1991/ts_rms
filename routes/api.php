@@ -43,6 +43,7 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::any('user_add','UserController@add')->name('gov_user_add');
     Route::any('user_info','UserController@info')->name('gov_user_info');
     Route::any('user_edit','UserController@edit')->name('gov_user_edit');
+    Route::any('edit_password','UserController@edit_password')->name('gov_edit_password');
     Route::any('user_delete','UserController@delete')->name('gov_user_delete');
     Route::any('user_restore','UserController@restore')->name('gov_user_restore');
     Route::any('user_destroy','UserController@destroy')->name('gov_user_destroy');

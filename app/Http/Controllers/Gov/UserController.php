@@ -171,7 +171,7 @@ class UserController extends BaseController
     }
 
     /* ========== 修改 ========== */
-    public function edit(Request $request,$id){
+    public function edit(Request $request){
         $model=new User();
         /* ********** 表单验证 ********** */
         $rules=[
@@ -193,6 +193,7 @@ class UserController extends BaseController
         /* ********** 更新 ********** */
         DB::beginTransaction();
         try{
+            $id = $request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $user=User::withTrashed()
                 ->lockForUpdate()
@@ -331,6 +332,89 @@ class UserController extends BaseController
             $code='success';
             $msg='销毁成功';
             $data=$user_ids;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $data=[];
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+    }
+
+    /* ========== 修改密码 ========== */
+    public function edit_password(Request $request){
+        $id = $request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择用户';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
+        /* ********** 更新 ********** */
+        DB::beginTransaction();
+        try{
+            /* ++++++++++ 锁定数据模型 ++++++++++ */
+            $user=User::withTrashed()
+                ->select(['password'])
+                ->lockForUpdate()
+                ->find($id);
+
+            if(blank($user)){
+                throw new \Exception('指定数据项不存在',404404);
+            }
+            $password = md5($request->input('old_password'));
+            if($user['password']!==$password){
+                $code='error';
+                $msg='旧密码输入错误';
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            }
+            $new_password = md5($request->input('new_password'));
+            /* ++++++++++ 处理其他数据 ++++++++++ */
+            $user->fill(['password'=>$new_password]);
+            $user->save();
+
+            $code='success';
+            $msg='修改密码成功';
+            $data=$user;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $data=[];
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+    }
+
+    /* ========== 重置密码 ========== */
+    public function reset_password(Request $request){
+        $id = $request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择用户';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
+        /* ********** 更新 ********** */
+        DB::beginTransaction();
+        try{
+            /* ++++++++++ 锁定数据模型 ++++++++++ */
+            $user=User::withTrashed()
+                ->lockForUpdate()
+                ->find($id);
+
+            if(blank($user)){
+                throw new \Exception('指定数据项不存在',404404);
+            }
+            $new_password = 'a'.rand(1000,9999);
+            /* ++++++++++ 处理其他数据 ++++++++++ */
+            $user->fill(['password'=>$new_password]);
+            $user->save();
+
+            $code='success';
+            $msg='重置密码成功';
+            $data=$user;
             DB::commit();
         }catch (\Exception $exception){
             $code='error';
