@@ -27,7 +27,7 @@ class ProcessController extends BaseController
             $msg = '请先选择项目流程';
             $data = '';
             if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
             }else{
                 $infos[$code]=$msg;
                 return view('system.process.all',$infos);
@@ -68,7 +68,7 @@ class ProcessController extends BaseController
                 throw new \Exception('没有符合条件的数据',404404);
             }
 
-            $error=1;
+
             $code='error';
             $msg='查询成功';
             $data=$processs;
@@ -76,7 +76,7 @@ class ProcessController extends BaseController
         }catch (\Exception $exception){
             $processs=collect();
 
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$processs;
@@ -88,7 +88,7 @@ class ProcessController extends BaseController
 
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return view('system.process.all',$infos);
         }
@@ -120,14 +120,14 @@ class ProcessController extends BaseController
                 $process->setOther($request);
                 $process->save();
 
-                $error=0;
+
                 $code='success';
                 $msg='添加成功';
                 $data=$process;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-                $error=1;
+
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
                 $data=[];
@@ -136,7 +136,7 @@ class ProcessController extends BaseController
             }
             /* ++++++++++ 结果 ++++++++++ */
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -169,23 +169,23 @@ class ProcessController extends BaseController
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($process)){
-            $error=1;
+
             $code='warning';
             $msg='数据不存在';
             $data=[];
             $url='';
         }else{
-            $error=0;
+
             $code='success';
             $msg='获取成功';
             $data=$process;
             $url='';
         }
         $infos=[
-            'error'=>$error,
+
             'code'=>$code,
             'msg'=>$msg,
-            'data'=>$data,
+            'sdata'=>$data,'edata'=>'',
             'url'=>$url,
         ];
 
@@ -225,14 +225,14 @@ class ProcessController extends BaseController
                 $process->setOther($request);
                 $process->save();
 
-                $error=0;
+
                 $code='success';
                 $msg='修改成功';
                 $data=$process;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-                $error=1;
+
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $data=[];
@@ -241,7 +241,7 @@ class ProcessController extends BaseController
             }
             /* ********** 结果 ********** */
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -255,23 +255,23 @@ class ProcessController extends BaseController
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($process)){
-                $error=1;
+
                 $code='warning';
                 $msg='数据不存在';
                 $data=[];
                 $url='';
             }else{
-                $error=0;
+
                 $code='success';
                 $msg='获取成功';
                 $data=$process;
                 $url='';
             }
             $infos=[
-                'error'=>$error,
+
                 'code'=>$code,
                 'msg'=>$msg,
-                'data'=>$data,
+                'sdata'=>$data,'edata'=>'',
                 'url'=>$url,
             ];
 
@@ -286,13 +286,13 @@ class ProcessController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -320,7 +320,7 @@ class ProcessController extends BaseController
             /* ++++++++++ 批量删除 ++++++++++ */
             Process::whereIn('id',$success_ids)->delete();
 
-            $error=0;
+
             if(blank($fail_ids)){
                 $code='success';
                 $msg='全部删除成功';
@@ -332,7 +332,7 @@ class ProcessController extends BaseController
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -341,7 +341,7 @@ class ProcessController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -353,13 +353,13 @@ class ProcessController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -375,14 +375,14 @@ class ProcessController extends BaseController
             /* ++++++++++ 批量恢复 ++++++++++ */
             Process::whereIn('id',$process_ids)->restore();
 
-            $error=0;
+
             $code='success';
             $msg='恢复成功';
             $data=$process_ids;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -391,7 +391,7 @@ class ProcessController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -403,13 +403,13 @@ class ProcessController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -425,14 +425,14 @@ class ProcessController extends BaseController
             /* ++++++++++ 批量销毁 ++++++++++ */
             Process::whereIn('id',$process_ids)->forceDelete();
 
-            $error=0;
+
             $code='success';
             $msg='销毁成功';
             $data=$process_ids;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -441,7 +441,7 @@ class ProcessController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }

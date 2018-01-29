@@ -56,4 +56,9 @@ Route::namespace('system')->prefix('system')->group(function (){
     Route::any('processmenu_edit','ProcessmenuController@edit')->name('sys_processmenu_edit');
     /*----- 必备附件分类 -----*/
     Route::any('filetable','FiletableController@index')->name('sys_filetable');
+    /*----- 项目资金进出类型 -----*/
+    Route::any('itemfundscate','ItemfundscateController@index')->name('sys_itemfundscate');
+    Route::any('itemfundscate_add','ItemfundscateController@add')->name('sys_itemfundscate_add');
+    Route::any('itemfundscate_info','ItemfundscateController@info')->name('sys_itemfundscate_info');
+    Route::any('itemfundscate_edit','ItemfundscateController@edit')->name('sys_itemfundscate_edit');
 });

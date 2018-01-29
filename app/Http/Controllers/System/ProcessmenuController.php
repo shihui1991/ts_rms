@@ -26,7 +26,7 @@ class ProcessmenuController extends BaseController
             $msg = '请先选择项目流程';
             $data = '';
             if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'data'=>$data]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
             }else{
                 $infos[$code]=$msg;
                 return view('system.processmenu.info',$infos);
@@ -42,23 +42,23 @@ class ProcessmenuController extends BaseController
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($process)){
-            $error=1;
+
             $code='warning';
             $msg='数据不存在';
             $data=[];
             $url='';
         }else{
-            $error=0;
+
             $code='success';
             $msg='获取成功';
             $data=$process;
             $url='';
         }
         $infos=[
-            'error'=>$error,
+
             'code'=>$code,
             'msg'=>$msg,
-            'data'=>$data,
+            'sdata'=>$data,'edata'=>'',
             'url'=>$url,
         ];
         return view('system.processmenu.info',$infos);
@@ -92,14 +92,14 @@ class ProcessmenuController extends BaseController
                 }
                 DB::table('a_process_menu')->insert([$datas]);
 
-                $error=0;
+
                 $code='success';
                 $msg='修改成功';
                 $data=$processmenu;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-                $error=1;
+
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $data=[];
@@ -108,7 +108,7 @@ class ProcessmenuController extends BaseController
             }
             /* ********** 结果 ********** */
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -123,23 +123,23 @@ class ProcessmenuController extends BaseController
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($processmenu)){
-                $error=1;
+
                 $code='warning';
                 $msg='数据不存在';
                 $data=[];
                 $url='';
             }else{
-                $error=0;
+
                 $code='success';
                 $msg='获取成功';
                 $data=$processmenu;
                 $url='';
             }
             $infos=[
-                'error'=>$error,
+
                 'code'=>$code,
                 'msg'=>$msg,
-                'data'=>$data,
+                'sdata'=>$data,'edata'=>'',
                 'url'=>$url,
             ];
 

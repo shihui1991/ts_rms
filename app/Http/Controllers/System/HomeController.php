@@ -37,15 +37,12 @@ class HomeController extends BaseController
                 throw new \Exception('没有符合条件的数据',404404);
             }
 
-            $error=0;
             $code='success';
             $msg='查询成功';
             $data=$menus;
             $url='';
         }catch (\Exception $exception){
             $menus=collect();
-
-            $error=1;
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$menus;
@@ -55,7 +52,7 @@ class HomeController extends BaseController
 
         /* ********** 输出 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             $infos['menus']=$menus;
             $infos['current_url']=route('sys_home');

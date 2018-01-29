@@ -58,7 +58,7 @@ class MenuController extends BaseController
                 throw new \Exception('没有符合条件的数据',404404);
             }
 
-            $error=0;
+
             $code='success';
             $msg='查询成功';
             $data=$menus;
@@ -66,7 +66,7 @@ class MenuController extends BaseController
         }catch (\Exception $exception){
             $menus=collect();
 
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$menus;
@@ -77,7 +77,7 @@ class MenuController extends BaseController
 
         /* ++++++++++ 结果 ++++++++++ */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return view('system.menu.index',$infos);
         }
@@ -142,7 +142,7 @@ class MenuController extends BaseController
                 throw new \Exception('没有符合条件的数据',404404);
             }
 
-            $error=1;
+
             $code='error';
             $msg='查询成功';
             $data=$menus;
@@ -150,7 +150,7 @@ class MenuController extends BaseController
         }catch (\Exception $exception){
             $menus=collect();
 
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$menus;
@@ -162,7 +162,7 @@ class MenuController extends BaseController
 
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return view('system.menu.all',$infos);
         }
@@ -201,14 +201,14 @@ class MenuController extends BaseController
                 $menu->setOther($request);
                 $menu->save();
 
-                $error=0;
+
                 $code='success';
                 $msg='添加成功';
                 $data=$menu;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-                $error=1;
+
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
                 $data=[];
@@ -217,7 +217,7 @@ class MenuController extends BaseController
             }
             /* ++++++++++ 结果 ++++++++++ */
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -254,23 +254,24 @@ class MenuController extends BaseController
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($menu)){
-            $error=1;
+
             $code='warning';
             $msg='数据不存在';
             $data=[];
             $url='';
         }else{
-            $error=0;
+
             $code='success';
             $msg='获取成功';
             $data=$menu;
             $url='';
         }
         $infos=[
-            'error'=>$error,
+
             'code'=>$code,
             'msg'=>$msg,
-            'data'=>$data,
+            'sdata'=>$data,
+            'edata'=>'',
             'url'=>$url,
         ];
 
@@ -320,14 +321,14 @@ class MenuController extends BaseController
                $menu->setOther($request);
                $menu->save();
 
-               $error=0;
+
                $code='success';
                $msg='修改成功';
                $data=$menu;
                $url='';
                DB::commit();
            }catch (\Exception $exception){
-               $error=1;
+
                $code='error';
                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                $data=[];
@@ -336,7 +337,7 @@ class MenuController extends BaseController
            }
            /* ********** 结果 ********** */
            if($request->ajax()){
-               return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+               return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
            }else{
                return redirect()->back()->withInput()->with($code,$msg);
            }
@@ -353,23 +354,24 @@ class MenuController extends BaseController
            DB::commit();
            /* ++++++++++ 数据不存在 ++++++++++ */
            if(blank($menu)){
-               $error=1;
+
                $code='warning';
                $msg='数据不存在';
                $data=[];
                $url='';
            }else{
-               $error=0;
+
                $code='success';
                $msg='获取成功';
                $data=$menu;
                $url='';
            }
            $infos=[
-               'error'=>$error,
+
                'code'=>$code,
                'msg'=>$msg,
-               'data'=>$data,
+               'sdata'=>$data,
+               'edata'=>'',
                'url'=>$url,
            ];
 
@@ -385,13 +387,13 @@ class MenuController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -399,13 +401,13 @@ class MenuController extends BaseController
         /* ********** 验证数据 ********** */
         $sorts=$request->input('sorts');
         if(blank($sorts)){
-            $error=1;
+
             $code='warning';
             $msg='请输入排序数据';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -439,14 +441,14 @@ class MenuController extends BaseController
                 DB::statement($sql);
             }
 
-            $error=0;
+
             $code='success';
             $msg='排序成功';
             $data=$values;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -455,7 +457,7 @@ class MenuController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -468,13 +470,13 @@ class MenuController extends BaseController
         /* ********** 验证数据 ********** */
         $keys=array_keys($model->getDisplayAttribute());
         if(!in_array($display,$keys)){
-            $error=1;
+
             $code='error';
             $msg='错误操作';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -482,13 +484,13 @@ class MenuController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -505,14 +507,14 @@ class MenuController extends BaseController
             /* ++++++++++ 批量更新 ++++++++++ */
             Menu::whereIn('id',$menu_ids)->update(['display'=>$display]);
 
-            $error=0;
+
             $code='success';
             $msg='修改成功';
             $data=$menu_ids;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -521,7 +523,7 @@ class MenuController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -533,13 +535,13 @@ class MenuController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -567,7 +569,7 @@ class MenuController extends BaseController
             /* ++++++++++ 批量删除 ++++++++++ */
             Menu::whereIn('id',$success_ids)->delete();
 
-            $error=0;
+
             if(blank($fail_ids)){
                 $code='success';
                 $msg='全部删除成功';
@@ -579,7 +581,7 @@ class MenuController extends BaseController
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -588,7 +590,7 @@ class MenuController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -600,13 +602,13 @@ class MenuController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -622,14 +624,14 @@ class MenuController extends BaseController
             /* ++++++++++ 批量恢复 ++++++++++ */
             Menu::whereIn('id',$menu_ids)->restore();
 
-            $error=0;
+
             $code='success';
             $msg='恢复成功';
             $data=$menu_ids;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -638,7 +640,7 @@ class MenuController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -650,13 +652,13 @@ class MenuController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -672,14 +674,14 @@ class MenuController extends BaseController
             /* ++++++++++ 批量销毁 ++++++++++ */
             Menu::whereIn('id',$menu_ids)->forceDelete();
 
-            $error=0;
+
             $code='success';
             $msg='销毁成功';
             $data=$menu_ids;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -688,7 +690,7 @@ class MenuController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }

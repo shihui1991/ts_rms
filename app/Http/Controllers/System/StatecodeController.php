@@ -1,17 +1,17 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 必备附件分类
+| 状态代码
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
 
-use App\Http\Model\Afiletable;
+
+use App\Http\Model\Statecode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-
-class FiletableController extends BaseController
+class StatecodeController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -20,8 +20,8 @@ class FiletableController extends BaseController
     }
 
     /* ++++++++++ 首页 ++++++++++ */
-    public function index(Request $request)
-    {
+    public function index(Request $request){
+        $select = ['id','name','code','deleted_at'];
         /* ********** 查询条件 ********** */
         $where=[];
         /* ++++++++++ 名称 ++++++++++ */
@@ -32,7 +32,7 @@ class FiletableController extends BaseController
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'sort';
+        $ordername=$ordername?$ordername:'id';
         $infos['ordername']=$ordername;
 
         $orderby=$request->input('orderby');
@@ -44,33 +44,47 @@ class FiletableController extends BaseController
         $displaynum=$request->input('displaynum');
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
+        /* ********** 是否删除 ********** */
+        $deleted=$request->input('deleted');
+
+        $model=new Statecode();
+        if(is_numeric($deleted) && in_array($deleted,[0,1])){
+            $infos['deleted']=$deleted;
+            if($deleted){
+                $model=$model->onlyTrashed();
+            }
+        }else{
+            $model=$model->withTrashed();
+        }
+
         /* ********** 查询 ********** */
-        $model=new Afiletable();
         DB::beginTransaction();
         try{
-            $filetables=$model->where($where)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
-            if(blank($filetables)){
+            $statecode=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            if(blank($statecode)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-            $code='error';
+
+            $code='success';
             $msg='查询成功';
-            $data=$filetables;
+            $data=$statecode;
+            $url='';
         }catch (\Exception $exception){
-            $filetables=collect();
+            $statecode=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$filetables;
+            $data=$statecode;
+            $url='';
         }
         DB::commit();
-        $infos['filetables']=$filetables;
+        $infos['statecode']=$statecode;
         $infos[$code]=$msg;
 
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>'']);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
-            return view('system.file_table',$infos);
+            return view('system.itemfundscate.index',$infos);
         }
-
     }
 }

@@ -53,7 +53,7 @@ class ScheduleController extends BaseController
                 throw new \Exception('没有符合条件的数据',404404);
             }
 
-            $error=1;
+
             $code='error';
             $msg='查询成功';
             $data=$schedules;
@@ -61,7 +61,7 @@ class ScheduleController extends BaseController
         }catch (\Exception $exception){
             $schedules=collect();
 
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$schedules;
@@ -73,7 +73,7 @@ class ScheduleController extends BaseController
 
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return view('system.schedule.all',$infos);
         }
@@ -105,14 +105,14 @@ class ScheduleController extends BaseController
                 $schedule->setOther($request);
                 $schedule->save();
 
-                $error=0;
+
                 $code='success';
                 $msg='添加成功';
                 $data=$schedule;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-                $error=1;
+
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
                 $data=[];
@@ -121,7 +121,7 @@ class ScheduleController extends BaseController
             }
             /* ++++++++++ 结果 ++++++++++ */
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -154,23 +154,23 @@ class ScheduleController extends BaseController
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($schedule)){
-            $error=1;
+
             $code='warning';
             $msg='数据不存在';
             $data=[];
             $url='';
         }else{
-            $error=0;
+
             $code='success';
             $msg='获取成功';
             $data=$schedule;
             $url='';
         }
         $infos=[
-            'error'=>$error,
+
             'code'=>$code,
             'msg'=>$msg,
-            'data'=>$data,
+            'sdata'=>$data,'edata'=>'',
             'url'=>$url,
         ];
 
@@ -210,14 +210,14 @@ class ScheduleController extends BaseController
                 $schedule->setOther($request);
                 $schedule->save();
 
-                $error=0;
+
                 $code='success';
                 $msg='修改成功';
                 $data=$schedule;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-                $error=1;
+
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $data=[];
@@ -226,7 +226,7 @@ class ScheduleController extends BaseController
             }
             /* ********** 结果 ********** */
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -240,23 +240,23 @@ class ScheduleController extends BaseController
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($schedule)){
-                $error=1;
+
                 $code='warning';
                 $msg='数据不存在';
                 $data=[];
                 $url='';
             }else{
-                $error=0;
+
                 $code='success';
                 $msg='获取成功';
                 $data=$schedule;
                 $url='';
             }
             $infos=[
-                'error'=>$error,
+
                 'code'=>$code,
                 'msg'=>$msg,
-                'data'=>$data,
+                'sdata'=>$data,'edata'=>'',
                 'url'=>$url,
             ];
 
@@ -271,13 +271,13 @@ class ScheduleController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -305,7 +305,7 @@ class ScheduleController extends BaseController
             /* ++++++++++ 批量删除 ++++++++++ */
             Schedule::whereIn('id',$success_ids)->delete();
 
-            $error=0;
+
             if(blank($fail_ids)){
                 $code='success';
                 $msg='全部删除成功';
@@ -317,7 +317,7 @@ class ScheduleController extends BaseController
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -326,7 +326,7 @@ class ScheduleController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -338,13 +338,13 @@ class ScheduleController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -360,14 +360,14 @@ class ScheduleController extends BaseController
             /* ++++++++++ 批量恢复 ++++++++++ */
             Schedule::whereIn('id',$schedule_ids)->restore();
 
-            $error=0;
+
             $code='success';
             $msg='恢复成功';
             $data=$schedule_ids;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -376,7 +376,7 @@ class ScheduleController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
@@ -388,13 +388,13 @@ class ScheduleController extends BaseController
         /* ********** 验证选择数据项 ********** */
         $ids=$request->input('ids');
         if(!$ids){
-            $error=1;
+
             $code='warning';
             $msg='至少选择一项';
             $data=[];
             $url='';
             if($request->ajax()){
-                return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
             }else{
                 return redirect()->back()->withInput()->with($code,$msg);
             }
@@ -410,14 +410,14 @@ class ScheduleController extends BaseController
             /* ++++++++++ 批量销毁 ++++++++++ */
             Schedule::whereIn('id',$schedule_ids)->forceDelete();
 
-            $error=0;
+
             $code='success';
             $msg='销毁成功';
             $data=$schedule_ids;
             $url='';
             DB::commit();
         }catch (\Exception $exception){
-            $error=1;
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=[];
@@ -426,7 +426,7 @@ class ScheduleController extends BaseController
         }
         /* ********** 结果 ********** */
         if($request->ajax()){
-            return response()->json(['error'=>$error,'code'=>$code,'message'=>$msg,'data'=>$data,'url'=>$url]);
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
             return redirect()->back()->withInput()->with($code,$msg);
         }
