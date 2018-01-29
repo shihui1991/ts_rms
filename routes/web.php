@@ -14,6 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::any('/', function () {
+    return view('index');
+});
 
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/
@@ -49,4 +52,8 @@ Route::namespace('system')->prefix('system')->group(function (){
     Route::any('process_restore','ProcessController@restore')->name('sys_process_restore');
     Route::any('process_destroy','ProcessController@destroy')->name('sys_process_destroy');
     /*----- 项目流程-功能菜单 -----*/
+    Route::any('processmenu_info','ProcessmenuController@info')->name('sys_processmenu_info');
+    Route::any('processmenu_edit','ProcessmenuController@edit')->name('sys_processmenu_edit');
+    /*----- 必备附件分类 -----*/
+    Route::any('filetable','FiletableController@index')->name('sys_filetable');
 });

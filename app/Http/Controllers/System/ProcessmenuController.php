@@ -90,8 +90,7 @@ class ProcessmenuController extends BaseController
                     $datas[$i]['process_id'] = $process_id;
                     $i++;
                 }
-                $processmenus = new Processmenu();
-                $processmenus->insert($datas);
+                DB::table('a_process_menu')->insert([$datas]);
 
                 $error=0;
                 $code='success';

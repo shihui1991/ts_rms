@@ -63,6 +63,15 @@
 @section('js')
     <script src="{{asset('ztree/jquery.ztree.core.min.js')}}"></script>
     <script>
+        $.ajax({
+            type:'post',
+            url:'/api/gov/bank',
+            data:{name:1},
+            dataType:'json',
+            success:function (rs) {
+                console.log(rs);
+            }
+        });
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

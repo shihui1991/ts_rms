@@ -87,8 +87,6 @@ class RoleController extends BaseController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $nums=[15,30,50,100,200];
-        $infos['nums']=$nums;
         $displaynum=$request->input('displaynum');
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
@@ -121,11 +119,9 @@ class RoleController extends BaseController
             $data=$roles;
         }
         DB::commit();
-        $infos['roles']=$roles;
-        $infos[$code]=$msg;
 
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
     }
 
     /* ========== 添加(查询上级角色) ========== */
@@ -190,7 +186,8 @@ class RoleController extends BaseController
     }
 
     /* ========== 详情 ========== */
-    public function info(Request $request,$id){
+    public function info(Request $request){
+        $id=$request->input('id');
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $role=Role::withTrashed()

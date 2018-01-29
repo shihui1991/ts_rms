@@ -19,50 +19,9 @@ class UserController extends BaseController
 
     }
 
-    /* ++++++++++ 首页 ++++++++++ */
-    public function index(Request $request)
-    {
-        /* ********** 查询条件 ********** */
-        /* ++++++++++ 上级 ID ++++++++++ */
-        $id=$request->input('id')?$request->input('id'):0;
-        $where[]=['parent_id',$id];
-
-        /* ********** 查询 ********** */
-        DB::beginTransaction();
-        try{
-            $users=User::withTrashed()
-                ->select(['id','parent_id','name','deleted_at'])
-                ->withCount(['childs'=>function($query){
-                    $query->withTrashed();
-                }])
-                ->with(['role','dept'])
-                ->where($where)
-                ->sharedLock()
-                ->get();
-
-            if(blank($users)){
-                throw new \Exception('没有符合条件的数据',404404);
-            }
-
-            $code='success';
-            $msg='查询成功';
-            $data=$users;
-        }catch (\Exception $exception){
-            $users=collect();
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$users;
-        }
-        DB::commit();
-        $infos['users']=$users;
-
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 全列表 ========== */
-    public function all(Request $request){
-        $select=['id','parent_id','name','deleted_at'];
+    /* ========== 首页 ========== */
+    public function index(Request $request){
+        $select=['id','username','secret','name','phone','email','login_at','login_ip','session','action_at','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -87,8 +46,6 @@ class UserController extends BaseController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $nums=[15,30,50,100,200];
-        $infos['nums']=$nums;
         $displaynum=$request->input('displaynum');
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
@@ -107,11 +64,21 @@ class UserController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $users=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $users=$model->where($where)
+                ->with([
+                    'dept'=>function($query){
+                         $query->withTrashed()->select(['id','name']);
+                        },
+                     'role'=>function($query){
+                        $query->withTrashed()->select(['id','name']);
+                    }])
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->paginate($displaynum);
             if(blank($users)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-
             $code='error';
             $msg='查询成功';
             $data=$users;
@@ -122,28 +89,9 @@ class UserController extends BaseController
             $data=$users;
         }
         DB::commit();
-        $infos['users']=$users;
-        $infos[$code]=$msg;
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
 
-    /* ========== 添加(查询上级用户) ========== */
-    public function select_parent(Request $request){
-        $parent_id = $request->input('id');
-        if($parent_id){
-            DB::beginTransaction();
-            $parent['name']=User::withTrashed()->where('id',$parent_id)->sharedLock()->value('name');
-            DB::commit();
-            $code = 'success';
-            $msg = '查询上级用户成功';
-            $data = $parent;
-        }else{
-            $code = 'error';
-            $msg = '暂无上级用户信息';
-            $data = [];
-        }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        /* ********** 结果 ********** */
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
     }
 
     /* ========== 添加 ========== */
@@ -152,7 +100,6 @@ class UserController extends BaseController
         /* ********** 保存 ********** */
         /* ++++++++++ 表单验证 ++++++++++ */
         $rules=[
-            'parent_id'=>['required','regex:/^[0-9]+$/'],
             'name'=>'required|unique:user',
             'username'=>'required',
             'password'=>'required',
@@ -161,7 +108,6 @@ class UserController extends BaseController
         ];
         $messages=[
             'required'=>':attribute 为必须项',
-            'parent_id.regex'=>'选择正确的上级菜单',
             'unique'=>':attribute 已存在'
         ];
 
@@ -194,14 +140,18 @@ class UserController extends BaseController
     }
 
     /* ========== 详情 ========== */
-    public function info(Request $request,$id){
-
+    public function info(Request $request){
+        $id=$request->input('id');
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $user=User::withTrashed()
-            ->with(['father'=>function($query){
-                $query->withTrashed()->select(['id','name']);
-            }])
+            ->with([
+                'dept'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                },
+                'role'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
             ->sharedLock()
             ->find($id);
 
@@ -225,7 +175,6 @@ class UserController extends BaseController
         $model=new User();
         /* ********** 表单验证 ********** */
         $rules=[
-            'parent_id'=>['required','regex:/^[0-9]+$/'],
             'name'=>'required|unique:user',
             'username'=>'required',
             'password'=>'required',
@@ -234,7 +183,6 @@ class UserController extends BaseController
         ];
         $messages=[
             'required'=>':attribute 为必须项',
-            'parent_id.regex'=>'选择正确的上级菜单',
             'unique'=>':attribute 已存在'
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
@@ -245,14 +193,8 @@ class UserController extends BaseController
         /* ********** 更新 ********** */
         DB::beginTransaction();
         try{
-            if($request->input('parent_id')){
-                throw new \Exception('禁止修改上级用户',404404);
-            }
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $user=User::withTrashed()
-                ->withCount(['childs'=>function($query){
-                    $query->withTrashed();
-                }])
                 ->lockForUpdate()
                 ->find($id);
 
@@ -292,7 +234,7 @@ class UserController extends BaseController
         DB::beginTransaction();
         try{
             /* ++++++++++ 锁定数据 ++++++++++ */
-            $users=User::select(['id'])->withCount('childs')->whereIn('id',$ids)->lockForUpdate()->get();
+            $users=User::select(['id'])->whereIn('id',$ids)->lockForUpdate()->get();
             if(blank($users)){
                 throw new \Exception('没有可删除数据');
             }

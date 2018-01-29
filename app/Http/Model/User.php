@@ -19,8 +19,8 @@ class User extends Model
     ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
-        'dept_id'=>'部门ID',
-        'role_id'=>'角色ID',
+        'dept_id'=>'所在部门',
+        'role_id'=>'所属角色',
         'username'=>'用户',
         'password'=>'登陆密码',
         'secret'=>'用户密钥',
@@ -54,13 +54,4 @@ class User extends Model
         return $this->belongsTo('App\Http\Model\Role','role_id','id')->withDefault();
     }
 
-    /* ++++++++++ 父级关联 ++++++++++ */
-    public function father(){
-        return $this->belongsTo('App\Http\Model\User','parent_id','id')->withDefault();
-    }
-
-    /* ++++++++++ 子级关联 ++++++++++ */
-    public function childs(){
-        return $this->hasMany('App\Http\Model\User','parent_id','id');
-    }
 }

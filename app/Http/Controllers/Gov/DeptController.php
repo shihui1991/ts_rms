@@ -51,7 +51,6 @@ class DeptController extends BaseController
             $data=$depts;
         }
         DB::commit();
-        $infos['depts']=$depts;
         /* ++++++++++ 结果 ++++++++++ */
         return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
@@ -76,15 +75,13 @@ class DeptController extends BaseController
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'sort';
+        $ordername=$ordername?$ordername:'id';
         $infos['ordername']=$ordername;
 
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $nums=[15,30,50,100,200];
-        $infos['nums']=$nums;
         $displaynum=$request->input('displaynum');
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
@@ -107,7 +104,7 @@ class DeptController extends BaseController
             if(blank($depts)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-            $code='error';
+            $code='success';
             $msg='查询成功';
             $data=$depts;
         }catch (\Exception $exception){
@@ -117,26 +114,24 @@ class DeptController extends BaseController
             $data=$depts;
         }
         DB::commit();
-        $infos['depts']=$depts;
-        $infos[$code]=$msg;
 
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
     }
 
-    /* ========== 添加(查询上级部门) ========== */
-    public function select_parent(Request $request){
-        $parent_id = $request->input('id');
-        if($parent_id){
+    /* ========== 添加(查询部门信息) ========== */
+    public function select_deptname(Request $request){
+        $id = $request->input('id');
+        if($id){
             DB::beginTransaction();
-            $parent['name']=Dept::withTrashed()->where('id',$parent_id)->sharedLock()->value('name');
+            $parent['name']=Dept::withTrashed()->where('id',$id)->sharedLock()->value('name');
             DB::commit();
             $code = 'success';
-            $msg = '查询上级部门成功';
+            $msg = '查询部门信息成功';
             $data = $parent;
         }else{
             $code = 'error';
-            $msg = '暂无上级部门信息';
+            $msg = '暂无部门信息';
             $data = [];
         }
         return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
@@ -186,7 +181,8 @@ class DeptController extends BaseController
     }
 
     /* ========== 详情 ========== */
-    public function info(Request $request,$id){
+    public function info(Request $request){
+        $id=$request->input('id');
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $dept=Dept::withTrashed()
@@ -211,7 +207,7 @@ class DeptController extends BaseController
     }
 
     /* ========== 修改 ========== */
-    public function edit(Request $request,$id){
+    public function edit(Request $request){
         $model=new Dept();
         /* ********** 表单验证 ********** */
         $rules=[
@@ -234,6 +230,7 @@ class DeptController extends BaseController
             if($request->input('parent_id')){
                 throw new \Exception('禁止修改上级部门',404404);
             }
+            $id=$request->input('id');
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $dept=Dept::withTrashed()
                 ->withCount(['childs'=>function($query){
