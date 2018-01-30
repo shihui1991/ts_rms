@@ -86,4 +86,29 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::any('housecommunity_add','HousecommunityController@add')->name('gov_housecommunity_add');
     Route::any('housecommunity_info','HousecommunityController@info')->name('gov_housecommunity_info');
     Route::any('housecommunity_edit','HousecommunityController@edit')->name('gov_housecommunity_edit');
+    /*----- 必备附件分类 -----*/
+    Route::any('filecate','FilecateController@index')->name('gov_filecate');
+    Route::any('filecate_add','FilecateController@add')->name('gov_filecate_add');
+    Route::any('filecate_info','FilecateController@info')->name('gov_filecate_info');
+    Route::any('filecate_edit','FilecateController@edit')->name('gov_filecate_edit');
+    /*----- 房源社区户型图 -----*/
+    Route::any('houselayoutimg','HouselayoutimgController@index')->name('gov_houselayoutimg');
+    Route::any('houselayoutimg_add','HouselayoutimgController@add')->name('gov_houselayoutimg_add');
+    Route::any('houselayoutimg_info','HouselayoutimgController@info')->name('gov_houselayoutimg_info');
+    Route::any('houselayoutimg_edit','HouselayoutimgController@edit')->name('gov_houselayoutimg_edit');
+    /*----- 房源 -----*/
+    Route::any('house','HouseController@index')->name('gov_house');
+    Route::any('house_add','HouseController@add')->name('gov_house_add');
+    Route::any('house_info','HouseController@info')->name('gov_house_info');
+    Route::any('house_edit','HouseController@edit')->name('gov_house_edit');
+    /*----- 房源-评估单价 -----*/
+    Route::any('houseprice','HousepriceController@index')->name('gov_houseprice');
+    Route::any('houseprice_add','HousepriceController@add')->name('gov_houseprice_add');
+    Route::any('houseprice_info','HousepriceController@info')->name('gov_houseprice_info');
+    Route::any('houseprice_edit','HousepriceController@edit')->name('gov_houseprice_edit');
+    /*----- 房源-购置管理费单价 -----*/
+    Route::any('housemanageprice','HousemanagepriceController@index')->name('gov_housemanageprice');
+    Route::any('housemanageprice_add','HousemanagepriceController@add')->name('gov_housemanageprice_add');
+    Route::any('housemanageprice_info','HousemanagepriceController@info')->name('gov_housemanageprice_info');
+    Route::any('housemanageprice_edit','HousemanagepriceController@edit')->name('gov_housemanageprice_edit');
 });

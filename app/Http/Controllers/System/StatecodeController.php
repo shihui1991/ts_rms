@@ -84,7 +84,7 @@ class StatecodeController extends BaseController
         if($request->ajax()){
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
-            return view('system.itemfundscate.index',$infos);
+            return view('system.statecode.index',$infos);
         }
     }
 }

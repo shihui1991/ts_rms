@@ -65,8 +65,8 @@
     <script>
         $.ajax({
             type:'post',
-            url:'/api/gov/bank',
-            data:{name:1},
+            url:'/api/gov/bank_edit',
+            data:{id:1,name:1234},
             dataType:'json',
             success:function (rs) {
                 console.log(rs);

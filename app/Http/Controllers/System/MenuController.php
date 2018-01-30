@@ -177,7 +177,7 @@ class MenuController extends BaseController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
                 'parent_id'=>['required','regex:/^[0-9]+$/'],
-                'name'=>'required|unique:a_menu',
+                'name'=>'required',
                 'url'=>'required',
                 'display'=>'boolean',
                 'sort'=>'nullable|integer',
@@ -185,7 +185,6 @@ class MenuController extends BaseController
             $messages=[
                 'required'=>':attribute 为必须项',
                 'parent_id.regex'=>'选择正确的上级菜单',
-                'unique'=>':attribute 已存在',
                 'boolean'=>':attribute 选择正确的选项',
                 'integer'=>':attribute 必须是整数',
             ];
@@ -286,14 +285,13 @@ class MenuController extends BaseController
        if($request->isMethod('post')){
            /* ********** 表单验证 ********** */
            $rules=[
-               'name'=>'required|unique:a_menu,name,'.$id.',id',
+               'name'=>'required',
                'url'=>'required',
                'display'=>'boolean',
                'sort'=>'nullable|integer',
            ];
            $messages=[
                'required'=>':attribute 为必须项',
-               'unique'=>':attribute 已存在',
                'boolean'=>':attribute 选择正确的选项',
                'integer'=>':attribute 必须是整数',
            ];

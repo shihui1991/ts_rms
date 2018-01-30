@@ -27,9 +27,9 @@ Route::namespace('system')->prefix('system')->group(function (){
     /*----- 功能与菜单 -----*/
     Route::any('menu','MenuController@index')->name('sys_menu');
     Route::any('menu_all','MenuController@all')->name('sys_menu_all');
-    Route::any('menu_add','MenuController@add')->name('sys_menu_add');
-    Route::any('menu_info','MenuController@info')->name('sys_menu_info');
-    Route::any('menu_edit','MenuController@edit')->name('sys_menu_edit');
+    Route::any('menu_add/{id}','MenuController@add')->name('sys_menu_add');
+    Route::any('menu_info/{id}','MenuController@info')->name('sys_menu_info');
+    Route::any('menu_edit/{id}','MenuController@edit')->name('sys_menu_edit');
     Route::any('menu_sort','MenuController@sort')->name('sys_menu_sort');
     Route::any('menu_display','MenuController@display')->name('sys_menu_display');
     Route::any('menu_delete','MenuController@delete')->name('sys_menu_delete');
@@ -61,4 +61,16 @@ Route::namespace('system')->prefix('system')->group(function (){
     Route::any('itemfundscate_add','ItemfundscateController@add')->name('sys_itemfundscate_add');
     Route::any('itemfundscate_info','ItemfundscateController@info')->name('sys_itemfundscate_info');
     Route::any('itemfundscate_edit','ItemfundscateController@edit')->name('sys_itemfundscate_edit');
+    /*----- 项目通知分类 -----*/
+    Route::any('itemnoticecate','ItemnoticecateController@index')->name('sys_itemnoticecate');
+    Route::any('itemnoticecate_add','ItemnoticecateController@add')->name('sys_itemnoticecate_add');
+    Route::any('itemnoticecate_info','ItemnoticecateController@info')->name('sys_itemnoticecate_info');
+    Route::any('itemnoticecate_edit','ItemnoticecateController@edit')->name('sys_itemnoticecate_edit');
+    /*----- 状态代码 -----*/
+    Route::any('statecode','StatecodeController@index')->name('sys_statecode');
+    /*----- 通知公告分类 -----*/
+    Route::any('newscate','NewscateController@index')->name('sys_newscate');
+    Route::any('newscate_add','NewscateController@add')->name('sys_newscate_add');
+    Route::any('newscate_info','NewscateController@info')->name('sys_newscate_info');
+    Route::any('newscate_edit','NewscateController@edit')->name('sys_newscate_edit');
 });
