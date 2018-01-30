@@ -111,4 +111,39 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::any('housemanageprice_add','HousemanagepriceController@add')->name('gov_housemanageprice_add');
     Route::any('housemanageprice_info','HousemanagepriceController@info')->name('gov_housemanageprice_info');
     Route::any('housemanageprice_edit','HousemanagepriceController@edit')->name('gov_housemanageprice_edit');
+    /*----- 公产单位 -----*/
+    Route::any('adminunit','AdminunitController@index')->name('gov_adminunit');
+    Route::any('adminunit_add','AdminunitController@add')->name('gov_adminunit_add');
+    Route::any('adminunit_info','AdminunitController@info')->name('gov_adminunit_info');
+    Route::any('adminunit_edit','AdminunitController@edit')->name('gov_adminunit_edit');
+    /*----- 评估机构 -----*/
+    Route::any('company','CompanyController@index')->name('gov_company');
+    Route::any('company_add','CompanyController@add')->name('gov_company_add');
+    Route::any('company_info','CompanyController@info')->name('gov_company_info');
+    Route::any('company_edit','CompanyController@edit')->name('gov_company_edit');
+    /*----- 评估机构(操作员) -----*/
+    Route::any('companyuser','CompanyuserController@index')->name('gov_companyuser');
+    Route::any('companyuser_add','CompanyuserController@add')->name('gov_companyuser_add');
+    Route::any('companyuser_info','CompanyuserController@info')->name('gov_companyuser_info');
+    Route::any('companyuser_edit','CompanyuserController@edit')->name('gov_companyuser_edit');
+    /*----- 评估机构(评估师) -----*/
+    Route::any('companyvaluer','CompanyvaluerController@index')->name('gov_companyvaluer');
+    Route::any('companyvaluer_add','CompanyvaluerController@add')->name('gov_companyvaluer_add');
+    Route::any('companyvaluer_info','CompanyvaluerController@info')->name('gov_companyvaluer_info');
+    Route::any('companyvaluer_edit','CompanyvaluerController@edit')->name('gov_companyvaluer_edit');
+    /*----- 土地性质 -----*/
+    Route::any('landprop','LandpropController@index')->name('gov_landprop');
+    Route::any('landprop_add','LandpropController@add')->name('gov_landprop_add');
+    Route::any('landprop_info','LandpropController@info')->name('gov_landprop_info');
+    Route::any('landprop_edit','LandpropController@edit')->name('gov_landprop_edit');
+    /*----- 土地来源 -----*/
+    Route::any('landsource','LandsourceController@index')->name('gov_landsource');
+    Route::any('landsource_add','LandsourceController@add')->name('gov_landsource_add');
+    Route::any('landsource_info','LandsourceController@info')->name('gov_landsource_info');
+    Route::any('landsource_edit','LandsourceController@edit')->name('gov_landsource_edit');
+    /*----- 土地权益状况 -----*/
+    Route::any('landstate','LandstateController@index')->name('gov_landstate');
+    Route::any('landstate_add','LandstateController@add')->name('gov_landstate_add');
+    Route::any('landstate_info','LandstateController@info')->name('gov_landstate_info');
+    Route::any('landstate_edit','LandstateController@edit')->name('gov_landstate_edit');
 });

@@ -31,7 +31,7 @@ class RoleController extends BaseController
         DB::beginTransaction();
         try{
             $roles=Role::withTrashed()
-                ->select(['id','parent_id','name','admin','deleted_at'])
+                ->select(['id','parent_id','level','name','admin','deleted_at'])
                 ->withCount(['childs'=>function($query){
                     $query->withTrashed();
                 }])
@@ -62,7 +62,7 @@ class RoleController extends BaseController
 
     /* ========== 全列表 ========== */
     public function all(Request $request){
-        $select=['id','parent_id','name','admin','deleted_at'];
+        $select=['id','parent_id','level','name','admin','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -150,7 +150,8 @@ class RoleController extends BaseController
         $rules=[
             'parent_id'=>['required','regex:/^[0-9]+$/'],
             'name'=>'required|unique:role',
-            'admin'=>'required'
+            'admin'=>'required',
+            'level'=>'required'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -231,7 +232,8 @@ class RoleController extends BaseController
         $rules=[
             'parent_id'=>['required','regex:/^[0-9]+$/'],
             'name'=>'required|unique:role',
-            'admin'=>'required'
+            'admin'=>'required',
+            'level'=>'required'
         ];
         $messages=[
             'required'=>':attribute 为必须项',

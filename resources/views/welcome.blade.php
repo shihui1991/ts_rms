@@ -66,7 +66,14 @@
     </head>
     <body>
 
-    {{phpinfo()}}
+    @php
+           dump(encrypt(123));
+    dump(decrypt('eyJpdiI6Imx6YkwyNlVRbTJJZmxZQ1kwMVY4d2c9PSIsInZhbHVlIjoieVR3cTJ2ZFwvMEEyUnFnS3JkK1dta3c9PSIsIm1hYyI6ImYyOTUyMDhiNmRiZGEyODI5ZTgwOTg1MjhjZDM5NmRkZTAxZDk1MjYwMWJlMTE1YTZmYmQ3NGZjMjM0NTNhNjkifQ=='));
+
+            @endphp
+    <hr>
+    eyJpdiI6IkFaQzlMZDBXdXJCcmphWDZYdVhoT0E9PSIsInZhbHVlIjoiTjN0T0pPMitsYXlyS1NPMVcrQlVTdz09IiwibWFjIjoiMWJmMTU2MzRjYjBmNjAwYzk0YWY3Y2E3ZmZiYWE2ZDA5ZjlmNGE3N2YzOWRlMjYxY2Y3MDk2NThjOTc4NzE3MiJ9
+    eyJpdiI6IkV2NElsSnYzQ1N5d0UrU01SQjVFR2c9PSIsInZhbHVlIjoiMGwyaWhhWXVEcnVhRVpDWlFCOWZCZz09IiwibWFjIjoiYzBhMGNmMzNiMDg4OGNkZDBmMmRiZGFkZDVlMDAxM2RiNWFjNjc1ZDFjZGEzYjEyNzRjODNiYmE4NDY1YzM5MSJ9
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">

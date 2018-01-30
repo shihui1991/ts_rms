@@ -14,9 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::any('/', function () {
-    return view('index');
-});
+
 
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/

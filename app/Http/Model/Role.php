@@ -25,6 +25,7 @@ class Role extends Model
     public $columns=[
         'parent_id'=>'上级角色',
         'name'=>'名称',
+        'level'=>'角色层级',
         'dept_id'=>'所属部门',
         'admin'=>'管理员',
         'infos'=>'描述'
