@@ -219,8 +219,14 @@ class DeptController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-        $model=new Dept();
+        if($id==$request->input('parent_id')){
+            $code='error';
+            $msg='所在部门不能与上级部门相同';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
+
         /* ********** 表单验证 ********** */
+        $model=new Dept();
         $rules=[
             'parent_id'=>['required','regex:/^[0-9]+$/'],
             'name'=>'required|unique:dept',

@@ -227,8 +227,15 @@ class RoleController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-        $model=new Role();
+
+        if($id==$request->input('parent_id')){
+            $code='error';
+            $msg='所属角色不能与上级角色相同';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
+
         /* ********** 表单验证 ********** */
+        $model=new Role();
         $rules=[
             'parent_id'=>['required','regex:/^[0-9]+$/'],
             'name'=>'required|unique:role',

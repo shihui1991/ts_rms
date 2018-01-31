@@ -158,8 +158,13 @@ class ProcessController extends BaseController
     }
 
     /* ========== 详情 ========== */
-    public function info(Request $request,$id){
-
+    public function info(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $process=Process::withTrashed()
@@ -195,7 +200,19 @@ class ProcessController extends BaseController
 
 
     /* ========== 修改 ========== */
-    public function edit(Request $request,$id){
+    public function edit(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $code='warning';
+            $msg='请选择一条数据';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
+
+        if($id==$request->input('parent_id')){
+            $code='error';
+            $msg='所属流程不能与上级流程相同';
+            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+        }
         $model=new Process();
         if($request->isMethod('post')){
             /* ********** 表单验证 ********** */
