@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Landsource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class LandsourceController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','deleted_at'];
+        $select=['id','prop_id','name','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -100,7 +99,7 @@ class LandsourceController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -109,7 +108,7 @@ class LandsourceController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $landsource=$model;
             $landsource->fill($request->input());
-            $landsource->setOther($request);
+            $landsource->addOther($request);
             $landsource->save();
 
             $code='success';
@@ -169,7 +168,7 @@ class LandsourceController extends BaseController
         /* ********** 表单验证 ********** */
         $rules=[
             'prop_id'=>'required',
-            'name'=>'required|unique:land_source'
+            'name'=>'required|unique:land_source,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -177,7 +176,7 @@ class LandsourceController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -193,7 +192,9 @@ class LandsourceController extends BaseController
             $landsource->fill($request->input());
             $landsource->setOther($request);
             $landsource->save();
-
+            if(blank($landsource)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$landsource;

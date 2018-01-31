@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Landstate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class LandstateController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','deleted_at'];
+        $select=['id','prop_id','source_id','name','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -103,7 +102,7 @@ class LandstateController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -112,9 +111,11 @@ class LandstateController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $landstate=$model;
             $landstate->fill($request->input());
-            $landstate->setOther($request);
+            $landstate->addOther($request);
             $landstate->save();
-
+            if(blank($landstate)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$landstate;
@@ -176,7 +177,7 @@ class LandstateController extends BaseController
         $rules=[
             'prop_id'=>'required',
             'source_id'=>'required',
-            'name'=>'required|unique:land_state'
+            'name'=>'required|unique:land_state,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -184,7 +185,7 @@ class LandstateController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -200,7 +201,9 @@ class LandstateController extends BaseController
             $landstate->fill($request->input());
             $landstate->setOther($request);
             $landstate->save();
-
+            if(blank($landstate)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$landstate;

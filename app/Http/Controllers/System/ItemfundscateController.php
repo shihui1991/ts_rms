@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Itemfundscate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -109,9 +108,11 @@ class ItemfundscateController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $itemfundscate=$model;
                 $itemfundscate->fill($request->input());
-                $itemfundscate->setOther($request);
+                $itemfundscate->addOther($request);
                 $itemfundscate->save();
-
+                if(blank($itemfundscate)){
+                    throw new \Exception('添加失败',404404);
+                }
                 $code='success';
                 $msg='添加成功';
                 $data=$itemfundscate;
@@ -189,7 +190,7 @@ class ItemfundscateController extends BaseController
         if($request->isMethod('post')){
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:a_item_funds_cate'
+                'name'=>'required|unique:a_item_funds_cate,name,'.$id.',id'
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
@@ -212,7 +213,9 @@ class ItemfundscateController extends BaseController
                 $itemfundscate->fill($request->input());
                 $itemfundscate->setOther($request);
                 $itemfundscate->save();
-
+                if(blank($itemfundscate)){
+                    throw new \Exception('修改失败',404404);
+                }
                 $code='success';
                 $msg='修改成功';
                 $data=$itemfundscate;

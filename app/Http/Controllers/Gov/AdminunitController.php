@@ -5,11 +5,11 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Adminunit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class AdminunitController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -29,6 +29,12 @@ class AdminunitController extends BaseController
         if($name){
             $where[]=['name','like','%'.$name.'%'];
             $infos['name']=$name;
+        }
+        /* ++++++++++ 联系人 ++++++++++ */
+        $contact_man=trim($request->input('contact_man'));
+        if($contact_man){
+            $where[]=['contact_man','like','%'.$contact_man.'%'];
+            $infos['contact_man']=$contact_man;
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
@@ -94,7 +100,7 @@ class AdminunitController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -103,8 +109,11 @@ class AdminunitController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $adminunit=$model;
             $adminunit->fill($request->input());
-            $adminunit->setOther($request);
+            $adminunit->addOther($request);
             $adminunit->save();
+            if(blank($adminunit)){
+                throw new \Exception('添加失败',404404);
+            }
 
             $code='success';
             $msg='添加成功';
@@ -156,10 +165,10 @@ class AdminunitController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-        $model=new Adminunit();
         /* ********** 表单验证 ********** */
+        $model=new Adminunit();
         $rules=[
-            'name'=>'required|unique:admin_unit',
+            'name'=>'required|unique:admin_unit,name,'.$id.',id',
             'address'=>'required',
             'phone'=>'required',
             'contact_man'=>'required',
@@ -171,7 +180,7 @@ class AdminunitController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -187,6 +196,9 @@ class AdminunitController extends BaseController
             $adminunit->fill($request->input());
             $adminunit->setOther($request);
             $adminunit->save();
+            if(blank($adminunit)){
+                throw new \Exception('修改失败',404404);
+            }
 
             $code='success';
             $msg='修改成功';

@@ -5,11 +5,11 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Houselayoutimg;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class HouselayoutimgController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -20,7 +20,7 @@ class HouselayoutimgController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','deleted_at'];
+        $select=['id','community_id','layout_id','name','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -101,7 +101,7 @@ class HouselayoutimgController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -110,9 +110,11 @@ class HouselayoutimgController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $houselayoutimg=$model;
             $houselayoutimg->fill($request->input());
-            $houselayoutimg->setOther($request);
+            $houselayoutimg->addOther($request);
             $houselayoutimg->save();
-
+            if(blank($houselayoutimg)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$houselayoutimg;
@@ -172,7 +174,7 @@ class HouselayoutimgController extends BaseController
         $model=new Houselayoutimg();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:houselayoutimg'
+            'name'=>'required|unique:houselayoutimg,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -180,7 +182,7 @@ class HouselayoutimgController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -196,7 +198,9 @@ class HouselayoutimgController extends BaseController
             $houselayoutimg->fill($request->input());
             $houselayoutimg->setOther($request);
             $houselayoutimg->save();
-
+            if(blank($houselayoutimg)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$houselayoutimg;

@@ -5,12 +5,12 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Company;
 use App\Http\Model\Companyuser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class CompanyController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -21,7 +21,7 @@ class CompanyController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','type','name','address','phone','fax','contact_man','contact_tel','state','deleted_at'];
+        $select=['id','type','name','address','phone','fax','contact_man','contact_tel','logo','infos','user_id','state','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -104,7 +104,7 @@ class CompanyController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /*--- 评估机构(操作员) ---*/
         $companyuser_model = new Companyuser();
@@ -118,7 +118,7 @@ class CompanyController extends BaseController
         ];
         $validator1 = Validator::make($request->all(),$rules1,$messages1,$companyuser_model->columns);
         if($validator1->fails()){
-            return response()->json(['code'=>'error','message'=>$validator1->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -128,21 +128,19 @@ class CompanyController extends BaseController
             /*--- 评估机构 ---*/
             $company=$model;
             $company->fill($request->input());
-            $company->setOther($request);
-            $company_rs = $company->save();
-            if(blank($company_rs)){
+            $company->addOther($request);
+            $company->save();
+            if(blank($company)){
                 throw  new \Exception('添加失败',404404);
             }
             /*--- 评估机构(操作员) ---*/
             $companyuser = $companyuser_model;
-            $companyuser->fill([
-                'company_id'=>$company->id,
-                'username'=>$request->input('username'),
-                'password'=>encrypt($request->input('password')),
-                'secret'=>create_guid()
-            ]);
-            $companyuser_rs = $companyuser->save();
-            if(blank($companyuser_rs)){
+            $companyuser->username = $request->input('username');
+            $companyuser->password = encrypt($request->input('password'));
+            $companyuser->company_id = $company->id;
+            $companyuser->secret = create_guid();
+            $companyuser->save();
+            if(blank($companyuser)){
                 throw  new \Exception('添加失败',404404);
             }
 
@@ -200,7 +198,7 @@ class CompanyController extends BaseController
         /* ********** 表单验证 ********** */
         $rules=[
             'type'=>'required',
-            'name'=>'required|unique:company',
+            'name'=>'required|unique:company,name,'.$id.',id',
             'address'=>'required',
             'phone'=>'required',
             'content'=>'required',
@@ -213,7 +211,7 @@ class CompanyController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -229,6 +227,9 @@ class CompanyController extends BaseController
             $company->fill($request->input());
             $company->setOther($request);
             $company->save();
+            if(blank($company)){
+                throw  new \Exception('添加失败',404404);
+            }
 
             $code='success';
             $msg='修改成功';

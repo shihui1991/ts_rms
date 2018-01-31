@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,15 +30,16 @@ class RoleController extends BaseController
         DB::beginTransaction();
         try{
             $roles=Role::withTrashed()
-                ->select(['id','parent_id','level','name','admin','deleted_at'])
+                ->select(['id','parent_id','level','name','dept_id','admin','infos','deleted_at'])
                 ->withCount(['childs'=>function($query){
                     $query->withTrashed();
                 }])
-                ->with(['dept'])
+                ->with(['dept'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
                 ->where($where)
                 ->sharedLock()
                 ->get();
-
             if(blank($roles)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -62,7 +62,7 @@ class RoleController extends BaseController
 
     /* ========== 全列表 ========== */
     public function all(Request $request){
-        $select=['id','parent_id','level','name','admin','deleted_at'];
+        $select=['id','parent_id','level','name','dept_id','admin','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -80,7 +80,7 @@ class RoleController extends BaseController
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'sort';
+        $ordername=$ordername?$ordername:'id';
         $infos['ordername']=$ordername;
 
         $orderby=$request->input('orderby');
@@ -151,6 +151,7 @@ class RoleController extends BaseController
             'parent_id'=>['required','regex:/^[0-9]+$/'],
             'name'=>'required|unique:role',
             'admin'=>'required',
+            'dept_id'=>'required',
             'level'=>'required'
         ];
         $messages=[
@@ -160,7 +161,7 @@ class RoleController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -169,9 +170,11 @@ class RoleController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $role=$model;
             $role->fill($request->input());
-            $role->setOther($request);
+            $role->addOther($request);
             $role->save();
-
+            if(blank($role)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$role;
@@ -198,8 +201,11 @@ class RoleController extends BaseController
         DB::beginTransaction();
         $role=Role::withTrashed()
             ->with(['father'=>function($query){
-                $query->withTrashed()->select(['id','name']);
-            }])
+                    $query->withTrashed()->select(['id','name']);
+                },
+                'dept'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
             ->sharedLock()
             ->find($id);
 
@@ -227,18 +233,11 @@ class RoleController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-
-        if($id==$request->input('parent_id')){
-            $code='error';
-            $msg='所属角色不能与上级角色相同';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-
         /* ********** 表单验证 ********** */
         $model=new Role();
         $rules=[
             'parent_id'=>['required','regex:/^[0-9]+$/'],
-            'name'=>'required|unique:role',
+            'name'=>'required|unique:role,name,'.$id.',id',
             'admin'=>'required',
             'level'=>'required'
         ];
@@ -249,7 +248,7 @@ class RoleController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ********** 更新 ********** */
@@ -273,7 +272,9 @@ class RoleController extends BaseController
             $role->fill($request->input());
             $role->setOther($request);
             $role->save();
-
+            if(blank($role)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$role;

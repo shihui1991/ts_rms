@@ -11,15 +11,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Menu extends Model
 {
     use SoftDeletes;
-
     protected $table='a_menu';
     protected $primaryKey='id';
     protected $guarded=[];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [
-
-    ];
-
+    protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'parent_id'=>'上级菜单',
@@ -39,24 +35,16 @@ class Menu extends Model
     {
         $this->attributes['name']=trim($value);
     }
-
     /* ++++++++++ 路由地址去空 ++++++++++ */
     public function setUrlAttribute($value)
     {
         $this->attributes['url']=trim($value);
     }
-
     /* ++++++++++ 排序强制转换为数字 ++++++++++ */
     public function setSortAttribute($value)
     {
         $this->attributes['sort']=is_null($value)?0:(integer)$value;
     }
-
-    /* ++++++++++ 设置其他数据 ++++++++++ */
-    public function setOther($request){
-
-    }
-
     /* ++++++++++ 获取限制访问 ++++++++++ */
     public function getAuthAttribute($key=null)
     {
@@ -67,7 +55,6 @@ class Menu extends Model
             return $array;
         }
     }
-
     /* ++++++++++ 获取状态 ++++++++++ */
     public function getDisplayAttribute($key=null)
     {
@@ -79,11 +66,19 @@ class Menu extends Model
         }
     }
 
+    /* ++++++++++ 设置添加数据 ++++++++++ */
+    public function addOther($request){
+
+    }
+    /* ++++++++++ 设置修改数据 ++++++++++ */
+    public function setOther($request){
+
+    }
+
     /* ++++++++++ 父级关联 ++++++++++ */
     public function father(){
         return $this->belongsTo('App\Http\Model\Menu','parent_id','id')->withDefault();
     }
-
     /* ++++++++++ 子级关联 ++++++++++ */
     public function childs(){
         return $this->hasMany('App\Http\Model\Menu','parent_id','id');

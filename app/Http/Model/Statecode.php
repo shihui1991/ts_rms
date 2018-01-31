@@ -10,9 +10,7 @@ class Statecode extends Model
     protected $primaryKey='id';
     protected $guarded=[];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [
-
-    ];
+    protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'code'=>'状态代码',

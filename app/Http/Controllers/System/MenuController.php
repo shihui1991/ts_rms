@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -57,16 +56,12 @@ class MenuController extends BaseController
             if(blank($menus)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-
-
             $code='success';
             $msg='查询成功';
             $data=$menus;
             $url='';
         }catch (\Exception $exception){
             $menus=collect();
-
-
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$menus;
@@ -197,17 +192,17 @@ class MenuController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $menu=$model;
                 $menu->fill($request->input());
-                $menu->setOther($request);
+                $menu->addOther($request);
                 $menu->save();
-
-
+                if(blank($menu)){
+                    throw new \Exception('添加失败',404404);
+                }
                 $code='success';
                 $msg='添加成功';
                 $data=$menu;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
                 $data=[];
@@ -318,8 +313,9 @@ class MenuController extends BaseController
                $menu->fill($request->input());
                $menu->setOther($request);
                $menu->save();
-
-
+               if(blank($menu)){
+                   throw new \Exception('修改失败',404404);
+               }
                $code='success';
                $msg='修改成功';
                $data=$menu;

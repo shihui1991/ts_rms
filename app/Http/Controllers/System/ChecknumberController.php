@@ -5,10 +5,10 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Checknumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class ChecknumberController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -19,7 +19,7 @@ class ChecknumberController extends BaseController
 
     /* ++++++++++ 首页 ++++++++++ */
     public function index(Request $request){
-        $select = ['id','number','deleted_at'];
+        $select = ['id','process_id','menu_id','number','deleted_at'];
         /* ********** 查询条件 ********** */
         $where=[];
         /* ********** 排序 ********** */
@@ -52,7 +52,18 @@ class ChecknumberController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $checknumbers=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $checknumbers=$model
+                ->with(['process'=>function($query){
+                        $query->withTrashed()->select(['id','name']);
+                    },
+                    'menu'=>function($query){
+                        $query->withTrashed()->select(['id','name']);
+                    }])
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->paginate($displaynum);
             if(blank($checknumbers)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -102,9 +113,11 @@ class ChecknumberController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $checknumber=$model;
                 $checknumber->fill($request->input());
-                $checknumber->setOther($request);
+                $checknumber->addOther($request);
                 $checknumber->save();
-
+                if(blank($checknumber)){
+                    throw new \Exception('添加失败',404404);
+                }
                 $code='success';
                 $msg='添加成功';
                 $data=$checknumber;
@@ -142,6 +155,12 @@ class ChecknumberController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $checknumber=Checknumber::withTrashed()
+            ->with(['process'=>function($query){
+                $query->withTrashed()->select(['id','name']);
+                 },
+                'menu'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
             ->sharedLock()
             ->find($id);
 
@@ -206,7 +225,9 @@ class ChecknumberController extends BaseController
                 $checknumber->fill($request->input());
                 $checknumber->setOther($request);
                 $checknumber->save();
-
+                if(blank($checknumber)){
+                    throw new \Exception('修改失败',404404);
+                }
                 $code='success';
                 $msg='修改成功';
                 $data=$checknumber;

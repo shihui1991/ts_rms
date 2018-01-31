@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Processmenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,20 +41,17 @@ class ProcessmenuController extends BaseController
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($process)){
-
             $code='warning';
             $msg='数据不存在';
             $data=[];
             $url='';
         }else{
-
             $code='success';
             $msg='获取成功';
             $data=$process;
             $url='';
         }
         $infos=[
-
             'code'=>$code,
             'msg'=>$msg,
             'sdata'=>$data,'edata'=>'',

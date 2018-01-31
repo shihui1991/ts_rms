@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Nation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class NationController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','deleted_at'];
+        $select=['id','name','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -91,7 +90,7 @@ class NationController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -100,9 +99,11 @@ class NationController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $nation=$model;
             $nation->fill($request->input());
-            $nation->setOther($request);
+            $nation->addOther($request);
             $nation->save();
-
+            if(blank($nation)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$nation;
@@ -156,7 +157,7 @@ class NationController extends BaseController
         $model=new Nation();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:nation'
+            'name'=>'required|unique:nation,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -164,7 +165,7 @@ class NationController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -180,7 +181,9 @@ class NationController extends BaseController
             $nation->fill($request->input());
             $nation->setOther($request);
             $nation->save();
-
+            if(blank($nation)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$nation;

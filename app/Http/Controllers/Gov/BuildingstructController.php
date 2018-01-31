@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Buildingstruct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class BuildingstructController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','deleted_at'];
+        $select=['id','name','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -90,7 +89,7 @@ class BuildingstructController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -99,9 +98,11 @@ class BuildingstructController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $building_struct=$model;
             $building_struct->fill($request->input());
-            $building_struct->setOther($request);
+            $building_struct->addOther($request);
             $building_struct->save();
-
+            if(blank($building_struct)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$building_struct;
@@ -152,10 +153,10 @@ class BuildingstructController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-        $model=new Buildingstruct();
         /* ********** 表单验证 ********** */
+        $model=new Buildingstruct();
         $rules=[
-            'name'=>'required|unique:building_struct'
+            'name'=>'required|unique:building_struct,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -163,7 +164,7 @@ class BuildingstructController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -179,7 +180,9 @@ class BuildingstructController extends BaseController
             $building_struct->fill($request->input());
             $building_struct->setOther($request);
             $building_struct->save();
-
+            if(blank($building_struct)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$building_struct;

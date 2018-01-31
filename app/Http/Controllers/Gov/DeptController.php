@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Dept;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -57,7 +56,7 @@ class DeptController extends BaseController
 
     /* ========== 全列表 ========== */
     public function all(Request $request){
-        $select=['id','parent_id','name','type','deleted_at'];
+        $select=['id','parent_id','name','type','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -154,7 +153,7 @@ class DeptController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -163,9 +162,11 @@ class DeptController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $dept=$model;
             $dept->fill($request->input());
-            $dept->setOther($request);
+            $dept->addOther($request);
             $dept->save();
-
+            if(blank($dept)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$dept;
@@ -219,17 +220,12 @@ class DeptController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-        if($id==$request->input('parent_id')){
-            $code='error';
-            $msg='所在部门不能与上级部门相同';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
 
         /* ********** 表单验证 ********** */
         $model=new Dept();
         $rules=[
             'parent_id'=>['required','regex:/^[0-9]+$/'],
-            'name'=>'required|unique:dept',
+            'name'=>'required|unique:dept,name,'.$id.',id',
             'type'=>'required'
         ];
         $messages=[
@@ -239,7 +235,7 @@ class DeptController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -261,7 +257,9 @@ class DeptController extends BaseController
             $dept->fill($request->input());
             $dept->setOther($request);
             $dept->save();
-            
+            if(blank($dept)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$dept;

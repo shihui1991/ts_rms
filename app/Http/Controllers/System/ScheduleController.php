@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Schedule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -53,15 +52,12 @@ class ScheduleController extends BaseController
                 throw new \Exception('没有符合条件的数据',404404);
             }
 
-
             $code='error';
             $msg='查询成功';
             $data=$schedules;
             $url='';
         }catch (\Exception $exception){
             $schedules=collect();
-
-
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$schedules;
@@ -102,10 +98,11 @@ class ScheduleController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $schedule=$model;
                 $schedule->fill($request->input());
-                $schedule->setOther($request);
+                $schedule->addOther($request);
                 $schedule->save();
-
-
+                if(blank($schedule)){
+                    throw new \Exception('添加失败',404404);
+                }
                 $code='success';
                 $msg='添加成功';
                 $data=$schedule;
@@ -159,20 +156,17 @@ class ScheduleController extends BaseController
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($schedule)){
-
             $code='warning';
             $msg='数据不存在';
             $data=[];
             $url='';
         }else{
-
             $code='success';
             $msg='获取成功';
             $data=$schedule;
             $url='';
         }
         $infos=[
-
             'code'=>$code,
             'msg'=>$msg,
             'sdata'=>$data,'edata'=>'',
@@ -182,7 +176,6 @@ class ScheduleController extends BaseController
         /* ********** 输出视图 ********** */
         return view('system.schedule.info',$infos);
     }
-
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
@@ -197,7 +190,7 @@ class ScheduleController extends BaseController
         if($request->isMethod('post')){
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:a_schedule',
+                'name'=>'required|unique:a_schedule,name,'.$id.',id',
                 'sort'=>'required'
             ];
             $messages=[
@@ -213,7 +206,6 @@ class ScheduleController extends BaseController
                 $schedule=Schedule::withTrashed()
                     ->lockForUpdate()
                     ->find($id);
-
                 if(blank($schedule)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
@@ -221,15 +213,15 @@ class ScheduleController extends BaseController
                 $schedule->fill($request->input());
                 $schedule->setOther($request);
                 $schedule->save();
-
-
+                if(blank($schedule)){
+                    throw new \Exception('修改失败',404404);
+                }
                 $code='success';
                 $msg='修改成功';
                 $data=$schedule;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $data=[];
@@ -248,30 +240,25 @@ class ScheduleController extends BaseController
             $schedule=Schedule::withTrashed()
                 ->sharedLock()
                 ->find($id);
-
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($schedule)){
-
                 $code='warning';
                 $msg='数据不存在';
                 $data=[];
                 $url='';
             }else{
-
                 $code='success';
                 $msg='获取成功';
                 $data=$schedule;
                 $url='';
             }
             $infos=[
-
                 'code'=>$code,
                 'msg'=>$msg,
                 'sdata'=>$data,'edata'=>'',
                 'url'=>$url,
             ];
-
             /* ********** 输出视图 ********** */
             return view('system.schedule.edit',$infos);
         }
@@ -344,7 +331,6 @@ class ScheduleController extends BaseController
         }
     }
 
-
     /* ========== 恢复 ========== */
     public function restore(Request $request){
         /* ********** 验证选择数据项 ********** */
@@ -393,7 +379,6 @@ class ScheduleController extends BaseController
             return redirect()->back()->withInput()->with($code,$msg);
         }
     }
-
 
     /* ========== 销毁 ========== */
     public function destroy(Request $request){

@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Processmenu extends Model
@@ -14,7 +13,6 @@ class Processmenu extends Model
     protected $guarded=[];
     protected $dates=['created_at','updated_at'];
     protected $casts = [];
-
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'process_id'=>'项目流程',

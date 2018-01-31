@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Buildinguse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class BuildinguseController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','deleted_at'];
+        $select=['id','name','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -91,7 +90,7 @@ class BuildinguseController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -100,9 +99,11 @@ class BuildinguseController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $building_use=$model;
             $building_use->fill($request->input());
-            $building_use->setOther($request);
+            $building_use->addOther($request);
             $building_use->save();
-
+            if(blank($building_use)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$building_use;
@@ -156,7 +157,7 @@ class BuildinguseController extends BaseController
         $model=new Buildinguse();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:building_use'
+            'name'=>'required|unique:building_use,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -164,7 +165,7 @@ class BuildinguseController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -180,7 +181,9 @@ class BuildinguseController extends BaseController
             $building_use->fill($request->input());
             $building_use->setOther($request);
             $building_use->save();
-
+            if(blank($building_use)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$building_use;

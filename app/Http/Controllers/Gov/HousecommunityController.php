@@ -5,11 +5,11 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Housecommunity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class HousecommunityController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -20,7 +20,7 @@ class HousecommunityController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','address','deleted_at'];
+        $select=['id','name','address','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -31,9 +31,9 @@ class HousecommunityController extends BaseController
             $infos['name']=$name;
         }
         /* ++++++++++ 地址 ++++++++++ */
-        $address=$request->input('address');
+        $address=trim($request->input('address'));
         if($address){
-            $where[]=['address',$address];
+            $where[]=['address','like','%'.$address.'%'];
             $infos['address']=$address;
         }
         /* ********** 排序 ********** */
@@ -97,7 +97,7 @@ class HousecommunityController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -106,9 +106,11 @@ class HousecommunityController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $house_community=$model;
             $house_community->fill($request->input());
-            $house_community->setOther($request);
+            $house_community->addOther($request);
             $house_community->save();
-
+            if(blank($house_community)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$house_community;
@@ -162,7 +164,7 @@ class HousecommunityController extends BaseController
         $model=new Housecommunity();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:house_community'
+            'name'=>'required|unique:house_community,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -170,7 +172,7 @@ class HousecommunityController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -186,7 +188,9 @@ class HousecommunityController extends BaseController
             $house_community->fill($request->input());
             $house_community->setOther($request);
             $house_community->save();
-
+            if(blank($house_community)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$house_community;

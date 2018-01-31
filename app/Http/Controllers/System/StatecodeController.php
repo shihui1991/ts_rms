@@ -5,8 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
-
 use App\Http\Model\Statecode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

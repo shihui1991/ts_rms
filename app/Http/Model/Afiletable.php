@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Afiletable extends Model
@@ -18,6 +17,22 @@ class Afiletable extends Model
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'name'=>'名称',
-        'table_name'=>'表名'
+        'table_name'=>'表名',
+        'infos'=>'描述'
     ];
+
+    /* ++++++++++ 名称去空 ++++++++++ */
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name']=trim($value);
+    }
+
+    /* ++++++++++ 设置添加数据 ++++++++++ */
+    public function addOther($request){
+
+    }
+    /* ++++++++++ 设置修改数据 ++++++++++ */
+    public function setOther($request){
+
+    }
 }

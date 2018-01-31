@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Process;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +35,7 @@ class ProcessController extends BaseController
         $where[]=['schedule_id',$schedule_id];
 
         $model=new Process();
-        $select = ['id','name','sort','infos'];
+        $select = ['id','schedule_id','parent_id','name','type','menu_id','sort','infos'];
         /* ********** 查询条件 ********** */
         $where=[];
         /* ++++++++++ 名称 ++++++++++ */
@@ -63,7 +62,21 @@ class ProcessController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $processs=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $processs=$model
+                ->with(['schedule'=>function($query){
+                    $query->select(['id','name']);
+                },
+                    'father'=>function($query){
+                        $query->select(['id','name']);
+                    },
+                    'menu'=>function($query){
+                        $query->select(['id','name']);
+                    }])
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->paginate($displaynum);
             if(blank($processs)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -117,17 +130,17 @@ class ProcessController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $process=$model;
                 $process->fill($request->input());
-                $process->setOther($request);
+                $process->addOther($request);
                 $process->save();
-
-
+                if(blank($process)){
+                    throw new \Exception('添加失败',404404);
+                }
                 $code='success';
                 $msg='添加成功';
                 $data=$process;
                 $url='';
                 DB::commit();
             }catch (\Exception $exception){
-
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
                 $data=[];
@@ -168,26 +181,31 @@ class ProcessController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $process=Process::withTrashed()
+            ->with(['schedule'=>function($query){
+                     $query->select(['id','name']);
+                },
+                'father'=>function($query){
+                    $query->select(['id','name']);
+                },
+                'menu'=>function($query){
+                    $query->select(['id','name']);
+                }])
             ->sharedLock()
             ->find($id);
-
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($process)){
-
             $code='warning';
             $msg='数据不存在';
             $data=[];
             $url='';
         }else{
-
             $code='success';
             $msg='获取成功';
             $data=$process;
             $url='';
         }
         $infos=[
-
             'code'=>$code,
             'msg'=>$msg,
             'sdata'=>$data,'edata'=>'',
@@ -198,7 +216,6 @@ class ProcessController extends BaseController
         return view('system.process.info',$infos);
     }
 
-
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
@@ -208,16 +225,11 @@ class ProcessController extends BaseController
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
 
-        if($id==$request->input('parent_id')){
-            $code='error';
-            $msg='所属流程不能与上级流程相同';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
         $model=new Process();
         if($request->isMethod('post')){
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:a_process',
+                'name'=>'required|unique:a_process,name,'.$id.',id',
                 'sort'=>'required'
             ];
             $messages=[
@@ -229,6 +241,9 @@ class ProcessController extends BaseController
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
+                if($request->input('parent_id')){
+                    throw new \Exception('禁止修改上级流程',404404);
+                }
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $process=Process::withTrashed()
                     ->lockForUpdate()
@@ -241,8 +256,9 @@ class ProcessController extends BaseController
                 $process->fill($request->input());
                 $process->setOther($request);
                 $process->save();
-
-
+                if(blank($process)){
+                    throw new \Exception('修改失败',404404);
+                }
                 $code='success';
                 $msg='修改成功';
                 $data=$process;

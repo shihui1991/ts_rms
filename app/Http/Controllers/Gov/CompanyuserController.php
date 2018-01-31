@@ -5,11 +5,11 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Companyuser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class CompanyuserController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -20,7 +20,7 @@ class CompanyuserController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','phone','username','action_at','deleted_at'];
+        $select=['id','company_id','name','phone','username','action_at','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -63,7 +63,15 @@ class CompanyuserController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $companyusers=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $companyusers=$model
+                ->with(['company'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->paginate($displaynum);
             if(blank($companyusers)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -98,7 +106,7 @@ class CompanyuserController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -108,10 +116,10 @@ class CompanyuserController extends BaseController
             /*--- 评估机构 ---*/
             $companyuser=$model;
             $companyuser->fill($request->input());
-            $companyuser->setOther($request);
+            $companyuser->addOther($request);
             $companyuser->save();
             if(blank($companyuser)){
-                throw  new \Exception('添加失败',404404);
+                throw new \Exception('添加失败',404404);
             }
 
             $code='success';
@@ -139,6 +147,9 @@ class CompanyuserController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $companyuser=Companyuser::withTrashed()
+            ->with(['company'=>function($query){
+                $query->withTrashed()->select(['id','name']);
+            }])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -168,7 +179,7 @@ class CompanyuserController extends BaseController
         /* ********** 表单验证 ********** */
         $rules=[
             'company_id'=>'required',
-            'username'=>'required|unique:company_user',
+            'username'=>'required|unique:company_user,name,'.$id.',id',
             'password'=>'required'
         ];
         $messages=[
@@ -177,7 +188,7 @@ class CompanyuserController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -193,6 +204,9 @@ class CompanyuserController extends BaseController
             $companyuser->fill($request->input());
             $companyuser->setOther($request);
             $companyuser->save();
+            if(blank($companyuser)){
+                throw new \Exception('修改失败',404404);
+            }
 
             $code='success';
             $msg='修改成功';

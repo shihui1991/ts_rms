@@ -5,10 +5,10 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Itemnoticecate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class ItemnoticecateController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -110,7 +110,9 @@ class ItemnoticecateController extends BaseController
                 $itemnoticecate->fill($request->input());
                 $itemnoticecate->setOther($request);
                 $itemnoticecate->save();
-
+                if(blank($itemnoticecate)){
+                    throw new \Exception('添加失败',404404);
+                }
                 $code='success';
                 $msg='添加成功';
                 $data=$itemnoticecate;
@@ -189,7 +191,7 @@ class ItemnoticecateController extends BaseController
         if($request->isMethod('post')){
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:a_item_notice_cate'
+                'name'=>'required|unique:a_item_notice_cate,name,'.$id.',id'
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
@@ -212,7 +214,9 @@ class ItemnoticecateController extends BaseController
                 $itemnoticecate->fill($request->input());
                 $itemnoticecate->setOther($request);
                 $itemnoticecate->save();
-
+                if(blank($itemnoticecate)){
+                    throw new \Exception('修改失败',404404);
+                }
                 $code='success';
                 $msg='修改成功';
                 $data=$itemnoticecate;

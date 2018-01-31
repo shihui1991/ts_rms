@@ -5,11 +5,9 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Afiletable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 
 class FiletableController extends BaseController
 {

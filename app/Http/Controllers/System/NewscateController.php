@@ -5,10 +5,10 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-
 use App\Http\Model\Newscate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class NewscateController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -19,7 +19,7 @@ class NewscateController extends BaseController
 
     /* ++++++++++ 首页 ++++++++++ */
     public function index(Request $request){
-        $select = ['id','name','deleted_at'];
+        $select = ['id','name','infos','deleted_at'];
         /* ********** 查询条件 ********** */
         $where=[];
         /* ++++++++++ 名称 ++++++++++ */
@@ -108,9 +108,11 @@ class NewscateController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $newscate=$model;
                 $newscate->fill($request->input());
-                $newscate->setOther($request);
+                $newscate->addOther($request);
                 $newscate->save();
-
+                if(blank($newscate)){
+                    throw new \Exception('添加失败',404404);
+                }
                 $code='success';
                 $msg='添加成功';
                 $data=$newscate;
@@ -188,7 +190,7 @@ class NewscateController extends BaseController
         if($request->isMethod('post')){
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:a_news_cate'
+                'name'=>'required|unique:a_news_cate,name,'.$id.',id'
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
@@ -211,7 +213,9 @@ class NewscateController extends BaseController
                 $newscate->fill($request->input());
                 $newscate->setOther($request);
                 $newscate->save();
-
+                if(blank($newscate)){
+                    throw new \Exception('修改失败',404404);
+                }
                 $code='success';
                 $msg='修改成功';
                 $data=$newscate;

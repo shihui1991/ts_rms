@@ -5,11 +5,11 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Companyvaluer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class CompanyvaluerController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -20,7 +20,7 @@ class CompanyvaluerController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','phone','register','valid_at','deleted_at'];
+        $select=['id','company_id','name','phone','register','valid_at','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -63,7 +63,15 @@ class CompanyvaluerController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $companyvaluers=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $companyvaluers=$model
+                ->with(['company'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->paginate($displaynum);
             if(blank($companyvaluers)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -99,7 +107,7 @@ class CompanyvaluerController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -140,6 +148,9 @@ class CompanyvaluerController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $companyvaluer=Companyvaluer::withTrashed()
+            ->with(['company'=>function($query){
+                $query->withTrashed()->select(['id','name']);
+            }])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -169,7 +180,7 @@ class CompanyvaluerController extends BaseController
         /* ********** 表单验证 ********** */
         $rules=[
             'company_id'=>'required',
-            'name'=>'required|unique:company_valuer',
+            'name'=>'required|unique:company_valuer,name,'.$id.',id',
             'register'=>'required',
             'valid_at'=>'required'
         ];
@@ -179,7 +190,7 @@ class CompanyvaluerController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -195,6 +206,9 @@ class CompanyvaluerController extends BaseController
             $companyvaluer->fill($request->input());
             $companyvaluer->setOther($request);
             $companyvaluer->save();
+            if(blank($companyvaluer)){
+                throw  new \Exception('修改失败',404404);
+            }
 
             $code='success';
             $msg='修改成功';

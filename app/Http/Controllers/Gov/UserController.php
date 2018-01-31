@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class UserController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','username','secret','name','phone','email','login_at','login_ip','session','action_at','deleted_at'];
+        $select=['id','dept_id','role_id','username','name','phone','email','login_at','login_ip','session','action_at','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -113,7 +112,7 @@ class UserController extends BaseController
 
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -122,9 +121,11 @@ class UserController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $user=$model;
             $user->fill($request->input());
-            $user->setOther($request);
+            $user->addOther($request);
             $user->save();
-
+            if(blank($user)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$user;
@@ -186,7 +187,7 @@ class UserController extends BaseController
         $model=new User();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:user',
+            'name'=>'required|unique:user,name,'.$id.',id',
             'username'=>'required',
             'password'=>'required',
             'secret'=>'required',
@@ -198,7 +199,7 @@ class UserController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ********** 更新 ********** */
@@ -216,7 +217,9 @@ class UserController extends BaseController
             $user->fill($request->input());
             $user->setOther($request);
             $user->save();
-
+            if(blank($user)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$user;

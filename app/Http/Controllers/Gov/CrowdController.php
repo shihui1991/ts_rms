@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\Crowd;
 use App\Http\Model\Crowdcate;
 use Illuminate\Http\Request;
@@ -24,7 +23,7 @@ class CrowdController extends BaseController
     public function index(Request $request){
         $model=new Crowdcate();
         /* ********** 查询字段 ********** */
-        $select=['id','name','deleted_at'];
+        $select=['id','name','infos','deleted_at'];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -57,12 +56,18 @@ class CrowdController extends BaseController
         }
         /* ********** 查询字段 ********** */
         $model=new Crowd();
-        $select=['id','name','deleted_at'];
+        $select=['id','cate_id','name','infos','deleted_at'];
         $where[] = ['cate_id',$crowd_cate_id];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $crowd=$model->select($select)->sharedLock()->get();
+            $crowd=$model->with([
+                'crowdcate'=>function($qeury){
+                    $qeury->withTrashed()->select(['id','name']);
+                }])
+                ->select($select)
+                ->sharedLock()
+                ->get();
             if(blank($crowd)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -94,7 +99,7 @@ class CrowdController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -103,9 +108,11 @@ class CrowdController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $crowd=$model;
             $crowd->fill($request->input());
-            $crowd->setOther($request);
+            $crowd->addOther($request);
             $crowd->save();
-
+            if(blank($crowd)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$crowd;
@@ -141,7 +148,7 @@ class CrowdController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
         /* ++++++++++ 新增 ++++++++++ */
@@ -150,9 +157,11 @@ class CrowdController extends BaseController
             /* ++++++++++ 批量赋值 ++++++++++ */
             $crowd=$model;
             $crowd->fill($request->input());
-            $crowd->setOther($request);
+            $crowd->addOther($request);
             $crowd->save();
-
+            if(blank($crowd)){
+                throw new \Exception('添加失败',404404);
+            }
             $code='success';
             $msg='添加成功';
             $data=$crowd;
@@ -232,7 +241,7 @@ class CrowdController extends BaseController
         $model=new Crowdcate();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:crowd_cate'
+            'name'=>'required|unique:crowd_cate,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -240,7 +249,7 @@ class CrowdController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -256,7 +265,9 @@ class CrowdController extends BaseController
             $crowd->fill($request->input());
             $crowd->setOther($request);
             $crowd->save();
-
+            if(blank($crowd)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$crowd;
@@ -283,7 +294,7 @@ class CrowdController extends BaseController
         $model=new Crowd();
         /* ********** 表单验证 ********** */
         $rules=[
-            'name'=>'required|unique:crowd'
+            'name'=>'required|unique:crowd,name,'.$id.',id'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -291,7 +302,7 @@ class CrowdController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -307,7 +318,9 @@ class CrowdController extends BaseController
             $crowd->fill($request->input());
             $crowd->setOther($request);
             $crowd->save();
-
+            if(blank($crowd)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$crowd;

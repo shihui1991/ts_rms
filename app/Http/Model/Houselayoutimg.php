@@ -5,21 +5,17 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Houselayoutimg extends Model
 {
     use SoftDeletes;
-
     protected $table='house_layout_img';
     protected $primaryKey='id';
     protected $guarded=[];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [
-
-    ];
+    protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
@@ -33,7 +29,11 @@ class Houselayoutimg extends Model
         $this->attributes['name']=trim($value);
     }
 
-    /* ++++++++++ 设置其他数据 ++++++++++ */
+    /* ++++++++++ 设置添加数据 ++++++++++ */
+    public function addOther($request){
+
+    }
+    /* ++++++++++ 设置修改数据 ++++++++++ */
     public function setOther($request){
 
     }
@@ -42,7 +42,6 @@ class Houselayoutimg extends Model
     public function housecommunity(){
         return $this->belongsTo('App\Http\Model\Housecommunity','community_id','id')->withDefault();
     }
-
     /* ++++++++++ 关联房屋户型 ++++++++++ */
     public function layout(){
         return $this->belongsTo('App\Http\Model\Layout','layout_id','id')->withDefault();

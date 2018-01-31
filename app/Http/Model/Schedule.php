@@ -5,7 +5,6 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Schedule extends Model
@@ -28,7 +27,12 @@ class Schedule extends Model
     {
         $this->attributes['name']=trim($value);
     }
-    /* ++++++++++ 设置其他数据 ++++++++++ */
+
+    /* ++++++++++ 设置添加数据 ++++++++++ */
+    public function addOther($request){
+
+    }
+    /* ++++++++++ 设置修改数据 ++++++++++ */
     public function setOther($request){
 
     }

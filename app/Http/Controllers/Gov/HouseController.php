@@ -5,13 +5,13 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-
 use App\Http\Model\House;
 use App\Http\Model\Housemanageprice;
 use App\Http\Model\Houseprice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class HouseController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
@@ -22,8 +22,9 @@ class HouseController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','building','unit','floor','number','area','total_floor','lift'
-            ,'is_real','is_buy','is_transit','is_public','state','deleted_at'];
+        $select=['id','community_id','layout_id','layout_img_id',
+            'building','unit','floor','number','area','total_floor','lift',
+            'is_real','is_buy','is_transit','is_public','state','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -115,7 +116,7 @@ class HouseController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /*----- 房源-评估单价 -----*/
         $houseprice_model = new Houseprice();
@@ -130,7 +131,7 @@ class HouseController extends BaseController
         ];
         $validator1 = Validator::make($request->all(),$rules1,$messages1,$houseprice_model->columns);
         if($validator1->fails()){
-            return response()->json(['code'=>'error','message'=>$validator1->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /*----- 房源-购置管理费单价 -----*/
         $housemanageprice_model = new Housemanageprice();
@@ -144,7 +145,7 @@ class HouseController extends BaseController
         ];
         $validator2 = Validator::make($request->all(),$rules2,$messages2,$housemanageprice_model->columns);
         if($validator2->fails()){
-            return response()->json(['code'=>'error','message'=>$validator2->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator2->errors()->first(),'sdata'=>'','edata'=>'']);
         }
 
 
@@ -155,7 +156,7 @@ class HouseController extends BaseController
             /*----- 房源添加 -----*/
             $house=$model;
             $house->fill($request->input());
-            $house->setOther($request);
+            $house->addOther($request);
             $house_rs = $house->save();
             if(blank($house_rs)){
                 throw  new \Exception('添加失败',404404);
@@ -169,8 +170,8 @@ class HouseController extends BaseController
                 'market'=>$request->input('market'),
                 'price'=>$request->input('price')
                 ]);
-            $houseprice_rs = $houseprice->save();
-            if(blank($houseprice_rs)){
+            $houseprice->save();
+            if(blank($houseprice)){
                 throw  new \Exception('添加失败',404404);
             }
             /*----- 房源-购置管理费单价添加 -----*/
@@ -181,8 +182,8 @@ class HouseController extends BaseController
                 'end_at'=>$request->input('end_at'),
                 'manage_price'=>$request->input('manage_price')
             ]);
-            $housemanageprice_rs = $housemanageprice->save();
-            if(blank($housemanageprice_rs)){
+            $housemanageprice->save();
+            if(blank($housemanageprice)){
                 throw  new \Exception('添加失败',404404);
             }
 
@@ -270,7 +271,7 @@ class HouseController extends BaseController
         ];
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors(),'sdata'=>'','edata'=>'']);
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -286,7 +287,9 @@ class HouseController extends BaseController
             $house->fill($request->input());
             $house->setOther($request);
             $house->save();
-
+            if(blank($house)){
+                throw new \Exception('修改失败',404404);
+            }
             $code='success';
             $msg='修改成功';
             $data=$house;
