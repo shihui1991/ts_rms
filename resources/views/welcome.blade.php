@@ -67,7 +67,7 @@
     <body>
 
     @php
-           dump(encrypt(123));
+           dump(encrypt(123456));
            dump(encrypt('1RERE'));
     dump(decrypt('eyJpdiI6IitKVzVkTHE3SnhTSHpyTTRqTXdDWGc9PSIsInZhbHVlIjoiRDBDMWlKRTJrOUo1REdwYTFOWE5tZz09IiwibWFjIjoiOWRjODM0NDFlM2U5MDk4ZDRmMjllMTg3MDRlMWQ5Y2FkMDYwYTlmZTNjNDBiNTQzMGUzOWVmYWJhZmJjMDRhYyJ9'));
 

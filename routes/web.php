@@ -12,9 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('system.login');
 });
-
+//Route::get('/', function () {
+//    return view('welcome');
+//});
 
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/
@@ -25,7 +27,7 @@ Route::namespace('system')->prefix('system')->group(function (){
     /*----- 功能与菜单 -----*/
     Route::any('menu','MenuController@index')->name('sys_menu');
     Route::any('menu_all','MenuController@all')->name('sys_menu_all');
-    Route::any('menu_add/{id}','MenuController@add')->name('sys_menu_add');
+    Route::any('menu_add/{id?}','MenuController@add')->name('sys_menu_add');
     Route::any('menu_info/{id}','MenuController@info')->name('sys_menu_info');
     Route::any('menu_edit/{id}','MenuController@edit')->name('sys_menu_edit');
     Route::any('menu_sort','MenuController@sort')->name('sys_menu_sort');
@@ -71,4 +73,9 @@ Route::namespace('system')->prefix('system')->group(function (){
     Route::any('newscate_add','NewscateController@add')->name('sys_newscate_add');
     Route::any('newscate_info','NewscateController@info')->name('sys_newscate_info');
     Route::any('newscate_edit','NewscateController@edit')->name('sys_newscate_edit');
+    /*----- 重要补偿科目 -----*/
+    Route::any('subject','SubjectController@index')->name('sys_subject');
+    Route::any('subject_add','SubjectController@add')->name('sys_subject_add');
+    Route::any('subject_info','SubjectController@info')->name('sys_subject_info');
+    Route::any('subject_edit','SubjectController@edit')->name('sys_subject_edit');
 });

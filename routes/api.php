@@ -146,4 +146,14 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::any('landstate_add','LandstateController@add')->name('gov_landstate_add');
     Route::any('landstate_info','LandstateController@info')->name('gov_landstate_info');
     Route::any('landstate_edit','LandstateController@edit')->name('gov_landstate_edit');
+    /*----- 社会风险评估调查话题 -----*/
+    Route::any('topic','TopicController@index')->name('gov_topic');
+    Route::any('topic_add','TopicController@add')->name('gov_topic_add');
+    Route::any('topic_info','TopicController@info')->name('gov_topic_info');
+    Route::any('topic_edit','TopicController@edit')->name('gov_topic_edit');
+    /*----- 其他补偿事项 -----*/
+    Route::any('object','ObjectController@index')->name('gov_object');
+    Route::any('object_add','ObjectController@add')->name('gov_object_add');
+    Route::any('object_info','ObjectController@info')->name('gov_object_info');
+    Route::any('object_edit','ObjectController@edit')->name('gov_object_edit');
 });

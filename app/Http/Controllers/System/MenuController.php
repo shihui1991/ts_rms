@@ -78,7 +78,6 @@ class MenuController extends BaseController
         }
     }
 
-
     /* ========== 全列表 ========== */
     public function all(Request $request){
         $select=['id','parent_id','name','icon','url','method','display','sort','deleted_at'];
@@ -137,15 +136,12 @@ class MenuController extends BaseController
                 throw new \Exception('没有符合条件的数据',404404);
             }
 
-
             $code='error';
             $msg='查询成功';
             $data=$menus;
             $url='';
         }catch (\Exception $exception){
             $menus=collect();
-
-
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $data=$menus;
@@ -154,7 +150,6 @@ class MenuController extends BaseController
         DB::commit();
         $infos['menus']=$menus;
         $infos[$code]=$msg;
-
         /* ********** 结果 ********** */
         if($request->ajax()){
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
@@ -162,7 +157,6 @@ class MenuController extends BaseController
             return view('system.menu.all',$infos);
         }
     }
-
 
     /* ========== 添加 ========== */
     public function add(Request $request,$id=0){
@@ -232,7 +226,6 @@ class MenuController extends BaseController
         }
     }
 
-
     /* ========== 详情 ========== */
     public function info(Request $request,$id){
 
@@ -272,7 +265,6 @@ class MenuController extends BaseController
         /* ********** 输出视图 ********** */
         return view('system.menu.info',$infos);
     }
-
 
     /* ========== 修改 ========== */
     public function edit(Request $request,$id){
@@ -375,7 +367,6 @@ class MenuController extends BaseController
 
     }
 
-
     /* ========== 排序 ========== */
     public function sort(Request $request){
         /* ********** 验证选择数据项 ********** */
@@ -457,7 +448,6 @@ class MenuController extends BaseController
         }
     }
 
-
     /* ========== 状态 ========== */
     public function display(Request $request,$display){
         $model=new Menu();
@@ -522,7 +512,6 @@ class MenuController extends BaseController
             return redirect()->back()->withInput()->with($code,$msg);
         }
     }
-
 
     /* ========== 删除 ========== */
     public function delete(Request $request){
@@ -590,7 +579,6 @@ class MenuController extends BaseController
         }
     }
 
-
     /* ========== 恢复 ========== */
     public function restore(Request $request){
         /* ********** 验证选择数据项 ********** */
@@ -639,7 +627,6 @@ class MenuController extends BaseController
             return redirect()->back()->withInput()->with($code,$msg);
         }
     }
-
 
     /* ========== 销毁 ========== */
     public function destroy(Request $request){

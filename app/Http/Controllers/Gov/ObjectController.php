@@ -1,17 +1,16 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 评估机构
+| 其他补偿事项
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-use App\Http\Model\Company;
-use App\Http\Model\Companyuser;
+use App\Http\Model\Object;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class CompanyController extends BaseController
+class ObjectController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -21,7 +20,7 @@ class CompanyController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','type','name','address','phone','fax','contact_man','contact_tel','logo','infos','user_id','state','deleted_at'];
+        $select=['id','name','num_unit','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -30,12 +29,6 @@ class CompanyController extends BaseController
         if($name){
             $where[]=['name','like','%'.$name.'%'];
             $infos['name']=$name;
-        }
-        /* ++++++++++ 类型 ++++++++++ */
-        $type=trim($request->input('type'));
-        if(is_numeric($type)&&in_array($type,['0','1'])){
-            $where[]=['type',$type];
-            $infos['type']=$type;
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
@@ -52,7 +45,7 @@ class CompanyController extends BaseController
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
-        $model=new Company();
+        $model=new Object();
         if(is_numeric($deleted) && in_array($deleted,[0,1])){
             $infos['deleted']=$deleted;
             if($deleted){
@@ -64,18 +57,18 @@ class CompanyController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $companys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
-            if(blank($companys)){
+            $objects=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            if(blank($objects)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $data=$companys;
+            $data=$objects;
         }catch (\Exception $exception){
-            $companys=collect();
+            $objects=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$companys;
+            $data=$objects;
         }
         DB::commit();
 
@@ -85,16 +78,12 @@ class CompanyController extends BaseController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $model=new Company();
+        $model=new Object();
         /* ********** 保存 ********** */
         /* ++++++++++ 表单验证 ++++++++++ */
-        /*--- 评估机构 ---*/
         $rules=[
-            'type'=>'required',
-            'name'=>'required|unique:company',
-            'address'=>'required',
-            'phone'=>'required',
-            'content'=>'required'
+            'name'=>'required|unique:object',
+            'num_unit'=>'required'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -104,54 +93,22 @@ class CompanyController extends BaseController
         if($validator->fails()){
             return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
         }
-        /*--- 评估机构(操作员) ---*/
-        $companyuser_model = new Companyuser();
-        $rules1=[
-            'username'=>'required|unique:company_user',
-            'password'=>'required',
-        ];
-        $messages1=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator1 = Validator::make($request->all(),$rules1,$messages1,$companyuser_model->columns);
-        if($validator1->fails()){
-            return response()->json(['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
 
         /* ++++++++++ 新增 ++++++++++ */
         DB::beginTransaction();
         try{
             /* ++++++++++ 批量赋值 ++++++++++ */
-            /*--- 评估机构 ---*/
-            $company=$model;
-            $company->fill($request->input());
-            $company->user_id = 0;
-            $company->state = 0;
-            $company->save();
-//            dump($company);
-            if(blank($company)){
-                throw  new \Exception('添加失败',404404);
-            }
-            /*--- 评估机构(操作员) ---*/
-            $companyuser = $companyuser_model;
-            $companyuser->username = $request->input('username');
-            $companyuser->password = encrypt($request->input('password'));
-            $companyuser->company_id = $company->id;
-            $companyuser->secret = create_guid();
-            $companyuser->save();
-            if(blank($companyuser)){
+            $object=$model;
+            $object->fill($request->input());
+            $object->addOther($request);
+            $object->save();
+            if(blank($object)){
                 throw new \Exception('添加失败',404404);
             }
-            /*--- 设置评估机构(操作员) ---*/
-            $company->user_id = $companyuser->id;
-            $company->save();
-            if(blank($company)){
-                throw new \Exception('添加失败',404404);
-            }
+
             $code='success';
             $msg='添加成功';
-            $data=$company;
+            $data=$object;
             DB::commit();
         }catch (\Exception $exception){
             $code='error';
@@ -173,12 +130,12 @@ class CompanyController extends BaseController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $company=Company::withTrashed()
+        $object=Object::withTrashed()
             ->sharedLock()
             ->find($id);
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($company)){
+        if(blank($object)){
             $code='warning';
             $msg='数据不存在';
             $data=[];
@@ -186,7 +143,7 @@ class CompanyController extends BaseController
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$company;
+            $data=$object;
         }
         return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
@@ -199,16 +156,11 @@ class CompanyController extends BaseController
             $msg='请选择一条数据';
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
         }
-        $model=new Company();
+        $model=new Object();
         /* ********** 表单验证 ********** */
         $rules=[
-            'type'=>'required',
-            'name'=>'required|unique:company,name,'.$id.',id',
-            'address'=>'required',
-            'phone'=>'required',
-            'content'=>'required',
-            'user_id'=>'required',
-            'state'=>'required'
+            'name'=>'required|unique:object,name,'.$id.',id',
+            'num_unit'=>'required'
         ];
         $messages=[
             'required'=>':attribute 为必须项',
@@ -222,23 +174,22 @@ class CompanyController extends BaseController
         DB::beginTransaction();
         try{
             /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $company=Company::withTrashed()
+            $object=Object::withTrashed()
                 ->lockForUpdate()
                 ->find($id);
-            if(blank($company)){
+            if(blank($object)){
                 throw new \Exception('指定数据项不存在',404404);
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
-            $company->fill($request->input());
-            $company->setOther($request);
-            $company->save();
-            if(blank($company)){
-                throw  new \Exception('修改失败',404404);
+            $object->fill($request->input());
+            $object->addOther($request);
+            $object->save();
+            if(blank($object)){
+                throw new \Exception('修改失败',404404);
             }
-
             $code='success';
             $msg='修改成功';
-            $data=$company;
+            $data=$object;
 
             DB::commit();
         }catch (\Exception $exception){
