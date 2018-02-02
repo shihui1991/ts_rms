@@ -1,4 +1,4 @@
-{{-- 继承aceAdmin后台布局 --}}
+{{-- 继承布局 --}}
 @extends('gov.layout')
 
 

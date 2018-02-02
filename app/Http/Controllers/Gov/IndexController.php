@@ -64,7 +64,7 @@ class IndexController extends Controller
         $user->session=session_id();
         $user->action_at=date('Y-m-d H:i:s');
         $user->login_at=date('Y-m-d H:i:s');
-        $user->login_ip=$request->getClientIp();
+        $user->login_ip=$request->ip();
         $user->save();
 
         /* ********** 生成session ********** */

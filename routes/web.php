@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('system.login');
+    return view('welcome');
 });
 
 
@@ -24,10 +24,13 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::get('/logout','IndexController@logout')->name('g_logout');
     /*---------- 首页 ----------*/
     Route::any('/home','HomeController@index')->name('g_home');
+    /*---------- 组织与部门 ----------*/
+    Route::get('/dept','DeptController@index')->name('g_dept');
+    Route::any('/dept_add','DeptController@add')->name('g_dept_add');
+    Route::get('/dept_info','DeptController@info')->name('g_dept_info');
+    Route::post('/dept_edit','DeptController@edit')->name('g_dept_edit');
 });
-Route::any('welcome', function () {
-    return view('welcome');
-});
+
 
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/
