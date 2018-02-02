@@ -70,7 +70,7 @@ function ajaxFormSub(btn) {
     var _btn = $(btn);
     var _form = _btn.data('form') ? $(_btn.data('form')) : _btn.parents('form:first'); //获取表单
     var _action = _btn.data('action') ? _btn.data('action') : _form.attr('action'); //获取表单地址
-    var _method=_btn.data('method')?_btn.data('method'):'post'; //指定提交方法
+    var _method=_btn.data('method')?_btn.data('method'):_form.attr('method')?_form.attr('method'):'post'; //指定提交方法
     var _datas='';
     var other_datas = _btn.data('datas'); //获取额外的参数【键值对】（多个以;隔开）
     var _noreload=_btn.data('noreload');

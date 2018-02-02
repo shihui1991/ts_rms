@@ -76,6 +76,13 @@
 
                @yield('header_tools')
 
+                <li class="green">
+                    <a href="#" title="消息提醒">
+                        <i class="ace-icon fa fa-bell icon-animated-bell"></i>
+                        <span class="badge badge-success">5</span>
+                    </a>
+                </li>
+
                 <li class="light-blue dropdown-modal">
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">
                         <span class="user-info">@yield('username')</span>
@@ -98,7 +105,7 @@
         try{ace.settings.loadState('main-container')}catch(e){}
     </script>
 
-    <div id="sidebar" class="sidebar                  responsive                    ace-save-state">
+    <div id="sidebar" class="sidebar responsive ace-save-state">
         <script type="text/javascript">
             try{ace.settings.loadState('sidebar')}catch(e){}
         </script>
@@ -200,6 +207,7 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+    $('[data-rel=tooltip]').tooltip();
 </script>
 @yield('js')
 </body>

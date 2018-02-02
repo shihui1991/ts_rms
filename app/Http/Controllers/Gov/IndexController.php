@@ -21,11 +21,27 @@ class IndexController extends Controller
 
     /* ========== 登录页 ========== */
     public function index(Request $request){
-        return view('gov.index');
+        return view('gov.login');
     }
 
     /* ========== 登录 ========== */
     public function login(Request $request){
+
+        $rules=[
+            'username'=>'required',
+            'password'=>'required',
+        ];
+        $messages=[
+            'required'=>'请输入 :attribute',
+        ];
+        $names=[
+            'username'=>'用户名',
+            'password'=>'密码',
+        ];
+        $validator = Validator::make($request->all(),$rules,$messages,$names);
+        if($validator->fails()){
+            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
+        }
         return response()->json(['code'=>'error','message'=>'错误','sdata'=>null,'edata'=>null,'url'=>null]);
     }
 

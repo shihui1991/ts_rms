@@ -18,8 +18,8 @@ class HomeController extends BaseController
 
     }
 
-    /* ========== 登录页 ========== */
+    /* ========== 首页 ========== */
     public function index(Request $request){
-        return view('gov.layout');
+        return view('gov.home');
     }
 }

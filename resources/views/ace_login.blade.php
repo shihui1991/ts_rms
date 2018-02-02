@@ -88,6 +88,8 @@
                                                 </span>
                                             </label>
 
+                                            @yield('more_field')
+
                                             <div class="space"></div>
 
                                             <div class="clearfix">

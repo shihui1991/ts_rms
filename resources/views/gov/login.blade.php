@@ -22,9 +22,14 @@
 @endsection
 
 
+{{-- 更多表单 --}}
+@section('more_field')
+
+@endsection
+
+
 {{-- 样式 --}}
 @section('css')
-
 
 
 @endsection
