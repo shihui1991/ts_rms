@@ -10,8 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
+Route::any('/', function () {
     return view('welcome');
 });
 
@@ -34,8 +33,9 @@ Route::namespace('gov')->prefix('gov')->group(function (){
 
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/
-    Route::any('index','IndexController@index')->name('sys_index');
+    Route::any('/','IndexController@index')->name('sys_index');
     Route::any('login','IndexController@login')->name('sys_login');
+    Route::any('logout','IndexController@logout')->name('sys_logout');
     /*---------- 控制台 ----------*/
     Route::any('home','HomeController@index')->name('sys_home');
     /*----- 功能与菜单 -----*/
