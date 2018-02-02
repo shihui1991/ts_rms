@@ -12,11 +12,19 @@
 */
 
 Route::get('/', function () {
-    return view('system.login');
+    return view('welcome');
 });
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+
+
+/*========== 征收管理端 ==========*/
+Route::namespace('gov')->prefix('gov')->group(function (){
+    /*---------- 登陆 ----------*/
+    Route::any('/','IndexController@index')->name('g_index');
+    Route::any('/login','IndexController@login')->name('g_login');
+    Route::any('/logout','IndexController@logout')->name('g_logout');
+    /*---------- 首页 ----------*/
+    Route::any('/home','HomeController@index')->name('g_home');
+});
 
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/
