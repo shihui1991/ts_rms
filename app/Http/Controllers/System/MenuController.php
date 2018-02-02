@@ -45,7 +45,7 @@ class MenuController extends BaseController
         DB::beginTransaction();
         try{
             $menus=Menu::withTrashed()
-                ->select(['id','parent_id','name','icon','url','method','auth','display','sort','deleted_at'])
+                ->select(['id','parent_id','module','name','login','icon','url','method','display','auth','sort','deleted_at'])
                 ->withCount(['childs'=>function($query){
                     $query->withTrashed();
                 }])
@@ -80,7 +80,7 @@ class MenuController extends BaseController
 
     /* ========== 全列表 ========== */
     public function all(Request $request){
-        $select=['id','parent_id','name','icon','url','method','display','sort','deleted_at'];
+        $select=['id','parent_id','module','name','login','icon','url','method','display','auth','sort','deleted_at'];
         
         /* ********** 查询条件 ********** */
         $where=[];
@@ -177,7 +177,6 @@ class MenuController extends BaseController
                 'boolean'=>':attribute 选择正确的选项',
                 'integer'=>':attribute 必须是整数',
             ];
-
             $this->validate($request,$rules,$messages,$model->columns);
 
             /* ++++++++++ 新增 ++++++++++ */
@@ -194,7 +193,11 @@ class MenuController extends BaseController
                 $code='success';
                 $msg='添加成功';
                 $data=$menu;
-                $url='';
+                if(blank($request->input('sub_type'))){
+                    $url=route('sys_menu');
+                }else{
+                    $url=route('sys_menu_all');
+                }
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
@@ -212,7 +215,7 @@ class MenuController extends BaseController
         }
         /* ********** 视图 ********** */
         else{
-            /* ++++++++++ 当前上级 ++++++++++ */
+            /* ++++++++++ 是否通过添加子菜单进入 ++++++++++ */
             $parent=['id'=>$id,'name'=>''];
             if($id){
                 DB::beginTransaction();
@@ -220,54 +223,30 @@ class MenuController extends BaseController
                 DB::commit();
             }
             $infos['parent']=$parent;
-
+            $infos['module'] = $request->input('module');
             /* ++++++++++ 输出视图 ++++++++++ */
-            return view('system.menu.add',$infos);
+            return view('system.menu.modify',$infos);
         }
     }
 
     /* ========== 详情 ========== */
-    public function info(Request $request,$id){
-
+    public function info(Request $request,$id=0){
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $menu=Menu::withTrashed()
+        $infos['infos']=Menu::withTrashed()
             ->with(['father'=>function($query){
                 $query->withTrashed()->select(['id','name','icon']);
             }])
             ->sharedLock()
             ->find($id);
-
         DB::commit();
-        /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($menu)){
-
-            $code='warning';
-            $msg='数据不存在';
-            $data=[];
-            $url='';
-        }else{
-
-            $code='success';
-            $msg='获取成功';
-            $data=$menu;
-            $url='';
-        }
-        $infos=[
-
-            'code'=>$code,
-            'msg'=>$msg,
-            'sdata'=>$data,
-            'edata'=>'',
-            'url'=>$url,
-        ];
-
+        $infos['sub_type'] = $request->input('sub_type');
         /* ********** 输出视图 ********** */
-        return view('system.menu.info',$infos);
+        return view('system.menu.modify',$infos);
     }
 
     /* ========== 修改 ========== */
-    public function edit(Request $request,$id){
+    public function edit(Request $request,$id=0){
         $model=new Menu();
        if($request->isMethod('post')){
            /* ********** 表单验证 ********** */
@@ -288,7 +267,7 @@ class MenuController extends BaseController
            DB::beginTransaction();
            try{
                if($request->input('parent_id')){
-                   throw new \Exception('非法操作',404404);
+                   throw new \Exception('禁止修改上级菜单',404404);
                }
                /* ++++++++++ 锁定数据模型 ++++++++++ */
                $menu=Menu::withTrashed()
@@ -311,7 +290,11 @@ class MenuController extends BaseController
                $code='success';
                $msg='修改成功';
                $data=$menu;
-               $url='';
+               if(blank($request->input('sub_type'))){
+                   $url=route('sys_menu');
+               }else{
+                   $url=route('sys_menu_all');
+               }
                DB::commit();
            }catch (\Exception $exception){
 
@@ -330,39 +313,15 @@ class MenuController extends BaseController
        }else{
            /* ********** 当前数据 ********** */
            DB::beginTransaction();
-           $menu=Menu::withTrashed()
+           $infos['infos']=Menu::withTrashed()
                ->with(['father'=>function($query){
                    $query->withTrashed()->select(['id','name','icon']);
                }])
                ->sharedLock()
                ->find($id);
-
            DB::commit();
-           /* ++++++++++ 数据不存在 ++++++++++ */
-           if(blank($menu)){
-
-               $code='warning';
-               $msg='数据不存在';
-               $data=[];
-               $url='';
-           }else{
-
-               $code='success';
-               $msg='获取成功';
-               $data=$menu;
-               $url='';
-           }
-           $infos=[
-
-               'code'=>$code,
-               'msg'=>$msg,
-               'sdata'=>$data,
-               'edata'=>'',
-               'url'=>$url,
-           ];
-
            /* ********** 输出视图 ********** */
-           return view('system.menu.edit',$infos);
+           return view('system.menu.modify',$infos);
        }
 
     }

@@ -1,5 +1,5 @@
 {{-- 继承基础模板 --}}
-@extends('base')
+@extends('system.public.base')
 
 {{-- public_head --}}
 @section('public_head')
@@ -122,7 +122,7 @@
                             系统日志
                         </div>
                     </li>
-                    <li data-tit="菜单管理" data-src="{{route('sys_menu')}}" onclick="leftSubNavManage(this,event)">
+                    <li data-tit="菜单管理" data-src="{{route('sys_menu_all')}}" onclick="leftSubNavManage(this,event)">
                         <div class="link">
                             <img src="img/monitor_window_3d.png"/>
                             菜单管理
@@ -318,14 +318,14 @@
     <!--iframe-->
     <div class="rightIframe">
         <div class="rightIframeCon">
-            <iframe src="iframe2.html" class="iframe homeIframe on"></iframe>
+            <iframe src="{{url('welcome')}}" class="iframe homeIframe on"></iframe>
         </div>
     </div>
 </div>
 <!--底部-->
 <div class="footer f12 cr_f h25 lh25 w_100 bg_black ov">
     <div class="pd0_5">技术支持：步联科技有限公司</div>
-    <div class="tc">CopyRight © 2017 - 2017 By Bulian</div>
+    <div class="tc">CopyRight © 2010 - @php echo date('Y'); @endphp By Bulian</div>
     <div class="ov right">
         <a href="javascript:void(0)">
             <img src="img/bottom_icon_usergroup.png"/>
@@ -341,8 +341,6 @@
         </a>
     </div>
 </div>
-</body>
-
 
 {{-- js --}}
 @section('js')
@@ -367,3 +365,4 @@
         }
     </script>
 @endsection
+</body>

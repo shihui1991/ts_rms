@@ -1,5 +1,5 @@
 {{-- 继承基础模板 --}}
-@extends('base')
+@extends('system.public.base')
 
 {{-- public_head --}}
 @section('public_head')
@@ -68,3 +68,4 @@
         });
     </script>
 @endsection
+</body>
