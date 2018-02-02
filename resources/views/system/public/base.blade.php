@@ -16,12 +16,22 @@
 
     <link href="{{asset('toastr/toastr.min.css')}}" rel="stylesheet">
     <!-- css -->
-    <link rel="stylesheet" type="text/css" href="{{asset('system/css/style.css')}}"/>
+    <style type="text/css">
+        .nav>li{float: left;padding: 5px 10px;margin-right: 10px;-webkit-border-radius: 5px; -moz-border-radius: 5px;border-radius: 5px;behavior: url(__STATIC__/system/js/PIE.htc);}
+        .chosen-results{
+            max-height: 200px;
+            overflow: scroll;
+        }
+    </style>
     @yield('public_head')
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+    <!--[if lte IE 9]>
+    <script src="{{asset('system/js/DOMAssistantCompressed-2.7.4.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{asset('system/js/ie-css3.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{asset('system/js/placeholder.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{asset('system/js/forie8.js')}}" type="text/javascript" charset="utf-8"></script>
+    <![endif]-->
+    <!--[if lte IE 8]>
     <script src="{{asset('js/html5shiv.min.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
     <![endif]-->
@@ -32,11 +42,12 @@
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 
 <!--[if !IE]> -->
+<link rel="stylesheet" type="text/css" href="{{asset('system/css/style.css')}}"/>
 <script src="{{asset('js/jquery-2.1.4.min.js')}}"></script>
-
 <!-- <![endif]-->
 
 <!--[if IE]>
+<link rel="stylesheet" type="text/css" href="{{asset('system/css/style_1.css')}}"/>
 <script src="{{asset('js/jquery-1.11.3.min.js')}}"></script>
 <![endif]-->
 

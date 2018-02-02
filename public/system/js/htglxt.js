@@ -28,7 +28,7 @@ function leftSubNavManage(e,event){
 		
 	}else{//未打开此页面
 		var iframeSrc = $(e).attr("data-src");
-		var li = '<li data-tit="'+tit+'" class="on" onmousedown="tabManage(this,event)"><img src="/static/system/img/file_extension_log.png"/>'+tit+'<span title="关闭当前窗口" onclick="closeIframe()"></span></li>';
+		var li = '<li data-tit="'+tit+'" class="on" onmousedown="tabManage(this,event)"><img src="/system/img/file_extension_log.png"/>'+tit+'<span title="关闭当前窗口" onclick="closeIframe()"></span></li>';
 		var iframeItem = '<iframe src="'+iframeSrc+'" data-tit="'+ tit +'" class="iframe on" id="'+iframeSrc+'"></iframe>';
 		$(tabs).removeClass("on");
 		$(tab).append(li);

@@ -13,7 +13,7 @@ class Menu extends Model
     use SoftDeletes;
     protected $table='a_menu';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $guarded=['id','sub_type'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -45,7 +45,17 @@ class Menu extends Model
     {
         $this->attributes['sort']=is_null($value)?0:(integer)$value;
     }
-    /* ++++++++++ 获取限制访问 ++++++++++ */
+    /* ++++++++++ 获取限制登陆访问 ++++++++++ */
+    public function getLoginAttribute($key=null)
+    {
+        $array=[0=>'无限制',1=>'受限'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+    /* ++++++++++ 获取限制操作访问 ++++++++++ */
     public function getAuthAttribute($key=null)
     {
         $array=[0=>'无限制',1=>'受限'];
@@ -59,6 +69,16 @@ class Menu extends Model
     public function getDisplayAttribute($key=null)
     {
         $array=[0=>'隐藏',1=>'显示'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+    /* ++++++++++ 获取模块 ++++++++++ */
+    public function getModuleAttribute($key=null)
+    {
+        $array=[0=>'征收部门',1=>'评估机构',2=>'被征收户',3=>'触摸屏'];
         if(is_numeric($key)){
             return $array[$key];
         }else{

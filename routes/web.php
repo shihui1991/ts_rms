@@ -14,9 +14,9 @@
 Route::get('/', function () {
     return view('system.login');
 });
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+Route::any('welcome', function () {
+    return view('welcome');
+});
 
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/
@@ -28,8 +28,8 @@ Route::namespace('system')->prefix('system')->group(function (){
     Route::any('menu','MenuController@index')->name('sys_menu');
     Route::any('menu_all','MenuController@all')->name('sys_menu_all');
     Route::any('menu_add/{id?}','MenuController@add')->name('sys_menu_add');
-    Route::any('menu_info/{id}','MenuController@info')->name('sys_menu_info');
-    Route::any('menu_edit/{id}','MenuController@edit')->name('sys_menu_edit');
+    Route::any('menu_info/{id?}','MenuController@info')->name('sys_menu_info');
+    Route::any('menu_edit/{id?}','MenuController@edit')->name('sys_menu_edit');
     Route::any('menu_sort','MenuController@sort')->name('sys_menu_sort');
     Route::any('menu_display','MenuController@display')->name('sys_menu_display');
     Route::any('menu_delete','MenuController@delete')->name('sys_menu_delete');

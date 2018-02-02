@@ -1,37 +1,9 @@
 {{-- 继承基础模板 --}}
-@extends('base')
+@extends('system.public.base')
 
 {{-- css --}}
 @section('css')
     <link href="{{asset('ztree/css/zTreeStyle/zTreeStyle.css')}}" rel="stylesheet">
-
-    <style>
-        header{
-            margin: 0;
-            padding-left: 0;
-            padding-right: 0;
-            border-width: 0;
-            border-radius: 0;
-            -webkit-box-shadow: none;
-            box-shadow: none;
-            min-height: 45px;
-            background: #438EB9;
-        }
-        nav{
-            width: 200px;
-            float: left;
-            position: static;
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .content{
-            margin-left: 200px;
-            min-height: 100%;
-        }
-
-
-    </style>
-
 @endsection
 
 {{-- 布局 --}}
@@ -42,60 +14,54 @@
         <ul>
             <li>
                 <a href="{{route('sys_menu_all')}}">
-                    <img src="{{asset('system/img/web_disk.png')}}"/>
+                    <img src="/system/img/web_disk.png"/>
                     所有菜单</a>
             </li>
             <li class="fgf">
-                <a href="{:url('index')}">
-                    <img src="{{asset('system/img/arrow_refresh.png')}}"/>
+                <a href="{{route('sys_menu')}}">
+                    <img src="/system/img/arrow_refresh.png"/>
                     重置</a>
             </li>
-            <li class="fgf" onclick="layerIfWindow('添加菜单','{:url('add')}','','335')">
+            <li class="fgf" onclick="layerIfWindow('添加菜单','{{route('sys_menu_add')}}','','335')">
                 <img src="{{asset('system/img/add.png')}}"/>
                 添加
             </li>
-            <li class="fgf js-ajax-form-btn" data-form="js-ajax-form">
-                <img src="{{asset('system/img/text_list_numbers.png')}}"/>
-                排序
-            </li>
-            <li class="fgf js-ajax-form-btn" data-form="js-ajax-form" data-action="{:url('show',array('display'=>'1'))}">
-                <img src="{{asset('system/img/monitor_window_3d.png')}}"/>
-                显示
-            </li>
-            <li class="fgf js-ajax-form-btn" data-form="js-ajax-form" data-action="{:url('show',array('display'=>'0'))}">
-                <img src="{{asset('system/img/insert_element.png')}}"/>
-                隐藏
-            </li>
-            <li class="fgf js-ajax-form-btn" data-form="js-ajax-form" data-action="{:url('status',array('status'=>'1'))}">
-                <img src="{{asset('system/img/checked.png')}}"/>
-                启用
-            </li>
-            <li class="fgf js-ajax-form-btn" data-form="js-ajax-form" data-action="{:url('status',array('status'=>'0'))}">
-                <img src="{{asset('system/img/disabled.png')}}"/>
-                禁用
-            </li>
-            <li class="fgf js-ajax-form-btn" data-form="js-ajax-form" data-action="{:url('delete')}">
-                <img src="{{asset('system/img/broom.png')}}"/>
-                删除
-            </li>
         </ul>
     </div>
-    <form action="{:url('sort')}" method="post" id="js-ajax-form">
+    <form action="{{route('sys_menu_sort')}}" method="post" id="js-ajax-form">
         <div class="tableCon">
             <em class="xian"></em>
             <table id="example-advanced" class="table treetable" border="0" >
                 <tbody>
                 <tr class="noSelect">
-                    <th class="tc" width="35px">
-                        <input class="va_m" type="checkbox" name="" id="allCheck" value="" data-falg="allCheck" onclick="checkBoxOp(this)"/>
-                    </th>
-                    <th>排序</th>
-                    <th>ID</th>
+                    <th><input type="checkbox" title="选择" lay-ignore> 模块</th>
                     <th>菜单名称</th>
-                    <th>应用URL</th>
+                    <th>路由地址</th>
+                    <th>请求方式</th>
+                    <th>登陆限制</th>
+                    <th>操作限制</th>
                     <th>状态</th>
+                    <th>ID</th>
+                    <th width="50">排序</th>
                     <th>操作</th>
                 </tr>
+                @foreach($menus as $menu)
+                    <tr data-tt-id="{{$menu->id}}" data-tt-parent-id="{{$menu->parent_id}}" @if($menu->childs_count) data-tt-branch="true" @endif>
+                        <td style="white-space:nowrap;"><input type="checkbox" name="ids[]" value="{{$menu->id}}">{{$menu->module}}</td>
+                        <td style="white-space:nowrap;">{!! $menu->icon !!} {{$menu->name}}</td>
+                        <td style="white-space:nowrap;">{{$menu->url}}</td>
+                        <td>{{$menu->method}}</td>
+                        <td>{{$menu->login}}</td>
+                        <td>{{$menu->auth}}</td>
+                        <td>{{$menu->display}}</td>
+                        <td>{{$menu->id}}</td>
+                        <td><input class="layui-input" type="number" min="0" name="sorts[{{$menu->id}}]" value="{{$menu->sort}}"></td>
+                        <td>
+                            <button type="button" class="btn" onclick="layerIfWindow('添加菜单','{{route('sys_menu_add',['id'=>$menu->id,'module'=>$menu->getOriginal('module'),'sub_type'=>'all'])}}','','335')" >添加子菜单</button>
+                            <button type="button" class="btn" onclick="layerIfWindow('菜单信息','{{route('sys_menu_info',['id'=>$menu->id,'sub_type'=>'all'])}}','','400')" >详细信息</button>
+                        </td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>
@@ -131,6 +97,7 @@
                         layer.msg(ajaxResp.message,{icon:2,time:1500},function () {});
                     });
                 }else{
+                    console.log();
                     if(ajaxResp.data.length){
                         var childs='';
                         $.each(ajaxResp.data,function (index,info) {

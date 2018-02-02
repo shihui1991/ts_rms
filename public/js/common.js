@@ -13,15 +13,16 @@ function ajaxAct(action,datas,method) {
         error:function (resp) {
             if(resp.responseJSON.errors){
                 ajaxResp=resp.responseJSON;
-                ajaxResp.error=1;
                 ajaxResp.code="error";
-                ajaxResp.data={};
+                ajaxResp.sdata={};
+                ajaxResp.edata={};
+                ajaxResp.url='';
             }else{
                 ajaxResp={
-                    error:1,
                     code:"error",
                     message:"网络错误，请稍候重试！",
-                    data:{},
+                    sdata:{},
+                    edata:{},
                     url:''
                 };
             }
@@ -47,15 +48,16 @@ function ajaxUpd(action,datas) {
         error:function (resp) {
             if(resp.responseJSON.errors){
                 ajaxResp=resp.responseJSON;
-                ajaxResp.error=1;
                 ajaxResp.code="error";
-                ajaxResp.data={};
+                ajaxResp.sdata={};
+                ajaxResp.edata={};
+                ajaxResp.url='';
             }else{
                 ajaxResp={
-                    error:1,
                     code:"error",
                     message:"网络错误，请稍候重试！",
-                    data:{},
+                    sdata:{},
+                    edata:{},
                     url:''
                 };
             }
