@@ -10,12 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('system.login');
+Route::any('welcome', function () {
+    return view('welcome');
 });
-
-
 /*========== 征收管理端 ==========*/
 Route::namespace('gov')->prefix('gov')->group(function (){
     /*---------- 登陆 ----------*/
@@ -25,14 +22,15 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     /*---------- 首页 ----------*/
     Route::any('/home','HomeController@index')->name('g_home');
 });
-Route::any('welcome', function () {
-    return view('welcome');
+/*========== 后台管理端 ==========*/
+Route::get('/', function () {
+    return view('system.login');
 });
-
 Route::namespace('system')->prefix('system')->group(function (){
     /*---------- 登陆后台 ----------*/
-    Route::any('index','IndexController@index')->name('sys_index');
+    Route::any('/','IndexController@index')->name('sys_index');
     Route::any('login','IndexController@login')->name('sys_login');
+    Route::any('logout','IndexController@logout')->name('sys_logout');
     /*---------- 控制台 ----------*/
     Route::any('home','HomeController@index')->name('sys_home');
     /*----- 功能与菜单 -----*/

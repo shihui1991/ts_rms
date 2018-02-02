@@ -51,6 +51,7 @@ class MenuController extends BaseController
                 }])
                 ->where($where)
                 ->sharedLock()
+                ->orderBy('sort','asc')
                 ->get();
 
             if(blank($menus)){
@@ -223,6 +224,7 @@ class MenuController extends BaseController
                 DB::commit();
             }
             $infos['parent']=$parent;
+            $infos['sub_type']=$request->input('sub_type')??'';
             $infos['module'] = $request->input('module');
             /* ++++++++++ 输出视图 ++++++++++ */
             return view('system.menu.modify',$infos);

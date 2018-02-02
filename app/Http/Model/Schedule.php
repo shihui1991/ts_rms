@@ -39,6 +39,6 @@ class Schedule extends Model
 
     /* ++++++++++ 关联项目流程 ++++++++++ */
     public function process(){
-        return $this->hasMany('App\Http\Model\Process','id','schedule_id');
+        return $this->hasMany('App\Http\Model\Process','schedule_id','id');
     }
 }

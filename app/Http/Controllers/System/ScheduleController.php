@@ -47,7 +47,12 @@ class ScheduleController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $schedules=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $schedules=$model
+                ->with(['process'=>function($query){
+                    $query->select(['id','schedule_id','name']);
+                }])
+                ->sharedLock()
+                ->get();
             if(blank($schedules)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -71,7 +76,8 @@ class ScheduleController extends BaseController
         if($request->ajax()){
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
-            return view('system.schedule.all',$infos);
+            dump($schedules);
+            return view('system.schedule.index',$infos);
         }
     }
 
