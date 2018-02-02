@@ -95,6 +95,7 @@ function ajaxFormSub(btn) {
             //拆分键值对
             $.each(_others,function (index,info) {
                 key_value=info.split('=');
+                _form.find('input[name="'+key_value[0]+'"]').remove();
                 _inputs +='<input type="hidden" name="'+key_value[0]+'" value="'+key_value[1]+'" />';
             });
 
@@ -110,33 +111,12 @@ function ajaxFormSub(btn) {
     //表单提交
     ajaxAct(_action,_datas,_method);
     //释放提交按钮
-    _btn.data('loading',false).prop('disabled',false).removeClass('disabled');
+    setTimeout(function () {
+        _btn.data('loading',false).prop('disabled',false).removeClass('disabled');
+    },1500);
 }
 
 $(function () {
-    toastr.options = {
-        closeButton: true,
-        debug: false,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "1500",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut"
-    };
-    //下拉选框 带搜索功能
-    $('.chosen-select').chosen({
-        no_results_text:"没有匹配数据",
-        placeholder_text:"请选择",
-        search_contains:true,
-        disable_search_threshold:10
-    });
-
 
     //表头 ==>> 全选、全不选
     $('thead').on('click','input[type=checkbox]',function () {
