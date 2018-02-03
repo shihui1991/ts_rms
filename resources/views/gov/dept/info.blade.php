@@ -65,7 +65,6 @@
         </div>
     </form>
 
-    @include('gov.alert')
 
     <div class="profile-user-info profile-user-info-striped">
         @if($sdata->deleted_at)

@@ -4,7 +4,6 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    @include('gov.alert')
 
     <div class="well well-sm">
         <a href="{{route('g_dept_add')}}" class="btn">添加部门</a>

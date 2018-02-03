@@ -65,7 +65,6 @@
         </div>
     </form>
 
-    @include('gov.alert')
 
 @endsection
 

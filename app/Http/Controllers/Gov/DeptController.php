@@ -104,11 +104,7 @@ class DeptController extends BaseController
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-                if($request->ajax()){
-                    return response()->json($result);
-                }else{
-                    return redirect()->back()->withErrors($validator->errors())->withInput();
-                }
+                return response()->json($result);
             }
 
             /* ++++++++++ 新增 ++++++++++ */
@@ -141,15 +137,7 @@ class DeptController extends BaseController
             }
             /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                if($code=='success'){
-                    return redirect($url)->with($code,$msg);
-                }else{
-                    return redirect()->back()->with($code,$msg)->withInput();
-                }
-            }
+            return response()->json($result);
         }
     }
 
@@ -161,7 +149,7 @@ class DeptController extends BaseController
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return redirect()->back()->with($result['code'],$result['message']);
+                return view('gov.error')->with($result);
             }
         }
         /* ********** 获取数据 ********** */
@@ -180,22 +168,22 @@ class DeptController extends BaseController
             $sdata=null;
             $edata=null;
             $url=null;
+
+            $view='gov.error';
         }else{
             $code='success';
             $msg='查询成功';
             $sdata=$dept;
             $edata=new Dept();
             $url=null;
+
+            $view='gov.dept.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
             return response()->json($result);
         }else{
-            if($code=='success'){
-                return view('gov.dept.info')->with($result);
-            }else{
-                return redirect()->back()->with($result['code'],$result['message']);
-            }
+            return view($view)->with($result);
         }
     }
 
@@ -204,11 +192,7 @@ class DeptController extends BaseController
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'错误操作','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return redirect()->back()->with($result['code'],$result['message'])->withInput();
-            }
+            return response()->json($result);
         }
 
         /* ********** 表单验证 ********** */
@@ -225,11 +209,7 @@ class DeptController extends BaseController
         $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
         if($validator->fails()){
             $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return redirect()->back()->withErrors($validator->errors())->withInput();
-            }
+            return response()->json($result);
         }
         /* ********** 更新 ********** */
         DB::beginTransaction();
@@ -265,15 +245,7 @@ class DeptController extends BaseController
         }
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
-            return response()->json($result);
-        }else{
-            if($code=='success'){
-                return redirect($url)->with($code,$msg);
-            }else{
-                return redirect()->back()->with($code,$msg)->withInput();
-            }
-        }
+        return response()->json($result);
     }
 
 }
