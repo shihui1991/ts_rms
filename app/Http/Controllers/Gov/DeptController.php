@@ -191,61 +191,103 @@ class DeptController extends BaseController
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $result=['code'=>'error','message'=>'错误操作','sdata'=>null,'edata'=>null,'url'=>null];
-            return response()->json($result);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
 
-        /* ********** 表单验证 ********** */
-        $model=new Dept();
-        $rules=[
-            'name'=>'required|unique:dept,name,'.$id.',id',
-            'type'=>'required|boolean'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在',
-            'boolean'=>'错误操作',
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-            return response()->json($result);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $dept=Dept::withTrashed()->lockForUpdate()->find($id);
-            if(blank($dept)){
-                throw new \Exception('数据不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $dept->fill($request->input());
-            $dept->editOther($request);
-            $dept->save();
-            if(blank($dept)){
-                throw new \Exception('修改失败',404404);
-            }
-
-            $code='success';
-            $msg='保存成功';
-            $sdata=$dept;
-            $edata=null;
-            $url=route('g_dept');
-           
+        if($request->isMethod('get')){
+            /* ********** 获取数据 ********** */
+            DB::beginTransaction();
+            $dept=Dept::withTrashed()
+                ->with(['father'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
+                ->sharedLock()
+                ->find($id);
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
-            $sdata=null;
-            $edata=$dept;
-            $url=null;
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($dept)){
+                $code='error';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
 
-            DB::rollBack();
+                $view='gov.error';
+            }else{
+                $code='success';
+                $msg='查询成功';
+                $sdata=$dept;
+                $edata=new Dept();
+                $url=null;
+
+                $view='gov.dept.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
         }
-        /* ********** 结果 ********** */
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        return response()->json($result);
+        /* ********** 保存 ********** */
+        else{
+            /* ********** 表单验证 ********** */
+            $model=new Dept();
+            $rules=[
+                'name'=>'required|unique:dept,name,'.$id.',id',
+                'type'=>'required|boolean'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在',
+                'boolean'=>'错误操作',
+            ];
+            $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+            if($validator->fails()){
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $dept=Dept::withTrashed()->lockForUpdate()->find($id);
+                if(blank($dept)){
+                    throw new \Exception('数据不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $dept->fill($request->input());
+                $dept->editOther($request);
+                $dept->save();
+                if(blank($dept)){
+                    throw new \Exception('修改失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=$dept;
+                $edata=null;
+                $url=route('g_dept');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=$dept;
+                $url=null;
+
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 
 }

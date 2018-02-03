@@ -13,13 +13,13 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_dept_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_dept_edit')}}" method="post">
         {{csrf_field()}}
+        <input type="hidden" name="id" value="{{$sdata->id}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="parent_id"> 上级部门： </label>
             <div class="col-sm-9">
-                <input type="text" id="parent_id" value="{{$sdata['name']}}" class="col-xs-10 col-sm-5" readonly>
-                <input type="hidden" name="parent_id" value="{{$sdata['id']}}">
+                <input type="text" id="parent_id" value="{{$sdata->father->name}}" class="col-xs-10 col-sm-5" readonly>
             </div>
         </div>
         <div class="space-4"></div>
@@ -27,7 +27,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{old('name')}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -37,7 +37,7 @@
             <div class="col-sm-9 radio">
                 @foreach($edata->type as $key => $value)
                     <label>
-                        <input name="type" type="radio" class="ace" value="{{$key}}" @if($key==0) checked @endif >
+                        <input name="type" type="radio" class="ace" value="{{$key}}" @if($value==$sdata->type) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
@@ -48,7 +48,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="infos">描述：</label>
             <div class="col-sm-9">
-                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" >{{old('infos')}}</textarea>
+                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" >{{$sdata->infos}}</textarea>
             </div>
         </div>
         <div class="space-4"></div>
@@ -67,7 +67,6 @@
             </div>
         </div>
     </form>
-
 
 @endsection
 
