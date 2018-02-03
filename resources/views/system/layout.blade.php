@@ -88,7 +88,7 @@
                             <b class="arrow"></b>
                         </li>
                         <li class="">
-                            <a href="{{route('sys_menu_info',['id'=>3])}}">
+                            <a href="{{route('sys_menu_info')}}">
                                 <i class="menu-icon fa fa-leaf green"></i>
                                 修改
                             </a>

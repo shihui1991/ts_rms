@@ -49,7 +49,7 @@ class ScheduleController extends BaseController
         try{
             $schedules=$model
                 ->with(['process'=>function($query){
-                    $query->select(['id','schedule_id','name']);
+                    $query->where('parent_id',0)->select(['id','name']);
                 }])
                 ->sharedLock()
                 ->get();
@@ -76,7 +76,7 @@ class ScheduleController extends BaseController
         if($request->ajax()){
             return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
         }else{
-            dump($schedules);
+            dump($schedules['process']);
             return view('system.schedule.index',$infos);
         }
     }

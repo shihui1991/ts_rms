@@ -14,7 +14,7 @@
         </thead>
         <tbody>
         @foreach($schedules as $info)
-            <tr data-tt-id="{{$info->id}}" data-tt-parent-id="{{$info->parent_id}}" @if($info->process_count)data-tt-branch="true" @else data-tt-branch="false"@endif>
+            <tr data-tt-id="{{$info->id}}" data-tt-parent-id="" @if($info->process_count)data-tt-branch="true" @else data-tt-branch="false"@endif>
                 <td>{{$info->name}}</td>
                 <td>{{$info->module}}</td>
                 <td>
