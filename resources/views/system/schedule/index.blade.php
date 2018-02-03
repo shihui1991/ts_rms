@@ -4,41 +4,30 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <table class="table table-hover table-bordered treetable"  id="treetable">
+    <div class="well well-sm">
+        <a href="{{route('g_dept_add')}}" class="btn">添加进度</a>
+    </div>
+
+    <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
-            <th>进度名称</th>
-            <th>进度说明</th>
+            <th>名称</th>
+            <th>说明</th>
             <th>操作</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($schedules as $info)
-            <tr data-tt-id="{{$info->id}}" data-tt-parent-id="" @if($info->process_count)data-tt-branch="true" @else data-tt-branch="false"@endif>
-                <td>{{$info->name}}</td>
-                <td>{{$info->module}}</td>
-                <td>
-                    <div class="hidden-sm hidden-xs btn-group">
-                        <a href="{{route('sys_menu_add',['id'=>$info->id,'module'=>$info->getOriginal('module')])}}">
-                            <button class="btn btn-xs btn-success">
-                                <i class="ace-icon fa fa-check bigger-120"></i>
-                            </button>
-                        </a>
-                        <a href="{{route('sys_menu_info',['id'=>$info->id])}}">
-                            <button class="btn btn-xs btn-info">
-                                <i class="ace-icon fa fa-pencil bigger-120"></i>
-                            </button>
-                        </a>
-                        <a href="{{route('sys_menu_delete',['id'=>$info->id])}}">
-                        <button class="btn btn-xs btn-danger">
-                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
-                        </button>
-                        </a>
-                    </div>
-                </td>
+            @foreach($schedules as $infos)
+                <tr data-tt-id="{{$infos->id}}" data-tt-parent-id="{{$infos->id}}" @if($infos->childs_count) data-tt-branch="true" @endif>
+                    <td>{{$infos->name}}</td>
+                    <td>{{$infos->infos}}</td>
+                    <td>
+                        <a href="{{route('g_dept_add',['id'=>$infos->id])}}" class="btn btn-sm">添加下级</a>
+                        <a href="{{route('g_dept_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
+                    </td>
+                </tr>
+            @endforeach
 
-            </tr>
-        @endforeach
         </tbody>
     </table>
 @endsection
@@ -65,7 +54,7 @@
                 if (childSize > 0) {
                     return;
                 }
-                ajaxAct("{{route('sys_menu')}}",{"id":node.id},'get');
+                ajaxAct("{{route('sys_process')}}",{"id":node.id},'get');
                 if(ajaxResp.error){
 
                 }else{

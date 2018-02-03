@@ -3,7 +3,7 @@
 
 {{-- 页面内容 --}}
 @section('content')
-    <form action="{{isset($infos)?route('sys_menu_edit',['id'=>$infos->id]):route('sys_menu_add')}}" method="post">
+    <form action="{{isset($infos)?route('sys_menu_edit',['id'=>$infos->id]):route('sys_menu_add')}}" method="post" class="form-horizontal">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="form-field-1">  模 块  </label>
             <div class="col-sm-9">

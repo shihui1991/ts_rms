@@ -28,6 +28,7 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::any('/dept_add','DeptController@add')->name('g_dept_add');
     Route::get('/dept_info','DeptController@info')->name('g_dept_info');
     Route::any('/dept_edit','DeptController@edit')->name('g_dept_edit');
+    require 'zhang.php';
 });
 
 
