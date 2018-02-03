@@ -244,12 +244,30 @@
             <b class="arrow"></b>
         </li>
         <li class="">
-            <a href="#">
+            <a href="#" class="dropdown-toggle">
                 <i class="menu-icon fa fa-home"></i>
                 <span class="menu-text"> 基础资料 </span>
             </a>
-
             <b class="arrow"></b>
+            <ul class="submenu">
+                <li class="">
+                    <a href="#">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        公产单位
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="#">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        银行管理
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+            </ul>
         </li>
         <li class="">
             <a href="#">

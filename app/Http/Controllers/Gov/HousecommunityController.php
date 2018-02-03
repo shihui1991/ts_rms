@@ -186,7 +186,7 @@ class HousecommunityController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $house_community->fill($request->input());
-            $house_community->setOther($request);
+            $house_community->editOther($request);
             $house_community->save();
             if(blank($house_community)){
                 throw new \Exception('修改失败',404404);

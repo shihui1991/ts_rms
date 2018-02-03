@@ -108,7 +108,7 @@ class ItemnoticecateController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $itemnoticecate=$model;
                 $itemnoticecate->fill($request->input());
-                $itemnoticecate->setOther($request);
+                $itemnoticecate->editOther($request);
                 $itemnoticecate->save();
                 if(blank($itemnoticecate)){
                     throw new \Exception('添加失败',404404);
@@ -212,7 +212,7 @@ class ItemnoticecateController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $itemnoticecate->fill($request->input());
-                $itemnoticecate->setOther($request);
+                $itemnoticecate->editOther($request);
                 $itemnoticecate->save();
                 if(blank($itemnoticecate)){
                     throw new \Exception('修改失败',404404);

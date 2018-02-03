@@ -285,7 +285,7 @@ class HouseController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $house->fill($request->input());
-            $house->setOther($request);
+            $house->editOther($request);
             $house->save();
             if(blank($house)){
                 throw new \Exception('修改失败',404404);

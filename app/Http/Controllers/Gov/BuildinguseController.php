@@ -179,7 +179,7 @@ class BuildinguseController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $building_use->fill($request->input());
-            $building_use->setOther($request);
+            $building_use->editOther($request);
             $building_use->save();
             if(blank($building_use)){
                 throw new \Exception('修改失败',404404);

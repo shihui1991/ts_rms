@@ -202,7 +202,7 @@ class CompanyuserController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $companyuser->fill($request->input());
-            $companyuser->setOther($request);
+            $companyuser->editOther($request);
             $companyuser->save();
             if(blank($companyuser)){
                 throw new \Exception('修改失败',404404);

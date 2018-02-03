@@ -213,7 +213,7 @@ class SubjectController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $subject->fill($request->input());
-                $subject->setOther($request);
+                $subject->editOther($request);
                 $subject->save();
                 if(blank($subject)){
                     throw new \Exception('修改失败',404404);

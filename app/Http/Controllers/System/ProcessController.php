@@ -254,7 +254,7 @@ class ProcessController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $process->fill($request->input());
-                $process->setOther($request);
+                $process->editOther($request);
                 $process->save();
                 if(blank($process)){
                     throw new \Exception('修改失败',404404);

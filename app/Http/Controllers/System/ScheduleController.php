@@ -216,7 +216,7 @@ class ScheduleController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $schedule->fill($request->input());
-                $schedule->setOther($request);
+                $schedule->editOther($request);
                 $schedule->save();
                 if(blank($schedule)){
                     throw new \Exception('修改失败',404404);

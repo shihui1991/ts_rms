@@ -33,7 +33,7 @@ class Crowdcate extends Model
 
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
-    public function setOther($request){
+    public function editOther($request){
 
     }
 

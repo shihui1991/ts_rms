@@ -215,7 +215,7 @@ class UserController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $user->fill($request->input());
-            $user->setOther($request);
+            $user->editOther($request);
             $user->save();
             if(blank($user)){
                 throw new \Exception('修改失败',404404);

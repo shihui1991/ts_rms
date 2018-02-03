@@ -188,7 +188,7 @@ class HousemanagepriceController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $housemanageprice->fill($request->input());
-            $housemanageprice->setOther($request);
+            $housemanageprice->editOther($request);
             $housemanageprice->save();
             if(blank($housemanageprice)){
                 throw new \Exception('修改失败',404404);

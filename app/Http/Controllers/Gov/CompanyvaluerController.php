@@ -117,7 +117,7 @@ class CompanyvaluerController extends BaseController
             /*--- 评估机构 ---*/
             $companyvaluer=$model;
             $companyvaluer->fill($request->input());
-            $companyvaluer->setOther($request);
+            $companyvaluer->editOther($request);
             $companyvaluer->save();
             if(blank($companyvaluer)){
                 throw  new \Exception('添加失败',404404);
@@ -204,7 +204,7 @@ class CompanyvaluerController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $companyvaluer->fill($request->input());
-            $companyvaluer->setOther($request);
+            $companyvaluer->editOther($request);
             $companyvaluer->save();
             if(blank($companyvaluer)){
                 throw  new \Exception('修改失败',404404);

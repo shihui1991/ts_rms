@@ -223,7 +223,7 @@ class ChecknumberController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $checknumber->fill($request->input());
-                $checknumber->setOther($request);
+                $checknumber->editOther($request);
                 $checknumber->save();
                 if(blank($checknumber)){
                     throw new \Exception('修改失败',404404);

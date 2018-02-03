@@ -190,7 +190,7 @@ class LandsourceController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $landsource->fill($request->input());
-            $landsource->setOther($request);
+            $landsource->editOther($request);
             $landsource->save();
             if(blank($landsource)){
                 throw new \Exception('修改失败',404404);

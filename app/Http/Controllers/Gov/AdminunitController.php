@@ -194,7 +194,7 @@ class AdminunitController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $adminunit->fill($request->input());
-            $adminunit->setOther($request);
+            $adminunit->editOther($request);
             $adminunit->save();
             if(blank($adminunit)){
                 throw new \Exception('修改失败',404404);

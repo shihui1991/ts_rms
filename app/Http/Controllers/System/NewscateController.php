@@ -211,7 +211,7 @@ class NewscateController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $newscate->fill($request->input());
-                $newscate->setOther($request);
+                $newscate->editOther($request);
                 $newscate->save();
                 if(blank($newscate)){
                     throw new \Exception('修改失败',404404);

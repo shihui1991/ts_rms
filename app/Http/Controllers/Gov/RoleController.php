@@ -270,7 +270,7 @@ class RoleController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $role->fill($request->input());
-            $role->setOther($request);
+            $role->editOther($request);
             $role->save();
             if(blank($role)){
                 throw new \Exception('修改失败',404404);

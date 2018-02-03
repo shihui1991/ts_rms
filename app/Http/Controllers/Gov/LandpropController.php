@@ -179,7 +179,7 @@ class LandpropController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $landprop->fill($request->input());
-            $landprop->setOther($request);
+            $landprop->editOther($request);
             $landprop->save();
             if(blank($landprop)){
                 throw new \Exception('修改失败',404404);

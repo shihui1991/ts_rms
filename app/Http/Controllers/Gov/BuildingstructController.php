@@ -178,7 +178,7 @@ class BuildingstructController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $building_struct->fill($request->input());
-            $building_struct->setOther($request);
+            $building_struct->editOther($request);
             $building_struct->save();
             if(blank($building_struct)){
                 throw new \Exception('修改失败',404404);
