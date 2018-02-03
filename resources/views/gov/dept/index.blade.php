@@ -14,7 +14,6 @@
         <tr>
             <th>名称</th>
             <th>类型</th>
-            <th>说明</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -25,7 +24,6 @@
                 <tr data-tt-id="{{$infos->id}}" data-tt-parent-id="{{$infos->parent_id}}" @if($infos->childs_count) data-tt-branch="true" @endif>
             <td>{{$infos->name}}</td>
             <td>{{$infos->type}}</td>
-            <td>{{$infos->infos}}</td>
             <td>
                 <a href="{{route('g_dept_add',['id'=>$infos->id])}}" class="btn btn-sm">添加下级</a>
                 <a href="{{route('g_dept_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
@@ -74,7 +72,6 @@
                             childs +='<tr data-tt-id="'+info.id+'" data-tt-parent-id="'+info.parent_id+'" data-tt-branch="'+(info.childs_count?'true':'false')+'">';
                             childs +='<td>'+info.name+'</td>';
                             childs +='<td>'+info.type+'</td>';
-                            childs +='<td>'+(info.infos||'')+'</td>';
                             childs +='<td><a href="{{route('g_dept_add')}}?id='+info.id+'" class="btn btn-sm">添加下级</a>&nbsp;<a href="{{route('g_dept_info')}}?id='+info.id+'" class="btn btn-sm">查看详情</a></td>';
                             childs +='</tr>';
                         });
