@@ -19,7 +19,7 @@ class DeptController extends BaseController
 
     }
 
-    /* ++++++++++ 首页 ++++++++++ */
+    /* ++++++++++ 列表 ++++++++++ */
     public function index(Request $request)
     {
         /* ********** 查询条件 ********** */

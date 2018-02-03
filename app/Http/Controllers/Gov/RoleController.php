@@ -6,7 +6,9 @@
 */
 namespace App\Http\Controllers\Gov;
 
+use App\Http\Model\Menu;
 use App\Http\Model\Role;
+use App\Http\Model\Rolemenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +21,7 @@ class RoleController extends BaseController
 
     }
 
-    /* ++++++++++ 首页 ++++++++++ */
+    /* ++++++++++ 列表 ++++++++++ */
     public function index(Request $request)
     {
         /* ********** 查询条件 ********** */
@@ -79,7 +81,30 @@ class RoleController extends BaseController
                 $id=0;
             }
 
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>['id'=>$id,'name'=>$name],'edata'=>$model,'url'=>null];
+            $menus=Menu::withTrashed()
+                ->where([
+                    ['module',0],
+                    ['login',1],
+                ])
+                ->select(['id','parent_id','name','auth'])
+                ->get();
+
+            $menu_tree='';
+            if(!blank($menus)){
+                $array=[];
+                foreach ($menus as $menu){
+                    $menu->checked=$menu->getOriginal('auth')==0?'checked':'';
+                    $array[]=$menu;
+                }
+                $str="<tr data-tt-id='\$id' data-tt-parent-id='\$parent_id'>
+                          <td>\$name</td>
+                          <td><input type='checkbox' name='menu_ids[]' value='\$id' \$checked></td>
+                      </tr>";
+
+                $menu_tree=get_tree($array,$str,0,1,['','',''],'');
+            }
+
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>['id'=>$id,'name'=>$name,'menus'=>$menu_tree],'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
@@ -93,13 +118,15 @@ class RoleController extends BaseController
             $rules=[
                 'parent_id'=>['required','regex:/^[0-9]+$/'],
                 'name'=>'required|unique:role',
-                'type'=>'required|boolean'
+                'type'=>'required|boolean',
+                'menu_ids'=>'required'
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
                 'parent_id.regex'=>'错误操作',
                 'unique'=>':attribute 已存在',
                 'boolean'=>'错误操作',
+                'menu_ids.required'=>'选择权限',
             ];
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
@@ -117,6 +144,32 @@ class RoleController extends BaseController
                 $role->save();
                 if(blank($role)){
                     throw new \Exception('保存失败',404404);
+                }
+
+                $menu_ids=Menu::withTrashed()
+                    ->whereIn('id',$request->input('menu_ids'))
+                    ->where('auth',1)
+                    ->sharedLock()
+                    ->pluck('id');
+
+                if(!blank($menu_ids)){
+                    $values=[];
+                    foreach($menu_ids as $menu_id){
+                        $values[]=[
+                            'role_id'=>$role->id,
+                            'menu_id'=>$menu_id,
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                    }
+                    $ins_field=['role_id','menu_id','created_at','updated_at'];
+                    $sqls=batch_update_or_insert_sql('role_menu',$ins_field,$values,$ins_field);
+                    if(!$sqls){
+                        throw new \Exception('保存失败',404404);
+                    }
+                    foreach ($sqls as $sql){
+                        DB::statement($sql);
+                    }
                 }
 
                 $code='success';
@@ -157,7 +210,11 @@ class RoleController extends BaseController
         $role=Role::withTrashed()
             ->with(['father'=>function($query){
                 $query->withTrashed()->select(['id','name']);
-            }])
+            }
+                ,'menus'=>function($query){
+                $query->withTrashed()->select(['id','name','icon']);
+                }
+            ])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -208,6 +265,32 @@ class RoleController extends BaseController
                 }])
                 ->sharedLock()
                 ->find($id);
+
+            $menu_ids=Rolemenu::where('role_id',$id)->sharedLock()->pluck('menu_id');
+
+            $menus=Menu::withTrashed()
+                ->where([
+                    ['module',0],
+                    ['login',1],
+                ])
+                ->select(['id','parent_id','name','auth'])
+                ->get();
+
+            $menu_tree='';
+            if(!blank($menus)){
+                $array=[];
+                foreach ($menus as $menu){
+                    $menu->checked=($menu->getOriginal('auth')==0 || in_array($menu->id,$menu_ids->toArray()))?'checked':'';
+                    $array[]=$menu;
+                }
+                $str="<tr data-tt-id='\$id' data-tt-parent-id='\$parent_id'>
+                          <td>\$name</td>
+                          <td><input type='checkbox' name='menu_ids[]' value='\$id' \$checked></td>
+                      </tr>";
+
+                $menu_tree=get_tree($array,$str,0,1,['','',''],'');
+            }
+
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($role)){
@@ -219,6 +302,8 @@ class RoleController extends BaseController
 
                 $view='gov.error';
             }else{
+                $role->menus=$menu_tree;
+
                 $code='success';
                 $msg='查询成功';
                 $sdata=$role;
@@ -240,12 +325,14 @@ class RoleController extends BaseController
             $model=new Role();
             $rules=[
                 'name'=>'required|unique:role,name,'.$id.',id',
-                'type'=>'required|boolean'
+                'type'=>'required|boolean',
+                'menu_ids'=>'required'
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
                 'unique'=>':attribute 已存在',
                 'boolean'=>'错误操作',
+                'menu_ids.required'=>'选择权限',
             ];
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
@@ -266,6 +353,34 @@ class RoleController extends BaseController
                 $role->save();
                 if(blank($role)){
                     throw new \Exception('修改失败',404404);
+                }
+
+                $menu_ids=Menu::withTrashed()
+                    ->whereIn('id',$request->input('menu_ids'))
+                    ->where('auth',1)
+                    ->sharedLock()
+                    ->pluck('id');
+
+                Rolemenu::where('role_id',$id)->delete();
+
+                if(!blank($menu_ids)){
+                    $values=[];
+                    foreach($menu_ids as $menu_id){
+                        $values[]=[
+                            'role_id'=>$role->id,
+                            'menu_id'=>$menu_id,
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                    }
+                    $ins_field=['role_id','menu_id','created_at','updated_at'];
+                    $sqls=batch_update_or_insert_sql('role_menu',$ins_field,$values,$ins_field);
+                    if(!$sqls){
+                        throw new \Exception('保存失败',404404);
+                    }
+                    foreach ($sqls as $sql){
+                        DB::statement($sql);
+                    }
                 }
 
                 $code='success';

@@ -49,6 +49,17 @@
         </div>
 
         <div class="profile-info-row">
+            <div class="profile-info-name"> 权限： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">
+                    @foreach($sdata->menus as $menu)
+                        {{$menu->name}}、
+                    @endforeach
+                </span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
             <div class="profile-info-name"> 创建时间： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->created_at}}</span>

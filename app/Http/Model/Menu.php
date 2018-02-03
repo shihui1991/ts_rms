@@ -13,7 +13,7 @@ class Menu extends Model
     use SoftDeletes;
     protected $table='a_menu';
     protected $primaryKey='id';
-    protected $guarded=['id','sub_type'];
+    protected $guarded=['id','parent_id'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -21,6 +21,7 @@ class Menu extends Model
         'parent_id'=>'上级菜单',
         'name'=>'名称',
         'icon'=>'图标',
+        'module'=>'模块',
         'url'=>'路由地址',
         'method'=>'限制请求方法',
         'login'=>'限制登陆访问',
@@ -78,7 +79,7 @@ class Menu extends Model
     /* ++++++++++ 获取模块 ++++++++++ */
     public function getModuleAttribute($key=null)
     {
-        $array=[0=>'征收部门',1=>'评估机构',2=>'被征收户',3=>'触摸屏'];
+        $array=[0=>'征收管理',1=>'评估机构',2=>'被征收户',3=>'触摸屏'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
@@ -88,10 +89,10 @@ class Menu extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-
+        $this->attributes['parent_id']=$request->input('parent_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
-    public function setOther($request){
+    public function editOther($request){
 
     }
 
