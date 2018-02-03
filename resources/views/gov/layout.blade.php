@@ -21,6 +21,8 @@
 {{-- 用户名 --}}
 @section('username')
 
+    {{session('gov_user.name')}}
+
 @endsection
 
 {{-- 用户工具 --}}

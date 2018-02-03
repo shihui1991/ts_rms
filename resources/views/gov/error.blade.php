@@ -1,4 +1,4 @@
-{{-- 继承aceAdmin后台布局 --}}
+{{-- 继承布局 --}}
 @extends('gov.layout')
 
 {{-- 导航头部提示 --}}
@@ -17,21 +17,45 @@
             <h1 class="grey lighter smaller">
                 <span class="blue bigger-125">
                     <i class="fa fa-spinner fa-spin fa-pulse"></i>
-                    404
+                    无法访问
                 </span>
-                抱歉：
             </h1>
 
             <hr />
+            <h3 class="lighter smaller">
+                提示：
+            </h3>
 
             @if(count($errors))
                 @foreach($errors->all() as $error)
-                    <h3 class="lighter smaller">{{$error}}</h3>
+                    <div class="alert alert-danger">
+                        <strong>
+                            <i class="ace-icon fa fa-times"></i>
+                        </strong>
+                        {{$error}}
+                        <br>
+                    </div>
                 @endforeach
             @endif
 
             @if(session()->has('error'))
-                <h3 class="lighter smaller">{{session()->get('error')}}</h3>
+                <div class="alert alert-danger">
+                    <strong>
+                        <i class="ace-icon fa fa-times"></i>
+                    </strong>
+                    {{session()->get('error')}}
+                    <br>
+                </div>
+            @endif
+
+            @if($code=='error')
+                <div class="alert alert-danger">
+                    <strong>
+                        <i class="ace-icon fa fa-times"></i>
+                    </strong>
+                    {{$message}}
+                    <br>
+                </div>
             @endif
 
             <hr />
