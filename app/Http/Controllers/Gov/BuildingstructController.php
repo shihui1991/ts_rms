@@ -63,67 +63,95 @@ class BuildingstructController extends BaseController
             }
             $code='success';
             $msg='查询成功';
-            $data=$building_structs;
+            $sdata=$building_structs;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
             $building_structs=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$building_structs;
+            $sdata=null;
+            $edata=$building_structs;
+            $url=null;
         }
         DB::commit();
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.buildingstruct.index')->with($result);
+        }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
         $model=new Buildingstruct();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'name'=>'required|unique:building_struct'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $building_struct=$model;
-            $building_struct->fill($request->input());
-            $building_struct->addOther($request);
-            $building_struct->save();
-            if(blank($building_struct)){
-                throw new \Exception('添加失败',404404);
+        if($request->isMethod('get')){
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.buildingstruct.add')->with($result);
             }
-            $code='success';
-            $msg='添加成功';
-            $data=$building_struct;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
         }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'name' => 'required|unique:building_struct'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'unique' => ':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $building_struct = $model;
+                $building_struct->fill($request->input());
+                $building_struct->addOther($request);
+                $building_struct->save();
+                if (blank($building_struct)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $building_struct;
+                $edata = null;
+                $url = route('g_buildingstruct');
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $building_struct;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
@@ -135,66 +163,118 @@ class BuildingstructController extends BaseController
         if(blank($building_struct)){
             $code='warning';
             $msg='数据不存在';
-            $data=[];
+            $sdata=null;
+            $edata=null;
+            $url=null;
 
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$building_struct;
+            $sdata=$building_struct;
+            $edata=new Buildingstruct();
+            $url=null;
+
+            $view='gov.buildingstruct.info';
         }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
-        /* ********** 表单验证 ********** */
-        $model=new Buildingstruct();
-        $rules=[
-            'name'=>'required|unique:building_struct,name,'.$id.',id'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
             $building_struct=Buildingstruct::withTrashed()
-                ->lockForUpdate()
+                ->sharedLock()
                 ->find($id);
-            if(blank($building_struct)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $building_struct->fill($request->input());
-            $building_struct->editOther($request);
-            $building_struct->save();
-            if(blank($building_struct)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$building_struct;
-
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($building_struct)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$building_struct;
+                $edata=new Buildingstruct();
+                $url=null;
+
+                $view='gov.buildingstruct.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            /* ********** 表单验证 ********** */
+            $model=new Buildingstruct();
+            $rules=[
+                'name'=>'required|unique:building_struct,name,'.$id.',id'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $building_struct=Buildingstruct::withTrashed()
+                    ->lockForUpdate()
+                    ->find($id);
+                if(blank($building_struct)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $building_struct->fill($request->input());
+                $building_struct->editOther($request);
+                $building_struct->save();
+                if(blank($building_struct)){
+                    throw new \Exception('修改失败',404404);
+                }
+                $code='success';
+                $msg='修改成功';
+                $sdata=$building_struct;
+                $edata=null;
+                $url=route('g_buildingstruct');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$building_struct;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 }

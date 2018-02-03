@@ -13,7 +13,7 @@ class Adminunit extends Model
     use SoftDeletes;
     protected $table='admin_unit';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['name','address','phone','contact_man','contact_tel','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
