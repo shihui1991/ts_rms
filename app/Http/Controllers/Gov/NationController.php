@@ -179,7 +179,7 @@ class NationController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $nation->fill($request->input());
-            $nation->setOther($request);
+            $nation->editOther($request);
             $nation->save();
             if(blank($nation)){
                 throw new \Exception('修改失败',404404);

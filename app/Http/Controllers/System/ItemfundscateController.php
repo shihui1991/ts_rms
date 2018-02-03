@@ -211,7 +211,7 @@ class ItemfundscateController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $itemfundscate->fill($request->input());
-                $itemfundscate->setOther($request);
+                $itemfundscate->editOther($request);
                 $itemfundscate->save();
                 if(blank($itemfundscate)){
                     throw new \Exception('修改失败',404404);

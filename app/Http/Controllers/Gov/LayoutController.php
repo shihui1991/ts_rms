@@ -179,7 +179,7 @@ class LayoutController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $layout->fill($request->input());
-            $layout->setOther($request);
+            $layout->editOther($request);
             $layout->save();
             if(blank($layout)){
                 throw new \Exception('修改失败',404404);

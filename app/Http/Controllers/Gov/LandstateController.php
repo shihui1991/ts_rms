@@ -199,7 +199,7 @@ class LandstateController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $landstate->fill($request->input());
-            $landstate->setOther($request);
+            $landstate->editOther($request);
             $landstate->save();
             if(blank($landstate)){
                 throw new \Exception('修改失败',404404);

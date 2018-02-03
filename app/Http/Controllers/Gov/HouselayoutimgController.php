@@ -196,7 +196,7 @@ class HouselayoutimgController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $houselayoutimg->fill($request->input());
-            $houselayoutimg->setOther($request);
+            $houselayoutimg->editOther($request);
             $houselayoutimg->save();
             if(blank($houselayoutimg)){
                 throw new \Exception('修改失败',404404);

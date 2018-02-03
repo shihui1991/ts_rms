@@ -230,7 +230,7 @@ class CompanyController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $company->fill($request->input());
-            $company->setOther($request);
+            $company->editOther($request);
             $company->save();
             if(blank($company)){
                 throw  new \Exception('修改失败',404404);

@@ -179,7 +179,7 @@ class FilecateController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $filecate->fill($request->input());
-            $filecate->setOther($request);
+            $filecate->editOther($request);
             $filecate->save();
             if(blank($filecate)){
                 throw new \Exception('修改失败',404404);

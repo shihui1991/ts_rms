@@ -263,7 +263,7 @@ class CrowdController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $crowd->fill($request->input());
-            $crowd->setOther($request);
+            $crowd->editOther($request);
             $crowd->save();
             if(blank($crowd)){
                 throw new \Exception('修改失败',404404);
@@ -316,7 +316,7 @@ class CrowdController extends BaseController
             }
             /* ++++++++++ 处理其他数据 ++++++++++ */
             $crowd->fill($request->input());
-            $crowd->setOther($request);
+            $crowd->editOther($request);
             $crowd->save();
             if(blank($crowd)){
                 throw new \Exception('修改失败',404404);

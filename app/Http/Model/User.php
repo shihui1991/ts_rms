@@ -13,6 +13,7 @@ class User extends Model
     use SoftDeletes;
     protected $table='user';
     protected $primaryKey='id';
+    protected $fillable=['username','name','phone','email','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -39,10 +40,13 @@ class User extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-
+        $this->attributes['dept_id']=$request->input('dept_id');
+        $this->attributes['role_id']=$request->input('role_id');
+        $this->attributes['password']=encrypt($request->input('password'));
+        $this->attributes['secret']=$this->get_secret();
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
-    public function setOther($request){
+    public function editOther($request){
 
     }
 
@@ -54,6 +58,17 @@ class User extends Model
     /* ++++++++++ 角色与权限关联 ++++++++++ */
     public function role(){
         return $this->belongsTo('App\Http\Model\Role','role_id','id')->withDefault();
+    }
+
+    /* ++++++++++ 生成密钥 ++++++++++ */
+    public function get_secret(){
+        $secret=create_guid();
+        $res=self::withTrashed()->where('secret',$secret)->count();
+        if($res){
+            self::get_secret();
+        }
+
+        return $secret;
     }
 
 }

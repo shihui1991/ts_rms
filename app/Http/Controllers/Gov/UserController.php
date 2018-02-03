@@ -1,10 +1,13 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 用户
+| 人员管理
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
+
+use App\Http\Model\Dept;
+use App\Http\Model\Role;
 use App\Http\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,424 +21,268 @@ class UserController extends BaseController
 
     }
 
-    /* ========== 首页 ========== */
-    public function index(Request $request){
-        $select=['id','dept_id','role_id','username','name','phone','email','login_at','login_ip','session','action_at','deleted_at'];
-
+    /* ++++++++++ 列表 ++++++++++ */
+    public function index(Request $request)
+    {
         /* ********** 查询条件 ********** */
-        $where=[];
-        /* ++++++++++ 名称 ++++++++++ */
-        $name=trim($request->input('name'));
-        if($name){
-            $where[]=['name','like','%'.$name.'%'];
-            $infos['name']=$name;
-        }
-        /* ++++++++++ 电话 ++++++++++ */
-        $phone=$request->input('phone');
-        if(is_numeric($phone)){
-            $where[]=['phone',$phone];
-            $infos['phone']=$phone;
-        }
-        /* ********** 排序 ********** */
-        $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'sort';
-        $infos['ordername']=$ordername;
-
-        $orderby=$request->input('orderby');
-        $orderby=$orderby?$orderby:'asc';
-        $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
-        /* ********** 是否删除 ********** */
-        $deleted=$request->input('deleted');
-
-        $model=new User();
-        if(is_numeric($deleted) && in_array($deleted,[0,1])){
-            $infos['deleted']=$deleted;
-            if($deleted){
-                $model=$model->onlyTrashed();
-            }
-        }else{
-            $model=$model->withTrashed();
-        }
+        $select=['id','dept_id','role_id','username','name','phone','email','infos','login_at','login_ip','action_at','created_at','updated_at','deleted_at'];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $users=$model->where($where)
-                ->with([
-                    'dept'=>function($query){
-                         $query->withTrashed()->select(['id','name']);
-                        },
-                     'role'=>function($query){
-                        $query->withTrashed()->select(['id','name']);
-                    }])
+            $users=User::withTrashed()
+                ->with(['dept'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                },'role'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
                 ->select($select)
-                ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->paginate();
+
             if(blank($users)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-            $code='error';
+            $code='success';
             $msg='查询成功';
-            $data=$users;
+            $sdata=$users;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
-            $users=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$users;
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }
         DB::commit();
 
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view('gov.user.index')->with($result);
+        }
     }
 
     /* ========== 添加 ========== */
-    public function add(Request $request,$id=0){
+    public function add(Request $request){
         $model=new User();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'name'=>'required|unique:user',
-            'username'=>'required',
-            'password'=>'required',
-            'secret'=>'required',
-            'role_id'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
 
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
+        if($request->isMethod('get')){
+            $depts=Dept::select(['id','name'])->get();
+            $roles=Role::select(['id','name'])->get();
 
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $user=$model;
-            $user->fill($request->input());
-            $user->addOther($request);
-            $user->save();
-            if(blank($user)){
-                throw new \Exception('添加失败',404404);
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>['depts'=>$depts,'roles'=>$roles],'edata'=>$model,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.user.add')->with($result);
             }
-            $code='success';
-            $msg='添加成功';
-            $data=$user;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
+
         }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        /* ++++++++++ 保存 ++++++++++ */
+        else{
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules=[
+                'dept_id'=>['required','regex:/^[0-9]+$/'],
+                'role_id'=>['required','regex:/^[0-9]+$/'],
+                'username'=>'required|unique:user',
+                'type'=>'required|boolean'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'parent_id.regex'=>'错误操作',
+                'unique'=>':attribute 已存在',
+                'boolean'=>'错误操作',
+            ];
+            $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+            if($validator->fails()){
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $user=$model;
+                $user->fill($request->input());
+                $user->addOther($request);
+                $user->save();
+                if(blank($user)){
+                    throw new \Exception('保存失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=$user;
+                $edata=null;
+                $url=route('g_user');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
-        /* ********** 当前数据 ********** */
+        /* ********** 获取数据 ********** */
         DB::beginTransaction();
         $user=User::withTrashed()
-            ->with([
-                'dept'=>function($query){
-                    $query->withTrashed()->select(['id','name']);
-                },
-                'role'=>function($query){
-                    $query->withTrashed()->select(['id','name']);
-                }])
+            ->with(['father'=>function($query){
+                $query->withTrashed()->select(['id','name']);
+            }])
             ->sharedLock()
             ->find($id);
-
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($user)){
-            $code='warning';
+            $code='error';
             $msg='数据不存在';
-            $data=[];
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            $view='gov.error';
         }else{
             $code='success';
-            $msg='获取成功';
-            $data=$user;
+            $msg='查询成功';
+            $sdata=$user;
+            $edata=new User();
+            $url=null;
+
+            $view='gov.user.info';
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
-        $id = $request->input('id');
+        $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        $model=new User();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'name'=>'required|unique:user,name,'.$id.',id',
-            'username'=>'required',
-            'password'=>'required',
-            'secret'=>'required',
-            'role_id'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $user=User::withTrashed()
-                ->lockForUpdate()
-                ->find($id);
-
-            if(blank($user)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $user->fill($request->input());
-            $user->setOther($request);
-            $user->save();
-            if(blank($user)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$user;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 删除 ========== */
-    public function delete(Request $request){
-        /* ********** 验证选择数据项 ********** */
-        $ids=$request->input('ids');
-        if(!$ids){
-            $code='warning';
-            $msg='至少选择一项';
-            $data=[];
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-        }
-        /* ********** 删除 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据 ++++++++++ */
-            $users=User::select(['id'])->whereIn('id',$ids)->lockForUpdate()->get();
-            if(blank($users)){
-                throw new \Exception('没有可删除数据');
-            }
-            $success_ids=[];
-            $fail_ids=[];
-            foreach ($users as $user){
-                if($user->childs_count){
-                    $fail_ids[]=$user->id;
-                }else{
-                    $success_ids[]=$user->id;
-                }
-            }
-            if(blank($success_ids)){
-                throw new \Exception('存在子级，禁止删除');
-            }
-            /* ++++++++++ 批量删除 ++++++++++ */
-            User::whereIn('id',$success_ids)->delete();
-
-            if(blank($fail_ids)){
-                $code='success';
-                $msg='全部删除成功';
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
             }else{
-                $code='warning';
-                $msg='部分存在子级，禁止删除';
+                return view('gov.error')->with($result);
             }
-            $data=$success_ids;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
 
-    /* ========== 恢复 ========== */
-    public function restore(Request $request){
-        /* ********** 验证选择数据项 ********** */
-        $ids=$request->input('ids');
-        if(!$ids){
-            $code='warning';
-            $msg='至少选择一项';
-            $data=[];
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-        }
-        /* ********** 恢复 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据 ++++++++++ */
-            $user_ids=User::onlyTrashed()->whereIn('id',$ids)->lockForUpdate()->pluck('id');
-            if(blank($user_ids)){
-                throw new \Exception('没有可恢复的数据');
-            }
-            /* ++++++++++ 批量恢复 ++++++++++ */
-            User::whereIn('id',$user_ids)->restore();
-
-            $code='success';
-            $msg='恢复成功';
-            $data=$user_ids;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 销毁 ========== */
-    public function destroy(Request $request){
-        /* ********** 验证选择数据项 ********** */
-        $ids=$request->input('ids');
-        if(!$ids){
-            $code='warning';
-            $msg='至少选择一项';
-            $data=[];
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-        }
-        /* ********** 销毁 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据 ++++++++++ */
-            $user_ids=User::onlyTrashed()->whereIn('id',$ids)->lockForUpdate()->pluck('id');
-            if(blank($user_ids)){
-                throw new \Exception('只能销毁已删除的数据');
-            }
-            /* ++++++++++ 批量销毁 ++++++++++ */
-            User::whereIn('id',$user_ids)->forceDelete();
-
-            $code='success';
-            $msg='销毁成功';
-            $data=$user_ids;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 修改密码 ========== */
-    public function edit_password(Request $request){
-        $id = $request->input('id');
-        if(!$id){
-            $code='warning';
-            $msg='请选择用户';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
+        if($request->isMethod('get')){
+            /* ********** 获取数据 ********** */
+            DB::beginTransaction();
             $user=User::withTrashed()
-                ->select(['password'])
-                ->lockForUpdate()
+                ->with(['father'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
+                ->sharedLock()
                 ->find($id);
-
+            DB::commit();
+            /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($user)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            $password = md5($request->input('old_password'));
-            if($user['password']!==$password){
                 $code='error';
-                $msg='旧密码输入错误';
-                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-            }
-            $new_password = md5($request->input('new_password'));
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $user->fill(['password'=>$new_password]);
-            $user->save();
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
 
-            $code='success';
-            $msg='修改密码成功';
-            $data=$user;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+                $view='gov.error';
+            }else{
+                $code='success';
+                $msg='查询成功';
+                $sdata=$user;
+                $edata=new User();
+                $url=null;
+
+                $view='gov.user.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        /* ********** 保存 ********** */
+        else{
+            /* ********** 表单验证 ********** */
+            $model=new User();
+            $rules=[
+                'name'=>'required|unique:user,name,'.$id.',id',
+                'type'=>'required|boolean'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在',
+                'boolean'=>'错误操作',
+            ];
+            $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+            if($validator->fails()){
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $user=User::withTrashed()->lockForUpdate()->find($id);
+                if(blank($user)){
+                    throw new \Exception('数据不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $user->fill($request->input());
+                $user->editOther($request);
+                $user->save();
+                if(blank($user)){
+                    throw new \Exception('修改失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=$user;
+                $edata=null;
+                $url=route('g_user');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=$user;
+                $url=null;
+
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 
-    /* ========== 重置密码 ========== */
-    public function reset_password(Request $request){
-        $id = $request->input('id');
-        if(!$id){
-            $code='warning';
-            $msg='请选择用户';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $user=User::withTrashed()
-                ->lockForUpdate()
-                ->find($id);
-
-            if(blank($user)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            $new_password = 'a'.rand(10000,99999);
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $user->fill(['password'=>$new_password]);
-            $user->save();
-
-            $code='success';
-            $msg='重置密码成功';
-            $data=$user;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
 }

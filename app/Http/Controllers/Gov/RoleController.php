@@ -210,11 +210,9 @@ class RoleController extends BaseController
         $role=Role::withTrashed()
             ->with(['father'=>function($query){
                 $query->withTrashed()->select(['id','name']);
-            }
-                ,'menus'=>function($query){
+            },'menus'=>function($query){
                 $query->withTrashed()->select(['id','name','icon']);
-                }
-            ])
+            }])
             ->sharedLock()
             ->find($id);
         DB::commit();

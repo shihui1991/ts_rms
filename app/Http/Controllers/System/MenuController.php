@@ -284,7 +284,7 @@ class MenuController extends BaseController
                }
                /* ++++++++++ 处理其他数据 ++++++++++ */
                $menu->fill($request->input());
-               $menu->setOther($request);
+               $menu->editOther($request);
                $menu->save();
                if(blank($menu)){
                    throw new \Exception('修改失败',404404);
