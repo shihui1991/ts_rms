@@ -11,14 +11,14 @@
             返回
         </a>
 
-        <a class="btn" href="{{route('g_user_edit',['id'=>$sdata->id])}}">
+        <a class="btn" href="{{route('g_userself_edit')}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>
 
-        <a class="btn" href="{{route('g_user_resetpwd',['id'=>$sdata->id])}}">
+        <a class="btn" href="{{route('g_userself_pwd')}}">
             <i class="ace-icon fa fa-refresh bigger-110"></i>
-            重置密码
+            修改密码
         </a>
     </p>
 
@@ -106,20 +106,6 @@
             <div class="profile-info-name"> 更新时间： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->updated_at}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 状态： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click"> @if($sdata->deleted_at) 已删除 @else 启用中 @endif</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 删除时间： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->deleted_at}}</span>
             </div>
         </div>
 

@@ -70,8 +70,8 @@ class UserController extends BaseController
         $model=new User();
 
         if($request->isMethod('get')){
-            $depts=Dept::select(['id','name'])->get();
-            $roles=Role::select(['id','name'])->get();
+            $depts=Dept::select(['id','name'])->sharedLock()->get();
+            $roles=Role::select(['id','name'])->sharedLock()->get();
 
             $result=['code'=>'success','message'=>'请求成功','sdata'=>['depts'=>$depts,'roles'=>$roles],'edata'=>$model,'url'=>null];
             if($request->ajax()){
@@ -87,14 +87,21 @@ class UserController extends BaseController
             $rules=[
                 'dept_id'=>['required','regex:/^[0-9]+$/'],
                 'role_id'=>['required','regex:/^[0-9]+$/'],
-                'username'=>'required|unique:user',
-                'type'=>'required|boolean'
+                'username'=>['required','alpha_num','between:4,20','unique:user'],
+                'password'=>'required|min:6',
+                'name'=>'required|min:2',
+                'phone'=>'nullable|min:7',
+                'email'=>'nullable|email',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
-                'parent_id.regex'=>'错误操作',
-                'unique'=>':attribute 已存在',
-                'boolean'=>'错误操作',
+                'dept_id.regex'=>'错误操作',
+                'role_id.regex'=>'错误操作',
+                'alpha_num'=>':attribute 须为字母或与数字组合',
+                'between'=>':attribute 长度在 :min 到 :max 位之间',
+                'unique'=>':attribute 已占用',
+                'min'=>':attribute 长度至少 :min 位',
+                'email'=>'错误操作',
             ];
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
@@ -148,11 +155,15 @@ class UserController extends BaseController
             }
         }
         /* ********** 获取数据 ********** */
+        $select=['id','dept_id','role_id','username','name','phone','email','infos','login_at','login_ip','action_at','created_at','updated_at','deleted_at'];
         DB::beginTransaction();
         $user=User::withTrashed()
-            ->with(['father'=>function($query){
+            ->with(['dept'=>function($query){
+                $query->withTrashed()->select(['id','name']);
+            },'role'=>function($query){
                 $query->withTrashed()->select(['id','name']);
             }])
+            ->select($select)
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -196,13 +207,16 @@ class UserController extends BaseController
 
         if($request->isMethod('get')){
             /* ********** 获取数据 ********** */
+            $select=['id','dept_id','role_id','username','name','phone','email','infos',];
             DB::beginTransaction();
             $user=User::withTrashed()
-                ->with(['father'=>function($query){
-                    $query->withTrashed()->select(['id','name']);
-                }])
+                ->select($select)
                 ->sharedLock()
                 ->find($id);
+
+            $depts=Dept::select(['id','name'])->sharedLock()->get();
+            $roles=Role::select(['id','name'])->sharedLock()->get();
+
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($user)){
@@ -214,6 +228,9 @@ class UserController extends BaseController
 
                 $view='gov.error';
             }else{
+                $user->depts=$depts;
+                $user->roles=$roles;
+
                 $code='success';
                 $msg='查询成功';
                 $sdata=$user;
@@ -234,14 +251,24 @@ class UserController extends BaseController
             /* ********** 表单验证 ********** */
             $model=new User();
             $rules=[
-                'name'=>'required|unique:user,name,'.$id.',id',
-                'type'=>'required|boolean'
+                'dept_id'=>['required','regex:/^[0-9]+$/'],
+                'role_id'=>['required','regex:/^[0-9]+$/'],
+                'username'=>['required','alpha_num','between:4,20','unique:user,username,'.$id.',id'],
+                'name'=>'required|min:2',
+                'phone'=>'nullable|min:7',
+                'email'=>'nullable|email',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
-                'unique'=>':attribute 已存在',
-                'boolean'=>'错误操作',
+                'dept_id.regex'=>'错误操作',
+                'role_id.regex'=>'错误操作',
+                'alpha_num'=>':attribute 须为字母或与数字组合',
+                'between'=>':attribute 长度在 :min 到 :max 位之间',
+                'unique'=>':attribute 已占用',
+                'min'=>':attribute 长度至少 :min 位',
+                'email'=>'错误操作',
             ];
+
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
@@ -268,6 +295,113 @@ class UserController extends BaseController
                 $sdata=$user;
                 $edata=null;
                 $url=route('g_user');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=$user;
+                $url=null;
+
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+
+    /* ========== 重置密码 ========== */
+    public function resetpwd(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+
+        if($request->isMethod('get')){
+            /* ********** 获取数据 ********** */
+            $select=['id','dept_id','role_id','username','name',];
+            DB::beginTransaction();
+            $user=User::withTrashed()
+                ->with(['dept'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                },'role'=>function($query){
+                    $query->withTrashed()->select(['id','name']);
+                }])
+                ->select($select)
+                ->sharedLock()
+                ->find($id);
+
+            DB::commit();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($user)){
+                $code='error';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }else{
+                $code='success';
+                $msg='查询成功';
+                $sdata=$user;
+                $edata=new User();
+                $url=null;
+
+                $view='gov.user.resetpwd';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ********** 更新 ********** */
+        else{
+            /* ********** 表单验证 ********** */
+            $model=new User();
+            $rules=[
+                'password'=>'required|min:6',
+            ];
+            $messages=[
+                'password.required'=>'输入重置密码',
+                'password.min'=>'重置密码 长度至少 :min 位',
+            ];
+
+            $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+            if($validator->fails()){
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $user=User::withTrashed()->lockForUpdate()->find($id);
+                if(blank($user)){
+                    throw new \Exception('数据不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $user->password=encrypt($request->input('password'));
+                $user->save();
+                if(blank($user)){
+                    throw new \Exception('重置失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=$user;
+                $edata=null;
+                $url=route('g_user_info',['id'=>$id]);
 
                 DB::commit();
             }catch (\Exception $exception){

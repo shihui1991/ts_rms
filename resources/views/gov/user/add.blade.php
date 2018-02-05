@@ -20,6 +20,7 @@
             <label class="col-sm-3 control-label no-padding-right" for="dept_id"> 所在部门： </label>
             <div class="col-sm-9">
                 <select name="dept_id" id="dept_id" class="col-xs-10 col-sm-5 chosen-select" required>
+                    <option value="">请选择部门</option>
                     @foreach($sdata['depts'] as $dept)
                         <option value="{{$dept->id}}">{{$dept->name}}</option>
                     @endforeach
@@ -29,9 +30,10 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="role_id"> 所属部门： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="role_id"> 所属角色： </label>
             <div class="col-sm-9">
                 <select name="role_id" id="role_id" class="col-xs-10 col-sm-5 chosen-select" required>
+                    <option value="">请选择角色</option>
                     @foreach($sdata['roles'] as $role)
                         <option value="{{$role->id}}">{{$role->name}}</option>
                     @endforeach

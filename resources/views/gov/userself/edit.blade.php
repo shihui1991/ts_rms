@@ -13,32 +13,21 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_user_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_userself_edit')}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="id" value="{{$sdata->id}}">
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="dept_id"> 所在部门： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="dept"> 所在部门： </label>
             <div class="col-sm-9">
-                <select name="dept_id" id="dept_id" class="col-xs-10 col-sm-5 chosen-select" required>
-                    <option value="">请选择部门</option>
-                    @foreach($sdata['depts'] as $dept)
-                        <option value="{{$dept->id}}" @if($dept->id == $sdata->dept_id) selected @endif>{{$dept->name}}</option>
-                    @endforeach
-                </select>
+                <input type="text" id="dept" name="dept" value="{{$sdata->dept->name}}" class="col-xs-10 col-sm-5" readonly>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="role_id"> 所属角色： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="role"> 所属角色： </label>
             <div class="col-sm-9">
-                <select name="role_id" id="role_id" class="col-xs-10 col-sm-5 chosen-select" required>
-                    <option value="">请选择角色</option>
-                    @foreach($sdata['roles'] as $role)
-                        <option value="{{$role->id}}" @if($role->id == $sdata->role_id) selected @endif>{{$role->name}}</option>
-                    @endforeach
-                </select>
+                <input type="text" id="role" name="role" value="{{$sdata->role->name}}" class="col-xs-10 col-sm-5" readonly>
             </div>
         </div>
         <div class="space-4"></div>
