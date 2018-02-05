@@ -16,16 +16,44 @@
     <form class="form-horizontal" role="form" action="{{route('g_user_edit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
+
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="parent_id"> 上级人员： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="dept_id"> 所在部门： </label>
             <div class="col-sm-9">
-                <input type="text" id="parent_id" value="{{$sdata->father->name}}" class="col-xs-10 col-sm-5" readonly>
+                <select name="dept_id" id="dept_id" class="col-xs-10 col-sm-5 chosen-select" required>
+                    <option value="">请选择部门</option>
+                    @foreach($sdata['depts'] as $dept)
+                        <option value="{{$dept->id}}" @if($dept->id == $sdata->dept_id) selected @endif>{{$dept->name}}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="role_id"> 所属角色： </label>
+            <div class="col-sm-9">
+                <select name="role_id" id="role_id" class="col-xs-10 col-sm-5 chosen-select" required>
+                    <option value="">请选择角色</option>
+                    @foreach($sdata['roles'] as $role)
+                        <option value="{{$role->id}}" @if($role->id == $sdata->role_id) selected @endif>{{$role->name}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="username"> 用户名： </label>
+            <div class="col-sm-9">
+                <input type="text" id="username" name="username" value="{{$sdata->username}}" class="col-xs-10 col-sm-5" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="name"> 姓名： </label>
             <div class="col-sm-9">
                 <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5" required>
             </div>
@@ -33,14 +61,17 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="type">类型：</label>
-            <div class="col-sm-9 radio">
-                @foreach($edata->type as $key => $value)
-                    <label>
-                        <input name="type" type="radio" class="ace" value="{{$key}}" @if($value==$sdata->type) checked @endif >
-                        <span class="lbl">{{$value}}</span>
-                    </label>
-                @endforeach
+            <label class="col-sm-3 control-label no-padding-right" for="phone"> 电话： </label>
+            <div class="col-sm-9">
+                <input type="text" id="phone" name="phone" value="{{$sdata->phone}}" class="col-xs-10 col-sm-5" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="email"> 邮箱： </label>
+            <div class="col-sm-9">
+                <input type="text" id="email" name="email" value="{{$sdata->email}}" class="col-xs-10 col-sm-5" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -73,6 +104,8 @@
 {{-- 样式 --}}
 @section('css')
 
+    <link rel="stylesheet" href="{{asset('chosen/chosen.min.css')}}">
+
 @endsection
 
 {{-- 插件 --}}
@@ -82,5 +115,7 @@
     <script>
         $('#name').focus();
     </script>
+
+    <script src="{{asset('chosen/chosen.jquery.min.js')}}"></script>
 
 @endsection

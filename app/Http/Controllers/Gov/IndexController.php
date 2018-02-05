@@ -68,10 +68,10 @@ class IndexController extends Controller
         $user->save();
 
         /* ********** 生成session ********** */
-        session('gov_user',[
+        session(['gov_user'=>[
             'name'=>$user->name,
             'secret'=>$user->secret,
-        ]);
+        ]]);
 
         return response()->json(['code'=>'success','message'=>'登录成功','sdata'=>session('gov_user'),'edata'=>null,'url'=>route('g_home')]);
     }

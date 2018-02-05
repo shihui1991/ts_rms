@@ -20,16 +20,16 @@ class User extends Model
     public $columns=[
         'dept_id'=>'所在部门',
         'role_id'=>'所属角色',
-        'username'=>'用户',
-        'password'=>'登陆密码',
+        'username'=>'用户名',
+        'password'=>'登录密码',
         'secret'=>'用户密钥',
         'name'=>'姓名',
         'phone'=>'电话',
         'email'=>'邮箱',
         'infos'=>'说明',
-        'login_at'=>'最近登陆时间',
-        'login_ip'=>'最近登陆IP',
-        'session'=>'最近登陆session'
+        'login_at'=>'最近登录时间',
+        'login_ip'=>'最近登录IP',
+        'session'=>'最近登录session'
     ];
 
     /* ++++++++++ 名称去空 ++++++++++ */
@@ -47,7 +47,8 @@ class User extends Model
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
-
+        $this->attributes['dept_id']=$request->input('dept_id');
+        $this->attributes['role_id']=$request->input('role_id');
     }
 
     /* ++++++++++ 组织与部门关联 ++++++++++ */

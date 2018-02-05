@@ -15,29 +15,55 @@
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>
+
+        <a class="btn" href="{{route('g_user_resetpwd',['id'=>$sdata->id])}}">
+            <i class="ace-icon fa fa-refresh bigger-110"></i>
+            重置密码
+        </a>
     </p>
 
 
     <div class="profile-user-info profile-user-info-striped">
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 上级人员： </div>
+            <div class="profile-info-name"> 所在部门： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->father->name}}</span>
+                <span class="editable editable-click">{{$sdata->dept->name}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 名称： </div>
+            <div class="profile-info-name"> 所属角色： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->role->name}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 用户名： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->username}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 姓名： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->name}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 类型： </div>
+            <div class="profile-info-name"> 电话： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->type}}</span>
+                <span class="editable editable-click">{{$sdata->phone}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 邮箱： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->email}}</span>
             </div>
         </div>
 
@@ -45,6 +71,27 @@
             <div class="profile-info-name"> 描述： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->infos}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 最近登录时间： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->login_at}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 最近登录IP： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->login_ip}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 最近操作时间： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->action_at}}</span>
             </div>
         </div>
 

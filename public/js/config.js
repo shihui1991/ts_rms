@@ -23,7 +23,7 @@ $(function () {
             no_results_text:"没有匹配数据",
             placeholder_text:"请选择",
             search_contains:true,
-            disable_search_threshold:2
+            disable_search_threshold:10
         });
     }
 
