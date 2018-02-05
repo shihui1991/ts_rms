@@ -236,20 +236,84 @@
             <b class="arrow"></b>
         </li>
         <li class="">
-            <a href="#">
+            <a href="#" class="dropdown-toggle">
                 <i class="menu-icon fa fa-home"></i>
                 <span class="menu-text"> 评估机构 </span>
+                <b class="arrow fa fa-angle-down"></b>
             </a>
-
             <b class="arrow"></b>
+            <ul class="submenu">
+                <li class="">
+                    <a href="{{route('g_company')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        机构管理
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+                <li class="">
+                    <a href="{{route('g_companyuser')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        操作员管理
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+                <li class="">
+                    <a href="{{route('g_companyvaluer')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        评估师管理
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+            </ul>
         </li>
         <li class="">
-            <a href="#">
+            <a href="#" class="dropdown-toggle">
                 <i class="menu-icon fa fa-home"></i>
                 <span class="menu-text"> 基础资料 </span>
+                <b class="arrow fa fa-angle-down"></b>
             </a>
-
             <b class="arrow"></b>
+
+            <ul class="submenu">
+                <li class="">
+                    <a href="{{route('g_adminunit')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        公产单位
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_bank')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        银行管理
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_buildingstruct')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        建筑结构类型
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_buildinguse')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        建筑用途
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+            </ul>
         </li>
         <li class="">
             <a href="#">

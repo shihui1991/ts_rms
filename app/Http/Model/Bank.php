@@ -13,7 +13,7 @@ class Bank extends Model
     use SoftDeletes;
     protected $table='bank';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['name','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
