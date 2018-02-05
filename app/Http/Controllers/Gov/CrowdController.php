@@ -6,7 +6,6 @@
 */
 namespace App\Http\Controllers\Gov;
 use App\Http\Model\Crowd;
-use App\Http\Model\Crowdcate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,204 +15,139 @@ class CrowdController extends BaseController
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
-
     }
 
-    /* ========== 特殊人群分类首页(一级分类) ========== */
+    /* ========== 首页 ========== */
     public function index(Request $request){
-        $model=new Crowdcate();
-        /* ********** 查询字段 ********** */
-        $select=['id','name','infos','deleted_at'];
+        /* ********** 查询条件 ********** */
+        /* ++++++++++ 上级 ID ++++++++++ */
+        $id=$request->input('id')?$request->input('id'):0;
+        $where[]=['parent_id',$id];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $crowd_cates=$model->select($select)->sharedLock()->get();
-            if(blank($crowd_cates)){
-                throw new \Exception('没有符合条件的数据',404404);
-            }
-            $code='success';
-            $msg='查询成功';
-            $data=$crowd_cates;
-        }catch (\Exception $exception){
-            $crowd_cates=collect();
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$crowd_cates;
-        }
-        DB::commit();
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 特殊人群分类首页(二级分类) ========== */
-    public function index_childs(Request $request){
-        /* ********** 是否存在一级分类 ********** */
-        $crowd_cate_id = $request->input('cate_id');
-        if(blank($crowd_cate_id)){
-            $code='error';
-            $msg='请选择特殊人群分类';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 查询字段 ********** */
-        $model=new Crowd();
-        $select=['id','cate_id','name','infos','deleted_at'];
-        $where[] = ['cate_id',$crowd_cate_id];
-        /* ********** 查询 ********** */
-        DB::beginTransaction();
-        try{
-            $crowd=$model->with([
-                'crowdcate'=>function($qeury){
-                    $qeury->withTrashed()->select(['id','name']);
+            $crowds=Crowd::withTrashed()
+                ->withCount(['childs'=>function($query){
+                    $query->withTrashed();
                 }])
-                ->select($select)
+                ->where($where)
                 ->sharedLock()
                 ->get();
-            if(blank($crowd)){
+
+            if(blank($crowds)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $data=$crowd;
+            $sdata=$crowds;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
-            $crowd=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$crowd;
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }
         DB::commit();
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
 
-    /* ========== 添加(特殊人群分类) ========== */
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view('gov.crowd.index')->with($result);
+        }
+    }
+    
+    /* ========== 添加 ========== */
     public function add(Request $request){
-        $model=new Crowdcate();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'name'=>'required|unique:crowd_cate'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $crowd=$model;
-            $crowd->fill($request->input());
-            $crowd->addOther($request);
-            $crowd->save();
-            if(blank($crowd)){
-                throw new \Exception('添加失败',404404);
-            }
-            $code='success';
-            $msg='添加成功';
-            $data=$crowd;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 添加(特殊人群) ========== */
-    public function add_childs(Request $request){
-        /* ********** 是否存在一级分类 ********** */
-        $crowd_cate_id = $request->input('cate_id');
-        if(blank($crowd_cate_id)){
-            $code='error';
-            $msg='请选择特殊人群分类';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 保存 ********** */
         $model=new Crowd();
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'name'=>'required|unique:crowd'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $crowd=$model;
-            $crowd->fill($request->input());
-            $crowd->addOther($request);
-            $crowd->save();
-            if(blank($crowd)){
-                throw new \Exception('添加失败',404404);
+        if($request->isMethod('get')){
+            $id=$request->input('id');
+            $name='';
+            if($id){
+                DB::beginTransaction();
+                $name=Crowd::withTrashed()->where('id',$id)->sharedLock()->value('name');
+                DB::commit();
             }
-            $code='success';
-            $msg='添加成功';
-            $data=$crowd;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
+            if(!$name){
+                $id=0;
+            }
 
-    /* ========== 详情(特殊人群分类) ========== */
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>['id'=>$id,'name'=>$name],'edata'=>$model,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.crowd.add')->with($result);
+            }
+        }
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ********** 保存 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'parent_id' => 'required',
+                'name' => 'required|unique:crowd'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'unique' => ':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $crowd = $model;
+                $crowd->fill($request->input());
+                $crowd->addOther($request);
+                $crowd->save();
+                if (blank($crowd)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $crowd;
+                $edata = null;
+                $url = route('g_crowd');
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $crowd;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+    
+    /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 当前数据 ********** */
-        DB::beginTransaction();
-        $crowd=Crowdcate::withTrashed()
-            ->sharedLock()
-            ->find($id);
-        DB::commit();
-        /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($crowd)){
-            $code='warning';
-            $msg='数据不存在';
-            $data=[];
-        }else{
-            $code='success';
-            $msg='获取成功';
-            $data=$crowd;
-        }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 详情(特殊人群) ========== */
-    public function info_childs(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $crowd=Crowd::withTrashed()
+            ->withCount(['childs'=>function($query){
+                $query->withTrashed();
+            }])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -221,120 +155,119 @@ class CrowdController extends BaseController
         if(blank($crowd)){
             $code='warning';
             $msg='数据不存在';
-            $data=[];
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$crowd;
+            $sdata=$crowd;
+            $edata=new Crowd();
+            $url=null;
+
+            $view='gov.crowd.info';
         }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
-    /* ========== 修改(特殊人群分类) ========== */
+    /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        $model=new Crowdcate();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'name'=>'required|unique:crowd_cate,name,'.$id.',id'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $crowd=Crowdcate::withTrashed()
-                ->lockForUpdate()
-                ->find($id);
-            if(blank($crowd)){
-                throw new \Exception('指定数据项不存在',404404);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
             }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $crowd->fill($request->input());
-            $crowd->editOther($request);
-            $crowd->save();
-            if(blank($crowd)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$crowd;
-
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
-    /* ========== 修改(特殊人群) ========== */
-    public function edit_childs(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        $model=new Crowd();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'name'=>'required|unique:crowd,name,'.$id.',id'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
             $crowd=Crowd::withTrashed()
-                ->lockForUpdate()
+                ->withCount(['childs'=>function($query){
+                    $query->withTrashed();
+                }])
+                ->sharedLock()
                 ->find($id);
-            if(blank($crowd)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $crowd->fill($request->input());
-            $crowd->editOther($request);
-            $crowd->save();
-            if(blank($crowd)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$crowd;
-
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($crowd)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$crowd;
+                $edata=new Crowd();
+                $url=null;
+
+                $view='gov.crowd.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Crowd();
+            /* ********** 表单验证 ********** */
+            $rules=[
+                'name'=>'required|unique:crowd,name,'.$id.',id'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $crowd=Crowd::withTrashed()
+                    ->lockForUpdate()
+                    ->find($id);
+                if(blank($crowd)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $crowd->fill($request->input());
+                $crowd->editOther($request);
+                $crowd->save();
+                if(blank($crowd)){
+                    throw new \Exception('修改失败',404404);
+                }
+                $code='success';
+                $msg='修改成功';
+                $sdata=$crowd;
+                $edata=null;
+                $url=route('g_crowd');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$crowd;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
-
-
 }

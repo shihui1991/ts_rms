@@ -6,7 +6,7 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_buildingstruct_add')}}" class="btn">添加建筑结构类型</a>
+        <a href="{{route('g_nation_add')}}" class="btn">添加民族</a>
     </div>
 
     <table class="table table-hover table-bordered treetable" id="tree-dept">
@@ -26,7 +26,7 @@
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->infos}}</td>
                         <td>
-                            <a href="{{route('g_buildingstruct_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_nation_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
                         </td>
                     </tr>
                 @endforeach
@@ -43,6 +43,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 {{-- 样式 --}}

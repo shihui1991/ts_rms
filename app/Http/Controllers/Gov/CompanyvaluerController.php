@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
+use App\Http\Model\Company;
 use App\Http\Model\Companyvaluer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +66,7 @@ class CompanyvaluerController extends BaseController
         try{
             $companyvaluers=$model
                 ->with(['company'=>function($query){
-                    $query->withTrashed()->select(['id','name']);
+                    $query->withTrashed()->select(['id','name','type']);
                 }])
                 ->where($where)
                 ->select($select)
@@ -77,79 +78,109 @@ class CompanyvaluerController extends BaseController
             }
             $code='success';
             $msg='查询成功';
-            $data=$companyvaluers;
+            $sdata=$companyvaluers;;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
             $companyvaluers=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$companyvaluers;
+            $sdata=null;
+            $edata=$companyvaluers;
+            $url=null;
         }
         DB::commit();
 
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.companyvaluer.index')->with($result);
+        }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
         $model=new Companyvaluer();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'company_id'=>'required',
-            'name'=>'required|unique:company_valuer',
-            'register'=>'required',
-            'valid_at'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
+        if($request->isMethod('get')){
+            $sdata['company'] = Company::withTrashed()->select(['id','type','name'])->get();
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.companyvaluer.add')->with($result);
+            }
         }
-
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            /*--- 评估机构 ---*/
-            $companyvaluer=$model;
-            $companyvaluer->fill($request->input());
-            $companyvaluer->editOther($request);
-            $companyvaluer->save();
-            if(blank($companyvaluer)){
-                throw  new \Exception('添加失败',404404);
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ********** 保存 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'company_id' => 'required',
+                'name' => 'required|unique:company_valuer',
+                'register' => 'required',
+                'valid_at' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'unique' => ':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
 
-            $code='success';
-            $msg='添加成功';
-            $data=$companyvaluer;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                /*--- 评估机构 ---*/
+                $companyvaluer = $model;
+                $companyvaluer->fill($request->input());
+                $companyvaluer->editOther($request);
+                $companyvaluer->save();
+                if (blank($companyvaluer)) {
+                    throw  new \Exception('添加失败', 404404);
+                }
+
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $companyvaluer;
+                $edata = null;
+                $url = route('g_companyvaluer');
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $companyvaluer;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $companyvaluer=Companyvaluer::withTrashed()
             ->with(['company'=>function($query){
-                $query->withTrashed()->select(['id','name']);
+                $query->withTrashed()->select(['id','name','type']);
             }])
             ->sharedLock()
             ->find($id);
@@ -158,70 +189,122 @@ class CompanyvaluerController extends BaseController
         if(blank($companyvaluer)){
             $code='warning';
             $msg='数据不存在';
-            $data=[];
-
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$companyvaluer;
+            $sdata=$companyvaluer;
+            $edata=new Companyvaluer();
+            $url=null;
+
+            $view='gov.companyvaluer.info';
         }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
-        $model=new Companyvaluer();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'company_id'=>'required',
-            'name'=>'required|unique:company_valuer,name,'.$id.',id',
-            'register'=>'required',
-            'valid_at'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
             $companyvaluer=Companyvaluer::withTrashed()
-                ->lockForUpdate()
+                ->with(['company'=>function($query){
+                    $query->withTrashed()->select(['id','name','type']);
+                }])
+                ->sharedLock()
                 ->find($id);
-            if(blank($companyvaluer)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $companyvaluer->fill($request->input());
-            $companyvaluer->editOther($request);
-            $companyvaluer->save();
-            if(blank($companyvaluer)){
-                throw  new \Exception('修改失败',404404);
-            }
-
-            $code='success';
-            $msg='修改成功';
-            $data=$companyvaluer;
-
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($companyvaluer)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$companyvaluer;
+                $edata=new Companyvaluer();
+                $url=null;
+
+                $view='gov.companyvaluer.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Companyvaluer();
+            /* ********** 表单验证 ********** */
+            $rules=[
+                'name'=>'required|unique:company_valuer,name,'.$id.',id',
+                'register'=>'required',
+                'valid_at'=>'required'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $companyvaluer=Companyvaluer::withTrashed()
+                    ->lockForUpdate()
+                    ->find($id);
+                if(blank($companyvaluer)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $companyvaluer->fill($request->input());
+                $companyvaluer->editOther($request);
+                $companyvaluer->save();
+                if(blank($companyvaluer)){
+                    throw  new \Exception('修改失败',404404);
+                }
+    
+                $code='success';
+                $msg='修改成功';
+                $sdata=$companyvaluer;
+                $edata=null;
+                $url=route('g_companyvaluer');
+    
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$companyvaluer;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 }

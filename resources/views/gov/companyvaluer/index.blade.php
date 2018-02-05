@@ -6,15 +6,18 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_buildingstruct_add')}}" class="btn">添加建筑结构类型</a>
+        <a href="{{route('g_companyvaluer_add')}}" class="btn">添加评估师</a>
     </div>
 
     <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
             <th>ID</th>
+            <th>【类型】机构名称</th>
             <th>名称</th>
-            <th>描述</th>
+            <th>电话</th>
+            <th>注册号</th>
+            <th>有效期</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -23,10 +26,13 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$infos->id}}</td>
+                        <td>【{{$infos->company->type}}】{{$infos->company->name}}</td>
                         <td>{{$infos->name}}</td>
-                        <td>{{$infos->infos}}</td>
+                        <td>{{$infos->phone}}</td>
+                        <td>{{$infos->register}}</td>
+                        <td>{{$infos->valid_at}}</td>
                         <td>
-                            <a href="{{route('g_buildingstruct_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_companyvaluer_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
                         </td>
                     </tr>
                 @endforeach
@@ -43,6 +49,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 {{-- 样式 --}}

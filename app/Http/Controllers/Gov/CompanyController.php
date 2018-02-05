@@ -120,7 +120,8 @@ class CompanyController extends BaseController
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
-                return response()->json(['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => '', 'edata' => '']);
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
             /*--- 评估机构(操作员) ---*/
             $companyuser_model = new Companyuser();
@@ -134,7 +135,8 @@ class CompanyController extends BaseController
             ];
             $validator1 = Validator::make($request->all(), $rules1, $messages1, $companyuser_model->columns);
             if ($validator1->fails()) {
-                return response()->json(['code' => 'error', 'message' => $validator1->errors()->first(), 'sdata' => '', 'edata' => '']);
+                $result=['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
 
             /* ++++++++++ 新增 ++++++++++ */
@@ -290,9 +292,10 @@ class CompanyController extends BaseController
                 'required'=>':attribute 为必须项',
                 'unique'=>':attribute 已存在'
             ];
-            $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-            if($validator->fails()){
-                return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
             /* ********** 更新 ********** */
             DB::beginTransaction();

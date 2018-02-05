@@ -13,14 +13,13 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_companyuser_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_crowd_edit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
-
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="company_id"> 【类型】机构名称： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="parent_id"> 特殊人群分类： </label>
             <div class="col-sm-9">
-                <input type="text" id="company_id"  value="【{{$sdata->company->type}}】{{$sdata->company->name}}" class="col-xs-10 col-sm-5" readonly>
+                <input type="text" id="parent_id" value="{{$sdata->father->name}}" class="col-xs-10 col-sm-5" readonly>
             </div>
         </div>
         <div class="space-4"></div>
@@ -34,25 +33,9 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="phone">电话：</label>
+            <label class="col-sm-3 control-label no-padding-right" for="infos">描述：</label>
             <div class="col-sm-9">
-                <input type="text" id="phone" name="phone" value="{{$sdata->phone}}" class="col-xs-10 col-sm-5" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="username">用户名：</label>
-            <div class="col-sm-9">
-                <input type="text" id="username" name="username" value="{{$sdata->username}}" class="col-xs-10 col-sm-5" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="password">密码：</label>
-            <div class="col-sm-9">
-                <input type="password" id="password" name="password" value="{{$sdata->username}}" class="col-xs-10 col-sm-5" required>
+                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" >{{$sdata->infos}}</textarea>
             </div>
         </div>
         <div class="space-4"></div>

@@ -228,12 +228,40 @@
         </li>
 
         <li class="">
-            <a href="#">
+            <a href="#" class="dropdown-toggle">
                 <i class="menu-icon fa fa-home"></i>
                 <span class="menu-text"> 房源 </span>
+
+                <b class="arrow fa fa-angle-down"></b>
             </a>
 
             <b class="arrow"></b>
+            <ul class="submenu">
+                <li class="">
+                    <a href="{{route('g_layout')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        房屋户型
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+                <li class="">
+                    <a href="{{route('g_companyuser')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        管理机构
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+                <li class="">
+                    <a href="{{route('g_companyvaluer')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        房源社区
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+            </ul>
         </li>
         <li class="">
             <a href="#" class="dropdown-toggle">
@@ -309,6 +337,33 @@
                     <a href="{{route('g_buildinguse')}}">
                         <i class="menu-icon fa fa-caret-right"></i>
                         建筑用途
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_crowd')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        特殊人群
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_filecate')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        必备附件
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_nation')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        民族管理
                     </a>
 
                     <b class="arrow"></b>
