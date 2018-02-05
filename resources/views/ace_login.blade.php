@@ -93,7 +93,7 @@
                                             <div class="space"></div>
 
                                             <div class="clearfix">
-                                                <button type="button" class="width-35 pull-right btn btn-sm btn-primary" onclick="login(this)">
+                                                <button type="button" class="width-35 pull-right btn btn-sm btn-primary" onclick="login(this)" id="btn-login">
                                                     <i class="ace-icon fa fa-key"></i>
                                                     <span class="bigger-110">立即登录</span>
                                                 </button>

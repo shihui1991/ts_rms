@@ -15,3 +15,8 @@ Route::any('/user_add','UserController@add')->name('g_user_add');
 Route::get('/user_info','UserController@info')->name('g_user_info');
 Route::any('/user_edit','UserController@edit')->name('g_user_edit');
 Route::any('/user_resetpwd','UserController@resetpwd')->name('g_user_resetpwd');
+
+/*---------- 个人中心 ----------*/
+Route::get('/userself','UserselfController@index')->name('g_userself');
+Route::any('/userself_edit','UserselfController@edit')->name('g_userself_edit');
+Route::any('/userself_pwd','UserselfController@password')->name('g_userself_pwd');

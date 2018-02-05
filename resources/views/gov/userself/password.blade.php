@@ -13,14 +13,29 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_user_resetpwd')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_userself_pwd')}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="id" value="{{$sdata->id}}">
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="password"> 重置密码： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="oldpassword"> 当前密码： </label>
             <div class="col-sm-9">
-                <input type="text" id="password" name="password" value="{{old('password')}}" class="col-xs-10 col-sm-5" required>
+                <input type="password" id="oldpassword" name="oldpassword" value="" class="col-xs-10 col-sm-5" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="password"> 新密码： </label>
+            <div class="col-sm-9">
+                <input type="password" id="password" name="password" value="" class="col-xs-10 col-sm-5" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="password_confirmation"> 重复新密码： </label>
+            <div class="col-sm-9">
+                <input type="password" id="password_confirmation" name="password_confirmation" value="" class="col-xs-10 col-sm-5" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -39,7 +54,6 @@
             </div>
         </div>
     </form>
-
 
     <div class="profile-user-info profile-user-info-striped">
 
