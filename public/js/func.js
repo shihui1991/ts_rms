@@ -37,7 +37,7 @@ function uplfile(obj) {
             if(ajaxResp.code=='success'){
                 imgs +='<li>'+
                     '<div>'+
-                    '<img width="120" height="120" src="'+ajaxResp.sdata.path+'" alt="a">'+
+                    '<img width="120" height="120" src="'+ajaxResp.sdata.path+'" alt="'+ajaxResp.sdata.path+'">'+
                     '<input type="hidden" name="'+name+'" value="'+ajaxResp.sdata.path+'">'+
                     '<div class="text">'+
                     '<div class="inner">'+
