@@ -13,14 +13,17 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_companyuser_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_companyvaluer_add')}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="id" value="{{$sdata->id}}">
-
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="company_id"> 【类型】机构名称： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="company_id"> 评估机构： </label>
             <div class="col-sm-9">
-                <input type="text" id="company_id"  value="【{{$sdata->company->type}}】{{$sdata->company->name}}" class="col-xs-10 col-sm-5" readonly>
+                <select class="col-xs-5 col-sm-5" name="company_id" id="company_id">
+                    <option value="0">--请选择--</option>
+                    @foreach($sdata['company'] as $company)
+                        <option value="{{$company->id}}">【{{$company->type}}】{{$company->name}}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="space-4"></div>
@@ -28,31 +31,31 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="name" name="name" value="{{old('name')}}" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="phone">电话：</label>
+            <label class="col-sm-3 control-label no-padding-right" for="phone"> 电话： </label>
             <div class="col-sm-9">
-                <input type="text" id="phone" name="phone" value="{{$sdata->phone}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="phone" name="phone" value="{{old('phone')}}" class="col-xs-10 col-sm-5"  placeholder="请输入电话" required>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="username">用户名：</label>
+            <label class="col-sm-3 control-label no-padding-right" for="register"> 注册号： </label>
             <div class="col-sm-9">
-                <input type="text" id="username" name="username" value="{{$sdata->username}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="register" name="register" value="{{old('register')}}" class="col-xs-10 col-sm-5"  placeholder="请输入注册号" required>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="password">密码：</label>
+            <label class="col-sm-3 control-label no-padding-right" for="valid_at"> 有效期： </label>
             <div class="col-sm-9">
-                <input type="password" id="password" name="password" value="{{$sdata->username}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="valid_at" name="valid_at" value="{{old('valid_at')}}" class="col-xs-10 col-sm-5 laydate"  placeholder="请输入有效期" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -72,6 +75,7 @@
         </div>
     </form>
 
+
 @endsection
 
 {{-- 样式 --}}
@@ -81,8 +85,8 @@
 
 {{-- 插件 --}}
 @section('js')
-
     <script src="{{asset('js/func.js')}}"></script>
+    <script src="{{asset('laydate/laydate.js')}}"></script>
     <script>
         $('#name').focus();
     </script>

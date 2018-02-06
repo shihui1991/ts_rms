@@ -42,93 +42,63 @@ class FilecateController extends BaseController
         $displaynum=$request->input('displaynum');
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
-        /* ********** 是否删除 ********** */
-        $deleted=$request->input('deleted');
 
-        $model=new Filecate();
-        if(is_numeric($deleted) && in_array($deleted,[0,1])){
-            $infos['deleted']=$deleted;
-            if($deleted){
-                $model=$model->onlyTrashed();
-            }
-        }else{
-            $model=$model->withTrashed();
-        }
         /* ********** 查询 ********** */
+        $model=new Filecate();
         DB::beginTransaction();
         try{
-            $filecates=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $filecates=$model
+                ->with(['afiletable'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->paginate($displaynum);
             if(blank($filecates)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $data=$filecates;
+            $sdata=$filecates;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
             $filecates=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$filecates;
+            $sdata=null;
+            $edata=$filecates;
+            $url=null;
         }
         DB::commit();
 
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
-    }
-
-    /* ========== 添加 ========== */
-    public function add(Request $request){
-        $model=new Filecate();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'name'=>'required|unique:file_cate'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.filecate.index')->with($result);
         }
-
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $filecate=$model;
-            $filecate->fill($request->input());
-            $filecate->addOther($request);
-            $filecate->save();
-            if(blank($filecate)){
-                throw new \Exception('添加失败',404404);
-            }
-            $code='success';
-            $msg='添加成功';
-            $data=$filecate;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $filecate=Filecate::withTrashed()
+        $filecate=Filecate::with(['afiletable'=>function($query){
+            $query->select(['id','name']);
+        }])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -136,67 +106,23 @@ class FilecateController extends BaseController
         if(blank($filecate)){
             $code='warning';
             $msg='数据不存在';
-            $data=[];
-
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$filecate;
+            $sdata=$filecate;
+            $edata=new Filecate();
+            $url=null;
+
+            $view='gov.filecate.info';
         }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
-
-    /* ========== 修改 ========== */
-    public function edit(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        $model=new Filecate();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'name'=>'required|unique:file_cate,name,'.$id.',id'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $filecate=Filecate::withTrashed()
-                ->lockForUpdate()
-                ->find($id);
-            if(blank($filecate)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $filecate->fill($request->input());
-            $filecate->editOther($request);
-            $filecate->save();
-            if(blank($filecate)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$filecate;
-
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
-    }
-
 }

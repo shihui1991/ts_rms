@@ -66,7 +66,7 @@ class CompanyuserController extends BaseController
         try{
             $companyusers=$model
                 ->with(['company'=>function($query){
-                    $query->withTrashed()->select(['id','name']);
+                    $query->withTrashed()->select(['id','name','user_id','type']);
                 }])
                 ->where($where)
                 ->select($select)
@@ -126,7 +126,8 @@ class CompanyuserController extends BaseController
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
-                return response()->json(['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => '', 'edata' => '']);
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
 
             /* ++++++++++ 新增 ++++++++++ */
@@ -177,7 +178,7 @@ class CompanyuserController extends BaseController
         DB::beginTransaction();
         $companyuser=Companyuser::withTrashed()
             ->with(['company'=>function($query){
-                $query->withTrashed()->select(['id','name']);
+                $query->withTrashed()->select(['id','name','user_id','type']);
             }])
             ->sharedLock()
             ->find($id);
@@ -210,55 +211,98 @@ class CompanyuserController extends BaseController
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
-        $model=new Companyuser();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'company_id'=>'required',
-            'username'=>'required|unique:company_user,name,'.$id.',id',
-            'password'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
             $companyuser=Companyuser::withTrashed()
-                ->lockForUpdate()
+                ->with(['company'=>function($query){
+                    $query->withTrashed()->select(['id','name','user_id','type']);
+                }])
+                ->sharedLock()
                 ->find($id);
-            if(blank($companyuser)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $companyuser->fill($request->input());
-            $companyuser->editOther($request);
-            $companyuser->save();
-            if(blank($companyuser)){
-                throw new \Exception('修改失败',404404);
-            }
-
-            $code='success';
-            $msg='修改成功';
-            $data=$companyuser;
-
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($companyuser)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$companyuser;
+                $edata=new Companyuser();
+                $url=null;
+
+                $view='gov.companyuser.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Companyuser();
+            /* ********** 表单验证 ********** */
+            $rules=[
+                'username'=>'required|unique:company_user,name,'.$id.',id',
+                'password'=>'required'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $companyuser=Companyuser::withTrashed()
+                    ->lockForUpdate()
+                    ->find($id);
+                if(blank($companyuser)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $companyuser->fill($request->input());
+                $companyuser->editOther($request);
+                $companyuser->save();
+                if(blank($companyuser)){
+                    throw new \Exception('修改失败',404404);
+                }
+
+                $code='success';
+                $msg='修改成功';
+
+                $sdata=$companyuser;
+                $edata=null;
+                $url=route('g_companyuser');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$companyuser;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 }

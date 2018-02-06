@@ -13,7 +13,8 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>评估机构</th>
+            <th>【类型】评估机构</th>
+            <th>是否为管理账号</th>
             <th>名称</th>
             <th>电话</th>
             <th>用户名</th>
@@ -26,7 +27,8 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$infos->id}}</td>
-                        <td>{{$infos->company->name}}</td>
+                        <td>【{{$infos->company->type}}】{{$infos->company->name}}</td>
+                        <td>@if($infos->id == $infos->company->user_id) 是@else 否@endif</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->phone}}</td>
                         <td>{{$infos->username}}</td>
@@ -41,7 +43,7 @@
     </table>
     <div class="row">
         <div class="col-xs-6">
-            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 {{$sdata->total()}} 条数据</div>
+            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据</div>
         </div>
         <div class="col-xs-6">
             <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">

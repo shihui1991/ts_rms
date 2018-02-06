@@ -11,7 +11,7 @@
             返回
         </a>
 
-        <a class="btn" href="{{route('g_companyuser_edit',['id'=>$sdata->id])}}">
+        <a class="btn" href="{{route('g_companyvaluer_edit',['id'=>$sdata->id])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>
@@ -19,6 +19,7 @@
 
 
     <div class="profile-user-info profile-user-info-striped">
+
         <div class="profile-info-row">
             <div class="profile-info-name"> 机构类型： </div>
             <div class="profile-info-value">
@@ -34,14 +35,7 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 是否为管理员： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">@if($sdata->id == $sdata->company->user_id) 是@else 否@endif</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 操作员名称： </div>
+            <div class="profile-info-name"> 评估师名称： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->name}}</span>
             </div>
@@ -55,16 +49,16 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 用户名： </div>
+            <div class="profile-info-name"> 注册号： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->username}}</span>
+                <span class="editable editable-click">{{$sdata->register}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 最近操作时间： </div>
+            <div class="profile-info-name"> 有效期： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->action_at}}</span>
+                <span class="editable editable-click">{{$sdata->valid_at}}</span>
             </div>
         </div>
 

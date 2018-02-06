@@ -27,4 +27,17 @@ $(function () {
         });
     }
 
+    //时间插件
+    if($('.laydate').length){
+        var that=$('.laydate');
+        $.each(that,function (index,info) {
+            laydate.render({
+                elem: info //指定元素
+                ,type:$(info).data('type') || 'date'
+                ,format:$(info).data('format') || 'yyyy-MM-dd'
+            });
+        });
+
+    }
+
 });

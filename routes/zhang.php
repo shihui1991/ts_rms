@@ -34,3 +34,21 @@ Route::get('/companyvaluer','CompanyvaluerController@index')->name('g_companyval
 Route::any('/companyvaluer_add','CompanyvaluerController@add')->name('g_companyvaluer_add');
 Route::get('/companyvaluer_info','CompanyvaluerController@info')->name('g_companyvaluer_info');
 Route::any('/companyvaluer_edit','CompanyvaluerController@edit')->name('g_companyvaluer_edit');
+/*---------- 特殊人群 ----------*/
+Route::get('/crowd','CrowdController@index')->name('g_crowd');
+Route::any('/crowd_add','CrowdController@add')->name('g_crowd_add');
+Route::get('/crowd_info','CrowdController@info')->name('g_crowd_info');
+Route::any('/crowd_edit','CrowdController@edit')->name('g_crowd_edit');
+/*---------- 必备附件分类 ----------*/
+Route::get('/filecate','FilecateController@index')->name('g_filecate');
+Route::get('/filecate_info','FilecateController@info')->name('g_filecate_info');
+/*---------- 房屋户型 ----------*/
+Route::get('/layout','LayoutController@index')->name('g_layout');
+Route::any('/layout_add','LayoutController@add')->name('g_layout_add');
+Route::get('/layout_info','LayoutController@info')->name('g_layout_info');
+Route::any('/layout_edit','LayoutController@edit')->name('g_layout_edit');
+/*---------- 民族 ----------*/
+Route::get('/nation','NationController@index')->name('g_nation');
+Route::any('/nation_add','NationController@add')->name('g_nation_add');
+Route::get('/nation_info','NationController@info')->name('g_nation_info');
+Route::any('/nation_edit','NationController@edit')->name('g_nation_edit');
