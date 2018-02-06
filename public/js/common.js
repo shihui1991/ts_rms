@@ -11,7 +11,7 @@ function ajaxAct(action,datas,method) {
             ajaxResp=resp;
         },
         error:function (resp) {
-            if(resp.responseJSON.errors){
+            if(resp.responseJSON && resp.responseJSON.errors){
                 ajaxResp=resp.responseJSON;
                 ajaxResp.code="error";
                 ajaxResp.sdata={};
@@ -46,7 +46,7 @@ function ajaxUpd(action,datas) {
             ajaxResp=resp;
         },
         error:function (resp) {
-            if(resp.responseJSON.errors){
+            if(resp.responseJSON && resp.responseJSON.errors){
                 ajaxResp=resp.responseJSON;
                 ajaxResp.code="error";
                 ajaxResp.sdata={};
