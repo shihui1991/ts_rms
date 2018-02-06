@@ -13,12 +13,15 @@ class House extends Model
     use SoftDeletes;
     protected $table='house';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['company_id','community_id','layout_id','layout_img_id','building',
+        'unit','floor','number','area','total_floor','lift','is_real','is_buy','is_transit',
+        'is_public','picture','delive_at','state'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
+        'company_id'=>'所属管理机构',
         'community_id'=>'所在房源社区',
         'layout_id'=>'所属房源户型',
         'layout_img_id'=>'所属房源户型图',
@@ -111,6 +114,11 @@ class House extends Model
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
 
+    }
+
+    /* ++++++++++ 关联房源管理机构 ++++++++++ */
+    public function housecompany(){
+        return $this->belongsTo('App\Http\Model\Housecompany','company_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联房源社区 ++++++++++ */

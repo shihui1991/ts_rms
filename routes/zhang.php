@@ -77,3 +77,8 @@ Route::get('/houselayoutimg','HouselayoutimgController@index')->name('g_houselay
 Route::any('/houselayoutimg_add','HouselayoutimgController@add')->name('g_houselayoutimg_add');
 Route::get('/houselayoutimg_info','HouselayoutimgController@info')->name('g_houselayoutimg_info');
 Route::any('/houselayoutimg_edit','HouselayoutimgController@edit')->name('g_houselayoutimg_edit');
+/*---------- 房源 ----------*/
+Route::get('/house','HouseController@index')->name('g_house');
+Route::any('/house_add','HouseController@add')->name('g_house_add');
+Route::get('/house_info','HouseController@info')->name('g_house_info');
+Route::any('/house_edit','HouseController@edit')->name('g_house_edit');

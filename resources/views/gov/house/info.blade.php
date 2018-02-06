@@ -11,7 +11,7 @@
             返回
         </a>
 
-        <a class="btn" href="{{route('g_houselayoutimg_edit',['id'=>$sdata->id])}}">
+        <a class="btn" href="{{route('g_bank_edit',['id'=>$sdata->id])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>
@@ -19,19 +19,6 @@
 
 
     <div class="profile-user-info profile-user-info-striped">
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 房源社区： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->housecommunity->name}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 房源户型： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->layout->name}}</span>
-            </div>
-        </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 名称： </div>
@@ -41,24 +28,9 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 户型图： </div>
+            <div class="profile-info-name"> 描述： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">
-                <ul class="ace-thumbnails clearfix img-content viewer">
-                    @foreach($sdata->picture as $pic)
-                        <li>
-                            <div>
-                                <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                <div class="text">
-                                    <div class="inner">
-                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-                </span>
+                <span class="editable editable-click">{{$sdata->infos}}</span>
             </div>
         </div>
 

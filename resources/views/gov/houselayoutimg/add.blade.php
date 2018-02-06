@@ -49,6 +49,30 @@
         </div>
         <div class="space-4"></div>
 
+        <div class="widget-body">
+            <div class="widget-main padding-8">
+
+                <div class="form-group img-box">
+                    <label class="col-sm-3 control-label no-padding-right">
+                        户型图：<br>
+                        <span class="btn btn-xs">
+                                        <span>上传图片</span>
+                                        <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple onchange="uplfile(this)">
+                                    </span>
+                    </label>
+                    <div class="col-sm-9">
+                        <ul class="ace-thumbnails clearfix img-content viewer">
+
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="space-4 header green"></div>
+
+            </div>
+        </div>
+
         <div class="clearfix form-actions">
             <div class="col-md-offset-3 col-md-9">
                 <button class="btn btn-info" type="button" onclick="sub(this)">
@@ -69,12 +93,13 @@
 
 {{-- 样式 --}}
 @section('css')
-
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
 @endsection
 
 {{-- 插件 --}}
 @section('js')
     <script src="{{asset('js/func.js')}}"></script>
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
         $('#name').focus();
     </script>

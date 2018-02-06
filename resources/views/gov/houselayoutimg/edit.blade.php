@@ -18,6 +18,22 @@
         <input type="hidden" name="id" value="{{$sdata->id}}">
 
         <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="community_id"> 房源社区： </label>
+            <div class="col-sm-9">
+                <input type="text" class="col-xs-5 col-sm-5" id="community_id" value="{{$sdata->housecommunity->name}}">
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="layout_id"> 房源户型： </label>
+            <div class="col-sm-9">
+                <input type="text" class="col-xs-5 col-sm-5" id="layout_id" value="{{$sdata->layout->name}}">
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
             <div class="col-sm-9">
                 <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5" required>
@@ -25,13 +41,42 @@
         </div>
         <div class="space-4"></div>
 
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="infos">描述：</label>
-            <div class="col-sm-9">
-                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" >{{$sdata->infos}}</textarea>
+        <div class="widget-body">
+            <div class="widget-main padding-8">
+
+                <div class="form-group img-box">
+                    <label class="col-sm-3 control-label no-padding-right">
+                        户型图：<br>
+                        <span class="btn btn-xs">
+                                        <span>上传图片</span>
+                                        <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple onchange="uplfile(this)">
+                                    </span>
+                    </label>
+                    <div class="col-sm-9">
+                        <ul class="ace-thumbnails clearfix img-content viewer">
+                            @foreach($sdata->picture as $pic)
+                                <li>
+                                    <div>
+                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                        <input type="hidden" name="picture[]" value="{!! $pic !!}">
+                                        <div class="text">
+                                            <div class="inner">
+                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="space-4 header green"></div>
+
             </div>
         </div>
-        <div class="space-4"></div>
 
         <div class="clearfix form-actions">
             <div class="col-md-offset-3 col-md-9">
@@ -52,12 +97,12 @@
 
 {{-- 样式 --}}
 @section('css')
-
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
 @endsection
 
 {{-- 插件 --}}
 @section('js')
-
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('js/func.js')}}"></script>
     <script>
         $('#name').focus();
