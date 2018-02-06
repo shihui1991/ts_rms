@@ -1,16 +1,16 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 社会风险评估调查话题
+| 房源管理机构
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-use App\Http\Model\Topic;
+use App\Http\Model\Housecompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class TopicController extends BaseController
+class HousecompanyController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -20,7 +20,7 @@ class TopicController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','infos','deleted_at'];
+        $select=['id','name','address','phone','contact_man','contact_tel','infos','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -45,7 +45,7 @@ class TopicController extends BaseController
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
-        $model=new Topic();
+        $model=new Housecompany();
         if(is_numeric($deleted) && in_array($deleted,[0,1])){
             $infos['deleted']=$deleted;
             if($deleted){
@@ -57,21 +57,22 @@ class TopicController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $topics=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
-            if(blank($topics)){
+            $housecompanys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            if(blank($housecompanys)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$topics;
+            $sdata=$housecompanys;
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
-            $topics=collect();
+            $housecompanys=collect();
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=$topics;
+            $edata=$housecompanys;
             $url=null;
         }
         DB::commit();
@@ -81,19 +82,19 @@ class TopicController extends BaseController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.topic.index')->with($result);
+            return view('gov.housecompany.index')->with($result);
         }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $model=new Topic();
+        $model=new Housecompany();
         if($request->isMethod('get')){
             $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.topic.add')->with($result);
+                return view('gov.housecompany.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -101,7 +102,8 @@ class TopicController extends BaseController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'name' => 'required|unique:topic'
+                'name' => 'required|unique:house_company',
+                'address' => 'required',
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
@@ -117,25 +119,25 @@ class TopicController extends BaseController
             DB::beginTransaction();
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $topic = $model;
-                $topic->fill($request->input());
-                $topic->addOther($request);
-                $topic->save();
-                if (blank($topic)) {
+                $housecompany = $model;
+                $housecompany->fill($request->input());
+                $housecompany->addOther($request);
+                $housecompany->save();
+                if (blank($housecompany)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $topic;
+                $sdata = $housecompany;
                 $edata = null;
-                $url = route('g_topic');
+                $url = route('g_housecompany');
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $topic;
+                $edata = $housecompany;
                 $url = null;
                 DB::rollBack();
             }
@@ -158,12 +160,12 @@ class TopicController extends BaseController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $topic=Topic::withTrashed()
+        $housecompany=Housecompany::withTrashed()
             ->sharedLock()
             ->find($id);
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($topic)){
+        if(blank($housecompany)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
@@ -172,11 +174,11 @@ class TopicController extends BaseController
         }else{
             $code='success';
             $msg='获取成功';
-            $sdata=$topic;
-            $edata=new Topic();
+            $sdata=$housecompany;
+            $edata=new Housecompany();
             $url=null;
 
-            $view='gov.topic.info';
+            $view='gov.housecompany.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -197,29 +199,29 @@ class TopicController extends BaseController
                 return view('gov.error')->with($result);
             }
         }
-
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $topic=Topic::withTrashed()
+            $housecompany=Housecompany::withTrashed()
                 ->sharedLock()
                 ->find($id);
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($topic)){
+            if(blank($housecompany)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
                 $edata=null;
                 $url=null;
+
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$topic;
-                $edata=new Topic();
+                $sdata=$housecompany;
+                $edata=new Housecompany();
                 $url=null;
 
-                $view='gov.topic.edit';
+                $view='gov.housecompany.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -228,10 +230,11 @@ class TopicController extends BaseController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Topic();
+            $model=new Housecompany();
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:topic,name,'.$id.',id'
+                'name'=>'required|unique:house_company,name,'.$id.',id',
+                'address' => 'required'
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
@@ -246,31 +249,31 @@ class TopicController extends BaseController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $topic=Topic::withTrashed()
+                $housecompany=Housecompany::withTrashed()
                     ->lockForUpdate()
                     ->find($id);
-                if(blank($topic)){
+                if(blank($housecompany)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $topic->fill($request->input());
-                $topic->addOther($request);
-                $topic->save();
-                if(blank($topic)){
+                $housecompany->fill($request->input());
+                $housecompany->addOther($request);
+                $housecompany->save();
+                if(blank($housecompany)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$topic;
+                $sdata=$housecompany;
                 $edata=null;
-                $url=route('g_topic');
+                $url=route('g_housecompany');
 
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$topic;
+                $edata=$housecompany;
                 $url=null;
                 DB::rollBack();
             }

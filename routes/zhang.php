@@ -52,3 +52,28 @@ Route::get('/nation','NationController@index')->name('g_nation');
 Route::any('/nation_add','NationController@add')->name('g_nation_add');
 Route::get('/nation_info','NationController@info')->name('g_nation_info');
 Route::any('/nation_edit','NationController@edit')->name('g_nation_edit');
+/*---------- 其他补偿事项 ----------*/
+Route::get('/object','ObjectController@index')->name('g_object');
+Route::any('/object_add','ObjectController@add')->name('g_object_add');
+Route::get('/object_info','ObjectController@info')->name('g_object_info');
+Route::any('/object_edit','ObjectController@edit')->name('g_object_edit');
+/*---------- 社会风险评估调查话题 ----------*/
+Route::get('/topic','TopicController@index')->name('g_topic');
+Route::any('/topic_add','TopicController@add')->name('g_topic_add');
+Route::get('/topic_info','TopicController@info')->name('g_topic_info');
+Route::any('/topic_edit','TopicController@edit')->name('g_topic_edit');
+/*---------- 房源管理机构 ----------*/
+Route::get('/housecompany','HousecompanyController@index')->name('g_housecompany');
+Route::any('/housecompany_add','HousecompanyController@add')->name('g_housecompany_add');
+Route::get('/housecompany_info','HousecompanyController@info')->name('g_housecompany_info');
+Route::any('/housecompany_edit','HousecompanyController@edit')->name('g_housecompany_edit');
+/*---------- 房源社区 ----------*/
+Route::get('/housecommunity','HousecommunityController@index')->name('g_housecommunity');
+Route::any('/housecommunity_add','HousecommunityController@add')->name('g_housecommunity_add');
+Route::get('/housecommunity_info','HousecommunityController@info')->name('g_housecommunity_info');
+Route::any('/housecommunity_edit','HousecommunityController@edit')->name('g_housecommunity_edit');
+/*---------- 房源户型图 ----------*/
+Route::get('/houselayoutimg','HouselayoutimgController@index')->name('g_houselayoutimg');
+Route::any('/houselayoutimg_add','HouselayoutimgController@add')->name('g_houselayoutimg_add');
+Route::get('/houselayoutimg_info','HouselayoutimgController@info')->name('g_houselayoutimg_info');
+Route::any('/houselayoutimg_edit','HouselayoutimgController@edit')->name('g_houselayoutimg_edit');

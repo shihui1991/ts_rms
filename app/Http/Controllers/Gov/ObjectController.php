@@ -63,70 +63,99 @@ class ObjectController extends BaseController
             }
             $code='success';
             $msg='查询成功';
-            $data=$objects;
+            $sdata=$objects;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
             $objects=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$objects;
+            $sdata=null;
+            $edata=$objects;
+            $url=null;
         }
         DB::commit();
 
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.object.index')->with($result);
+        }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
         $model=new Object();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'name'=>'required|unique:object',
-            'num_unit'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
+        if($request->isMethod('get')){
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.object.add')->with($result);
+            }
         }
-
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $object=$model;
-            $object->fill($request->input());
-            $object->addOther($request);
-            $object->save();
-            if(blank($object)){
-                throw new \Exception('添加失败',404404);
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ********** 保存 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'name' => 'required|unique:object',
+                'num_unit' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'unique' => ':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
+                return response()->json($result);
             }
 
-            $code='success';
-            $msg='添加成功';
-            $data=$object;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $object = $model;
+                $object->fill($request->input());
+                $object->addOther($request);
+                $object->save();
+                if (blank($object)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $object;
+                $edata = null;
+                $url = route('g_object');
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $object;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
@@ -138,67 +167,117 @@ class ObjectController extends BaseController
         if(blank($object)){
             $code='warning';
             $msg='数据不存在';
-            $data=[];
-
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$object;
+            $sdata=$object;
+            $edata=new Object();
+            $url=null;
+
+            $view='gov.object.info';
         }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
-        $model=new Object();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'name'=>'required|unique:object,name,'.$id.',id',
-            'num_unit'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
             $object=Object::withTrashed()
-                ->lockForUpdate()
+                ->sharedLock()
                 ->find($id);
-            if(blank($object)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $object->fill($request->input());
-            $object->addOther($request);
-            $object->save();
-            if(blank($object)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$object;
-
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($object)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$object;
+                $edata=new Object();
+                $url=null;
+
+                $view='gov.object.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Object();
+            /* ********** 表单验证 ********** */
+            $rules=[
+                'name'=>'required|unique:object,name,'.$id.',id',
+                'num_unit'=>'required'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $object=Object::withTrashed()
+                    ->lockForUpdate()
+                    ->find($id);
+                if(blank($object)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $object->fill($request->input());
+                $object->addOther($request);
+                $object->save();
+                if(blank($object)){
+                    throw new \Exception('修改失败',404404);
+                }
+                $code='success';
+                $msg='修改成功';
+                $sdata=$object;
+                $edata=null;
+                $url=route('g_object');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$object;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 }
