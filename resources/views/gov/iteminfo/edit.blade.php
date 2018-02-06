@@ -5,8 +5,14 @@
 {{-- 页面内容 --}}
 @section('content')
 
+    <p>
+        <a class="btn" href="javascript:history.back();">
+            <i class="ace-icon fa fa-arrow-left bigger-110"></i>
+            返回
+        </a>
+    </p>
 
-    <form class="form-horizontal" role="form" action="{{route('g_item_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_iteminfo_edit')}}" method="post">
         {{csrf_field()}}
 
         <div class="row">
@@ -21,7 +27,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
                                 <div class="col-sm-9">
-                                    <input type="text" id="name" name="name" value="{{old('name')}}" class="col-xs-10 col-sm-10" required>
+                                    <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-10" required>
                                 </div>
                             </div>
                             <div class="space-4"></div>
@@ -29,7 +35,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="place">征收范围：</label>
                                 <div class="col-sm-9">
-                                    <textarea id="place" name="place" class="col-xs-10 col-sm-10" >{{old('place')}}</textarea>
+                                    <textarea id="place" name="place" class="col-xs-10 col-sm-10" >{{$sdata->place}}</textarea>
                                 </div>
                             </div>
                             <div class="space-4"></div>
@@ -37,7 +43,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="infos">描述：</label>
                                 <div class="col-sm-9">
-                                    <textarea id="infos" name="infos" class="col-xs-10 col-sm-10" >{{old('infos')}}</textarea>
+                                    <textarea id="infos" name="infos" class="col-xs-10 col-sm-10" >{{$sdata->infos}}</textarea>
                                 </div>
                             </div>
                             <div class="space-4"></div>
@@ -68,14 +74,24 @@
                                 </label>
                                 <div class="col-sm-9">
                                     <ul class="ace-thumbnails clearfix img-content">
-
-
+                                        <li>
+                                            <div>
+                                                <img width="120" height="120" src="{{$sdata->map}}" alt="{{$sdata->map}}">
+                                                <input type="hidden" name="map" value="{{$sdata->map}}">
+                                                <div class="text">
+                                                    <div class="inner">
+                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                        <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="space-4 header green"></div>
 
-                            @foreach($sdata['filecates'] as $filecate)
+                            @foreach($edata as $filecate)
                                 <div class="form-group img-box">
                                     <label class="col-sm-3 control-label no-padding-right">
                                         {{$filecate->name}}<br>
@@ -86,8 +102,20 @@
                                     </label>
                                     <div class="col-sm-9">
                                         <ul class="ace-thumbnails clearfix img-content">
-
-
+                                            @foreach($sdata->picture[$filecate->filename] as $pic)
+                                                <li>
+                                                    <div>
+                                                        <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                                        <input type="hidden" name="picture[{{$filecate->filename}}][]" value="{{$pic}}">
+                                                        <div class="text">
+                                                            <div class="inner">
+                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            @endforeach
                                         </ul>
                                     </div>
                                 </div>
@@ -132,6 +160,7 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script>
         $('#name').focus();
+        $('.img-content').viewer();
     </script>
 
 @endsection

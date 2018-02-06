@@ -1,10 +1,11 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目
+| 项目信息
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
+
 use App\Http\Model\Filecate;
 use App\Http\Model\Filetable;
 use App\Http\Model\Item;
@@ -12,44 +13,44 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class ItemController extends BaseController
+class IteminfoController extends BaseController
 {
-    /* ++++++++++ 初始化 ++++++++++ */
+    /* ========== 初始化 ========== */
     public function __construct()
     {
 
     }
 
-    /* ========== 我的项目 ========== */
+    /* ========== 项目概述 ========== */
     public function index(Request $request){
-
-    }
-
-
-    /* ========== 所有项目 ========== */
-    public function all(Request $request){
         $select=['id','name','place','map','infos','code','created_at','updated_at','deleted_at'];
+        $where[]=['id',1];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $items=Item::select($select)
+            $item=Item::select($select)
+                ->where($where)
                 ->sharedLock()
-                ->paginate();
+                ->first();
 
-            if(blank($items)){
-                throw new \Exception('没有符合条件的数据',404404);
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$items;
+            $sdata=$item;
             $edata=null;
             $url=null;
+
+            $view='gov.iteminfo.index';
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
             $edata=null;
             $url=null;
+
+            $view='gov.error';
         }
         DB::commit();
 
@@ -58,34 +59,102 @@ class ItemController extends BaseController
         if($request->ajax()){
             return response()->json($result);
         }else{
-            return view('gov.item.all')->with($result);
+            return view($view)->with($result);
+        }
+    }
+
+    /* ========== 项目信息 ========== */
+    public function info(Request $request){
+
+        $where[]=['id',1];
+        /* ********** 查询 ********** */
+        DB::beginTransaction();
+        try{
+            $file_table_id=Filetable::where('table_name','item')->sharedLock()->value('id');
+            $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
+
+            $item=Item::where($where)
+                ->sharedLock()
+                ->first();
+
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
+            }
+            $code='success';
+            $msg='查询成功';
+            $sdata=$item;
+            $edata=$file_cates;
+            $url=null;
+
+            $view='gov.iteminfo.info';
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            $view='gov.error';
+        }
+        DB::commit();
+
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
         }
     }
 
 
-    /* ========== 新建项目 ========== */
-    public function add(Request $request){
-        $model=new Item();
-
+    /* ========== 修改项目 ========== */
+    public function edit(Request $request){
+        $id=1;
+        $where[]=['id',$id];
         if($request->isMethod('get')){
-            /* ++++++++++ 必备附件分类 ++++++++++ */
+            /* ********** 获取数据 ********** */
             DB::beginTransaction();
+
             $file_table_id=Filetable::where('table_name','item')->sharedLock()->value('id');
             $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
-            DB::commit();
 
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>['filecates'=>$file_cates],'edata'=>$model,'url'=>null];
+            $item=Item::where($where)
+                ->sharedLock()
+                ->first();
+
+            DB::commit();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($item)){
+                $code='error';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }else{
+                $code='success';
+                $msg='查询成功';
+                $sdata=$item;
+                $edata=$file_cates;
+                $url=null;
+
+                $view='gov.iteminfo.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.item.add')->with($result);
+                return view($view)->with($result);
             }
         }
-        /* ++++++++++ 保存 ++++++++++ */
+        /* ********** 保存 ********** */
         else{
+            $model=new Item();
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
-                'name'=>'required|unique:item',
+                'name'=>'required|unique:item,name,'.$id.',id',
                 'place'=>'required',
                 'map'=>'required'
             ];
@@ -115,9 +184,15 @@ class ItemController extends BaseController
                     throw new \Exception($validator->errors()->first(),404404);
                 }
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $item=$model;
+                $item=Item::where($where)
+                    ->sharedLock()
+                    ->first();
+
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+
                 $item->fill($request->input());
-                $item->addOther($request);
                 $item->code=0;
 
                 $item->save();
@@ -129,7 +204,7 @@ class ItemController extends BaseController
                 $msg='保存成功';
                 $sdata=$item;
                 $edata=null;
-                $url=route('g_item_all');
+                $url=route('g_iteminfo_info');
 
                 DB::commit();
             }catch (\Exception $exception){
@@ -144,7 +219,6 @@ class ItemController extends BaseController
             /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
-
         }
     }
 }
