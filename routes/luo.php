@@ -20,3 +20,11 @@ Route::any('/user_resetpwd','UserController@resetpwd')->name('g_user_resetpwd');
 Route::get('/userself','UserselfController@index')->name('g_userself');
 Route::any('/userself_edit','UserselfController@edit')->name('g_userself_edit');
 Route::any('/userself_pwd','UserselfController@password')->name('g_userself_pwd');
+
+/*---------- 项目 ----------*/
+Route::get('/item','ItemController@index')->name('g_item');
+Route::get('/item_all','ItemController@all')->name('g_item_all');
+Route::any('/item_add','ItemController@add')->name('g_item_add');
+
+/*---------- 工具 ----------*/
+Route::any('/upl','ToolsController@upl')->name('g_upl');

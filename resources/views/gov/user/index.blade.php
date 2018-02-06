@@ -44,11 +44,16 @@
         </tbody>
     </table>
 
-    <p>
-        @if($code=='success')
-            {{$sdata->links()}}
-        @endif
-    </p>
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 {{$sdata->total()}} 条数据</div>
+        </div>
+        <div class="col-xs-6">
+            <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
+                @if($code=='success') {{ $sdata->links() }} @endif
+            </div>
+        </div>
+    </div>
 
 @endsection
 
