@@ -37,6 +37,6 @@ class Filecate extends Model
     }
     /* ++++++++++ 关联必备附件表 ++++++++++ */
     public function afiletable(){
-        return $this->belongsTo('App\Http\Model\Afiletable','file_table_id','id')->withDefault();
+        return $this->belongsTo('App\Http\Model\Filetable','file_table_id','id')->withDefault();
     }
 }

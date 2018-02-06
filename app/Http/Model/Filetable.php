@@ -7,7 +7,7 @@
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 
-class Afiletable extends Model
+class Filetable extends Model
 {
     protected $table='a_file_table';
     protected $guarded=[];

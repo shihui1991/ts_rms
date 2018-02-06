@@ -5,7 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-use App\Http\Model\Afiletable;
+use App\Http\Model\Filetable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -43,7 +43,7 @@ class FiletableController extends BaseController
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
-        $model=new Afiletable();
+        $model=new Filetable();
         DB::beginTransaction();
         try{
             $filetables=$model->where($where)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
