@@ -13,7 +13,7 @@ class Object extends Model
     use SoftDeletes;
     protected $table='object';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['name','num_unit','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 

@@ -238,6 +238,22 @@
             <b class="arrow"></b>
             <ul class="submenu">
                 <li class="">
+                    <a href="{{route('g_housecompany')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        管理机构
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+                <li class="">
+                    <a href="{{route('g_housecommunity')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        房源社区
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+                <li class="">
                     <a href="{{route('g_layout')}}">
                         <i class="menu-icon fa fa-caret-right"></i>
                         房屋户型
@@ -246,17 +262,9 @@
                     <b class="arrow"></b>
                 </li>
                 <li class="">
-                    <a href="{{route('g_companyuser')}}">
+                    <a href="{{route('g_houselayoutimg')}}">
                         <i class="menu-icon fa fa-caret-right"></i>
-                        管理机构
-                    </a>
-
-                    <b class="arrow"></b>
-                </li>
-                <li class="">
-                    <a href="{{route('g_companyvaluer')}}">
-                        <i class="menu-icon fa fa-caret-right"></i>
-                        房源社区
+                        房源户型图
                     </a>
 
                     <b class="arrow"></b>
@@ -364,6 +372,24 @@
                     <a href="{{route('g_nation')}}">
                         <i class="menu-icon fa fa-caret-right"></i>
                         民族管理
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_object')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        其他补偿事项
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_topic')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        调查话题
                     </a>
 
                     <b class="arrow"></b>
