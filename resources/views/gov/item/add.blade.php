@@ -60,21 +60,39 @@
 
                             <div class="form-group img-box">
                                 <label class="col-sm-3 control-label no-padding-right">
-                                    征收范围红线图：<br>
+                                    征收范围红线地图<br>
                                     <span class="btn btn-xs">
                                         <span>上传图片</span>
-                                        <input type="file" accept="image/*" class="hidden" data-name="files" multiple onchange="uplfile(this)">
+                                        <input type="file" accept="image/*" class="hidden" data-name="map" multiple onchange="uplfile(this)">
                                     </span>
                                 </label>
                                 <div class="col-sm-9">
-                                    <ul class="ace-thumbnails clearfix img-content viewer">
+                                    <ul class="ace-thumbnails clearfix img-content">
 
 
                                     </ul>
                                 </div>
                             </div>
-
                             <div class="space-4 header green"></div>
+
+                            @foreach($sdata['filecates'] as $filecate)
+                                <div class="form-group img-box">
+                                    <label class="col-sm-3 control-label no-padding-right">
+                                        {{$filecate->name}}<br>
+                                        <span class="btn btn-xs">
+                                        <span>上传图片</span>
+                                        <input type="file" accept="image/*" class="hidden" data-name="picture[{{$filecate->filename}}][]" multiple onchange="uplfile(this)">
+                                    </span>
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <ul class="ace-thumbnails clearfix img-content">
+
+
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="space-4 header green"></div>
+                            @endforeach
 
                         </div>
                     </div>
@@ -113,7 +131,7 @@
 
     <script src="{{asset('js/func.js')}}"></script>
     <script>
-        $('#username').focus();
+        $('#name').focus();
     </script>
 
 @endsection
