@@ -11,25 +11,21 @@ class Process extends Model
 {
     protected $table='a_process';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['schedule_id','name','type','menu_id','sort','infos'];
     protected $dates=['created_at','updated_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
-        'schedule_id'=>'所在项目进度',
-        'parent_id'=>'上级流程',
+        'schedule_id'=>'项目进度',
+        'parent_id'=>'上级',
         'name'=>'名称',
         'type'=>'操作类型',
         'menu_id'=>'菜单',
         'sort'=>'排序',
-        'infos'=>'流程描述'
+        'infos'=>'描述'
     ];
 
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
+
     /* ++++++++++ 获取操作类型 ++++++++++ */
     public function getAuthAttribute($key=null)
     {

@@ -11,7 +11,7 @@ class Schedule extends Model
 {
     protected $table='a_schedule';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['name','sort','infos'];
     protected $dates=['created_at','updated_at'];
     protected $casts = [];
 
@@ -19,14 +19,8 @@ class Schedule extends Model
     public $columns=[
         'name'=>'名称',
         'sort'=>'排序',
-        'infos'=>'进度描述'
+        'infos'=>'描述'
     ];
-
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
@@ -40,5 +34,9 @@ class Schedule extends Model
     /* ++++++++++ 关联项目流程 ++++++++++ */
     public function process(){
         return $this->hasMany('App\Http\Model\Process','schedule_id','id');
+    }
+
+    public function itemtime(){
+        return $this->hasOne('App\Http\Model\Itemtime','schedule_id','id');
     }
 }

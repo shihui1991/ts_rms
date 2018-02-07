@@ -1,39 +1,47 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目 模型
+| 项目-时间规划 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Item extends Model
+class Itemtime extends Model
 {
     use SoftDeletes;
-    protected $table='item';
+    protected $table='item_time';
     protected $primaryKey='id';
-    protected $fillable=['name','place','map','infos','picture'];
+    protected $fillable=['start_at','end_at'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
-        'picture'=>'array',
+
     ];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
-        'name'=>'项目名称',
-        'place'=>'征收范围',
-        'map'=>'征收范围红线地图',
-        'infos'=>'描述',
-        'picture'=>'审查资料',
+        'item_id'=>'项目',
+        'schedule_id'=>'项目进度',
+        'start_at'=>'开始时间',
+        'end_at'=>'结束时间',
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
 
     }
+
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
 
+    }
+
+    public function item(){
+        return $this->belongsTo('App\Http\Model\Item','item_id','id');
+    }
+
+    public function schedule(){
+        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id');
     }
 }

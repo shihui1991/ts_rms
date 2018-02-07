@@ -30,6 +30,9 @@ Route::any('/item_add','ItemController@add')->name('g_item_add'); // 新建项�
 Route::get('/iteminfo','IteminfoController@index')->name('g_iteminfo');  // 项目概述
 Route::get('/iteminfo_info','IteminfoController@info')->name('g_iteminfo_info');  // 项目信息
 Route::any('/iteminfo_edit','IteminfoController@edit')->name('g_iteminfo_edit');  // 修改项目
+Route::any('/itemtime','ItemtimeController@index')->name('g_itemtime');  // 时间规划
+Route::any('/itemtime_edit','ItemtimeController@edit')->name('g_itemtime_edit');  // 修改时间规划
+
 
 /*---------- 工具 ----------*/
 Route::any('/upl','ToolsController@upl')->name('g_upl'); // 文件上传
