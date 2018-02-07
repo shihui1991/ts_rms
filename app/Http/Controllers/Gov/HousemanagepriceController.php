@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
+use App\Http\Model\House;
 use App\Http\Model\Housemanageprice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,122 +21,149 @@ class HousemanagepriceController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','house_id','start_at','end_at','manage_price','deleted_at'];
-
-        /* ********** 查询条件 ********** */
-        $where=[];
-        /* ********** 排序 ********** */
-        $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'id';
-        $infos['ordername']=$ordername;
-
-        $orderby=$request->input('orderby');
-        $orderby=$orderby?$orderby:'asc';
-        $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
-        /* ********** 是否删除 ********** */
-        $deleted=$request->input('deleted');
-
-        $model=new Housemanageprice();
-        if(is_numeric($deleted) && in_array($deleted,[0,1])){
-            $infos['deleted']=$deleted;
-            if($deleted){
-                $model=$model->onlyTrashed();
+        $house_id = $request->input('house_id');
+        if(!$house_id){
+            $result=['code'=>'error','message'=>'请先选择房源','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
             }
-        }else{
-            $model=$model->withTrashed();
         }
+        /* ********** 查询条件 ********** */
+        $select=['id','house_id','start_at','end_at','manage_price','deleted_at'];
         /* ********** 查询 ********** */
+        $model=new Housemanageprice();
         DB::beginTransaction();
         try{
-            $housemanageprices=$model->with(
-                ['house'=> function ($query) {
-                    $query->select('id', 'unit','building','floor','number');
+            $housemanageprices['house_id'] = $house_id;
+            $housemanageprices['house_info'] = House::withTrashed()
+                ->with(['housecommunity'=> function ($query) {
+                    $query->withTrashed()->select(['id','name']);
                 }])
-                ->where($where)
+                ->select(['id','community_id','unit','building','floor','number'])
+                ->find($house_id);
+            $housemanageprices['housemanageprice']=$model->withTrashed()
+                ->with(['house'=> function ($query) {
+                    $query->withTrashed()->select(['id', 'unit','building','floor','number']);
+                }])
+                ->where('house_id',$house_id)
                 ->select($select)
-                ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->get();
             if(blank($housemanageprices)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $data=$housemanageprices;
+            $sdata=$housemanageprices;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
             $housemanageprices=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$housemanageprices;
+            $sdata=null;
+            $edata=$housemanageprices;
+            $url=null;
         }
         DB::commit();
 
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.housemanageprice.index')->with($result);
+        }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $model=new Housemanageprice();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'house_id'=>'required',
-            'start_at'=>'required',
-            'end_at'=>'required',
-            'manage_price'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
+        $house_id = $request->input('house_id');
+        if(!$house_id){
+            $result=['code'=>'error','message'=>'请先选择房源','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
 
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $housemanageprice=$model;
-            $housemanageprice->fill($request->input());
-            $housemanageprice->addOther($request);
-            $housemanageprice->save();
-            if(blank($housemanageprice)){
-                throw new \Exception('添加失败',404404);
+        if($request->isMethod('get')){
+            $edata['house_id'] = $house_id;
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>$edata,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.housemanageprice.add')->with($result);
             }
-            $code='success';
-            $msg='添加成功';
-            $data=$housemanageprice;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
         }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            $model = new Housemanageprice();
+            /* ********** 保存 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'house_id' => 'required',
+                'start_at' => 'required',
+                'end_at' => 'required',
+                'manage_price' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $housemanageprice = $model;
+                $housemanageprice->fill($request->input());
+                $housemanageprice->addOther($request);
+                $housemanageprice->save();
+                if (blank($housemanageprice)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $housemanageprice;
+                $edata = null;
+                $url = route('g_housemanageprice',['house_id'=>$house_id]);
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $housemanageprice;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $housemanageprice=Housemanageprice::withTrashed()
-            ->with(['house'=> function ($query) {
-                $query->select('id', 'unit','building','floor','number');
-            }])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -143,68 +171,118 @@ class HousemanagepriceController extends BaseController
         if(blank($housemanageprice)){
             $code='warning';
             $msg='数据不存在';
-            $data=[];
-
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$housemanageprice;
+            $sdata=$housemanageprice;
+            $edata=new Housemanageprice();
+            $url=null;
+
+            $view='gov.housemanageprice.info';
         }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        $model=new Housemanageprice();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'house_id'=>'required',
-            'start_at'=>'required',
-            'end_at'=>'required',
-            'manage_price'=>'required'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
-            $housemanageprice=Housemanageprice::withTrashed()
-                ->lockForUpdate()
-                ->find($id);
-            if(blank($housemanageprice)){
-                throw new \Exception('指定数据项不存在',404404);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
             }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $housemanageprice->fill($request->input());
-            $housemanageprice->editOther($request);
-            $housemanageprice->save();
-            if(blank($housemanageprice)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$housemanageprice;
+        }
 
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
+            $housemanageprice=Housemanageprice::withTrashed()
+                ->sharedLock()
+                ->find($id);
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($housemanageprice)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$housemanageprice;
+                $edata=new Housemanageprice();
+                $url=null;
+
+                $view='gov.housemanageprice.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else {
+            $model = new Housemanageprice();
+            /* ********** 表单验证 ********** */
+            $rules = [
+                'start_at' => 'required',
+                'end_at' => 'required',
+                'manage_price' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $housemanageprice = Housemanageprice::withTrashed()
+                    ->lockForUpdate()
+                    ->find($id);
+                $house_id = $housemanageprice->house_id;
+                if (blank($housemanageprice)) {
+                    throw new \Exception('指定数据项不存在', 404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $housemanageprice->fill($request->input());
+                $housemanageprice->editOther($request);
+                $housemanageprice->save();
+                if (blank($housemanageprice)) {
+                    throw new \Exception('修改失败', 404404);
+                }
+                $code = 'success';
+                $msg = '修改成功';
+                $sdata=$housemanageprice;
+                $edata=null;
+                $url=route('g_housemanageprice',['house_id'=>$house_id]);
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
+                $sdata=null;
+                $edata=$housemanageprice;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 }

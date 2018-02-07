@@ -24,12 +24,6 @@ class Companyvaluer extends Model
         'valid_at'=>'有效期'
     ];
 
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
-
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
         $this->attributes['company_id']=$request->input('company_id');

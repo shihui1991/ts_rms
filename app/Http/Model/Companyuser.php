@@ -27,11 +27,6 @@ class Companyuser extends Model
         'session'=>'登录sessionID',
         'action_at'=>'最近操作时间'
     ];
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){

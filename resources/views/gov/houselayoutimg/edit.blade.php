@@ -49,16 +49,15 @@
                         户型图：<br>
                         <span class="btn btn-xs">
                                         <span>上传图片</span>
-                                        <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple onchange="uplfile(this)">
+                                        <input type="file" accept="image/*" class="hidden" data-name="picture" onchange="uplfile(this)">
                                     </span>
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
-                            @foreach($sdata->picture as $pic)
                                 <li>
                                     <div>
-                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                        <input type="hidden" name="picture[]" value="{!! $pic !!}">
+                                        <img width="120" height="120" src="{!! $sdata->picture !!}" alt="加载失败">
+                                        <input type="hidden" name="picture[]" value="{!! $sdata->picture !!}">
                                         <div class="text">
                                             <div class="inner">
                                                 <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
@@ -67,8 +66,6 @@
                                         </div>
                                     </div>
                                 </li>
-                            @endforeach
-
                         </ul>
                     </div>
                 </div>

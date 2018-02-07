@@ -13,7 +13,7 @@ class Housemanageprice extends Model
     use SoftDeletes;
     protected $table='house_manage_price';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['house_id','start_at','end_at','manage_price'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 

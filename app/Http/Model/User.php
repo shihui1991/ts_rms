@@ -32,12 +32,6 @@ class User extends Model
         'session'=>'最近登录session'
     ];
 
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
-
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
         $this->attributes['dept_id']=$request->input('dept_id');

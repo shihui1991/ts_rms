@@ -24,12 +24,7 @@ class Process extends Model
         'sort'=>'排序',
         'infos'=>'流程描述'
     ];
-
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
+    
     /* ++++++++++ 获取操作类型 ++++++++++ */
     public function getAuthAttribute($key=null)
     {

@@ -24,11 +24,6 @@ class Dept extends Model
         'infos'=>'描述'
     ];
 
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
     /* ++++++++++ 获取类型 ++++++++++ */
     public function getTypeAttribute($key=null)
     {

@@ -13,7 +13,7 @@ class Landprop extends Model
     use SoftDeletes;
     protected $table='land_prop';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['name','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -21,12 +21,6 @@ class Landprop extends Model
         'name'=>'土地性质名称',
         'infos'=>'描述'
     ];
-
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
