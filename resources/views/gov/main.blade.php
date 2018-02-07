@@ -402,6 +402,15 @@
 
                     <b class="arrow"></b>
                 </li>
+
+                <li class="">
+                    <a href="{{route('g_landprop')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        土地性质
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
             </ul>
         </li>
         <li class="">
