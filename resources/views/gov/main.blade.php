@@ -269,6 +269,14 @@
 
                     <b class="arrow"></b>
                 </li>
+                <li class="">
+                    <a href="{{route('g_house')}}">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        房源管理
+                    </a>
+
+                    <b class="arrow"></b>
+                </li>
             </ul>
         </li>
         <li class="">

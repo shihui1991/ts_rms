@@ -25,6 +25,12 @@ class HousecommunityController extends BaseController
 
         /* ********** 查询条件 ********** */
         $where=[];
+        /* ++++++++++ 房源管理机构 ++++++++++ */
+        $company_id=$request->input('company_id');
+        if(is_numeric($company_id)){
+            $where[]=['company_id',$company_id];
+            $infos['company_id']=$company_id;
+        }
         /* ++++++++++ 名称 ++++++++++ */
         $name=trim($request->input('name'));
         if($name){

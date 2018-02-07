@@ -6,6 +6,7 @@
 */
 namespace App\Http\Controllers\Gov;
 
+use App\Http\Model\Houselayoutimg;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -26,4 +27,5 @@ class ToolsController extends BaseController
 
         return response()->json($result);
     }
+
 }
