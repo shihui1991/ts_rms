@@ -58,7 +58,7 @@ class ItemtimeController extends BaseController
         if($request->ajax()){
             return response()->json($result);
         }else{
-            return view('gov.Itemtime.index')->with($result);
+            return view('gov.itemtime.index')->with($result);
         }
     }
 

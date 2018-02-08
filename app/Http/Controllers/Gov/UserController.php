@@ -27,6 +27,18 @@ class UserController extends BaseController
         /* ********** 查询条件 ********** */
         $select=['id','dept_id','role_id','username','name','phone','email','infos','login_at','login_ip','action_at','created_at','updated_at','deleted_at'];
         /* ********** 查询 ********** */
+        $where=[];
+        $share=[];
+        if($dept_id=$request->input('dept_id')){
+            $where[]=['dept_id',$dept_id];
+            $share['dept_id']=$dept_id;
+        }
+        if($name=$request->input('name')){
+            $where[]=['name','like','%'.$name.'%'];
+            $share['name']=$name;
+        }
+        view()->share($share);
+
         DB::beginTransaction();
         try{
             $users=User::withTrashed()
@@ -35,9 +47,10 @@ class UserController extends BaseController
                 },'role'=>function($query){
                     $query->withTrashed()->select(['id','name']);
                 }])
+                ->where($where)
                 ->select($select)
                 ->sharedLock()
-                ->paginate();
+                ->paginate(1);
 
             if(blank($users)){
                 throw new \Exception('没有符合条件的数据',404404);

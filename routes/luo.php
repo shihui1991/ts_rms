@@ -32,6 +32,10 @@ Route::get('/iteminfo_info','IteminfoController@info')->name('g_iteminfo_info');
 Route::any('/iteminfo_edit','IteminfoController@edit')->name('g_iteminfo_edit');  // 修改项目
 Route::any('/itemtime','ItemtimeController@index')->name('g_itemtime');  // 时间规划
 Route::any('/itemtime_edit','ItemtimeController@edit')->name('g_itemtime_edit');  // 修改时间规划
+Route::any('/itemuser','ItemuserController@index')->name('g_itemuser');  // 项目人员
+Route::any('/itemuser_add','ItemuserController@add')->name('g_itemuser_add');  // 配置项目人员
+Route::any('/itemuser_edit','ItemuserController@edit')->name('g_itemuser_edit');  // 调整项目人员
+Route::any('/itemuser_del','ItemuserController@del')->name('g_itemuser_del');  // 删除项目人员
 
 
 /*---------- 工具 ----------*/
