@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\Gov;
 
 use App\Http\Model\Dept;
+use App\Http\Model\Itemadmin;
 use App\Http\Model\Itemuser;
 use App\Http\Model\Process;
 use App\Http\Model\Schedule;
@@ -59,21 +60,24 @@ class ItemuserController extends BaseController
             ->sharedLock()
             ->get();
 
+        $itemadmins=Itemadmin::with(['dept'=>function($query){
+            $query->select(['id','name']);
+        },'role'=>function($query){
+            $query->select(['id','name']);
+        },'user'=>function($query){
+            $query->select(['id','name']);
+        }])
+            ->where('item_id',$item_id)
+            ->sharedLock()
+            ->get();
+
         DB::commit();
 
-        if(blank($itemusers)){
-            $code='error';
-            $msg='还未配置项目人员';
-            $sdata=null;
-            $edata=null;
-            $url=null;
-        }else{
-            $code='success';
-            $msg='查询成功';
-            $sdata=$itemusers;
-            $edata=null;
-            $url=null;
-        }
+        $code='success';
+        $msg='查询成功';
+        $sdata=$itemusers;
+        $edata=$itemadmins;
+        $url=null;
 
         /* ++++++++++ 结果 ++++++++++ */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
@@ -105,7 +109,7 @@ class ItemuserController extends BaseController
                 $code='error';
                 $msg='数据错误';
                 $sdata=null;
-                $edata=null;
+                $edata=$depts;
                 $url=null;
 
                 $view='gov.error';
@@ -339,11 +343,7 @@ class ItemuserController extends BaseController
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
+            return response()->json($result);
         }
         DB::beginTransaction();
         try{
