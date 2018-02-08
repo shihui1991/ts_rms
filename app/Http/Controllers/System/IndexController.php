@@ -6,9 +6,8 @@
 */
 
 namespace App\Http\Controllers\System;
-use App\Http\Controllers\Controller;
 
-use App\Http\Model\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,56 +33,51 @@ class IndexController extends Controller
     /* ++++++++++ 处理登陆页面 ++++++++++ */
     public function login(Request $request)
     {
-        $user_model = new User();
-        $datas = $request->input();
         if($request->isMethod('post')){
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
-                'username'=>['required','regex:/^[0-9A-Za-z]{4,20}$/'],
-                'password'=>['required','regex:/^[0-9A-Za-z]{6,20}$/'],
-                'security_code'=>['required','regex:/^[0-9A-Za-z]{4,20}$/']
+                'username'=>'required',
+                'password'=>'required',
+                'security_code'=>'required',
             ];
             $messages=[
-                'required'=>'请填写:attribute',
-                'username.regex'=>'账号必须为4-20位数字或字母',
-                'password.regex'=>'密码必须为6-20位数字或字母',
-                'security_code.regex'=>'安全码必须为4-20位数字或字母'
+                'username.required'=>'请输入用户名',
+                'password.required'=>'请输入密码',
+                'security_code.required'=>'请输入安全码',
             ];
-            $validator = Validator::make($request->all(),$rules,$messages,$user_model->columns);
+            $validator = Validator::make($request->all(),$rules,$messages);
             if($validator->fails()){
-                return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
             /* ++++++++++ 账号检测 ++++++++++ */
-            if($this->username!=$datas['username']){
-                return response()->json(['code'=>'error','message'=>'用户不存在','sdata'=>'','edata'=>'']);
+            if($this->username!=$request->input('username')){
+                $result=['code'=>'error','message'=>'用户不存在','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
-            if($this->password!=$datas['password']){
-                return response()->json(['code'=>'error','message'=>'密码输入错误','sdata'=>'','edata'=>'']);
+            if($this->password!=$request->input('password')){
+                $result=['code'=>'error','message'=>'密码输入错误','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
-            if($this->security_code!==$datas['security_code']){
-                return response()->json(['code'=>'error','message'=>'安全码输入错误','sdata'=>'','edata'=>'']);
+            if($this->security_code!=$request->input('security_code')){
+                $result=['code'=>'error','message'=>'安全码输入错误','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
             }
-            /* ++++++++++ 获取IP ++++++++++ */
-            $request->setTrustedProxies(array('10.32.0.1/16'));
-            $ip = $request->getClientIp();
-            /* ++++++++++ 获取SessionID ++++++++++ */
-            $sessionid = $request->session()->regenerate();
+
             /* ++++++++++ 存入Session ++++++++++ */
-            $userinfo = [
-                'username'=>$datas['username'],
-                'login_ip'=>$ip,
-                'login_at'=>date('Y-m-d H:i:s'),
-                'session'=>$sessionid
-            ];
-            session(['userinfo'=>$userinfo]);
-            return response()->json(['code'=>'success','message'=>$datas['username'].'，欢迎回来！','sdata'=>'','edata'=>'','url'=>route('sys_home')]);
+            session(['sys_user'=>[
+                'username'=>$request->input('username'),
+                'time'=>time(),
+            ]]);
+            $result=['code'=>'error','message'=>'登录成功','sdata'=>null,'edata'=>null,'url'=>route('sys_home')];
+            return response()->json($result);
         }
     }
 
     /* ========== 退出 ========== */
     public function logout(Request $request)
     {
-        $request->session()->flush();
+        $request->session()->forget('sys_user');
         return redirect()->route('sys_index');
     }
 }
