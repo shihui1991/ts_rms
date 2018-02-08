@@ -49,6 +49,7 @@ class HousemanagepriceController extends BaseController
                 }])
                 ->where('house_id',$house_id)
                 ->select($select)
+                ->orderBy('start_at','asc')
                 ->sharedLock()
                 ->get();
             if(blank($housemanageprices)){

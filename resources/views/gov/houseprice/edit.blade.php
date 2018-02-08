@@ -19,7 +19,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="start_at"> 开始时间： </label>
             <div class="col-sm-9">
-                <input type="text" id="start_at" name="start_at" value="{{$sdata->start_at}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="start_at" name="start_at" value="{{$sdata->start_at}}" class="col-xs-10 col-sm-5 laydate" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -27,7 +27,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="end_at">结束时间：</label>
             <div class="col-sm-9">
-                <input type="text" id="end_at" name="end_at" value="{{$sdata->end_at}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="end_at" name="end_at" value="{{$sdata->end_at}}" class="col-xs-10 col-sm-5 laydate" required>
             </div>
         </div>
         <div class="space-4"></div>

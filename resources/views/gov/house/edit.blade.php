@@ -205,6 +205,7 @@
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
+                            @if($sdata->picture)
                             @foreach($sdata->picture as $pic)
                                 <li>
                                     <div>
@@ -219,6 +220,7 @@
                                     </div>
                                 </li>
                             @endforeach
+                                @endif
                         </ul>
                     </div>
                 </div>
