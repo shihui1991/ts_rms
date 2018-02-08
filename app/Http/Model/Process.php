@@ -50,11 +50,18 @@ class Process extends Model
     public function schedule(){
         return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id')->withDefault();
     }
+
     /* ++++++++++ 父级 ++++++++++ */
     public function father(){
         return $this->belongsTo('App\Http\Model\Process','parent_id','id')->withDefault();
     }
-    /* ++++++++++ 关联项目进度 ++++++++++ */
+
+    /* ++++++++++ 下级 ++++++++++ */
+    public function childs(){
+        return $this->hasMany('App\Http\Model\Process','parent_id','id');
+    }
+
+    /* ++++++++++ 关联菜单 ++++++++++ */
     public function menu(){
         return $this->belongsTo('App\Http\Model\Menu','menu_id','id')->withDefault();
     }

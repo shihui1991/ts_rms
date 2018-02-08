@@ -6,8 +6,9 @@
 */
 namespace App\Http\Controllers\System;
 use App\Http\Model\Schedule;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ScheduleController extends BaseController
 {
@@ -17,200 +18,172 @@ class ScheduleController extends BaseController
 
     }
 
-    /* ++++++++++ 首页 ++++++++++ */
+    /* ========== 首页 ========== */
     public function index(Request $request){
-        $model=new Schedule();
-        $select = ['id','name','sort','infos'];
-        /* ********** 查询条件 ********** */
-        $where=[];
-        /* ++++++++++ 名称 ++++++++++ */
-        $name=trim($request->input('name'));
-        if($name){
-            $where[]=['name','like','%'.$name.'%'];
-            $infos['name']=$name;
-        }
-        /* ********** 排序 ********** */
-        $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'sort';
-        $infos['ordername']=$ordername;
-
-        $orderby=$request->input('orderby');
-        $orderby=$orderby?$orderby:'asc';
-        $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $nums=[15,30,50,100,200];
-        $infos['nums']=$nums;
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
-
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $schedules=$model
-                ->with(['process'=>function($query){
-                    $query->where('parent_id','0')->select(['id','schedule_id','type','menu_id','parent_id','name']);
-                }])
+            $schedules=Schedule::with(['processes'=>function($query){
+                $query->withCount('childs')->with(['menu'=>function($query){
+                    $query->select(['id','name','url']);
+                }])->where('parent_id',0)->orderBy('sort','asc');
+            }])
+                ->orderBy('sort','asc')
                 ->sharedLock()
                 ->get();
             if(blank($schedules)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
-
-            $code='error';
+            $code='success';
             $msg='查询成功';
-            $data=$schedules;
-            $url='';
+            $sdata=$schedules;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
-            $schedules=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$schedules;
-            $url='';
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }
         DB::commit();
-        $infos['schedules']=$schedules;
-        $infos[$code]=$msg;
 
         /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-        }else{
-            return view('system.schedule.index',$infos);
+            return response()->json($result);
+        }else {
+            return view('system.schedule.index')->with($result);
         }
     }
 
     /* ========== 添加 ========== */
-    public function add(Request $request,$id=0){
-        $model=new Schedule();
-        /* ********** 保存 ********** */
-        if($request->isMethod('post')){
+    public function add(Request $request){
+        if($request->isMethod('get')){
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('system.schedule.add')->with($result);
+            }
+        }
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
             /* ++++++++++ 表单验证 ++++++++++ */
-            $rules=[
-                'name'=>'required|unique:a_schedule',
-                'sort'=>'required'
+            $rules = [
+                'name' => 'required|unique:a_schedule',
+                'sort' => 'required|integer|min:0|unique:a_schedule',
             ];
-            $messages=[
-                'required'=>':attribute 为必须项',
-                'unique'=>':attribute 已存在'
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'unique' => ':attribute 已存在',
+                'integer' => ':attribute 必须为整数',
+                'min' => ':attribute 必须不少于 :min',
             ];
 
-            $this->validate($request,$rules,$messages,$model->columns);
+            $model=new Schedule();
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
 
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
-            try{
+            try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $schedule=$model;
+                $schedule = $model;
                 $schedule->fill($request->input());
                 $schedule->addOther($request);
                 $schedule->save();
-                if(blank($schedule)){
-                    throw new \Exception('添加失败',404404);
+                if (blank($schedule)) {
+                    throw new \Exception('添加失败', 404404);
                 }
-                $code='success';
-                $msg='添加成功';
-                $data=$schedule;
-                $url='';
-                DB::commit();
-            }catch (\Exception $exception){
 
-                $code='error';
-                $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-                $data=[];
-                $url='';
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $schedule;
+                $edata = null;
+                $url = route('sys_schedule');
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $schedule;
+                $url = null;
                 DB::rollBack();
             }
             /* ++++++++++ 结果 ++++++++++ */
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 视图 ********** */
-        else{
-            /* ++++++++++ 当前上级 ++++++++++ */
-            $parent=['id'=>$id,'name'=>''];
-            if($id){
-                DB::beginTransaction();
-                $parent['name']=schedule::withTrashed()->where('id',$id)->sharedLock()->value('name');
-                DB::commit();
-            }
-            $infos['parent']=$parent;
-
-            /* ++++++++++ 输出视图 ++++++++++ */
-            return view('system.schedule.add',$infos);
-        }
-    }
-
-    /* ========== 详情 ========== */
-    public function info(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 当前数据 ********** */
-        DB::beginTransaction();
-        $schedule=Schedule::withTrashed()
-            ->sharedLock()
-            ->find($id);
-
-        DB::commit();
-        /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($schedule)){
-            $code='warning';
-            $msg='数据不存在';
-            $data=[];
-            $url='';
-        }else{
-            $code='success';
-            $msg='获取成功';
-            $data=$schedule;
-            $url='';
-        }
-        $infos=[
-            'code'=>$code,
-            'msg'=>$msg,
-            'sdata'=>$data,'edata'=>'',
-            'url'=>$url,
-        ];
-
-        /* ********** 输出视图 ********** */
-        return view('system.schedule.info',$infos);
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('system.error')->with($result);
+            }
         }
 
-        $model=new Schedule();
-        if($request->isMethod('post')){
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
+            $schedule=Schedule::withTrashed()->sharedLock()->find($id);
+            DB::commit();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($schedule)){
+                $code='error';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='system.error';
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$schedule;
+                $edata=new Schedule();
+                $url=null;
+
+                $view='system.schedule.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Schedule();
             /* ********** 表单验证 ********** */
             $rules=[
                 'name'=>'required|unique:a_schedule,name,'.$id.',id',
-                'sort'=>'required'
+                'sort' => 'required|integer|min:0|unique:a_schedule,sort,'.$id.',id',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
-                'unique'=>':attribute 已存在'
+                'unique'=>':attribute 已存在',
+                'integer' => ':attribute 必须为整数',
+                'min' => ':attribute 必须不少于 :min',
             ];
-            $this->validate($request,$rules,$messages,$model->columns);
-
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $schedule=Schedule::withTrashed()
-                    ->lockForUpdate()
-                    ->find($id);
+                $schedule=Schedule::withTrashed()->lockForUpdate()->find($id);
                 if(blank($schedule)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
@@ -222,215 +195,23 @@ class ScheduleController extends BaseController
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
-                $msg='修改成功';
-                $data=$schedule;
-                $url='';
+                $msg='保存成功';
+                $sdata=$schedule;
+                $edata=null;
+                $url=route('sys_schedule');
+
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-                $data=[];
-                $url='';
+                $sdata=null;
+                $edata=$schedule;
+                $url=null;
                 DB::rollBack();
             }
             /* ********** 结果 ********** */
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
-        }else{
-            /* ********** 当前数据 ********** */
-            DB::beginTransaction();
-            $schedule=Schedule::withTrashed()
-                ->sharedLock()
-                ->find($id);
-            DB::commit();
-            /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($schedule)){
-                $code='warning';
-                $msg='数据不存在';
-                $data=[];
-                $url='';
-            }else{
-                $code='success';
-                $msg='获取成功';
-                $data=$schedule;
-                $url='';
-            }
-            $infos=[
-                'code'=>$code,
-                'msg'=>$msg,
-                'sdata'=>$data,'edata'=>'',
-                'url'=>$url,
-            ];
-            /* ********** 输出视图 ********** */
-            return view('system.schedule.edit',$infos);
-        }
-
-    }
-
-    /* ========== 删除 ========== */
-    public function delete(Request $request){
-        /* ********** 验证选择数据项 ********** */
-        $ids=$request->input('ids');
-        if(!$ids){
-
-            $code='warning';
-            $msg='至少选择一项';
-            $data=[];
-            $url='';
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
-        }
-        /* ********** 删除 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据 ++++++++++ */
-            $schedules=Schedule::select(['id'])->withCount('process')->whereIn('id',$ids)->lockForUpdate()->get();
-            if(blank($schedules)){
-                throw new \Exception('没有可删除数据');
-            }
-            $success_ids=[];
-            $fail_ids=[];
-            foreach ($schedules as $schedule){
-                if($schedule->process_count){
-                    $fail_ids[]=$schedule->id;
-                }else{
-                    $success_ids[]=$schedule->id;
-                }
-            }
-            if(blank($success_ids)){
-                throw new \Exception('存在子级，禁止删除');
-            }
-            /* ++++++++++ 批量删除 ++++++++++ */
-            Schedule::whereIn('id',$success_ids)->delete();
-
-
-            if(blank($fail_ids)){
-                $code='success';
-                $msg='全部删除成功';
-            }else{
-                $code='warning';
-                $msg='部分存在子级，禁止删除';
-            }
-            $data=$success_ids;
-            $url='';
-            DB::commit();
-        }catch (\Exception $exception){
-
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            $url='';
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-        }else{
-            return redirect()->back()->withInput()->with($code,$msg);
-        }
-    }
-
-    /* ========== 恢复 ========== */
-    public function restore(Request $request){
-        /* ********** 验证选择数据项 ********** */
-        $ids=$request->input('ids');
-        if(!$ids){
-
-            $code='warning';
-            $msg='至少选择一项';
-            $data=[];
-            $url='';
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
-        }
-        /* ********** 恢复 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据 ++++++++++ */
-            $schedule_ids=Schedule::onlyTrashed()->whereIn('id',$ids)->lockForUpdate()->pluck('id');
-            if(blank($schedule_ids)){
-                throw new \Exception('没有可恢复的数据');
-            }
-            /* ++++++++++ 批量恢复 ++++++++++ */
-            Schedule::whereIn('id',$schedule_ids)->restore();
-
-
-            $code='success';
-            $msg='恢复成功';
-            $data=$schedule_ids;
-            $url='';
-            DB::commit();
-        }catch (\Exception $exception){
-
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            $url='';
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-        }else{
-            return redirect()->back()->withInput()->with($code,$msg);
-        }
-    }
-
-    /* ========== 销毁 ========== */
-    public function destroy(Request $request){
-        /* ********** 验证选择数据项 ********** */
-        $ids=$request->input('ids');
-        if(!$ids){
-
-            $code='warning';
-            $msg='至少选择一项';
-            $data=[];
-            $url='';
-            if($request->ajax()){
-                return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-            }else{
-                return redirect()->back()->withInput()->with($code,$msg);
-            }
-        }
-        /* ********** 销毁 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据 ++++++++++ */
-            $schedule_ids=Schedule::onlyTrashed()->whereIn('id',$ids)->lockForUpdate()->pluck('id');
-            if(blank($schedule_ids)){
-                throw new \Exception('只能销毁已删除的数据');
-            }
-            /* ++++++++++ 批量销毁 ++++++++++ */
-            Schedule::whereIn('id',$schedule_ids)->forceDelete();
-
-
-            $code='success';
-            $msg='销毁成功';
-            $data=$schedule_ids;
-            $url='';
-            DB::commit();
-        }catch (\Exception $exception){
-
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            $url='';
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        if($request->ajax()){
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'','url'=>$url]);
-        }else{
-            return redirect()->back()->withInput()->with($code,$msg);
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
     }
 }

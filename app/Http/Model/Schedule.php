@@ -6,13 +6,15 @@
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Schedule extends Model
 {
+    use SoftDeletes;
     protected $table='a_schedule';
     protected $primaryKey='id';
     protected $fillable=['name','sort','infos'];
-    protected $dates=['created_at','updated_at'];
+    protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -21,6 +23,10 @@ class Schedule extends Model
         'sort'=>'排序',
         'infos'=>'描述'
     ];
+
+    public function setSortAttribute($value){
+        $this->attributes['sort']=is_null($value)?0:(integer)$value;
+    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){

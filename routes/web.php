@@ -36,25 +36,22 @@ Route::namespace('gov')->prefix('gov')->group(function (){
 
 Route::namespace('system')->prefix('sys')->group(function (){
     /*---------- 登录后台 ----------*/
-    Route::any('/','IndexController@index')->name('sys_index');
-    Route::any('/login','IndexController@login')->name('sys_login');
-    Route::any('/logout','IndexController@logout')->name('sys_logout');
+    Route::any('/','IndexController@index')->name('sys_index'); //登录页
+    Route::any('/login','IndexController@login')->name('sys_login'); //登录
+    Route::any('/logout','IndexController@logout')->name('sys_logout'); //退出
     /*---------- 首页 ----------*/
     Route::any('/home','HomeController@index')->name('sys_home');
     /*----- 功能与菜单 -----*/
-    Route::any('/menu','MenuController@index')->name('sys_menu');
-    Route::any('/menu_add','MenuController@add')->name('sys_menu_add');
-    Route::any('/menu_info','MenuController@info')->name('sys_menu_info');
-    Route::any('/menu_edit','MenuController@edit')->name('sys_menu_edit');
+    Route::any('/menu','MenuController@index')->name('sys_menu'); //树形列表
+    Route::any('/menu_add','MenuController@add')->name('sys_menu_add'); //添加菜单
+    Route::any('/menu_info','MenuController@info')->name('sys_menu_info'); //菜单详情
+    Route::any('/menu_edit','MenuController@edit')->name('sys_menu_edit'); //修改菜单
 
     /*----- 项目进度 -----*/
-    Route::any('schedule','ScheduleController@index')->name('sys_schedule');
-    Route::any('schedule_add','ScheduleController@add')->name('sys_schedule_add');
-    Route::any('schedule_info','ScheduleController@info')->name('sys_schedule_info');
-    Route::any('schedule_edit','ScheduleController@edit')->name('sys_schedule_edit');
-    Route::any('schedule_delete','ScheduleController@delete')->name('sys_schedule_delete');
-    Route::any('schedule_restore','ScheduleController@restore')->name('sys_schedule_restore');
-    Route::any('schedule_destroy','ScheduleController@destroy')->name('sys_schedule_destroy');
+    Route::any('schedule','ScheduleController@index')->name('sys_schedule'); //项目进度及流程
+    Route::any('schedule_add','ScheduleController@add')->name('sys_schedule_add'); //添加进度
+    Route::any('schedule_edit','ScheduleController@edit')->name('sys_schedule_edit'); //修改进度
+
     /*----- 项目流程 -----*/
     Route::any('process','ProcessController@index')->name('sys_process');
     Route::any('process_add','ProcessController@add')->name('sys_process_add');
