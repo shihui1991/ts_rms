@@ -25,8 +25,10 @@
             <td>{{$infos->name}}</td>
             <td>{{$infos->type}}</td>
             <td>
+                <div class="btn-group">
                 <a href="{{route('g_role_add',['id'=>$infos->id])}}" class="btn btn-sm">添加下级</a>
                 <a href="{{route('g_role_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
+                </div>
             </td>
         </tr>
         @endforeach
@@ -72,7 +74,7 @@
                             childs +='<tr data-tt-id="'+info.id+'" data-tt-parent-id="'+info.parent_id+'" data-tt-branch="'+(info.childs_count?'true':'false')+'">';
                             childs +='<td>'+info.name+'</td>';
                             childs +='<td>'+info.type+'</td>';
-                            childs +='<td><a href="{{route('g_role_add')}}?id='+info.id+'" class="btn btn-sm">添加下级</a>&nbsp;<a href="{{route('g_role_info')}}?id='+info.id+'" class="btn btn-sm">查看详情</a></td>';
+                            childs +='<td><div class="btn-group"><a href="{{route('g_role_add')}}?id='+info.id+'" class="btn btn-sm">添加下级</a><a href="{{route('g_role_info')}}?id='+info.id+'" class="btn btn-sm">查看详情</a></div></td>';
                             childs +='</tr>';
                         });
                         treeObj.treetable("loadBranch", node, childs);// 插入子节点

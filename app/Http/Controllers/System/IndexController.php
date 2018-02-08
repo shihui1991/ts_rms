@@ -69,7 +69,7 @@ class IndexController extends Controller
                 'username'=>$request->input('username'),
                 'time'=>time(),
             ]]);
-            $result=['code'=>'error','message'=>'登录成功','sdata'=>null,'edata'=>null,'url'=>route('sys_home')];
+            $result=['code'=>'success','message'=>'登录成功','sdata'=>null,'edata'=>null,'url'=>route('sys_home')];
             return response()->json($result);
         }
     }
