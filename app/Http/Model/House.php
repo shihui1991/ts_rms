@@ -17,7 +17,9 @@ class House extends Model
         'unit','floor','number','area','total_floor','lift','is_real','is_buy','is_transit',
         'is_public','picture','delive_at','state'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [];
+    protected $casts = [
+        'picture'=>'array'
+    ];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
@@ -41,11 +43,6 @@ class House extends Model
         'state'=>'房源状况'
     ];
 
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
     /* ++++++++++ 获取是否有电梯 ++++++++++ */
     public function getLiftAttribute($key=null)
     {

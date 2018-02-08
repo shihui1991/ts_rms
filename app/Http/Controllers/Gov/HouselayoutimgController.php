@@ -22,10 +22,22 @@ class HouselayoutimgController extends BaseController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','community_id','layout_id','name','deleted_at'];
+        $select=['id','community_id','layout_id','picture','name','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
+        /* ++++++++++ 房源社区 ++++++++++ */
+        $community_id=$request->input('community_id');
+        if(is_numeric($community_id)){
+            $where[]=['community_id',$community_id];
+            $infos['community_id']=$community_id;
+        }
+        /* ++++++++++ 户型 ++++++++++ */
+        $layout_id=$request->input('layout_id');
+        if(is_numeric($layout_id)){
+            $where[]=['layout_id',$layout_id];
+            $infos['layout_id']=$layout_id;
+        }
         /* ++++++++++ 名称 ++++++++++ */
         $name=trim($request->input('name'));
         if($name){

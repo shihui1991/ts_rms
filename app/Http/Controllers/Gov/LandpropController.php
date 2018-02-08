@@ -63,68 +63,97 @@ class LandpropController extends BaseController
             }
             $code='success';
             $msg='查询成功';
-            $data=$landprops;
+            $sdata=$landprops;
+            $edata=null;
+            $url=null;
         }catch (\Exception $exception){
             $landprops=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=$landprops;
+            $sdata=null;
+            $edata=$landprops;
+            $url=null;
         }
         DB::commit();
 
         /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>$infos]);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.landprop.index')->with($result);
+        }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
         $model=new Landprop();
-        /* ********** 保存 ********** */
-        /* ++++++++++ 表单验证 ++++++++++ */
-        $rules=[
-            'name'=>'required|unique:land_prop'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-
-        /* ++++++++++ 新增 ++++++++++ */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 批量赋值 ++++++++++ */
-            $landprop=$model;
-            $landprop->fill($request->input());
-            $landprop->addOther($request);
-            $landprop->save();
-            if(blank($landprop)){
-                throw new \Exception('添加失败',404404);
+        if($request->isMethod('get')){
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.landprop.add')->with($result);
             }
-            $code='success';
-            $msg='添加成功';
-            $data=$landprop;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'添加失败';
-            $data=[];
-            DB::rollBack();
         }
-        /* ++++++++++ 结果 ++++++++++ */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ********** 保存 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'name' => 'required|unique:land_prop'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'unique' => ':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $landprop = $model;
+                $landprop->fill($request->input());
+                $landprop->addOther($request);
+                $landprop->save();
+                if (blank($landprop)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $landprop;
+                $edata = null;
+                $url = route('g_landprop');
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $landprop;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
@@ -136,66 +165,116 @@ class LandpropController extends BaseController
         if(blank($landprop)){
             $code='warning';
             $msg='数据不存在';
-            $data=[];
-
+            $sdata=null;
+            $edata=null;
+            $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $data=$landprop;
+            $sdata=$landprop;
+            $edata=new Landprop();
+            $url=null;
+
+            $view='gov.landprop.info';
         }
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
         if(!$id){
-            $code='warning';
-            $msg='请选择一条数据';
-            return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>'','edata'=>'']);
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
         }
-        $model=new Landprop();
-        /* ********** 表单验证 ********** */
-        $rules=[
-            'name'=>'required|unique:land_prop,name,'.$id.',id'
-        ];
-        $messages=[
-            'required'=>':attribute 为必须项',
-            'unique'=>':attribute 已存在'
-        ];
-        $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
-        if($validator->fails()){
-            return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>'','edata'=>'']);
-        }
-        /* ********** 更新 ********** */
-        DB::beginTransaction();
-        try{
-            /* ++++++++++ 锁定数据模型 ++++++++++ */
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            DB::beginTransaction();
             $landprop=Landprop::withTrashed()
-                ->lockForUpdate()
+                ->sharedLock()
                 ->find($id);
-            if(blank($landprop)){
-                throw new \Exception('指定数据项不存在',404404);
-            }
-            /* ++++++++++ 处理其他数据 ++++++++++ */
-            $landprop->fill($request->input());
-            $landprop->editOther($request);
-            $landprop->save();
-            if(blank($landprop)){
-                throw new \Exception('修改失败',404404);
-            }
-            $code='success';
-            $msg='修改成功';
-            $data=$landprop;
-
             DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $data=[];
-            DB::rollBack();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($landprop)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$landprop;
+                $edata=new Landprop();
+                $url=null;
+
+                $view='gov.landprop.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Landprop();
+            /* ********** 表单验证 ********** */
+            $rules=[
+                'name'=>'required|unique:land_prop,name,'.$id.',id'
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'unique'=>':attribute 已存在'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $landprop=Landprop::withTrashed()
+                    ->lockForUpdate()
+                    ->find($id);
+                if(blank($landprop)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $landprop->fill($request->input());
+                $landprop->editOther($request);
+                $landprop->save();
+                if(blank($landprop)){
+                    throw new \Exception('修改失败',404404);
+                }
+                $code='success';
+                $msg='修改成功';
+                $sdata=$landprop;
+                $edata=null;
+                $url=route('g_landprop');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$landprop;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
-        /* ********** 结果 ********** */
-        return response()->json(['code'=>$code,'message'=>$msg,'sdata'=>$data,'edata'=>'']);
     }
 }

@@ -104,7 +104,6 @@ class HouseController extends BaseController
         $model = new House();
         if($request->isMethod('get')){
             $sdata['housecompany'] = Housecompany::withTrashed()->select(['id','name'])->get();
-            $sdata['housecommunity'] = Housecommunity::withTrashed()->select(['id','name'])->get();
             $sdata['layout'] = Layout::withTrashed()->select(['id','name'])->get();
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
@@ -133,8 +132,7 @@ class HouseController extends BaseController
                 'is_real' => 'required',
                 'is_buy' => 'required',
                 'is_transit' => 'required',
-                'is_public' => 'required',
-                'state' => 'required'
+                'is_public' => 'required'
             ];
             $messages = [
                 'required' => ':attribute 为必须项'
@@ -147,8 +145,8 @@ class HouseController extends BaseController
             /*----- 房源-评估单价 -----*/
             $houseprice_model = new Houseprice();
             $rules1 = [
-                'start_at' => 'required',
-                'end_at' => 'required',
+                'houseprice.start_at' => 'required',
+                'houseprice.end_at' => 'required',
                 'market' => 'required',
                 'price' => 'required'
             ];
@@ -185,31 +183,28 @@ class HouseController extends BaseController
                 $house = $model;
                 $house->fill($request->input());
                 $house->addOther($request);
+                $house->state=0;
                 $house_rs = $house->save();
                 if (blank($house_rs)) {
                     throw  new \Exception('添加失败', 404404);
                 }
                 /*----- 房源-评估单价添加 -----*/
                 $houseprice = $houseprice_model;
-                $houseprice->fill([
-                    'house_id' => $house->id,
-                    'start_at' => $request->input('start_at'),
-                    'end_at' => $request->input('end_at'),
-                    'market' => $request->input('market'),
-                    'price' => $request->input('price')
-                ]);
+                $houseprice->house_id = $house->id;
+                $houseprice->start_at = ($request->input('houseprice'))['start_at'];
+                $houseprice->end_at = ($request->input('houseprice'))['end_at'];
+                $houseprice->market = $request->input('market');
+                $houseprice->price = $request->input('price');
                 $houseprice->save();
                 if (blank($houseprice)) {
                     throw  new \Exception('添加失败', 404404);
                 }
                 /*----- 房源-购置管理费单价添加 -----*/
                 $housemanageprice = $housemanageprice_model;
-                $housemanageprice->fill([
-                    'house_id' => $house->id,
-                    'start_at' => $request->input('start_at'),
-                    'end_at' => $request->input('end_at'),
-                    'manage_price' => $request->input('manage_price')
-                ]);
+                $housemanageprice->house_id = $house->id;
+                $housemanageprice->start_at = $request->input('start_at');
+                $housemanageprice->end_at = $request->input('end_at');
+                $housemanageprice->manage_price = $request->input('manage_price');
                 $housemanageprice->save();
                 if (blank($housemanageprice)) {
                     throw  new \Exception('添加失败', 404404);
@@ -263,6 +258,8 @@ class HouseController extends BaseController
               }])
             ->sharedLock()
             ->find($id);
+        $house['manage_price'] = Housemanageprice::withTrashed()->where('house_id',$id)->first();
+        $house['price'] = Houseprice::withTrashed()->where('house_id',$id)->first();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($house)){
@@ -307,9 +304,6 @@ class HouseController extends BaseController
                 ->with(['housecommunity'=> function ($query) {
                     $query->withTrashed()->select(['id','name']);
                 },
-                    'layout'=> function ($query) {
-                        $query->withTrashed()->select(['id','name']);
-                    },
                     'housecompany'=> function ($query) {
                         $query->withTrashed()->select(['id','name']);
                     },
@@ -318,6 +312,7 @@ class HouseController extends BaseController
                     }])
                 ->sharedLock()
                 ->find($id);
+            $house['layout'] = Layout::withTrashed()->select(['id','name'])->get();
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($house)){
@@ -345,7 +340,6 @@ class HouseController extends BaseController
             $model=new House();
             /* ********** 表单验证 ********** */
             $rules=[
-                'community_id'=>'required',
                 'layout_id'=>'required',
                 'layout_img_id'=>'required',
                 'building'=>'required',
@@ -359,7 +353,6 @@ class HouseController extends BaseController
                 'is_buy'=>'required',
                 'is_transit'=>'required',
                 'is_public'=>'required',
-                'state'=>'required'
             ];
             $messages=[
                 'required'=>':attribute 为必须项'

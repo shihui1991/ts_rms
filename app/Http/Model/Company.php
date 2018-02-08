@@ -32,12 +32,7 @@ class Company extends Model
         'user_id'=>'评估机构操作员(管理员)',
         'state'=>'状态'
     ];
-
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
+    
     /* ++++++++++ 获取类型 ++++++++++ */
     public function getTypeAttribute($key=null)
     {

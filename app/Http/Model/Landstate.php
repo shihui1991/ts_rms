@@ -13,7 +13,7 @@ class Landstate extends Model
     use SoftDeletes;
     protected $table='land_state';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['prop_id','source_id','name','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -23,12 +23,6 @@ class Landstate extends Model
         'name'=>'土地权益状况名称',
         'infos'=>'描述'
     ];
-
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){

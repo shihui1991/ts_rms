@@ -24,11 +24,6 @@ class Subject extends Model
         'infos'=>'补偿说明'
     ];
 
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
     /* ++++++++++ 获取是否固定科目 ++++++++++ */
     public function getMainAttribute($key=null)
     {

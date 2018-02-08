@@ -30,12 +30,7 @@ class Menu extends Model
         'sort'=>'排序',
         'infos'=>'说明'
     ];
-
-    /* ++++++++++ 名称去空 ++++++++++ */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name']=trim($value);
-    }
+    
     /* ++++++++++ 路由地址去空 ++++++++++ */
     public function setUrlAttribute($value)
     {

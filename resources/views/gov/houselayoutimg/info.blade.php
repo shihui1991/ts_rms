@@ -45,10 +45,9 @@
             <div class="profile-info-value">
                 <span class="editable editable-click">
                 <ul class="ace-thumbnails clearfix img-content viewer">
-                    @foreach($sdata->picture as $pic)
                         <li>
                             <div>
-                                <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                <img width="120" height="120" src="{!! $sdata->picture !!}" alt="加载失败">
                                 <div class="text">
                                     <div class="inner">
                                         <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
@@ -56,7 +55,6 @@
                                 </div>
                             </div>
                         </li>
-                    @endforeach
                 </ul>
                 </span>
             </div>

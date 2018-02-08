@@ -13,7 +13,7 @@ class Houseprice extends Model
     use SoftDeletes;
     protected $table='house_price';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['house_id','start_at','end_at','market','price'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 

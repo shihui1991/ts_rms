@@ -68,12 +68,12 @@ Route::any('/housecompany_add','HousecompanyController@add')->name('g_housecompa
 Route::get('/housecompany_info','HousecompanyController@info')->name('g_housecompany_info');
 Route::any('/housecompany_edit','HousecompanyController@edit')->name('g_housecompany_edit');
 /*---------- 房源社区 ----------*/
-Route::get('/housecommunity','HousecommunityController@index')->name('g_housecommunity');
+Route::any('/housecommunity','HousecommunityController@index')->name('g_housecommunity');
 Route::any('/housecommunity_add','HousecommunityController@add')->name('g_housecommunity_add');
 Route::get('/housecommunity_info','HousecommunityController@info')->name('g_housecommunity_info');
 Route::any('/housecommunity_edit','HousecommunityController@edit')->name('g_housecommunity_edit');
 /*---------- 房源户型图 ----------*/
-Route::get('/houselayoutimg','HouselayoutimgController@index')->name('g_houselayoutimg');
+Route::any('/houselayoutimg','HouselayoutimgController@index')->name('g_houselayoutimg');
 Route::any('/houselayoutimg_add','HouselayoutimgController@add')->name('g_houselayoutimg_add');
 Route::get('/houselayoutimg_info','HouselayoutimgController@info')->name('g_houselayoutimg_info');
 Route::any('/houselayoutimg_edit','HouselayoutimgController@edit')->name('g_houselayoutimg_edit');
@@ -82,3 +82,28 @@ Route::get('/house','HouseController@index')->name('g_house');
 Route::any('/house_add','HouseController@add')->name('g_house_add');
 Route::get('/house_info','HouseController@info')->name('g_house_info');
 Route::any('/house_edit','HouseController@edit')->name('g_house_edit');
+/*---------- 房源-评估单价 ----------*/
+Route::any('/houseprice','HousepriceController@index')->name('g_houseprice');
+Route::any('/houseprice_add','HousepriceController@add')->name('g_houseprice_add');
+Route::get('/houseprice_info','HousepriceController@info')->name('g_houseprice_info');
+Route::any('/houseprice_edit','HousepriceController@edit')->name('g_houseprice_edit');
+/*---------- 房源-购置管理费单价 ----------*/
+Route::get('/housemanageprice','HousemanagepriceController@index')->name('g_housemanageprice');
+Route::any('/housemanageprice_add','HousemanagepriceController@add')->name('g_housemanageprice_add');
+Route::get('/housemanageprice_info','HousemanagepriceController@info')->name('g_housemanageprice_info');
+Route::any('/housemanageprice_edit','HousemanagepriceController@edit')->name('g_housemanageprice_edit');
+/*---------- 土地性质 ----------*/
+Route::get('/landprop','LandpropController@index')->name('g_landprop');
+Route::any('/landprop_add','LandpropController@add')->name('g_landprop_add');
+Route::get('/landprop_info','LandpropController@info')->name('g_landprop_info');
+Route::any('/landprop_edit','LandpropController@edit')->name('g_landprop_edit');
+/*---------- 土地来源 ----------*/
+Route::get('/landsource','LandsourceController@index')->name('g_landsource');
+Route::any('/landsource_add','LandsourceController@add')->name('g_landsource_add');
+Route::get('/landsource_info','LandsourceController@info')->name('g_landsource_info');
+Route::any('/landsource_edit','LandsourceController@edit')->name('g_landsource_edit');
+/*---------- 土地权益状况 ----------*/
+Route::get('/landstate','LandstateController@index')->name('g_landstate');
+Route::any('/landstate_add','LandstateController@add')->name('g_landstate_add');
+Route::get('/landstate_info','LandstateController@info')->name('g_landstate_info');
+Route::any('/landstate_edit','LandstateController@edit')->name('g_landstate_edit');
