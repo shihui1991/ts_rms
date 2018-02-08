@@ -13,7 +13,7 @@ class Menu extends Model
     use SoftDeletes;
     protected $table='a_menu';
     protected $primaryKey='id';
-    protected $fillable=['name','icon','module','url','method','login','auth','display','sort','infos'];
+    protected $fillable=['name','icon','url','method','login','auth','display','sort','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -30,12 +30,7 @@ class Menu extends Model
         'sort'=>'排序',
         'infos'=>'说明'
     ];
-    
-    /* ++++++++++ 路由地址去空 ++++++++++ */
-    public function setUrlAttribute($value)
-    {
-        $this->attributes['url']=trim($value);
-    }
+
     /* ++++++++++ 排序强制转换为数字 ++++++++++ */
     public function setSortAttribute($value)
     {
@@ -74,7 +69,7 @@ class Menu extends Model
     /* ++++++++++ 获取模块 ++++++++++ */
     public function getModuleAttribute($key=null)
     {
-        $array=[0=>'征收管理',1=>'评估机构',2=>'被征收户',3=>'触摸屏'];
+        $array=[0=>'征收管理端',1=>'评估机构端',2=>'被征收户端',3=>'触摸屏端',4=>'后台管理端'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
@@ -85,6 +80,12 @@ class Menu extends Model
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
         $this->attributes['parent_id']=$request->input('parent_id');
+        if($request->input('parent_id')){
+            $parent=self::select(['id','module'])->find($request->input('parent_id'));
+            $this->attributes['module']=$parent->getOriginal('module');
+        }else{
+            $this->attributes['module']=$request->input('module');
+        }
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
@@ -98,5 +99,9 @@ class Menu extends Model
     /* ++++++++++ 子级关联 ++++++++++ */
     public function childs(){
         return $this->hasMany('App\Http\Model\Menu','parent_id','id');
+    }
+
+    public function modulemenus(){
+        return $this->hasMany('App\Http\Model\Menu','module','module');
     }
 }

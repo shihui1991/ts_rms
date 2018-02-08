@@ -23,14 +23,14 @@
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 征收范围： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click">{{$infos->place}}</span>
+                                                <span class="editable editable-click">{{str_limit($infos->place,50)}}</span>
                                             </div>
                                         </div>
 
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 项目描述： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click">{{$infos->infos}}</span>
+                                                <span class="editable editable-click">{{str_limit($infos->infos,50)}}</span>
                                             </div>
                                         </div>
 

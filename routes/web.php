@@ -17,7 +17,7 @@ Route::any('/', function () {
 
 /*========== 征收管理端 ==========*/
 Route::namespace('gov')->prefix('gov')->group(function (){
-    /*---------- 登陆 ----------*/
+    /*---------- 登录 ----------*/
     Route::get('/','IndexController@index')->name('g_index');
     Route::post('/login','IndexController@login')->name('g_login');
     Route::get('/logout','IndexController@logout')->name('g_logout');
@@ -34,24 +34,19 @@ Route::namespace('gov')->prefix('gov')->group(function (){
 });
 
 
-Route::namespace('system')->prefix('system')->group(function (){
-    /*---------- 登陆后台 ----------*/
+Route::namespace('system')->prefix('sys')->group(function (){
+    /*---------- 登录后台 ----------*/
     Route::any('/','IndexController@index')->name('sys_index');
-    Route::any('login','IndexController@login')->name('sys_login');
-    Route::any('logout','IndexController@logout')->name('sys_logout');
-    /*---------- 控制台 ----------*/
-    Route::any('home','HomeController@index')->name('sys_home');
+    Route::any('/login','IndexController@login')->name('sys_login');
+    Route::any('/logout','IndexController@logout')->name('sys_logout');
+    /*---------- 首页 ----------*/
+    Route::any('/home','HomeController@index')->name('sys_home');
     /*----- 功能与菜单 -----*/
-    Route::any('menu','MenuController@index')->name('sys_menu');
-    Route::any('menu_all','MenuController@all')->name('sys_menu_all');
-    Route::any('menu_add/{id?}','MenuController@add')->name('sys_menu_add');
-    Route::any('menu_info/{id?}','MenuController@info')->name('sys_menu_info');
-    Route::any('menu_edit/{id?}','MenuController@edit')->name('sys_menu_edit');
-    Route::any('menu_sort','MenuController@sort')->name('sys_menu_sort');
-    Route::any('menu_display','MenuController@display')->name('sys_menu_display');
-    Route::any('menu_delete','MenuController@delete')->name('sys_menu_delete');
-    Route::any('menu_restore','MenuController@restore')->name('sys_menu_restore');
-    Route::any('menu_destroy','MenuController@destroy')->name('sys_menu_destroy');
+    Route::any('/menu','MenuController@index')->name('sys_menu');
+    Route::any('/menu_add','MenuController@add')->name('sys_menu_add');
+    Route::any('/menu_info','MenuController@info')->name('sys_menu_info');
+    Route::any('/menu_edit','MenuController@edit')->name('sys_menu_edit');
+
     /*----- 项目进度 -----*/
     Route::any('schedule','ScheduleController@index')->name('sys_schedule');
     Route::any('schedule_add','ScheduleController@add')->name('sys_schedule_add');
