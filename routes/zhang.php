@@ -98,12 +98,29 @@ Route::any('/landprop_add','LandpropController@add')->name('g_landprop_add');
 Route::get('/landprop_info','LandpropController@info')->name('g_landprop_info');
 Route::any('/landprop_edit','LandpropController@edit')->name('g_landprop_edit');
 /*---------- 土地来源 ----------*/
-Route::get('/landsource','LandsourceController@index')->name('g_landsource');
+Route::any('/landsource','LandsourceController@index')->name('g_landsource');
 Route::any('/landsource_add','LandsourceController@add')->name('g_landsource_add');
 Route::get('/landsource_info','LandsourceController@info')->name('g_landsource_info');
 Route::any('/landsource_edit','LandsourceController@edit')->name('g_landsource_edit');
 /*---------- 土地权益状况 ----------*/
-Route::get('/landstate','LandstateController@index')->name('g_landstate');
+Route::any('/landstate','LandstateController@index')->name('g_landstate');
 Route::any('/landstate_add','LandstateController@add')->name('g_landstate_add');
 Route::get('/landstate_info','LandstateController@info')->name('g_landstate_info');
 Route::any('/landstate_edit','LandstateController@edit')->name('g_landstate_edit');
+
+
+/*---------- 项目-地块 ----------*/
+Route::get('/itemland','ItemlandController@index')->name('g_itemland');
+Route::any('/itemland_add','ItemlandController@add')->name('g_itemland_add');
+Route::get('/itemland_info','ItemlandController@info')->name('g_itemland_info');
+Route::any('/itemland_edit','ItemlandController@edit')->name('g_itemland_edit');
+/*---------- 项目-地块楼栋 ----------*/
+Route::get('/itembuilding','ItembuildingController@index')->name('g_itembuilding');
+Route::any('/itembuilding_add','ItembuildingController@add')->name('g_itembuilding_add');
+Route::get('/itembuilding_info','ItembuildingController@info')->name('g_itembuilding_info');
+Route::any('/itembuilding_edit','ItembuildingController@edit')->name('g_itembuilding_edit');
+/*---------- 项目-公共附属物 ----------*/
+Route::get('/itempublic','ItempublicController@index')->name('g_itempublic');
+Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
+Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
+Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');

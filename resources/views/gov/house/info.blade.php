@@ -186,63 +186,6 @@
                 <span class="editable editable-click">{{$sdata->deleted_at}}</span>
             </div>
         </div><br/>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 【评估信息】 </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click"></span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 开始时间： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->price->start_at}}</span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 结束时间： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->price->end_at}}</span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 市场评估价： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->price->market}}</span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 安置优惠价： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->price->price}}</span>
-            </div>
-        </div><br/>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name">【管理费用】 </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click"></span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 开始时间： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->manage_price->start_at}}</span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 结束时间： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->manage_price->end_at}}</span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 月管理费： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->manage_price->manage_price}}</span>
-            </div>
-        </div>
-
     </div>
 
 @endsection

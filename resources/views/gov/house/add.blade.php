@@ -58,10 +58,10 @@
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right"> 房源户型图：<br/>
-                <button type="button" class="btn layout_select" style="background-color: #ABBAC3!important;border-color: #ABBAC3;width: 100px;"
+                <span type="button" class="btn btn-xs layout_select"
                         data-toggle="modal">
-                    选择户型图
-                </button>
+                    <span>选择户型图</span>
+                </span>
             </label>
             <div class="col-sm-9">
                 <ul class="ace-thumbnails clearfix img-content viewer imgs_layout">
