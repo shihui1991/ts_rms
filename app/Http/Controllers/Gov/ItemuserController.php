@@ -187,6 +187,11 @@ class ItemuserController extends BaseController
                     }
                 }
 
+                $count=Itemuser::where('item_id',$item_id)->count();
+                if($count){
+                    throw new \Exception('项目人员已配置',404404);
+                }
+
                 /* ++++++++++ 批量添加 ++++++++++ */
                 $field=['item_id','schedule_id','process_id','menu_id','dept_id','role_id', 'user_id','created_at','updated_at'];
                 $sqls=batch_update_or_insert_sql('item_user',$field,$data,$field);
