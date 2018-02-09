@@ -68,10 +68,10 @@ Route::namespace('system')->prefix('sys')->group(function (){
     Route::any('/filetable_edit','FiletableController@edit')->name('sys_filetable_edit'); // 修改分类数据表
 
     /*----- 项目资金进出类型 -----*/
-    Route::any('itemfundscate','ItemfundscateController@index')->name('sys_itemfundscate');
-    Route::any('itemfundscate_add','ItemfundscateController@add')->name('sys_itemfundscate_add');
-    Route::any('itemfundscate_info','ItemfundscateController@info')->name('sys_itemfundscate_info');
-    Route::any('itemfundscate_edit','ItemfundscateController@edit')->name('sys_itemfundscate_edit');
+    Route::any('/fundscate','FundscateController@index')->name('sys_fundscate');
+    Route::any('/fundscate_add','FundscateController@add')->name('sys_fundscate_add');
+    Route::any('/fundscate_edit','FundscateController@edit')->name('sys_fundscate_edit');
+
     /*----- 项目通知分类 -----*/
     Route::any('itemnoticecate','ItemnoticecateController@index')->name('sys_itemnoticecate');
     Route::any('itemnoticecate_add','ItemnoticecateController@add')->name('sys_itemnoticecate_add');
