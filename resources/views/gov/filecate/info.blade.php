@@ -17,7 +17,7 @@
         <div class="profile-info-row">
             <div class="profile-info-name"> 表名： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->afiletable->name}}</span>
+                <span class="editable editable-click">{{$sdata->filetable->name}}</span>
             </div>
         </div>
 

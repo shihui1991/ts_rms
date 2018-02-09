@@ -48,7 +48,7 @@ class FilecateController extends BaseController
         DB::beginTransaction();
         try{
             $filecates=$model
-                ->with(['afiletable'=>function($query){
+                ->with(['filetable'=>function($query){
                     $query->select(['id','name']);
                 }])
                 ->where($where)
@@ -96,7 +96,7 @@ class FilecateController extends BaseController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $filecate=Filecate::with(['afiletable'=>function($query){
+        $filecate=Filecate::with(['filetable'=>function($query){
             $query->select(['id','name']);
         }])
             ->sharedLock()

@@ -48,22 +48,25 @@ Route::namespace('system')->prefix('sys')->group(function (){
     Route::any('/menu_edit','MenuController@edit')->name('sys_menu_edit'); //修改菜单
 
     /*----- 项目进度 -----*/
-    Route::any('schedule','ScheduleController@index')->name('sys_schedule'); //项目进度及流程
-    Route::any('schedule_add','ScheduleController@add')->name('sys_schedule_add'); //添加进度
-    Route::any('schedule_edit','ScheduleController@edit')->name('sys_schedule_edit'); //修改进度
+    Route::any('/schedule','ScheduleController@index')->name('sys_schedule'); //项目进度及流程
+    Route::any('/schedule_add','ScheduleController@add')->name('sys_schedule_add'); //添加进度
+    Route::any('/schedule_edit','ScheduleController@edit')->name('sys_schedule_edit'); //修改进度
 
     /*----- 项目流程 -----*/
-    Route::any('process','ProcessController@index')->name('sys_process'); //项目流程
-    Route::any('process_add','ProcessController@add')->name('sys_process_add'); // 添加流程
-    Route::any('process_edit','ProcessController@edit')->name('sys_process_edit'); // 修改流程
+    Route::any('/process','ProcessController@index')->name('sys_process'); //项目流程
+    Route::any('/process_add','ProcessController@add')->name('sys_process_add'); // 添加流程
+    Route::any('/process_edit','ProcessController@edit')->name('sys_process_edit'); // 修改流程
 
     /*----- 控制类型 -----*/
-    Route::any('ctrlcate','CtrlcateController@index')->name('sys_ctrlcate'); //控制类型
-    Route::any('ctrlcate_add','CtrlcateController@add')->name('sys_ctrlcate_add'); // 添加控制类型
-    Route::any('ctrlcate_edit','CtrlcateController@edit')->name('sys_ctrlcate_edit'); // 修改控制类型
+    Route::any('/ctrlcate','CtrlcateController@index')->name('sys_ctrlcate'); //控制类型
+    Route::any('/ctrlcate_add','CtrlcateController@add')->name('sys_ctrlcate_add'); // 添加控制类型
+    Route::any('/ctrlcate_edit','CtrlcateController@edit')->name('sys_ctrlcate_edit'); // 修改控制类型
     
-    /*----- 必备附件分类 -----*/
-    Route::any('filetable','FiletableController@index')->name('sys_filetable');
+    /*----- 必备附件分类-数据表 -----*/
+    Route::any('/filetable','FiletableController@index')->name('sys_filetable'); //必备附件分类-数据表
+    Route::any('/filetable_add','FiletableController@add')->name('sys_filetable_add'); // 添加分类数据表
+    Route::any('/filetable_edit','FiletableController@edit')->name('sys_filetable_edit'); // 修改分类数据表
+
     /*----- 项目资金进出类型 -----*/
     Route::any('itemfundscate','ItemfundscateController@index')->name('sys_itemfundscate');
     Route::any('itemfundscate_add','ItemfundscateController@add')->name('sys_itemfundscate_add');

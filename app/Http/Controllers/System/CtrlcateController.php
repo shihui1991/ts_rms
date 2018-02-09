@@ -1,7 +1,7 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目进度
+| 项目控制类型分类
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
@@ -18,7 +18,7 @@ class CtrlcateController extends BaseController
 
     }
 
-    /* ========== 首页 ========== */
+    /* ========== 列表 ========== */
     public function index(Request $request){
         /* ********** 查询 ********** */
         DB::beginTransaction();
