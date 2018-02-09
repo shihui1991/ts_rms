@@ -72,11 +72,11 @@ Route::namespace('system')->prefix('sys')->group(function (){
     Route::any('/fundscate_add','FundscateController@add')->name('sys_fundscate_add');
     Route::any('/fundscate_edit','FundscateController@edit')->name('sys_fundscate_edit');
 
-    /*----- 项目通知分类 -----*/
-    Route::any('itemnoticecate','ItemnoticecateController@index')->name('sys_itemnoticecate');
-    Route::any('itemnoticecate_add','ItemnoticecateController@add')->name('sys_itemnoticecate_add');
-    Route::any('itemnoticecate_info','ItemnoticecateController@info')->name('sys_itemnoticecate_info');
-    Route::any('itemnoticecate_edit','ItemnoticecateController@edit')->name('sys_itemnoticecate_edit');
+    /*----- 项目内部通知分类 -----*/
+    Route::any('/noticecate','NoticecateController@index')->name('sys_noticecate');
+    Route::any('/noticecate_add','NoticecateController@add')->name('sys_noticecate_add');
+    Route::any('/noticecate_edit','NoticecateController@edit')->name('sys_noticecate_edit');
+
     /*----- 状态代码 -----*/
     Route::any('statecode','StatecodeController@index')->name('sys_statecode');
     /*----- 通知公告分类 -----*/

@@ -5,7 +5,7 @@
 @section('content')
 
     <div class="well well-sm">
-        <a href="{{route('sys_fundscate_add')}}" class="btn">添加进出类型</a>
+        <a href="{{route('sys_noticecate_add')}}" class="btn">添加通知分类</a>
     </div>
 
     @if(filled($sdata))
@@ -20,14 +20,14 @@
             </thead>
             <tbody>
 
-            @foreach($sdata as $fundscate)
+            @foreach($sdata as $noticecate)
                 <tr>
-                    <td>{{$fundscate->id}}</td>
-                    <td>{{$fundscate->name}}</td>
-                    <td>{{str_limit($fundscate->infos,50)}}</td>
+                    <td>{{$noticecate->id}}</td>
+                    <td>{{$noticecate->name}}</td>
+                    <td>{{str_limit($noticecate->infos,50)}}</td>
                     <td>
                         <div class="btn-group">
-                            <a href="{{route('sys_fundscate_edit',['id'=>$fundscate->id])}}" class="btn btn-xs">
+                            <a href="{{route('sys_noticecate_edit',['id'=>$noticecate->id])}}" class="btn btn-xs">
                                 修改
                             </a>
                         </div>
