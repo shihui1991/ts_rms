@@ -70,7 +70,7 @@ class ItemController extends BaseController
         if($request->isMethod('get')){
             /* ++++++++++ 必备附件分类 ++++++++++ */
             DB::beginTransaction();
-            $file_table_id=Filetable::where('table_name','item')->sharedLock()->value('id');
+            $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
             $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
             DB::commit();
 
@@ -101,7 +101,7 @@ class ItemController extends BaseController
 
             DB::beginTransaction();
             try{
-                $file_table_id=Filetable::where('table_name','item')->sharedLock()->value('id');
+                $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
                 $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
                 $rules=[];
                 $messages=[];

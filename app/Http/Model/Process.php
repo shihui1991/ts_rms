@@ -13,7 +13,7 @@ class Process extends Model
     use SoftDeletes;
     protected $table='a_process';
     protected $primaryKey='id';
-    protected $fillable=['name','type','menu_id','sort','infos'];
+    protected $fillable=['name','type','menu_id','sort','number','infos'];
     protected $dates=['created_at','updated_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -24,6 +24,7 @@ class Process extends Model
         'type'=>'操作类型',
         'menu_id'=>'关联菜单',
         'sort'=>'排序',
+        'number'=>'同级角色执行限制人数',
         'infos'=>'描述'
     ];
 

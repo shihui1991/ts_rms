@@ -70,7 +70,7 @@ class IteminfoController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $file_table_id=Filetable::where('table_name','item')->sharedLock()->value('id');
+            $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
             $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
 
             $item=Item::where($where)
@@ -116,7 +116,7 @@ class IteminfoController extends BaseController
             /* ********** 获取数据 ********** */
             DB::beginTransaction();
 
-            $file_table_id=Filetable::where('table_name','item')->sharedLock()->value('id');
+            $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
             $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
 
             $item=Item::where($where)
@@ -170,7 +170,7 @@ class IteminfoController extends BaseController
 
             DB::beginTransaction();
             try{
-                $file_table_id=Filetable::where('table_name','item')->sharedLock()->value('id');
+                $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
                 $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
                 $rules=[];
                 $messages=[];

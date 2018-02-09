@@ -21,7 +21,7 @@ class IndexController extends Controller
     /* ========== 初始化 ========== */
     public function __construct()
     {
-
+        parent::__construct();
     }
 
     /* ++++++++++ 登陆页面 ++++++++++ */

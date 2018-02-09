@@ -24,7 +24,7 @@
             @foreach($sdata as $infos)
                 <tr>
                     <td>{{$infos->id}}</td>
-                    <td>{{$infos->afiletable->name}}</td>
+                    <td>{{$infos->filetable->name}}</td>
                     <td>{{$infos->name}}</td>
                     <td>{{$infos->filename}}</td>
                     <td>

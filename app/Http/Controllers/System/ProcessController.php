@@ -129,6 +129,7 @@ class ProcessController extends BaseController
                 'type'=>'required:in:'.$keys_str,
                 'menu_id'=>['required','regex:/^[0-9]+$/','unique:a_process'],
                 'sort'=>'required|integer|min:0|unique:a_process',
+                'number'=>'required|integer|min:1',
             ];
             $messages=[
                 'schedule_id.regex'=>'选择正确的 :attribute',
@@ -268,6 +269,7 @@ class ProcessController extends BaseController
                 'type'=>'required:in:'.$keys_str,
                 'menu_id'=>['required','regex:/^[0-9]+$/','unique:a_process,menu_id,'.$id.',id'],
                 'sort'=>'required|integer|min:0|unique:a_process,sort,'.$id.',id',
+                'number'=>'required|integer|min:1',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',

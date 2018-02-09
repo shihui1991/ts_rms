@@ -6,9 +6,11 @@
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Filecate extends Model
 {
+    use SoftDeletes;
     protected $table='file_cate';
     protected $primaryKey='id';
     protected $fillable=['file_table_id','name','filename'];
@@ -30,7 +32,7 @@ class Filecate extends Model
 
     }
     /* ++++++++++ 关联必备附件表 ++++++++++ */
-    public function afiletable(){
+    public function filetable(){
         return $this->belongsTo('App\Http\Model\Filetable','file_table_id','id')->withDefault();
     }
 }

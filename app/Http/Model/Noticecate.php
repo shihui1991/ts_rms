@@ -1,25 +1,25 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目资金进出类型 模型
+| 项目内部通知分类 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Itemfundscate extends Model
+class Noticecate extends Model
 {
     use SoftDeletes;
-    protected $table='a_item_funds_cate';
+    protected $table='a_item_notice_cate';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['name','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
-        'name'=>'项目资金进出类型名称',
+        'name'=>'名称',
         'infos'=>'描述'
     ];
 
