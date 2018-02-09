@@ -124,3 +124,18 @@ Route::any('/itempublic','ItempublicController@index')->name('g_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');
+/*---------- 项目-自选社会风险评估调查话题 ----------*/
+Route::any('/itemtopic','ItemtopicController@index')->name('g_itemtopic');
+Route::any('/itemtopic_add','ItemtopicController@add')->name('g_itemtopic_add');
+Route::get('/itemtopic_info','ItemtopicController@info')->name('g_itemtopic_info');
+Route::any('/itemtopic_edit','ItemtopicController@edit')->name('g_itemtopic_edit');
+/*---------- 项目-其他补偿事项单价 ----------*/
+Route::any('/itemobject','ItemobjectController@index')->name('g_itemobject');
+Route::any('/itemobject_add','ItemobjectController@add')->name('g_itemobject_add');
+Route::get('/itemobject_info','ItemobjectController@info')->name('g_itemobject_info');
+Route::any('/itemobject_edit','ItemobjectController@edit')->name('g_itemobject_edit');
+/*---------- 项目-补偿科目说明 ----------*/
+Route::any('/itemsubject','ItemsubjectController@index')->name('g_itemsubject');
+Route::any('/itemsubject_add','ItemsubjectController@add')->name('g_itemsubject_add');
+Route::get('/itemsubject_info','ItemsubjectController@info')->name('g_itemsubject_info');
+Route::any('/itemsubject_edit','ItemsubjectController@edit')->name('g_itemsubject_edit');
