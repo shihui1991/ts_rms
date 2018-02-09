@@ -92,10 +92,15 @@ class MenuController extends BaseController
         }
         /* ********** 保存 ********** */
         else{
+            $model=new Menu();
+            $modules=$model->getModuleAttribute();
+            $keys=array_keys($modules);
+            $keys_str=implode(',',$keys);
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
                 'parent_id'=>['required','regex:/^[0-9]+$/'],
                 'name'=>'required',
+                'module'=>'nullable|in:'.$keys_str,
                 'url'=>'required',
                 'login'=>'required|boolean',
                 'auth'=>'required|boolean',
@@ -105,11 +110,12 @@ class MenuController extends BaseController
             $messages=[
                 'required'=>':attribute 为必须项',
                 'parent_id.regex'=>'选择正确的上级',
+                'in'=>':attribute 选择正确的选项',
                 'boolean'=>':attribute 选择正确的选项',
                 'integer'=>':attribute 必须是整数',
             ];
-            
-            $model=new Menu();
+
+
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];

@@ -1,5 +1,5 @@
 {{-- 继承布局 --}}
-@extends('gov.layout')
+@extends('system.home')
 
 
 {{-- 页面内容 --}}
