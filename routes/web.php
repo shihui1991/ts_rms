@@ -57,9 +57,11 @@ Route::namespace('system')->prefix('sys')->group(function (){
     Route::any('process_add','ProcessController@add')->name('sys_process_add'); // 添加流程
     Route::any('process_edit','ProcessController@edit')->name('sys_process_edit'); // 修改流程
 
-    /*----- 项目流程-功能菜单 -----*/
-    Route::any('processmenu_info','ProcessmenuController@info')->name('sys_processmenu_info');
-    Route::any('processmenu_edit','ProcessmenuController@edit')->name('sys_processmenu_edit');
+    /*----- 控制类型 -----*/
+    Route::any('ctrlcate','CtrlcateController@index')->name('sys_ctrlcate'); //控制类型
+    Route::any('ctrlcate_add','CtrlcateController@add')->name('sys_ctrlcate_add'); // 添加控制类型
+    Route::any('ctrlcate_edit','CtrlcateController@edit')->name('sys_ctrlcate_edit'); // 修改控制类型
+    
     /*----- 必备附件分类 -----*/
     Route::any('filetable','FiletableController@index')->name('sys_filetable');
     /*----- 项目资金进出类型 -----*/
