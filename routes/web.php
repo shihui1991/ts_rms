@@ -85,7 +85,6 @@ Route::namespace('system')->prefix('sys')->group(function (){
     /*----- 重要补偿科目 -----*/
     Route::any('/subject','SubjectController@index')->name('sys_subject');
     Route::any('/subject_add','SubjectController@add')->name('sys_subject_add');
-    Route::any('/subject_info','SubjectController@info')->name('sys_subject_info');
     Route::any('/subject_edit','SubjectController@edit')->name('sys_subject_edit');
 
     /*----- 状态代码 -----*/

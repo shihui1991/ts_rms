@@ -13,14 +13,14 @@ class Subject extends Model
     use SoftDeletes;
     protected $table='a_subject';
     protected $primaryKey='id';
-    protected $guarded=[];
+    protected $fillable=['name','main','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'name'=>'重要补偿科目名称',
-        'main'=>'是否固定科目',
+        'main'=>'固定科目',
         'infos'=>'补偿说明'
     ];
 
