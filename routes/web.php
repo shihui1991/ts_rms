@@ -88,5 +88,7 @@ Route::namespace('system')->prefix('sys')->group(function (){
     Route::any('/subject_edit','SubjectController@edit')->name('sys_subject_edit');
 
     /*----- 状态代码 -----*/
-    Route::any('statecode','StatecodeController@index')->name('sys_statecode');
+    Route::any('/statecode','StatecodeController@index')->name('sys_statecode');
+    Route::any('/statecode_add','StatecodeController@add')->name('sys_statecode_add');
+    Route::any('/statecode_edit','StatecodeController@edit')->name('sys_statecode_edit');
 });
