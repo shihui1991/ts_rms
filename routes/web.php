@@ -77,16 +77,17 @@ Route::namespace('system')->prefix('sys')->group(function (){
     Route::any('/noticecate_add','NoticecateController@add')->name('sys_noticecate_add');
     Route::any('/noticecate_edit','NoticecateController@edit')->name('sys_noticecate_edit');
 
+    /*----- 通知公告分类 -----*/
+    Route::any('/newscate','NewscateController@index')->name('sys_newscate');
+    Route::any('/newscate_add','NewscateController@add')->name('sys_newscate_add');
+    Route::any('/newscate_edit','NewscateController@edit')->name('sys_newscate_edit');
+
+    /*----- 重要补偿科目 -----*/
+    Route::any('/subject','SubjectController@index')->name('sys_subject');
+    Route::any('/subject_add','SubjectController@add')->name('sys_subject_add');
+    Route::any('/subject_info','SubjectController@info')->name('sys_subject_info');
+    Route::any('/subject_edit','SubjectController@edit')->name('sys_subject_edit');
+
     /*----- 状态代码 -----*/
     Route::any('statecode','StatecodeController@index')->name('sys_statecode');
-    /*----- 通知公告分类 -----*/
-    Route::any('newscate','NewscateController@index')->name('sys_newscate');
-    Route::any('newscate_add','NewscateController@add')->name('sys_newscate_add');
-    Route::any('newscate_info','NewscateController@info')->name('sys_newscate_info');
-    Route::any('newscate_edit','NewscateController@edit')->name('sys_newscate_edit');
-    /*----- 重要补偿科目 -----*/
-    Route::any('subject','SubjectController@index')->name('sys_subject');
-    Route::any('subject_add','SubjectController@add')->name('sys_subject_add');
-    Route::any('subject_info','SubjectController@info')->name('sys_subject_info');
-    Route::any('subject_edit','SubjectController@edit')->name('sys_subject_edit');
 });
