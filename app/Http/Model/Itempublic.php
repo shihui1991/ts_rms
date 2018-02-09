@@ -13,7 +13,7 @@ class Itempublic extends Model
     use SoftDeletes;
     protected $table='item_public';
     protected $primaryKey='id';
-    protected $fillable=['item_id','land_id','building_id','name','num_unit','number','infos','picture'];
+    protected $fillable=['name','num_unit','number','infos','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -33,7 +33,9 @@ class Itempublic extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-
+        $this->attributes['item_id'] = $request->input('item_id');
+        $this->attributes['land_id'] = $request->input('land_id');
+        $this->attributes['building_id'] = $request->input('building_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){

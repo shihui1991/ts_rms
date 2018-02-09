@@ -17,18 +17,11 @@
         {{csrf_field()}}
         <input type="hidden" name="item_id" value="{{$sdata['item_id']}}">
         <input type="hidden" name="land_id" value="{{$sdata['land_id']}}">
-        @if($sdata['building'])
-            <input type="hidden" name="building_id" value="0">
-            @else
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="building_id"> 楼栋号： </label>
-            <div class="col-sm-9">
-                <select class="col-xs-5 col-sm-5" name="building_id" id="building_id">
-                    <option value="">--请先选择地块--</option>
-                </select>
-            </div>
-        </div>
-        <div class="space-4"></div>
+        <input type="hidden" name="building" value="{{$sdata['building']}}">
+        @if($sdata['building'] and $sdata['building']=='landpublic')
+                <input type="hidden" name="building_id" value="0">
+        @else
+            <input type="hidden" name="building_id" value="{{$sdata['building_id']}}">
         @endif
 
         <div class="form-group">

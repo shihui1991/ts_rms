@@ -13,55 +13,37 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itembuilding_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itempublic_edit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
         <input type="hidden" name="item_id" value="{{$sdata->item_id}}">
         <input type="hidden" name="land_id" value="{{$sdata->land_id}}">
-
+        <input type="hidden" name="building" value="{{$edata['building']}}">
+        @if($sdata['building'] and $sdata['building']=='landpublic')
+            <input type="hidden" name="building_id" value="0">
+        @else
+            <input type="hidden" name="building_id" value="{{$edata['building_id']}}">
+        @endif
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋号： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
             <div class="col-sm-9">
-                <input type="text" id="building" name="building" value="{{$sdata->building}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋号" required>
+                <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="total_floor"> 总楼层： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="num_unit"> 计量单位： </label>
             <div class="col-sm-9">
-                <input type="number" id="total_floor" name="total_floor" value="{{$sdata->total_floor}}" class="col-xs-10 col-sm-5"  placeholder="请输入总楼层" required>
+                <input type="text" id="num_unit" name="num_unit" value="{{$sdata->num_unit}}" class="col-xs-10 col-sm-5"  placeholder="请输入计量单位" required>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="area"> 占地面积： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="number"> 数量： </label>
             <div class="col-sm-9">
-                <input type="text" id="area" name="area" value="{{$sdata->area}}" class="col-xs-10 col-sm-5"  placeholder="请输入占地面积" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="build_year"> 建造年份： </label>
-            <div class="col-sm-9">
-                <input type="text" id="build_year" name="build_year" data-type="year" data-format="yyyy" value="{{$sdata->build_year}}" class="col-xs-10 col-sm-5 laydate"  placeholder="请输入建造年份" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="struct_id"> 结构类型： </label>
-            <div class="col-sm-9">
-                <select class="col-xs-5 col-sm-5" name="struct_id" id="struct_id">
-                    <option value="0">--请选择--</option>
-                    @if($edata['buildingstruct'])
-                        @foreach($edata['buildingstruct'] as $buildingstruct)
-                            <option value="{{$buildingstruct->id}}" @if($sdata->struct_id == $buildingstruct->id) selected @endif>{{$buildingstruct->name}}</option>
-                        @endforeach
-                    @endif
-                </select>
+                <input type="text" id="number" name="number" value="{{$sdata->number}}" class="col-xs-10 col-sm-5"  placeholder="请输入数量" required>
             </div>
         </div>
         <div class="space-4"></div>

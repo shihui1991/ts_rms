@@ -8,9 +8,11 @@ namespace App\Http\Controllers\Gov;
 use App\Http\Model\Buildingstruct;
 use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemland;
+use App\Http\Model\Itempublic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ItembuildingController extends BaseController
 {
@@ -20,10 +22,9 @@ class ItembuildingController extends BaseController
 
     }
 
-    /* ========== 首页 ========== */
+    /* ========== 查询地块下所有楼栋 ========== */
     public function index(Request $request){
-        //        $item_id=$request->input('item_id');
-        $item_id=1;
+        $item_id=$request->input('item_id');
         if(!$item_id){
             $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -33,7 +34,7 @@ class ItembuildingController extends BaseController
             }
         }
 
-        $land_id=1;
+        $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -49,6 +50,9 @@ class ItembuildingController extends BaseController
         $where=[];
         $where[]=['item_id',$item_id];
         $infos['item_id']=$item_id;
+
+        $where[]=['land_id',$land_id];
+        $infos['land_id']=$land_id;
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -59,27 +63,46 @@ class ItembuildingController extends BaseController
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
         $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
         $model=new Itembuilding();
         DB::beginTransaction();
         try{
-            $itembuildings=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },
-                    'itemland'=>function($query){
-                        $query->select(['id','address']);
-                },
-                    'buildingstruct'=>function($query){
+            /* ********** 是否分页 ********** */
+            if($displaynum){
+                $itembuildings=$model
+                    ->with(['item'=>function($query){
                         $query->select(['id','name']);
-                    }])
-                ->where($where)
-                ->select($select)
-                ->orderBy($ordername,$orderby)
-                ->sharedLock()
-                ->paginate($displaynum);
+                    },
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        },
+                        'buildingstruct'=>function($query){
+                            $query->select(['id','name']);
+                        }])
+                    ->where($where)
+                    ->select($select)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->paginate($displaynum);
+            }else{
+                $itembuildings=$model
+                    ->with(['item'=>function($query){
+                        $query->select(['id','name']);
+                    },
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        },
+                        'buildingstruct'=>function($query){
+                            $query->select(['id','name']);
+                        }])
+                    ->where($where)
+                    ->select($select)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->get();
+            }
+
             if(blank($itembuildings)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -100,11 +123,7 @@ class ItembuildingController extends BaseController
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
-            return response()->json($result);
-        }else {
-            return view('gov.itembuilding.index')->with($result);
-        }
+        return response()->json($result);
     }
 
     /* ========== 添加 ========== */
@@ -137,7 +156,6 @@ class ItembuildingController extends BaseController
             }
         }
 
-
         $model=new Itembuilding();
         if($request->isMethod('get')){
             $sdata['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
@@ -153,18 +171,22 @@ class ItembuildingController extends BaseController
         /* ++++++++++ 保存 ++++++++++ */
         else {
             /* ********** 保存 ********** */
+            $land_id = $request->input('land_id');
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'item_id' => 'required',
                 'land_id' => 'required',
-                'building' => 'required',
+                'building' => ['required',Rule::unique('item_building')->where(function ($query) use($land_id){
+                    $query->where('land_id', $land_id);
+                 })],
                 'total_floor' => 'required',
                 'area' => 'required',
                 'build_year' => 'required',
                 'struct_id' => 'required',
             ];
             $messages = [
-                'required' => ':attribute必须填写'
+                'required' => ':attribute必须填写',
+                'unique'=>':attribute已经存在'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -215,10 +237,38 @@ class ItembuildingController extends BaseController
                 return view('gov.error')->with($result);
             }
         }
+        $item_id=$request->input('item_id');
+        if(!$item_id){
+            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        $land_id=$request->input('land_id');
+        if(!$land_id){
+            $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        $itemland_count = Itemland::where(['item_id'=>$item_id,'id'=>$land_id])->count();
+        if(!$itemland_count){
+            $result=['code'=>'error','message'=>'该条数据不存在','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
         /* ********** 当前数据 ********** */
-        $data['item_id'] = $request->input('item_id');
+        $datas['item_id'] = $item_id;
+        $datas['land_id'] = $land_id;
         DB::beginTransaction();
-        $itembuilding=Itembuilding::with(
+        $datas['itembuilding']=Itembuilding::with(
             ['item'=>function($query){
                 $query->select(['id','name']);
             },
@@ -230,19 +280,34 @@ class ItembuildingController extends BaseController
             }])
             ->sharedLock()
             ->find($id);
+        $datas['itempublic']=Itempublic::with(
+            ['item'=>function($query){
+                $query->select(['id','name']);
+            },
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                }])
+            ->where('item_id',$item_id)
+            ->where('land_id',$land_id)
+            ->where('building_id',$id)
+            ->sharedLock()
+            ->get();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($itembuilding)){
+        if(blank($datas)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
-            $edata=$data;
+            $edata=null;
             $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $sdata=$itembuilding;
-            $edata=$data;
+            $sdata=$datas;
+            $edata=null;
             $url=null;
 
             $view='gov.itembuilding.info';
@@ -266,11 +331,39 @@ class ItembuildingController extends BaseController
                 return view('gov.error')->with($result);
             }
         }
+        $item_id=$request->input('item_id');
+        if(!$item_id){
+            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        $land_id=$request->input('land_id');
+        if(!$land_id){
+            $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        $itemland_count = Itemland::where(['item_id'=>$item_id,'id'=>$land_id])->count();
+        if(!$itemland_count){
+            $result=['code'=>'error','message'=>'该条数据不存在','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
             $itembuilding=Itembuilding::sharedLock()->find($id);
-
+            $data['item_id'] = $item_id;
+            $data['land_id'] = $land_id;
             $data['itemland'] = Itemland::select(['id','address'])->where('item_id',$request->input('item_id'))->get()?:[];
             $data['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
             DB::commit();
@@ -301,8 +394,9 @@ class ItembuildingController extends BaseController
             $model=new Itembuilding();
             /* ********** 表单验证 ********** */
             $rules=[
-                'land_id' => 'required|unique:item_building,land_id,'.$id.',id',
-                'building' => 'required',
+                'building' =>['required',Rule::unique('item_building')->where(function ($query) use($land_id,$id){
+                    $query->where('land_id', $land_id)->where('id','<>',$id);
+                })],
                 'total_floor' => 'required',
                 'area' => 'required',
                 'build_year' => 'required',
@@ -327,7 +421,7 @@ class ItembuildingController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $itembuilding->fill($request->input());
-                $itembuilding->addOther($request);
+                $itembuilding->editOther($request);
                 $itembuilding->save();
                 if(blank($itembuilding)){
                     throw new \Exception('修改失败',404404);
@@ -336,8 +430,7 @@ class ItembuildingController extends BaseController
                 $msg='修改成功';
                 $sdata=$itembuilding;
                 $edata=null;
-                $url=route('g_itembuilding');
-
+                $url = route('g_itemland_info',['id'=>$land_id,'item_id'=>$item_id]);
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';

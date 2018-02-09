@@ -255,7 +255,7 @@ class ObjectController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $object->fill($request->input());
-                $object->addOther($request);
+                $object->editOther($request);
                 $object->save();
                 if(blank($object)){
                     throw new \Exception('修改失败',404404);

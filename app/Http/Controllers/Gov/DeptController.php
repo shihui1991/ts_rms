@@ -113,7 +113,7 @@ class DeptController extends BaseController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $dept=$model;
                 $dept->fill($request->input());
-                $dept->addOther($request);
+                $dept->editOther($request);
                 $dept->save();
                 if(blank($dept)){
                     throw new \Exception('保存失败',404404);

@@ -162,7 +162,7 @@ class ItemlandController extends BaseController
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $itemland = $model;
-                $itemland->fill($request->input());
+                $itemland->fill($request->all());
                 $itemland->addOther($request);
                 $itemland->save();
                 if (blank($itemland)) {
@@ -191,8 +191,7 @@ class ItemlandController extends BaseController
 
     /* ========== 详情 ========== */
     public function info(Request $request){
-//        $item_id=$request->input('item_id');
-        $item_id=1;
+        $item_id=$request->input('item_id');
         if(!$item_id){
             $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -321,7 +320,7 @@ class ItemlandController extends BaseController
             $model=new Itemland();
             /* ********** 表单验证 ********** */
             $rules=[
-                'address'=>'required|unique:item_land,address,'.$id.',id'
+                'address'=>'required'
             ];
             $messages=[
                 'required'=>':attribute必须填写',
@@ -341,8 +340,8 @@ class ItemlandController extends BaseController
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $itemland->fill($request->input());
-                $itemland->addOther($request);
+                $itemland->fill($request->all());
+                $itemland->editOther($request);
                 $itemland->save();
                 if(blank($itemland)){
                     throw new \Exception('修改失败',404404);

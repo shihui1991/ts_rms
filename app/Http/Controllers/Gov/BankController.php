@@ -255,7 +255,7 @@ class BankController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $bank->fill($request->input());
-                $bank->addOther($request);
+                $bank->editOther($request);
                 $bank->save();
                 if(blank($bank)){
                     throw new \Exception('修改失败',404404);
