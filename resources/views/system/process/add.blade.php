@@ -73,6 +73,14 @@
         <div class="space-4"></div>
 
         <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="number"> 同级角色执行限制人数： </label>
+            <div class="col-sm-9">
+                <input type="number" min="1" id="number" name="number" value="{{old('number')}}" class="col-xs-10 col-sm-5" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="infos">描述：</label>
             <div class="col-sm-9">
                 <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" >{{old('infos')}}</textarea>
