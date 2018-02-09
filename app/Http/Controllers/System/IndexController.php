@@ -8,20 +8,18 @@
 namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
+use App\Http\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class IndexController extends Controller
 {
-    /*===== 账户信息 =====*/
-    public $username = 'demo';
-    public $password = '123456';
     public $security_code = '123456';
 
     /* ========== 初始化 ========== */
     public function __construct()
     {
-        parent::__construct();
+
     }
 
     /* ++++++++++ 登陆页面 ++++++++++ */
@@ -50,15 +48,28 @@ class IndexController extends Controller
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
-            /* ++++++++++ 账号检测 ++++++++++ */
-            if($this->username!=$request->input('username')){
-                $result=['code'=>'error','message'=>'用户不存在','sdata'=>null,'edata'=>null,'url'=>null];
+
+            /* ********** 查询用户 ********** */
+            DB::beginTransaction();
+            $user=User::select(['id','role_id','username','password','secret','name'])
+                ->where('username',$request->input('username'))
+                ->sharedLock()
+                ->first();
+            DB::commit();
+            if(blank($user)){
+                return response()->json(['code'=>'error','message'=>'用户不存在或已被禁用','sdata'=>null,'edata'=>null,'url'=>null]);
+            }
+
+            /* ********** 验证密码 ********** */
+            if($request->input('password') != decrypt($user->password)){
+                return response()->json(['code'=>'error','message'=>'密码错误','sdata'=>null,'edata'=>null,'url'=>null]);
+            }
+
+            if($user->role_id != 1){
+                $result=['code'=>'error','message'=>'没有操作权限','sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
-            if($this->password!=$request->input('password')){
-                $result=['code'=>'error','message'=>'密码输入错误','sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
+
             if($this->security_code!=$request->input('security_code')){
                 $result=['code'=>'error','message'=>'安全码输入错误','sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
@@ -66,10 +77,11 @@ class IndexController extends Controller
 
             /* ++++++++++ 存入Session ++++++++++ */
             session(['sys_user'=>[
-                'username'=>$request->input('username'),
-                'time'=>time(),
+                'username'=>$user->name,
+                'secret'=>$user->secret,
             ]]);
-            $result=['code'=>'success','message'=>'登录成功','sdata'=>null,'edata'=>null,'url'=>route('sys_home')];
+
+            $result=['code'=>'success','message'=>'登录成功','sdata'=>session('sys_user'),'edata'=>null,'url'=>route('sys_home')];
             return response()->json($result);
         }
     }
