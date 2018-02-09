@@ -257,7 +257,7 @@ class HousecompanyController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $housecompany->fill($request->input());
-                $housecompany->addOther($request);
+                $housecompany->editOther($request);
                 $housecompany->save();
                 if(blank($housecompany)){
                     throw new \Exception('修改失败',404404);

@@ -254,7 +254,7 @@ class TopicController extends BaseController
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $topic->fill($request->input());
-                $topic->addOther($request);
+                $topic->editOther($request);
                 $topic->save();
                 if(blank($topic)){
                     throw new \Exception('修改失败',404404);

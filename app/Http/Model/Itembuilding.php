@@ -13,7 +13,7 @@ class Itembuilding extends Model
     use SoftDeletes;
     protected $table='item_building';
     protected $primaryKey='id';
-    protected $fillable=['item_id','land_id','building','total_floor','area','build_year','struct_id','infos','picture'];
+    protected $fillable=['building','total_floor','area','build_year','struct_id','infos','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -34,7 +34,8 @@ class Itembuilding extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-
+        $this->attributes['item_id'] = $request->input('item_id');
+        $this->attributes['land_id'] = $request->input('land_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){

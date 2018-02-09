@@ -49,6 +49,13 @@
                                                 <span class="editable editable-click">{{$infos->adminunit->name}}</span>
                                             </div>
                                         </div>
+                                            @else
+                                            <div class="profile-info-row">
+                                                <div class="profile-info-name"> 类型： </div>
+                                                <div class="profile-info-value">
+                                                    <span class="editable editable-click">私产单位</span>
+                                                </div>
+                                            </div>
                                         @endif
 
                                         <div class="profile-info-row">

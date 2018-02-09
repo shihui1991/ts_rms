@@ -13,7 +13,7 @@ class Itemland extends Model
     use SoftDeletes;
     protected $table='item_land';
     protected $primaryKey='id';
-    protected $fillable=['item_id','address','land_prop_id','land_source_id','land_state_id','admin_unit_id','area','infos','picture'];
+    protected $fillable=['address','land_prop_id','land_source_id','land_state_id','admin_unit_id','area','infos','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -34,7 +34,7 @@ class Itemland extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-
+        $this->attributes['item_id'] = $request->input('item_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
