@@ -61,8 +61,8 @@
 
 {{-- 插件 --}}
 @section('js')
-    <script src="{{asset('treetable/jquery.treetable.js')}}"></script>
     @parent
+    <script src="{{asset('treetable/jquery.treetable.js')}}"></script>
     <script>
         $(".treetable").treetable({
             expandable: true // 展示
