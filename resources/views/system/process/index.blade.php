@@ -5,45 +5,45 @@
 @section('content')
 
     <div class="well well-sm">
-        <a href="{{route('sys_schedule_add')}}" class="btn">添加进度</a>
+        <a href="{{route('sys_process_add')}}" class="btn">添加流程</a>
     </div>
 
     @if(filled($sdata))
         <table class="table table-hover table-bordered treetable">
             <thead>
             <tr>
-                <th>进度 > 流程 > 子流程</th>
-                <th>说明</th>
-                <th>进度ID | 流程ID</th>
-                <th></th>
+                <th>名称 - 排序</th>
+                <th>项目进度</th>
+                <th>类型</th>
+                <th>菜单</th>
+                <th>地址</th>
+                <th>ID</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody>
-            @foreach($sdata as $schedule)
-                <tr data-tt-id="schedule-{{$schedule->id}}" @if(count($schedule->processes)) data-tt-branch="true" @else data-tt-branch="false"@endif>
-                    <td>{{$schedule->name}}</td>
-                    <td>{{str_limit($schedule->infos,50)}}</td>
-                    <td>{{$schedule->id}}</td>
+            @foreach($sdata as $process)
+                <tr data-tt-id="{{$process->id}}" data-tt-parent-id="{{$process->parent_id}}" @if($process->childs_count)data-tt-branch="true" @else data-tt-branch="false"@endif>
+                    <td>{{$process->name}} - {{$process->sort}}</td>
+                    <td>{{$process->schedule->name}}</td>
+                    <td>{{$process->type}}</td>
+                    <td>{{$process->menu->name}}</td>
+                    <td>{{$process->menu->url}}</td>
+                    <td>{{$process->id}}</td>
                     <td>
                         <div class="btn-group">
-                            <a href="{{route('sys_schedule_edit',['id'=>$schedule->id])}}" class="btn btn-xs">
+                            @if($process->parent_id==0)
+                            <a href="{{route('sys_process_add',['id'=>$process->id])}}" class="btn btn-xs">
+                                添加下级
+                            </a>
+                            @endif
+                            <a href="{{route('sys_process_edit',['id'=>$process->id])}}" class="btn btn-xs">
                                 修改
                             </a>
                         </div>
                     </td>
+
                 </tr>
-
-                @if(count($schedule->processes))
-                    @foreach($schedule->processes as $process)
-                        <tr data-tt-id="{{$process->id}}" data-tt-parent-id="schedule-{{$schedule->id}}" @if($process->childs_count) data-tt-branch="true" @else data-tt-branch="false"@endif>
-                            <td>{{$process->name}}</td>
-                            <td>{{$process->menu->name}} - {{$process->menu->url}}</td>
-                            <td>{{$process->id}}</td>
-                            <td></td>
-                        </tr>
-
-                    @endforeach
-                @endif
             @endforeach
 
             </tbody>
@@ -74,9 +74,6 @@
                 if (childSize > 0) {
                     return;
                 }
-                if(parseInt(node.id) == 0){
-                    return;
-                }
                 ajaxAct("{{route('sys_process')}}",{"id":node.id},'get');
                 if(ajaxResp.error){
 
@@ -84,11 +81,18 @@
                     if(ajaxResp.sdata.length){
                         var childs='';
                         $.each(ajaxResp.sdata,function (index,info) {
-                            childs +='<tr data-tt-id="'+info.id+'" data-tt-parent-id="'+info.parent_id+'" data-tt-branch="'+(info.childs_count?'true':'false')+'">';
-                            childs +='<td>'+info.name+'</td>';
-                            childs +='<td>'+info.menu.name+' - '+info.menu.url+'</td>';
+                            childs +='<tr data-tt-id="'+info.id+'" data-tt-parent-id="'+info.parent_id+'">';
+                            childs +='<td>'+info.name+' - '+info.sort+'</td>';
+                            childs +='<td>'+info.schedule.name+'</td>';
+                            childs +='<td>'+info.type+'</td>';
+                            childs +='<td>'+info.menu.name+'</td>';
+                            childs +='<td>'+info.menu.url+'</td>';
                             childs +='<td>'+info.id+'</td>';
-                            childs +='<td></td>';
+                            childs +='<td><div class="btn-group">' +
+                                '    <a href="{{route('sys_process_edit')}}?id='+info.id+'" class="btn btn-xs">' +
+                                '       修改' +
+                                '    </a>' +
+                                '</div></td>';
                             childs +='</tr>';
                         });
                         treeObj.treetable("loadBranch", node, childs);// 插入子节点

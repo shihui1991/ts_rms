@@ -5,12 +5,12 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\System;
-use App\Http\Model\Schedule;
+use App\Http\Model\Ctrlcate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class ScheduleController extends BaseController
+class CtrlcateController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -23,20 +23,13 @@ class ScheduleController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $schedules=Schedule::with(['processes'=>function($query){
-                $query->withCount('childs')->with(['menu'=>function($query){
-                    $query->select(['id','name','url']);
-                }])->where('parent_id',0)->orderBy('sort','asc');
-            }])
-                ->orderBy('sort','asc')
-                ->sharedLock()
-                ->get();
-            if(blank($schedules)){
+            $ctrlcates=Ctrlcate::sharedLock()->get();
+            if(blank($ctrlcates)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$schedules;
+            $sdata=$ctrlcates;
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
@@ -53,7 +46,7 @@ class ScheduleController extends BaseController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('system.schedule.index')->with($result);
+            return view('system.ctrlcate.index')->with($result);
         }
     }
 
@@ -64,24 +57,21 @@ class ScheduleController extends BaseController
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('system.schedule.add')->with($result);
+                return view('system.ctrlcate.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
         else {
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'name' => 'required|unique:a_schedule',
-                'sort' => 'required|integer|min:0|unique:a_schedule',
+                'name' => 'required|unique:a_control_cate',
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
                 'unique' => ':attribute 已存在',
-                'integer' => ':attribute 必须为整数',
-                'min' => ':attribute 必须不少于 :min',
             ];
 
-            $model=new Schedule();
+            $model=new Ctrlcate();
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
@@ -92,25 +82,25 @@ class ScheduleController extends BaseController
             DB::beginTransaction();
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $schedule = $model;
-                $schedule->fill($request->input());
-                $schedule->addOther($request);
-                $schedule->save();
-                if (blank($schedule)) {
+                $ctrlcate = $model;
+                $ctrlcate->fill($request->input());
+                $ctrlcate->addOther($request);
+                $ctrlcate->save();
+                if (blank($ctrlcate)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $schedule;
+                $sdata = $ctrlcate;
                 $edata = null;
-                $url = route('sys_schedule');
+                $url = route('sys_ctrlcate');
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $schedule;
+                $edata = $ctrlcate;
                 $url = null;
                 DB::rollBack();
             }
@@ -135,10 +125,10 @@ class ScheduleController extends BaseController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $schedule=Schedule::withTrashed()->sharedLock()->find($id);
+            $ctrlcate=Ctrlcate::withTrashed()->sharedLock()->find($id);
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($schedule)){
+            if(blank($ctrlcate)){
                 $code='error';
                 $msg='数据不存在';
                 $sdata=null;
@@ -149,11 +139,11 @@ class ScheduleController extends BaseController
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$schedule;
-                $edata=new Schedule();
+                $sdata=$ctrlcate;
+                $edata=new Ctrlcate();
                 $url=null;
 
-                $view='system.schedule.edit';
+                $view='system.ctrlcate.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -162,17 +152,14 @@ class ScheduleController extends BaseController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Schedule();
+            $model=new Ctrlcate();
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:a_schedule,name,'.$id.',id',
-                'sort' => 'required|integer|min:0|unique:a_schedule,sort,'.$id.',id',
+                'name'=>'required|unique:a_control_cate,name,'.$id.',id',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
                 'unique'=>':attribute 已存在',
-                'integer' => ':attribute 必须为整数',
-                'min' => ':attribute 必须不少于 :min',
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -183,29 +170,29 @@ class ScheduleController extends BaseController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $schedule=Schedule::withTrashed()->lockForUpdate()->find($id);
-                if(blank($schedule)){
+                $ctrlcate=Ctrlcate::withTrashed()->lockForUpdate()->find($id);
+                if(blank($ctrlcate)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $schedule->fill($request->input());
-                $schedule->editOther($request);
-                $schedule->save();
-                if(blank($schedule)){
+                $ctrlcate->fill($request->input());
+                $ctrlcate->editOther($request);
+                $ctrlcate->save();
+                if(blank($ctrlcate)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='保存成功';
-                $sdata=$schedule;
+                $sdata=$ctrlcate;
                 $edata=null;
-                $url=route('sys_schedule');
+                $url=route('sys_ctrlcate');
 
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$schedule;
+                $edata=$ctrlcate;
                 $url=null;
                 DB::rollBack();
             }
