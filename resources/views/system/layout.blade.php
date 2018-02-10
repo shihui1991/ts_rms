@@ -21,6 +21,8 @@
 {{-- 用户名 --}}
 @section('username')
 
+    {{session('sys_user.username')}}
+
 @endsection
 
 {{-- 用户工具 --}}
@@ -45,13 +47,13 @@
 {{-- 侧边导航 --}}
 @section('nav')
 
-
-
+    {!! $nav !!}
 
 @endsection
 
 {{-- 面包屑 --}}
 @section('breadcrumbs')
+
 
 @endsection
 

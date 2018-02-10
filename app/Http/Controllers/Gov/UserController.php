@@ -108,13 +108,13 @@ class UserController extends BaseController
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
-                'dept_id.regex'=>'错误操作',
-                'role_id.regex'=>'错误操作',
+                'dept_id.regex'=>'请选择正确的 :attribute',
+                'role_id.regex'=>'请选择正确的 :attribute',
                 'alpha_num'=>':attribute 须为字母或与数字组合',
                 'between'=>':attribute 长度在 :min 到 :max 位之间',
                 'unique'=>':attribute 已占用',
                 'min'=>':attribute 长度至少 :min 位',
-                'email'=>'错误操作',
+                'email'=>':attribute 格式错误',
             ];
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
@@ -273,13 +273,13 @@ class UserController extends BaseController
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
-                'dept_id.regex'=>'错误操作',
-                'role_id.regex'=>'错误操作',
+                'dept_id.regex'=>'请选择正确的 :attribute',
+                'role_id.regex'=>'请选择正确的 :attribute',
                 'alpha_num'=>':attribute 须为字母或与数字组合',
                 'between'=>':attribute 长度在 :min 到 :max 位之间',
                 'unique'=>':attribute 已占用',
                 'min'=>':attribute 长度至少 :min 位',
-                'email'=>'错误操作',
+                'email'=>':attribute 格式错误',
             ];
 
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);

@@ -15,6 +15,13 @@
 {{-- 头部工具 --}}
 @section('header_tools')
 
+    <li class="green">
+        <a href="#" title="消息提醒">
+            <i class="ace-icon fa fa-bell icon-animated-bell"></i>
+            <span class="badge badge-success">5</span>
+        </a>
+    </li>
+
 @endsection
 
 

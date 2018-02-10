@@ -23,7 +23,7 @@ class StatecodeController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $statecodes=Statecode::sharedLock()->get();
+            $statecodes=Statecode::sharedLock()->paginate();
             if(blank($statecodes)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

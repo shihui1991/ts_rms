@@ -7,6 +7,31 @@
     <span id="timeshow"></span>
 @endsection
 
+{{-- 面包屑 --}}
+@section('breadcrumbs')
+
+    <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon fa fa-home home-icon"></i>
+                <a href="{{route('sys_home')}}">后台管理端</a>
+            </li>
+
+            @if(count($parents_menus))
+                @foreach($parents_menus as $parents_menu)
+                    <li>
+                        <a href="{{$parents_menu->url}}">{{$parents_menu->name}}</a>
+                    </li>
+                @endforeach
+            @endif
+
+            <li class="active">{{$current_menu->name}}</li>
+        </ul><!-- /.breadcrumb -->
+
+    </div>
+
+@endsection
+
 
 {{-- 页面内容 --}}
 @section('content')
@@ -22,6 +47,17 @@
 @section('js')
 
     <script>
+        // 导航栏 调整
+        var nav_li_list=$('ul.nav.nav-list').find('li.active.open');
+        if(nav_li_list.length>0){
+            $.each(nav_li_list,function (index,nav_obj) {
+                var child_li_list=$(nav_obj).find('li');
+                if(child_li_list.length==0){
+                    $(nav_obj).removeClass('open');
+                }
+            })
+        }
+
         timeshow();
         function timeshow()
         {

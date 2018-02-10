@@ -117,7 +117,7 @@ class UserselfController extends BaseController
                 'between'=>':attribute 长度在 :min 到 :max 位之间',
                 'unique'=>':attribute 已占用',
                 'min'=>':attribute 长度至少 :min 位',
-                'email'=>'错误操作',
+                'email'=>':attribute 格式错误',
             ];
 
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);

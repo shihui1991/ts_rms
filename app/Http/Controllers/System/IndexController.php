@@ -8,20 +8,19 @@
 namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
+use App\Http\Model\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class IndexController extends Controller
 {
-    /*===== 账户信息 =====*/
-    public $username = 'demo';
-    public $password = '123456';
     public $security_code = '123456';
 
     /* ========== 初始化 ========== */
     public function __construct()
     {
-        parent::__construct();
+
     }
 
     /* ++++++++++ 登陆页面 ++++++++++ */
@@ -50,26 +49,56 @@ class IndexController extends Controller
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
-            /* ++++++++++ 账号检测 ++++++++++ */
-            if($this->username!=$request->input('username')){
-                $result=['code'=>'error','message'=>'用户不存在','sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
-            if($this->password!=$request->input('password')){
-                $result=['code'=>'error','message'=>'密码输入错误','sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
-            if($this->security_code!=$request->input('security_code')){
-                $result=['code'=>'error','message'=>'安全码输入错误','sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
+
+            try{
+                /* ********** 查询用户 ********** */
+                DB::beginTransaction();
+                $user=User::select(['id','role_id','username','password','secret','name'])
+                    ->where('username',$request->input('username'))
+                    ->sharedLock()
+                    ->first();
+                DB::commit();
+                if(blank($user)){
+                    throw new \Exception('用户不存在或已被禁用',404404);
+                }
+
+                /* ********** 验证密码 ********** */
+                if($request->input('password') != decrypt($user->password)){
+                    throw new \Exception('密码错误',404404);
+                }
+
+                if($user->role_id != 1){
+                    throw new \Exception('没有操作权限',404404);
+                }
+
+                if($this->security_code!=$request->input('security_code')){
+                    throw new \Exception('安全码输入错误',404404);
+                }
+
+                /* ++++++++++ 存入Session ++++++++++ */
+                session(['sys_user'=>[
+                    'username'=>$user->name,
+                    'secret'=>$user->secret,
+                ]]);
+
+                $code='success';
+                $msg='登录成功';
+                $sdata=session('sys_user');
+                $edata=null;
+                $url=route('sys_home');
+
+            }catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '登录失败';
+                $sdata = null;
+                $edata = $exception;
+                $url = null;
             }
 
-            /* ++++++++++ 存入Session ++++++++++ */
-            session(['sys_user'=>[
-                'username'=>$request->input('username'),
-                'time'=>time(),
-            ]]);
-            $result=['code'=>'success','message'=>'登录成功','sdata'=>null,'edata'=>null,'url'=>route('sys_home')];
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }else{
+            $result=['code'=>'error','message'=>'错误操作','sdata'=>null,'edata'=>null,'url'=>null];
             return response()->json($result);
         }
     }
