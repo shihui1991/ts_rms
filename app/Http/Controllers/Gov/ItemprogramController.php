@@ -1,96 +1,22 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-其他补偿事项单价
+| 项目-征收方案
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-use App\Http\Model\Itemobject;
-use App\Http\Model\Object;
+use App\Http\Model\Itemprogram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class ItemobjectController extends BaseController
+class ItemprogramController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
 
-    }
-
-    /* ========== 首页 ========== */
-    public function index(Request $request){
-        //        $item_id=$request->input('item_id');
-        $item_id=1;
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
-        /* ********** 查询条件 ********** */
-        $where=[];
-        $where[] = ['item_id',$item_id];
-        $infos['item_id'] = $item_id;
-        $select=['id','item_id','object_id'];
-        /* ********** 排序 ********** */
-        $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'id';
-        $infos['ordername']=$ordername;
-
-        $orderby=$request->input('orderby');
-        $orderby=$orderby?$orderby:'asc';
-        $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
-        /* ********** 查询 ********** */
-        $model=new Itemobject();
-        DB::beginTransaction();
-        try{
-            $itemobjects=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },
-                    'object'=>function($query){
-                        $query->select(['id','name']);
-                    }])
-                ->where($where)
-                ->select($select)
-                ->orderBy($ordername,$orderby)
-                ->sharedLock()
-                ->paginate($displaynum);
-            if(blank($itemobjects)){
-                throw new \Exception('没有符合条件的数据',404404);
-            }
-            $code='success';
-            $msg='查询成功';
-            $sdata=$itemobjects;
-            $edata=$infos;
-            $url=null;
-        }catch (\Exception $exception){
-            $itemobjects=collect();
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemobjects;
-            $edata=$infos;
-            $url=null;
-        }
-        DB::commit();
-
-        /* ********** 结果 ********** */
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
-            return response()->json($result);
-        }else {
-            return view('gov.itemobject.index')->with($result);
-        }
     }
 
     /* ========== 添加 ========== */
@@ -105,15 +31,14 @@ class ItemobjectController extends BaseController
             }
         }
 
-        $model=new Itemobject();
+        $model=new Itemprogram();
         if($request->isMethod('get')){
-            $sdata['object'] = Object::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemobject.add')->with($result);
+                return view('gov.itemprogram.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -121,11 +46,9 @@ class ItemobjectController extends BaseController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
-                'object_id' => ['required',Rule::unique('item_object')->where(function ($query) use($item_id){
-                    $query->where('item_id', $item_id);
-                })],
-                'price' => 'required'
+                'item_id'=>'required|unique:item_program',
+                'name' => 'required',
+                'content' => 'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -141,25 +64,26 @@ class ItemobjectController extends BaseController
             DB::beginTransaction();
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $itemobject = $model;
-                $itemobject->fill($request->all());
-                $itemobject->addOther($request);
-                $itemobject->save();
-                if (blank($itemobject)) {
+                $itemprogram = $model;
+                $itemprogram->fill($request->all());
+                $itemprogram->addOther($request);
+                $itemprogram->save();
+                if (blank($itemprogram)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $itemobject;
+                $sdata = $itemprogram;
                 $edata = null;
-                $url = route('g_itemobject');
+                $url = null;
                 DB::commit();
             } catch (\Exception $exception) {
+                dump($exception);
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $itemobject;
+                $edata = $itemprogram;
                 $url = null;
                 DB::rollBack();
             }
@@ -193,13 +117,10 @@ class ItemobjectController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
 
-        $itemtopid=Itemobject::with(
+        $itemtopid=Itemprogram::with(
             ['item'=>function($query){
                 $query->select(['id','name']);
-            },
-                'object'=>function($query){
-                    $query->select(['id','name']);
-                }])
+            }])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -217,7 +138,7 @@ class ItemobjectController extends BaseController
             $edata=null;
             $url=null;
 
-            $view='gov.itemobject.info';
+            $view='gov.itemprogram.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -251,25 +172,24 @@ class ItemobjectController extends BaseController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $itemobject=Itemobject::sharedLock()->find($id);
-            $data['object'] = Object::select(['id','name'])->get()?:[];
+            $itemprogram=Itemprogram::sharedLock()->find($id);
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($itemobject)){
+            if(blank($itemprogram)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
-                $edata=$data;
+                $edata=null;
                 $url=null;
 
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$itemobject;
-                $edata=$data;
+                $sdata=$itemprogram;
+                $edata=null;
                 $url=null;
 
-                $view='gov.itemobject.edit';
+                $view='gov.itemprogram.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -278,17 +198,16 @@ class ItemobjectController extends BaseController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Itemobject();
+            $model=new Itemprogram();
             /* ********** 表单验证 ********** */
-            $rules=[
-                'object_id'=>['required',Rule::unique('item_object')->where(function ($query) use($item_id){
-                    $query->where('item_id', $item_id);
-                })],
-                'price' => 'required'
+            $rules = [
+                'item_id'=>'required|unique:item_program,item_id,'.$id.',id',
+                'name' => 'required',
+                'content' => 'required'
             ];
-            $messages=[
-                'required'=>':attribute必须填写',
-                'unique'=>':attribute已存在'
+            $messages = [
+                'required' => ':attribute必须填写',
+                'unique' => ':attribute已存在'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -299,29 +218,29 @@ class ItemobjectController extends BaseController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $itemobject=Itemobject::lockForUpdate()->find($id);
-                if(blank($itemobject)){
+                $itemprogram=Itemprogram::lockForUpdate()->find($id);
+                if(blank($itemprogram)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $itemobject->fill($request->all());
-                $itemobject->editOther($request);
-                $itemobject->save();
-                if(blank($itemobject)){
+                $itemprogram->fill($request->all());
+                $itemprogram->editOther($request);
+                $itemprogram->save();
+                if(blank($itemprogram)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$itemobject;
+                $sdata=$itemprogram;
                 $edata=null;
-                $url=route('g_itemobject');
+                $url=null;
 
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$itemobject;
+                $edata=$itemprogram;
                 $url=null;
                 DB::rollBack();
             }
