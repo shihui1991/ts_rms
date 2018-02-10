@@ -15,7 +15,7 @@ class HomeController extends BaseController
     /* ========== 初始化 ========== */
     public function __construct()
     {
-
+        parent::__construct();
     }
 
     /* ========== 首页 ========== */

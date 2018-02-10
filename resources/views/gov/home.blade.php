@@ -10,6 +10,20 @@
 {{-- 侧边导航 --}}
 @section('nav')
 
+    <ul class="nav nav-list">
+
+        @foreach($top_menus as $top_menu)
+            <li @if($loop->iteration ==1) class="active" @endif>
+                <a href="{{$top_menu->url}}">
+                    {!! $top_menu->icon !!}
+                    <span class="menu-text"> {{$top_menu->name}} </span>
+                </a>
+                <b class="arrow"></b>
+            </li>
+        @endforeach
+
+    </ul>
+
 @endsection
 
 

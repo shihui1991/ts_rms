@@ -12,6 +12,7 @@ use App\Http\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends BaseController
 {
@@ -27,7 +28,7 @@ class UserController extends BaseController
         /* ********** 查询条件 ********** */
         $select=['id','dept_id','role_id','username','name','phone','email','infos','login_at','login_ip','action_at','created_at','updated_at','deleted_at'];
         /* ********** 查询 ********** */
-        $where=[];
+        $where[]=['role_id','<>',1];
         $share=[];
         if($dept_id=$request->input('dept_id')){
             $where[]=['dept_id',$dept_id];
@@ -50,7 +51,7 @@ class UserController extends BaseController
                 ->where($where)
                 ->select($select)
                 ->sharedLock()
-                ->paginate(1);
+                ->paginate();
 
             if(blank($users)){
                 throw new \Exception('没有符合条件的数据',404404);
@@ -84,7 +85,7 @@ class UserController extends BaseController
 
         if($request->isMethod('get')){
             $depts=Dept::select(['id','name'])->sharedLock()->get();
-            $roles=Role::select(['id','name'])->sharedLock()->get();
+            $roles=Role::select(['id','name'])->where('id','<>',1)->sharedLock()->get();
 
             $result=['code'=>'success','message'=>'请求成功','sdata'=>['depts'=>$depts,'roles'=>$roles],'edata'=>$model,'url'=>null];
             if($request->ajax()){
@@ -99,7 +100,7 @@ class UserController extends BaseController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
                 'dept_id'=>['required','regex:/^[0-9]+$/'],
-                'role_id'=>['required','regex:/^[0-9]+$/'],
+                'role_id'=>['required','regex:/^[0-9]+$/',Rule::unique('user')->where(function ($query){$query->where('role_id',1);})],
                 'username'=>['required','alpha_num','between:4,20','unique:user'],
                 'password'=>'required|min:6',
                 'name'=>'required|min:2',
@@ -110,6 +111,7 @@ class UserController extends BaseController
                 'required'=>':attribute 为必须项',
                 'dept_id.regex'=>'请选择正确的 :attribute',
                 'role_id.regex'=>'请选择正确的 :attribute',
+                'role_id.unique'=>'只能有一名超级管理员',
                 'alpha_num'=>':attribute 须为字母或与数字组合',
                 'between'=>':attribute 长度在 :min 到 :max 位之间',
                 'unique'=>':attribute 已占用',
@@ -228,7 +230,7 @@ class UserController extends BaseController
                 ->find($id);
 
             $depts=Dept::select(['id','name'])->sharedLock()->get();
-            $roles=Role::select(['id','name'])->sharedLock()->get();
+            $roles=Role::select(['id','name'])->where('id','<>',1)->sharedLock()->get();
 
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
@@ -265,7 +267,7 @@ class UserController extends BaseController
             $model=new User();
             $rules=[
                 'dept_id'=>['required','regex:/^[0-9]+$/'],
-                'role_id'=>['required','regex:/^[0-9]+$/'],
+                'role_id'=>['required','regex:/^[0-9]+$/',Rule::unique('user')->where(function ($query){$query->where('role_id',1);})],
                 'username'=>['required','alpha_num','between:4,20','unique:user,username,'.$id.',id'],
                 'name'=>'required|min:2',
                 'phone'=>'nullable|min:7',
@@ -275,6 +277,7 @@ class UserController extends BaseController
                 'required'=>':attribute 为必须项',
                 'dept_id.regex'=>'请选择正确的 :attribute',
                 'role_id.regex'=>'请选择正确的 :attribute',
+                'role_id.unique'=>'只能有一名超级管理员',
                 'alpha_num'=>':attribute 须为字母或与数字组合',
                 'between'=>':attribute 长度在 :min 到 :max 位之间',
                 'unique'=>':attribute 已占用',

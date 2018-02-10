@@ -61,7 +61,7 @@ class IndexController extends Controller
         }
 
         /* ********** 更新登录 ********** */
-        $user->session=session_id();
+        $user->session=session()->getId();
         $user->action_at=date('Y-m-d H:i:s');
         $user->login_at=date('Y-m-d H:i:s');
         $user->login_ip=$request->ip();

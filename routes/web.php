@@ -22,16 +22,14 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::post('/login','IndexController@login')->name('g_login');
     Route::get('/logout','IndexController@logout')->name('g_logout');
 
-    Route::middleware('CheckLogin:gov_user,g_index')->group(function (){
+    Route::middleware('CheckLogin:gov_user,g_index','CheckAuth')->group(function (){
         require 'web_gov_login.php';
+
+        require 'web_gov_auth.php';
 
         require 'zhang.php';
 
         require 'luo.php';
-    });
-
-    Route::middleware('CheckLogin:gov_user,g_index','CheckAuth')->group(function (){
-        require 'web_gov_auth.php';
     });
 
     Route::middleware('CheckLogin:gov_user,g_index','CheckAuth','CheckItem')->group(function (){

@@ -8,49 +8,68 @@
         <a href="{{route('sys_menu_add')}}" class="btn">添加菜单</a>
     </div>
 
-    @if(filled($sdata))
-        <table class="table table-hover table-bordered treetable">
-            <thead>
-            <tr>
-                <th>名称</th>
-                <th>模块</th>
-                <th>路由地址</th>
-                <th>请求方法</th>
-                <th>限制登陆访问</th>
-                <th>限制操作访问</th>
-                <th>状态</th>
-                <th>ID</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($sdata as $menu)
-                <tr data-tt-id="{{$menu->id}}" data-tt-parent-id="{{$menu->parent_id}}" @if($menu->childs_count)data-tt-branch="true" @else data-tt-branch="false"@endif>
-                    <td>{{$menu->name}}</td>
-                    <td>{{$menu->module}}</td>
-                    <td>{{$menu->url}}</td>
-                    <td>{{$menu->method}}</td>
-                    <td>{{$menu->login}}</td>
-                    <td>{{$menu->auth}}</td>
-                    <td>{{$menu->display}}</td>
-                    <td>{{$menu->id}}</td>
-                    <td>
-                        <div class="btn-group">
-                            <a href="{{route('sys_menu_add',['id'=>$menu->id])}}" class="btn btn-xs">
-                                添加下级
-                            </a>
-                            <a href="{{route('sys_menu_info',['id'=>$menu->id])}}" class="btn btn-xs">
-                                查看详情
-                            </a>
-                        </div>
-                    </td>
 
-                </tr>
-            @endforeach
+        <div class="tabbable">
+            <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">
+                @foreach($edata->module as $key=>$value)
+                <li class="@if($key==0) active @endif">
+                    <a data-toggle="tab" href="#{{$value}}" @if($key==0) aria-expanded="true" @endif >{{$value}}</a>
+                </li>
+                @endforeach
+            </ul>
 
-            </tbody>
-        </table>
-    @endif
+            <div class="tab-content">
+                @foreach($edata->module as $k=>$v)
+                    <div id="{{$v}}" class="tab-pane @if($k==0) active @endif">
+                        <table class="table table-hover table-bordered treetable">
+                            <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>路由地址</th>
+                                <th>请求方法</th>
+                                <th>限制登陆访问</th>
+                                <th>限制操作访问</th>
+                                <th>状态</th>
+                                <th>ID</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if(filled($sdata))
+                            @foreach($sdata as $menu)
+                                @if($menu->module==$v)
+                                <tr data-tt-id="{{$menu->id}}" data-tt-parent-id="{{$menu->parent_id}}" @if($menu->childs_count)data-tt-branch="true" @else data-tt-branch="false"@endif>
+                                    <td>{!! $menu->icon !!}&nbsp;{{$menu->name}}</td>
+                                    <td>{{$menu->url}}</td>
+                                    <td>{{$menu->method}}</td>
+                                    <td>{{$menu->login}}</td>
+                                    <td>{{$menu->auth}}</td>
+                                    <td>{{$menu->display}}</td>
+                                    <td>{{$menu->id}}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{route('sys_menu_add',['id'=>$menu->id])}}" class="btn btn-xs">
+                                                添加下级
+                                            </a>
+                                            <a href="{{route('sys_menu_info',['id'=>$menu->id])}}" class="btn btn-xs">
+                                                查看详情
+                                            </a>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                @endif
+                            @endforeach
+                            @endif
+
+                            </tbody>
+                        </table>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+
 
 @endsection
 
@@ -84,8 +103,7 @@
                         var childs='';
                         $.each(ajaxResp.sdata,function (index,info) {
                             childs +='<tr data-tt-id="'+info.id+'" data-tt-parent-id="'+info.parent_id+'" data-tt-branch="'+(info.childs_count?'true':'false')+'">';
-                            childs +='<td>'+info.name+'</td>';
-                            childs +='<td>'+info.module+'</td>';
+                            childs +='<td>'+(info.icon || '')+'&nbsp;'+info.name+'</td>';
                             childs +='<td>'+info.url+'</td>';
                             childs +='<td>'+(info.method || '')+'</td>';
                             childs +='<td>'+info.login+'</td>';

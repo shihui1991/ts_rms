@@ -59,6 +59,24 @@
 {{-- 面包屑 --}}
 @section('breadcrumbs')
 
+    <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon fa fa-location-arrow home-icon"></i>
+                <a href="{{route('g_home')}}">征收管理端</a>
+            </li>
+
+            @if(count($parents_menus))
+                @foreach($parents_menus as $parents_menu)
+                    <li>{{$parents_menu->name}}</li>
+                @endforeach
+            @endif
+
+            <li class="active">{{$current_menu->name}}</li>
+        </ul><!-- /.breadcrumb -->
+
+    </div>
+
 @endsection
 
 {{-- 页面头部 --}}

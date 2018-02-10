@@ -21,7 +21,7 @@
 {{-- 用户名 --}}
 @section('username')
 
-    {{session('sys_user.username')}}
+    {{session('sys_user.name')}}
 
 @endsection
 

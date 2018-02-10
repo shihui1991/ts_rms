@@ -28,6 +28,7 @@ class RoleController extends BaseController
         /* ++++++++++ 上级 ID ++++++++++ */
         $id=$request->input('id')?$request->input('id'):0;
         $where[]=['parent_id',$id];
+        $where[]=['id','<>',1];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -90,7 +91,7 @@ class RoleController extends BaseController
                 ->get();
 
             $menu_tree='';
-            if(!blank($menus)){
+            if(filled($menus)){
                 $array=[];
                 foreach ($menus as $menu){
                     $menu->checked=$menu->getOriginal('auth')==0?'checked':'';
@@ -98,7 +99,7 @@ class RoleController extends BaseController
                 }
                 $str="<tr data-tt-id='\$id' data-tt-parent-id='\$parent_id'>
                           <td>\$name</td>
-                          <td><input type='checkbox' name='menu_ids[]' value='\$id' \$checked></td>
+                          <td><input type='checkbox' name='menu_ids[]' value='\$id' \$checked onclick='upDown($(this))' id='id-\$id' data-id='\$id' data-parent-id='\$parent_id'></td>
                       </tr>";
 
                 $menu_tree=get_tree($array,$str,0,1,['','',''],'');
@@ -152,7 +153,7 @@ class RoleController extends BaseController
                     ->sharedLock()
                     ->pluck('id');
 
-                if(!blank($menu_ids)){
+                if(filled($menu_ids)){
                     $values=[];
                     foreach($menu_ids as $menu_id){
                         $values[]=[
@@ -275,15 +276,15 @@ class RoleController extends BaseController
                 ->get();
 
             $menu_tree='';
-            if(!blank($menus)){
+            if(filled($menus)){
                 $array=[];
                 foreach ($menus as $menu){
-                    $menu->checked=($menu->getOriginal('auth')==0 || in_array($menu->id,$menu_ids->toArray()))?'checked':'';
+                    $menu->checked=($menu->getOriginal('auth')==0 || $role->id==1 || $menu_ids->contains($menu->id))?'checked':'';
                     $array[]=$menu;
                 }
                 $str="<tr data-tt-id='\$id' data-tt-parent-id='\$parent_id'>
                           <td>\$name</td>
-                          <td><input type='checkbox' name='menu_ids[]' value='\$id' \$checked></td>
+                          <td><input type='checkbox' name='menu_ids[]' value='\$id' \$checked onclick='upDown($(this))' id='id-\$id' data-id='\$id' data-parent-id='\$parent_id'></td>
                       </tr>";
 
                 $menu_tree=get_tree($array,$str,0,1,['','',''],'');
@@ -361,7 +362,7 @@ class RoleController extends BaseController
 
                 Rolemenu::where('role_id',$id)->delete();
 
-                if(!blank($menu_ids)){
+                if($role->id!=1 && filled($menu_ids)){
                     $values=[];
                     foreach($menu_ids as $menu_id){
                         $values[]=[

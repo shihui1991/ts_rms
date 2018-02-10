@@ -61,7 +61,12 @@
                         <thead>
                         <tr>
                             <th>功能</th>
-                            <th>选择</th>
+                            <th>
+                                <label>
+                                    <input type="checkbox" class="ace">
+                                    <span class="lbl">选择</span>
+                                </label>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>

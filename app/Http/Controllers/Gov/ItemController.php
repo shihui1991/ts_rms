@@ -5,9 +5,11 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
+
 use App\Http\Model\Filecate;
 use App\Http\Model\Filetable;
 use App\Http\Model\Item;
+use App\Http\Model\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +19,23 @@ class ItemController extends BaseController
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
+        parent::__construct();
+        $this->middleware(function ($request,$next){
+            $menus=Menu::sharedLock()
+                ->where([
+                    ['parent_id',41],
+                    ['display',1]
+                ])
+                ->orderBy('sort','asc')
+                ->get();
 
+            $cur_menu=session('menu.cur_menu');
+            $nav_menus=get_nav_li_list($menus,$cur_menu['id'],session('menu.cur_pids'),1,41);
+
+            view()->share(['nav_menus'=>$nav_menus]);
+
+            return $next($request);
+        });
     }
 
     /* ========== 我的项目 ========== */

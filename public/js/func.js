@@ -75,3 +75,22 @@ function removeimg(obj) {
     that.parents('li:first').remove();
     imgcontenter.viewer('update');
 }
+
+
+// 树形列表复选框 选中冒泡与取消捕获
+function upDown(obj) {
+    var _this=obj,
+        _id=_this.data('id'),
+        parent_id=_this.data('parent-id'),
+        parent_obj=$('#id-'+parent_id),
+        child_obj=$('input[data-parent-id='+_id+']');
+    if(_this.prop('checked') && parent_id){
+        parent_obj.prop("checked", true);
+        upDown(parent_obj);
+    }else if(!_this.prop('checked') && child_obj.length){
+        $.each(child_obj,function (index,info) {
+            $(info).prop('checked',false);
+            upDown($(info));
+        })
+    }
+}

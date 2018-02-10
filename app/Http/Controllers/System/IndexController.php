@@ -77,7 +77,7 @@ class IndexController extends Controller
 
                 /* ++++++++++ 存入Session ++++++++++ */
                 session(['sys_user'=>[
-                    'username'=>$user->name,
+                    'name'=>$user->name,
                     'secret'=>$user->secret,
                 ]]);
 
