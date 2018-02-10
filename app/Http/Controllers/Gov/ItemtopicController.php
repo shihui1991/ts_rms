@@ -123,7 +123,7 @@ class ItemtopicController extends BaseController
             $rules = [
                 'item_id' => 'required',
                 'topic_id' =>  ['required',Rule::unique('item_topic')->where(function ($query) use($item_id){
-                    $query->where('ltem_id', $item_id);
+                    $query->where('item_id', $item_id);
                 })],
             ];
             $messages = [
@@ -281,7 +281,7 @@ class ItemtopicController extends BaseController
             /* ********** 表单验证 ********** */
             $rules=[
                 'topic_id'=> ['required',Rule::unique('item_topic')->where(function ($query) use($item_id){
-                    $query->where('ltem_id', $item_id);
+                    $query->where('item_id', $item_id);
                 })],
             ];
             $messages=[

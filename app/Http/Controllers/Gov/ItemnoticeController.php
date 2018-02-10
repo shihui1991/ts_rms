@@ -1,18 +1,18 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-其他补偿事项单价
+| 项目-内部通知
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-use App\Http\Model\Itemobject;
-use App\Http\Model\Object;
+use App\Http\Model\Itemnotice;
+use App\Http\Model\Newscate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class ItemobjectController extends BaseController
+class ItemnoticeController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -37,7 +37,7 @@ class ItemobjectController extends BaseController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','object_id'];
+        $select=['id','item_id','cate_id','infos'];
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -51,14 +51,14 @@ class ItemobjectController extends BaseController
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
-        $model=new Itemobject();
+        $model=new Itemnotice();
         DB::beginTransaction();
         try{
-            $itemobjects=$model
+            $itemnotices=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
                 },
-                    'object'=>function($query){
+                    'newscate'=>function($query){
                         $query->select(['id','name']);
                     }])
                 ->where($where)
@@ -66,19 +66,19 @@ class ItemobjectController extends BaseController
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->paginate($displaynum);
-            if(blank($itemobjects)){
+            if(blank($itemnotices)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$itemobjects;
+            $sdata=$itemnotices;
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $itemobjects=collect();
+            $itemnotices=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemobjects;
+            $sdata=$itemnotices;
             $edata=$infos;
             $url=null;
         }
@@ -89,7 +89,7 @@ class ItemobjectController extends BaseController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.itemobject.index')->with($result);
+            return view('gov.itemnotice.index')->with($result);
         }
     }
 
@@ -104,16 +104,26 @@ class ItemobjectController extends BaseController
                 return view('gov.error')->with($result);
             }
         }
+//        $cate_id=$request->input('cate_id');
+        $cate_id=1;
+        if(!$cate_id){
+            $result=['code'=>'error','message'=>'请先选择通知分类','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
 
-        $model=new Itemobject();
+        $model=new Itemnotice();
         if($request->isMethod('get')){
-            $sdata['object'] = Object::select(['id','name'])->get()?:[];
+            $sdata['cate_id'] = $cate_id;
             $sdata['item_id'] = $item_id;
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemobject.add')->with($result);
+                return view('gov.itemnotice.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -122,10 +132,11 @@ class ItemobjectController extends BaseController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'item_id' => 'required',
-                'object_id' => ['required',Rule::unique('item_object')->where(function ($query) use($item_id){
+                'cate_id' => ['required',Rule::unique('item_notice')->where(function ($query) use($item_id){
                     $query->where('item_id', $item_id);
                 })],
-                'price' => 'required'
+                'infos'=>'required',
+                'picture' => 'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -141,25 +152,25 @@ class ItemobjectController extends BaseController
             DB::beginTransaction();
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $itemobject = $model;
-                $itemobject->fill($request->all());
-                $itemobject->addOther($request);
-                $itemobject->save();
-                if (blank($itemobject)) {
+                $itemnotice = $model;
+                $itemnotice->fill($request->all());
+                $itemnotice->addOther($request);
+                $itemnotice->save();
+                if (blank($itemnotice)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $itemobject;
+                $sdata = $itemnotice;
                 $edata = null;
-                $url = route('g_itemobject');
+                $url = route('g_itemnotice');
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $itemobject;
+                $edata = $itemnotice;
                 $url = null;
                 DB::rollBack();
             }
@@ -193,11 +204,11 @@ class ItemobjectController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
 
-        $itemtopid=Itemobject::with(
+        $itemtopid=Itemnotice::with(
             ['item'=>function($query){
                 $query->select(['id','name']);
             },
-                'object'=>function($query){
+                'newscate'=>function($query){
                     $query->select(['id','name']);
                 }])
             ->sharedLock()
@@ -217,7 +228,7 @@ class ItemobjectController extends BaseController
             $edata=null;
             $url=null;
 
-            $view='gov.itemobject.info';
+            $view='gov.itemnotice.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -251,11 +262,16 @@ class ItemobjectController extends BaseController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $itemobject=Itemobject::sharedLock()->find($id);
-            $data['object'] = Object::select(['id','name'])->get()?:[];
+            $itemnotice=Itemnotice::with([
+                    'newscate'=>function($query){
+                        $query->select(['id','name']);
+                    }])
+                    ->sharedLock()
+                    ->find($id);
+            $data['cate_id'] = Newscate::select(['id','name'])->get()?:[];
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($itemobject)){
+            if(blank($itemnotice)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
@@ -265,11 +281,11 @@ class ItemobjectController extends BaseController
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$itemobject;
+                $sdata=$itemnotice;
                 $edata=$data;
                 $url=null;
 
-                $view='gov.itemobject.edit';
+                $view='gov.itemnotice.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -278,13 +294,14 @@ class ItemobjectController extends BaseController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Itemobject();
+            $model=new Itemnotice();
             /* ********** 表单验证 ********** */
             $rules=[
-                'object_id'=>['required',Rule::unique('item_object')->where(function ($query) use($item_id){
-                    $query->where('item_id', $item_id);
+                'cate_id'=>['required',Rule::unique('item_notice')->where(function ($query) use($item_id,$id){
+                    $query->where('item_id', $item_id)->where('id','<>',$id);
                 })],
-                'price' => 'required'
+                'infos' => 'required',
+                'picture' => 'required'
             ];
             $messages=[
                 'required'=>':attribute必须填写',
@@ -299,29 +316,29 @@ class ItemobjectController extends BaseController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $itemobject=Itemobject::lockForUpdate()->find($id);
-                if(blank($itemobject)){
+                $itemnotice=Itemnotice::lockForUpdate()->find($id);
+                if(blank($itemnotice)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $itemobject->fill($request->all());
-                $itemobject->editOther($request);
-                $itemobject->save();
-                if(blank($itemobject)){
+                $itemnotice->fill($request->all());
+                $itemnotice->editOther($request);
+                $itemnotice->save();
+                if(blank($itemnotice)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$itemobject;
+                $sdata=$itemnotice;
                 $edata=null;
-                $url=route('g_itemobject');
+                $url=route('g_itemnotice');
 
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$itemobject;
+                $edata=$itemnotice;
                 $url=null;
                 DB::rollBack();
             }

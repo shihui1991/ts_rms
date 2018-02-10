@@ -139,3 +139,18 @@ Route::any('/itemsubject','ItemsubjectController@index')->name('g_itemsubject');
 Route::any('/itemsubject_add','ItemsubjectController@add')->name('g_itemsubject_add');
 Route::get('/itemsubject_info','ItemsubjectController@info')->name('g_itemsubject_info');
 Route::any('/itemsubject_edit','ItemsubjectController@edit')->name('g_itemsubject_edit');
+/*---------- 项目-内部通知 ----------*/
+Route::any('/itemnotice','ItemnoticeController@index')->name('g_itemnotice');
+Route::any('/itemnotice_add','ItemnoticeController@add')->name('g_itemnotice_add');
+Route::get('/itemnotice_info','ItemnoticeController@info')->name('g_itemnotice_info');
+Route::any('/itemnotice_edit','ItemnoticeController@edit')->name('g_itemnotice_edit');
+/*---------- 项目-征收方案 ----------*/
+Route::any('/itemprogram_add','ItemprogramController@add')->name('g_itemprogram_add');
+Route::get('/itemprogram_info','ItemprogramController@info')->name('g_itemprogram_info');
+Route::any('/itemprogram_edit','ItemprogramController@edit')->name('g_itemprogram_edit');
+
+/*---------- 项目-被征收户 ----------*/
+Route::any('/household','HouseholdController@index')->name('g_household');
+Route::any('/household_add','HouseholdController@add')->name('g_household_add');
+Route::get('/household_info','HouseholdController@info')->name('g_household_info');
+Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
