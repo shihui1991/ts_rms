@@ -107,5 +107,5 @@
 
 {{-- 插件 --}}
 @section('js')
-
+    @parent
 @endsection

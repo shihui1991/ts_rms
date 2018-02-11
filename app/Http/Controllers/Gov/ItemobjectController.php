@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class ItemobjectController extends BaseController
+class ItemobjectController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
-
+        parent::__construct();
     }
 
     /* ========== 首页 ========== */

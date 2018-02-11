@@ -12,12 +12,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class ItempublicController extends BaseController
+class ItempublicController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
-
+        parent::__construct();
     }
 
     /* ========== 查询地块下所有公共附属物 ========== */

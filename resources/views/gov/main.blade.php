@@ -14,6 +14,8 @@
         </li>
     @endforeach
 
+    @parent
+
 @endsection
 
 
@@ -31,7 +33,25 @@
 
 {{-- 面包屑 --}}
 @section('breadcrumbs')
-    @parent
+
+    <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon fa fa-location-arrow home-icon"></i>
+                <a href="{{route('g_home')}}">征收管理端</a>
+            </li>
+
+            @if(count($parents_menus))
+                @foreach($parents_menus as $parents_menu)
+                    <li>{{$parents_menu->name}}</li>
+                @endforeach
+            @endif
+
+            <li class="active">{{$current_menu->name}}</li>
+        </ul><!-- /.breadcrumb -->
+
+    </div>
+
 
 @endsection
 
@@ -52,5 +72,19 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
+
+    <script>
+        // 导航栏 调整
+        var nav_li_list=$('ul.nav.nav-list').find('li.active.open');
+        if(nav_li_list.length>0){
+            $.each(nav_li_list,function (index,nav_obj) {
+                var child_li_list=$(nav_obj).find('li');
+                if(child_li_list.length==0){
+                    $(nav_obj).removeClass('open');
+                }
+            })
+        }
+    </script>
 
 @endsection

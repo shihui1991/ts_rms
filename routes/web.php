@@ -22,6 +22,12 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::post('/login','IndexController@login')->name('g_login');
     Route::get('/logout','IndexController@logout')->name('g_logout');
 
+    Route::middleware('CheckLogin:gov_user,g_index')->group(function (){
+        /*---------- 工具 ----------*/
+        Route::any('/error','ToolsController@error')->name('g_error'); // 错误提示
+        Route::any('/upl','ToolsController@upl')->name('g_upl'); // 文件上传
+    });
+
     Route::middleware('CheckLogin:gov_user,g_index','CheckAuth')->group(function (){
         require 'web_gov_login.php';
 

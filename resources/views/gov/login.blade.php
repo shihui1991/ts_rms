@@ -37,6 +37,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
 
     <script>
         function login(obj) {

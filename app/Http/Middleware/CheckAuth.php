@@ -30,7 +30,8 @@ class CheckAuth
             if(request()->ajax()){
                 return response()->json($result);
             }else{
-                return back()->with($result);
+//                return back()->with($result);
+                return redirect()->route('g_error')->with($result);
             }
         }
 
@@ -47,6 +48,18 @@ class CheckAuth
                 return redirect()->route('g_index')->with($result);
             }
         }
+        if($user->session != $request->session()->getId()){
+            $result=['code'=>'error','message'=>'您的账号已被迫退出，请确认是否他人盗用','sdata'=>null,'edata'=>null,'url'=>null];
+            session()->forget('gov_user');
+            if(request()->ajax()){
+                return response()->json($result);
+            }else{
+                return redirect()->route('g_index')->with($result);
+            }
+        }
+        $user->action_at=date('Y-m-d H:i:s');
+        $user->save();
+
         /* ++++++++++ 检查操作权限 ++++++++++ */
         if($user->role_id != 1 && $current_menu->getOriginal('auth')){
             $rolemenu_ids=Rolemenu::where('role_id',$user->role_id)->pluck('menu_id');
@@ -55,7 +68,8 @@ class CheckAuth
                 if(request()->ajax()){
                     return response()->json($result);
                 }else{
-                    return back()->with($result);
+//                    return back()->with($result);
+                    return redirect()->route('g_error')->with($result);
                 }
             }
         }

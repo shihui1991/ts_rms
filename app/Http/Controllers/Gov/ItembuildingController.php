@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class ItembuildingController extends BaseController
+class ItembuildingController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
-
+        parent::__construct();
     }
 
     /* ========== 查询地块下所有楼栋 ========== */

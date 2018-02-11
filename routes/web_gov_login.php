@@ -7,9 +7,6 @@
 /*---------- 首页 ----------*/
 Route::any('/home','HomeController@index')->name('g_home');
 
-/*---------- 工具 ----------*/
-Route::any('/upl','ToolsController@upl')->name('g_upl'); // 文件上传
-
 /*---------- 个人中心 ----------*/
 Route::get('/userself','UserselfController@index')->name('g_userself'); // 个人信息
 Route::any('/userself_edit','UserselfController@edit')->name('g_userself_edit'); // 修改信息

@@ -1,5 +1,5 @@
 {{-- 继承布局 --}}
-@extends('gov.layout')
+@extends('gov.main')
 
 
 {{-- 页面内容 --}}
@@ -64,7 +64,7 @@
 
 {{-- 插件 --}}
 @section('js')
-
+    @parent
     <script src="{{asset('laydate/laydate.js')}}"></script>
 
     <script src="{{asset('js/func.js')}}"></script>

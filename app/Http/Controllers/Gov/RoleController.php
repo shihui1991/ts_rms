@@ -13,12 +13,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class RoleController extends BaseController
+class RoleController extends BaseauthController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
-
+        parent::__construct();
     }
 
     /* ++++++++++ 列表 ++++++++++ */

@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Validator;
 
 class ToolsController extends BaseController
 {
+    public function __construct()
+    {
+
+    }
+
     /* ========== 上传文件 ========== */
     public function upl(Request $request){
         $files=$request->file();
@@ -26,6 +31,12 @@ class ToolsController extends BaseController
         }
 
         return response()->json($result);
+    }
+
+    /* ========== 错误提示页 ========== */
+    public function error(Request $request){
+
+        return view('gov.error')->with(['code'=>session('code'),'message'=>session('message')]);
     }
 
 }
