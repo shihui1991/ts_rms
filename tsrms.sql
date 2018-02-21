@@ -1,7 +1,7 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost_phpstudy
+Source Server         : localhost
 Source Server Version : 50553
 Source Host           : 127.0.0.1:3306
 Source Database       : tsrms
@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2018-02-10 18:13:19
+Date: 2018-02-11 14:55:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -55,7 +55,7 @@ CREATE TABLE `a_api` (
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='接口文档';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='接口文档';
 
 -- ----------------------------
 -- Records of a_api
@@ -74,7 +74,7 @@ CREATE TABLE `a_control_cate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='项目控制类型分类';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='项目控制类型分类';
 
 -- ----------------------------
 -- Records of a_control_cate
@@ -96,7 +96,7 @@ CREATE TABLE `a_file_table` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='必备附件分类-数据表';
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='必备附件分类-数据表';
 
 -- ----------------------------
 -- Records of a_file_table
@@ -116,7 +116,7 @@ CREATE TABLE `a_item_funds_cate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='项目资金进出类型';
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='项目资金进出类型';
 
 -- ----------------------------
 -- Records of a_item_funds_cate
@@ -143,7 +143,7 @@ CREATE TABLE `a_item_notice_cate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='项目内部通知分类';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='项目内部通知分类';
 
 -- ----------------------------
 -- Records of a_item_notice_cate
@@ -174,7 +174,7 @@ CREATE TABLE `a_menu` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`) COMMENT '上级ID'
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COMMENT='功能与菜单';
+) ENGINE=MyISAM AUTO_INCREMENT=81 DEFAULT CHARSET=utf8 COMMENT='功能与菜单';
 
 -- ----------------------------
 -- Records of a_menu
@@ -182,7 +182,7 @@ CREATE TABLE `a_menu` (
 INSERT INTO `a_menu` VALUES ('1', '0', '入口', '<i class=\"menu-icon fa fa-telegram bigger-120\"></i>', '4', '/sys', null, '0', '0', '0', '0', null, '2018-02-08 18:52:53', '2018-02-10 16:39:25', null);
 INSERT INTO `a_menu` VALUES ('2', '1', '登录', null, '4', '/sys/login', 'post', '0', '0', '0', '0', null, '2018-02-08 18:54:09', '2018-02-08 18:54:09', null);
 INSERT INTO `a_menu` VALUES ('3', '1', '退出', null, '4', '/sys/logout', null, '0', '0', '0', '0', null, '2018-02-08 18:55:49', '2018-02-08 18:55:49', null);
-INSERT INTO `a_menu` VALUES ('4', '0', '首页', '<i class=\"menu-icon fa fa-home bigger-120\"></i>', '4', '/sys/home', null, '1', '1', '1', '0', null, '2018-02-08 19:37:44', '2018-02-09 20:42:22', null);
+INSERT INTO `a_menu` VALUES ('4', '0', '首页', '<i class=\"menu-icon fa fa-home bigger-120\"></i>', '4', '/sys/home', null, '1', '0', '1', '0', null, '2018-02-08 19:37:44', '2018-02-11 14:16:27', null);
 INSERT INTO `a_menu` VALUES ('5', '0', '功能与菜单', '<i class=\"menu-icon fa fa-list bigger-120\"></i>', '4', '/sys/menu', null, '1', '1', '1', '0', null, '2018-02-08 19:50:48', '2018-02-09 20:43:08', null);
 INSERT INTO `a_menu` VALUES ('6', '5', '添加菜单', null, '4', '/sys/menu_add', null, '1', '1', '0', '0', null, '2018-02-08 19:51:33', '2018-02-09 20:50:54', null);
 INSERT INTO `a_menu` VALUES ('7', '5', '菜单详情', null, '4', '/sys/menu_info', null, '1', '1', '0', '0', null, '2018-02-08 19:53:59', '2018-02-09 20:38:22', null);
@@ -217,7 +217,7 @@ INSERT INTO `a_menu` VALUES ('35', '33', '修改补偿科目', null, '4', '/sys/
 INSERT INTO `a_menu` VALUES ('36', '0', '入口', '<i class=\"menu-icon fa fa-telegram bigger-120\"></i>', '0', '/gov', null, '0', '0', '0', '0', null, '2018-02-10 11:42:38', '2018-02-10 16:39:05', null);
 INSERT INTO `a_menu` VALUES ('37', '36', '登录', null, '0', '/gov/login', 'post', '0', '0', '0', '0', null, '2018-02-10 11:43:09', '2018-02-10 11:44:31', null);
 INSERT INTO `a_menu` VALUES ('38', '36', '退出', null, '0', '/gov/logout', null, '0', '0', '0', '0', null, '2018-02-10 11:43:30', '2018-02-10 11:44:45', null);
-INSERT INTO `a_menu` VALUES ('39', '0', '首页', '<i class=\"menu-icon fa fa-dashboard bigger-120\"></i>', '0', '/gov/home', null, '1', '1', '1', '0', null, '2018-02-10 11:44:08', '2018-02-10 16:33:58', null);
+INSERT INTO `a_menu` VALUES ('39', '0', '首页', '<i class=\"menu-icon fa fa-dashboard bigger-120\"></i>', '0', '/gov/home', null, '1', '0', '1', '0', null, '2018-02-10 11:44:08', '2018-02-11 14:16:09', null);
 INSERT INTO `a_menu` VALUES ('40', '0', '项目', '<i class=\"menu-icon fa fa-th bigger-120\"></i>', '0', '/gov/item#', null, '1', '1', '1', '0', null, '2018-02-10 12:20:16', '2018-02-10 16:30:07', null);
 INSERT INTO `a_menu` VALUES ('41', '40', '项目管理', null, '0', '/gov/item#', null, '1', '1', '1', '0', null, '2018-02-10 12:25:16', '2018-02-10 12:31:43', null);
 INSERT INTO `a_menu` VALUES ('42', '41', '我的项目', '<i class=\"menu-icon fa fa-grav bigger-120\"></i>', '0', '/gov/item', null, '1', '1', '1', '0', null, '2018-02-10 12:25:59', '2018-02-10 17:41:25', null);
@@ -230,7 +230,7 @@ INSERT INTO `a_menu` VALUES ('48', '47', '修改项目资料', null, '0', '/gov/
 INSERT INTO `a_menu` VALUES ('49', '0', '房源', '<i class=\"menu-icon fa fa-home bigger-120\"></i>', '0', '/gov/house#', null, '1', '1', '1', '0', null, '2018-02-10 13:54:58', '2018-02-10 16:32:15', null);
 INSERT INTO `a_menu` VALUES ('50', '0', '评估机构', '<i class=\"menu-icon fa fa-industry bigger-120\"></i>', '0', '/gov/company#', null, '1', '1', '1', '0', null, '2018-02-10 13:55:37', '2018-02-10 16:34:46', null);
 INSERT INTO `a_menu` VALUES ('51', '0', '基础资料', '<i class=\"menu-icon fa fa-group bigger-120\"></i>', '0', '/gov/adminunit#', null, '1', '1', '1', '0', null, '2018-02-10 13:57:48', '2018-02-10 16:35:22', null);
-INSERT INTO `a_menu` VALUES ('52', '0', '设置', '<i class=\"menu-icon fa fa-cogs bigger-120\"></i>', '0', '/gov/dept#', null, '1', '1', '1', '0', null, '2018-02-10 13:59:20', '2018-02-10 16:36:21', null);
+INSERT INTO `a_menu` VALUES ('52', '0', '设置', '<i class=\"menu-icon fa fa-cogs bigger-120\"></i>', '0', '/gov/userself#', null, '1', '0', '1', '0', null, '2018-02-10 13:59:20', '2018-02-11 14:17:09', null);
 INSERT INTO `a_menu` VALUES ('53', '0', '工作提醒', '<i class=\"menu-icon fa fa-comments bigger-120\"></i>', '0', '/gov/infos', null, '1', '0', '0', '0', null, '2018-02-10 14:01:05', '2018-02-10 16:41:23', null);
 INSERT INTO `a_menu` VALUES ('54', '0', '常用工具', '<i class=\"menu-icon fa fa-wrench bigger-120\"></i>', '0', '#', null, '1', '0', '0', '0', null, '2018-02-10 14:02:43', '2018-02-10 16:37:58', null);
 INSERT INTO `a_menu` VALUES ('55', '54', '文件上传', null, '0', '/gov/upl', null, '1', '0', '0', '0', null, '2018-02-10 14:03:37', '2018-02-10 14:03:37', null);
@@ -250,6 +250,15 @@ INSERT INTO `a_menu` VALUES ('68', '64', '重置密码', null, '0', '/gov/user_r
 INSERT INTO `a_menu` VALUES ('69', '52', '个人中心', null, '0', '/gov/userself', null, '1', '0', '1', '0', null, '2018-02-10 14:12:38', '2018-02-10 14:12:38', null);
 INSERT INTO `a_menu` VALUES ('70', '69', '修改个人资料', null, '0', '/gov/userself_edit', null, '1', '0', '0', '0', null, '2018-02-10 14:13:19', '2018-02-10 14:13:55', null);
 INSERT INTO `a_menu` VALUES ('71', '69', '修改密码', null, '0', '/gov/userself_pwd', null, '1', '0', '0', '0', null, '2018-02-10 14:14:26', '2018-02-10 14:14:26', null);
+INSERT INTO `a_menu` VALUES ('72', '51', '公产单位', null, '0', '/gov/adminunit', null, '1', '1', '1', '0', null, '2018-02-11 13:30:34', '2018-02-11 13:30:34', null);
+INSERT INTO `a_menu` VALUES ('73', '72', '添加公产单位', null, '0', '/gov/adminunit_add', null, '1', '1', '0', '0', null, '2018-02-11 13:31:16', '2018-02-11 13:31:16', null);
+INSERT INTO `a_menu` VALUES ('74', '72', '公产单位详情', null, '0', '/gov/adminunit_info', null, '1', '1', '0', '0', null, '2018-02-11 13:31:43', '2018-02-11 13:31:43', null);
+INSERT INTO `a_menu` VALUES ('75', '72', '修改公产单位', null, '0', '/gov/adminunit_edit', null, '1', '1', '0', '0', null, '2018-02-11 13:32:12', '2018-02-11 13:32:12', null);
+INSERT INTO `a_menu` VALUES ('76', '51', '银行列表', null, '0', '/gov/bank', null, '1', '1', '1', '0', null, '2018-02-11 13:32:36', '2018-02-11 13:32:36', null);
+INSERT INTO `a_menu` VALUES ('77', '76', '添加银行', null, '0', '/gov/bank_add', null, '1', '1', '0', '0', null, '2018-02-11 13:32:55', '2018-02-11 13:32:55', null);
+INSERT INTO `a_menu` VALUES ('78', '76', '银行详情', null, '0', '/gov/bank_info', null, '1', '1', '0', '0', null, '2018-02-11 13:33:26', '2018-02-11 13:33:26', null);
+INSERT INTO `a_menu` VALUES ('79', '76', '修改银行', null, '0', '/gov/bank_edit', null, '1', '1', '0', '0', null, '2018-02-11 13:34:05', '2018-02-11 13:34:05', null);
+INSERT INTO `a_menu` VALUES ('80', '54', '错误提示', null, '0', '/gov/error', null, '1', '0', '0', '0', null, '2018-02-11 14:53:02', '2018-02-11 14:53:02', null);
 
 -- ----------------------------
 -- Table structure for a_news_cate
@@ -264,7 +273,7 @@ CREATE TABLE `a_news_cate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='通知公告-分类';
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='通知公告-分类';
 
 -- ----------------------------
 -- Records of a_news_cate
@@ -284,7 +293,7 @@ CREATE TABLE `a_pact_cate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='协议分类';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='协议分类';
 
 -- ----------------------------
 -- Records of a_pact_cate
@@ -311,7 +320,7 @@ CREATE TABLE `a_process` (
   UNIQUE KEY `sort` (`sort`) COMMENT '顺序唯一',
   UNIQUE KEY `menu_id` (`menu_id`) COMMENT '菜单 ID',
   KEY `schedule_id` (`schedule_id`) COMMENT '进度ID'
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='项目流程';
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='项目流程';
 
 -- ----------------------------
 -- Records of a_process
@@ -338,7 +347,7 @@ CREATE TABLE `a_schedule` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一',
   UNIQUE KEY `sort` (`sort`) COMMENT '顺序唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='项目进度';
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='项目进度';
 
 -- ----------------------------
 -- Records of a_schedule
@@ -363,7 +372,7 @@ CREATE TABLE `a_state_code` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`) COMMENT '代码唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='状态代码';
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='状态代码';
 
 -- ----------------------------
 -- Records of a_state_code
@@ -385,7 +394,7 @@ CREATE TABLE `a_subject` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COMMENT='重要补偿科目';
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COMMENT='重要补偿科目';
 
 -- ----------------------------
 -- Records of a_subject
@@ -420,7 +429,7 @@ CREATE TABLE `bank` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='银行';
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='银行';
 
 -- ----------------------------
 -- Records of bank
@@ -440,7 +449,7 @@ CREATE TABLE `building_struct` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='建筑结构类型';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='建筑结构类型';
 
 -- ----------------------------
 -- Records of building_struct
@@ -459,7 +468,7 @@ CREATE TABLE `building_use` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='建筑用途';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='建筑用途';
 
 -- ----------------------------
 -- Records of building_use
@@ -793,7 +802,7 @@ CREATE TABLE `crowd` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='特殊人群分类';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='特殊人群分类';
 
 -- ----------------------------
 -- Records of crowd
@@ -815,7 +824,7 @@ CREATE TABLE `dept` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) USING BTREE COMMENT '名称唯一',
   KEY `parent_id` (`parent_id`) COMMENT '上级ID'
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='组织与部门';
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='组织与部门';
 
 -- ----------------------------
 -- Records of dept
@@ -841,7 +850,7 @@ CREATE TABLE `file_cate` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一',
   UNIQUE KEY `file_table_file_name` (`file_table_id`,`filename`) COMMENT '同类文件名唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='必备附件分类';
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='必备附件分类';
 
 -- ----------------------------
 -- Records of file_cate
@@ -2161,7 +2170,7 @@ CREATE TABLE `land_prop` (
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='土地性质';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='土地性质';
 
 -- ----------------------------
 -- Records of land_prop
@@ -2180,7 +2189,7 @@ CREATE TABLE `land_source` (
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='土地来源';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='土地来源';
 
 -- ----------------------------
 -- Records of land_source
@@ -2200,7 +2209,7 @@ CREATE TABLE `land_state` (
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='土地权益状况';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='土地权益状况';
 
 -- ----------------------------
 -- Records of land_state
@@ -2251,7 +2260,7 @@ CREATE TABLE `log` (
   KEY `menu_id` (`menu_id`) USING BTREE COMMENT '菜单',
   KEY `user_id` (`user_id`) COMMENT '人员',
   KEY `item_id` (`item_id`) COMMENT '项目ID'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='操作日志';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='操作日志';
 
 -- ----------------------------
 -- Records of log
@@ -2270,7 +2279,7 @@ CREATE TABLE `nation` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='民族';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='民族';
 
 -- ----------------------------
 -- Records of nation
@@ -2317,7 +2326,7 @@ CREATE TABLE `object` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='其他补偿事项';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='其他补偿事项';
 
 -- ----------------------------
 -- Records of object
@@ -2805,29 +2814,41 @@ CREATE TABLE `role_menu` (
 -- ----------------------------
 -- Records of role_menu
 -- ----------------------------
-INSERT INTO `role_menu` VALUES ('2', '39', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '40', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '41', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '42', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '43', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '44', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '45', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '46', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '47', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '48', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '49', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '50', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '51', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '52', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '60', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '61', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '62', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '63', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '64', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '65', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '66', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '67', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
-INSERT INTO `role_menu` VALUES ('2', '68', '2018-02-10 15:12:22', '2018-02-10 15:12:22');
+INSERT INTO `role_menu` VALUES ('2', '39', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '40', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '41', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '42', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '43', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '44', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '45', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '46', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '47', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '48', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '49', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '50', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '51', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '52', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '56', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '57', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '58', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '59', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '60', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '61', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '62', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '63', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '64', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '65', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '66', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '67', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '68', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '72', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '73', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '74', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '75', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '76', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '77', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '78', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
+INSERT INTO `role_menu` VALUES ('2', '79', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
 
 -- ----------------------------
 -- Table structure for tear
@@ -2922,6 +2943,6 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', '0', '1', 'demo', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA9', '测试演示账号', null, null, null, '2018-02-10 15:11:34', '127.0.0.1', 'G5R8JugUg7M9cvBoZHbKbMfy4JVNLPc1TpRUR0Ww', '2018-02-10 15:11:34', '2018-02-05 09:38:29', '2018-02-10 15:11:34', null);
-INSERT INTO `user` VALUES ('3', '1', '2', 'admin', 'eyJpdiI6IlpzbzB5UUJvc2d6dWZSVlZvQmtIWXc9PSIsInZhbHVlIjoiclM5WkdYVk1sc0FQZ1lzbHRwVnY1dz09IiwibWFjIjoiMzNiNjZiYWZiMjEyZjAwNDkyMzFjZDEwN2I1Mzk3ZWJhNmRkYWMyZmE1MjQ2M2RmOWJiOTE5ODgxMjQzM2QwOCJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA8', '主管', null, null, null, '2018-02-10 15:11:57', '127.0.0.1', 'G5R8JugUg7M9cvBoZHbKbMfy4JVNLPc1TpRUR0Ww', '2018-02-10 15:11:57', '2018-02-05 09:38:29', '2018-02-10 15:11:57', null);
-INSERT INTO `user` VALUES ('4', '1', '3', 'user', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA1', '分管', null, null, null, '2018-02-05 14:22:43', '127.0.0.1', '', '2018-02-05 14:22:43', '2018-02-05 09:38:29', '2018-02-10 15:06:13', null);
+INSERT INTO `user` VALUES ('1', '0', '1', 'demo', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA9', '测试演示账号', null, null, null, '2018-02-11 14:47:57', '127.0.0.1', 'xpqasUo0jZY12LoGRgUQmSHThFHlOg8BHh0BN1W8', '2018-02-11 14:53:39', '2018-02-05 09:38:29', '2018-02-11 14:53:39', null);
+INSERT INTO `user` VALUES ('3', '1', '2', 'admin', 'eyJpdiI6IlpzbzB5UUJvc2d6dWZSVlZvQmtIWXc9PSIsInZhbHVlIjoiclM5WkdYVk1sc0FQZ1lzbHRwVnY1dz09IiwibWFjIjoiMzNiNjZiYWZiMjEyZjAwNDkyMzFjZDEwN2I1Mzk3ZWJhNmRkYWMyZmE1MjQ2M2RmOWJiOTE5ODgxMjQzM2QwOCJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA8', '主管', null, null, null, '2018-02-11 12:54:05', '127.0.0.1', 'xpqasUo0jZY12LoGRgUQmSHThFHlOg8BHh0BN1W8', '2018-02-11 14:12:36', '2018-02-05 09:38:29', '2018-02-11 14:12:36', null);
+INSERT INTO `user` VALUES ('4', '1', '3', 'user', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA1', '分管', null, null, null, '2018-02-11 14:53:53', '127.0.0.1', 'xpqasUo0jZY12LoGRgUQmSHThFHlOg8BHh0BN1W8', '2018-02-11 14:54:37', '2018-02-05 09:38:29', '2018-02-11 14:54:37', null);

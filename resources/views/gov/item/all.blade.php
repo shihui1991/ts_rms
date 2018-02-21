@@ -59,7 +59,7 @@
 
                                 </div>
                                 <div>
-                                    <a href="#" class="btn btn-block btn-inverse">
+                                    <a href="{{route('g_iteminfo',['item'=>$infos->id])}}" class="btn btn-block btn-inverse">
                                         <span>进入项目</span>
                                         <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
                                     </a>

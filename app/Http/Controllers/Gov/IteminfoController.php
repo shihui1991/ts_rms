@@ -24,7 +24,7 @@ class IteminfoController extends BaseitemController
     /* ========== 项目概述 ========== */
     public function index(Request $request){
         $select=['id','name','place','map','infos','code','created_at','updated_at','deleted_at'];
-        $where[]=['id',1];
+        $where[]=['id',$this->item_id];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -66,7 +66,7 @@ class IteminfoController extends BaseitemController
     /* ========== 项目信息 ========== */
     public function info(Request $request){
 
-        $where[]=['id',1];
+        $where[]=['id',$this->item_id];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -110,8 +110,7 @@ class IteminfoController extends BaseitemController
 
     /* ========== 修改项目 ========== */
     public function edit(Request $request){
-        $id=1;
-        $where[]=['id',$id];
+        $where[]=['id',$this->item_id];
         if($request->isMethod('get')){
             /* ********** 获取数据 ********** */
             DB::beginTransaction();
