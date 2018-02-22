@@ -44,8 +44,7 @@ class BaseitemController extends BaseController
                 ->orderBy('sort','asc')
                 ->get();
 
-            $cur_menu=session('menu.cur_menu');
-            $nav_menus=$this->makeMenu2($menus,$cur_menu['id'],session('menu.cur_pids'),1,41,$item_id);
+            $nav_menus=$this->makeMenu2($menus,session('menu.cur_menu.id'),session('menu.cur_pids'),1,41,$item_id);
 
             view()->share(['nav_menus'=>$nav_menus]);
 

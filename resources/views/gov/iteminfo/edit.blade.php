@@ -12,7 +12,7 @@
         </a>
     </p>
 
-    <form class="form-horizontal" role="form" action="{{route('g_iteminfo_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_iteminfo_edit',['item'=>$sdata->id])}}" method="post">
         {{csrf_field()}}
 
         <div class="row">

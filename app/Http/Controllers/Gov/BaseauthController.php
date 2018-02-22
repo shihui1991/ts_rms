@@ -17,7 +17,6 @@ class BaseauthController extends BaseController
         parent::__construct();
 
         $this->middleware(function ($request,$next){
-            $cur_menu=session('menu.cur_menu');
             $cur_pids=session('menu.cur_pids');
             $top_id=array_last($cur_pids);
 
@@ -36,7 +35,7 @@ class BaseauthController extends BaseController
                 ->get();
 
 
-            $nav_menus=$this->makeMenu($menus,$cur_menu['id'],$cur_pids,1,$top_id);
+            $nav_menus=$this->makeMenu($menus,session('menu.cur_menu.id'),$cur_pids,1,$top_id);
 
             view()->share(['nav_menus'=>$nav_menus]);
 
