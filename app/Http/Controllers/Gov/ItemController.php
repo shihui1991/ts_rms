@@ -186,7 +186,7 @@ class ItemController extends BaseController
                 $item=$model;
                 $item->fill($request->input());
                 $item->addOther($request);
-                $item->code=0;
+                $item->code=1;
 
                 $item->save();
                 if(blank($item)){
