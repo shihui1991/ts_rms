@@ -22,22 +22,12 @@ class ItemobjectController extends BaseitemController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        //        $item_id=$request->input('item_id');
-        $item_id=1;
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','object_id'];
+        $select=['id','item_id','object_id','price'];
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -95,16 +85,7 @@ class ItemobjectController extends BaseitemController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         $model=new Itemobject();
         if($request->isMethod('get')){
             $sdata['object'] = Object::select(['id','name'])->get()?:[];
@@ -121,7 +102,6 @@ class ItemobjectController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
                 'object_id' => ['required',Rule::unique('item_object')->where(function ($query) use($item_id){
                     $query->where('item_id', $item_id);
                 })],
@@ -144,6 +124,7 @@ class ItemobjectController extends BaseitemController
                 $itemobject = $model;
                 $itemobject->fill($request->all());
                 $itemobject->addOther($request);
+                $itemobject->item_id=$this->item_id;
                 $itemobject->save();
                 if (blank($itemobject)) {
                     throw new \Exception('添加失败', 404404);
@@ -153,7 +134,7 @@ class ItemobjectController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $itemobject;
                 $edata = null;
-                $url = route('g_itemobject');
+                $url = route('g_itemobject',['item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -171,16 +152,6 @@ class ItemobjectController extends BaseitemController
 
     /* ========== 详情 ========== */
     public function info(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
@@ -229,16 +200,7 @@ class ItemobjectController extends BaseitemController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
@@ -314,7 +276,7 @@ class ItemobjectController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$itemobject;
                 $edata=null;
-                $url=route('g_itemobject');
+                $url=route('g_itemobject',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){

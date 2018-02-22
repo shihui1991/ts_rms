@@ -11,7 +11,7 @@
             返回
         </a>
 
-        <a class="btn" href="{{route('g_itemsubject_edit',['id'=>$sdata->id,'item_id'=>$sdata->item_id])}}">
+        <a class="btn" href="{{route('g_itemsubject_edit',['id'=>$sdata->id,'item'=>$sdata->item_id])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>

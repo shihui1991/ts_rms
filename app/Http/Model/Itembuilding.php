@@ -34,7 +34,6 @@ class Itembuilding extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-        $this->attributes['item_id'] = $request->input('item_id');
         $this->attributes['land_id'] = $request->input('land_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */

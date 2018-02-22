@@ -6,7 +6,7 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_itemsubject_add',['item_id'=>$edata['item_id']])}}" class="btn">添加项目重要补偿事项</a>
+        <a href="{{route('g_itemsubject_add',['item'=>$edata['item_id']])}}" class="btn">添加项目重要补偿事项</a>
     </div>
 
     <table class="table table-hover table-bordered treetable" id="tree-dept">
@@ -24,7 +24,7 @@
                         <td>{{$infos->id}}</td>
                         <td>{{$infos->subject->name}}</td>
                         <td>
-                            <a href="{{route('g_itemsubject_info',['id'=>$infos->id,'item_id'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_itemsubject_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
                         </td>
                     </tr>
                 @endforeach

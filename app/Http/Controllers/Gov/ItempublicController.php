@@ -22,15 +22,7 @@ class ItempublicController extends BaseitemController
 
     /* ========== 查询地块下所有公共附属物 ========== */
     public function index(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
 
         $land_id=$request->input('land_id');
         if(!$land_id){
@@ -128,15 +120,7 @@ class ItempublicController extends BaseitemController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
 
         $land_id=$request->input('land_id');
         if(!$land_id){
@@ -187,7 +171,6 @@ class ItempublicController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
                 'land_id' => 'required',
                 'building_id' => 'required',
                 'name' => 'required',
@@ -211,6 +194,7 @@ class ItempublicController extends BaseitemController
                 $itempublic = $model;
                 $itempublic->fill($request->input());
                 $itempublic->addOther($request);
+                $itempublic->item_id=$this->item_id;
                 $itempublic->save();
                 if (blank($itempublic)) {
                     throw new \Exception('添加失败', 404404);
@@ -221,9 +205,9 @@ class ItempublicController extends BaseitemController
                 $sdata = $itempublic;
                 $edata = null;
                 if($request->input('building')=='buildingpublic') {
-                    $url = route('g_itembuilding_info',['id'=>$building_id,'land_id'=>$land_id,'item_id'=>$item_id]);
+                    $url = route('g_itembuilding_info',['id'=>$building_id,'land_id'=>$land_id,'item'=>$item_id]);
                 }else{
-                    $url = route('g_itemland_info',['id'=>$land_id,'item_id'=>$item_id]);
+                    $url = route('g_itemland_info',['id'=>$land_id,'item'=>$item_id]);
                 }
                 DB::commit();
             } catch (\Exception $exception) {
@@ -251,15 +235,7 @@ class ItempublicController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $building_id = $request->input('building_id');
         if($request->input('building')=='buildingpublic') {
 
@@ -341,15 +317,7 @@ class ItempublicController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
@@ -455,9 +423,9 @@ class ItempublicController extends BaseitemController
                 $sdata=$itempublic;
                 $edata=null;
                 if($request->input('building')=='buildingpublic') {
-                    $url = route('g_itembuilding_info',['id'=>$building_id,'land_id'=>$land_id,'item_id'=>$item_id]);
+                    $url = route('g_itembuilding_info',['id'=>$building_id,'land_id'=>$land_id,'item'=>$item_id]);
                 }else{
-                    $url = route('g_itemland_info',['id'=>$land_id,'item_id'=>$item_id]);
+                    $url = route('g_itemland_info',['id'=>$land_id,'item'=>$item_id]);
                 }
 
 

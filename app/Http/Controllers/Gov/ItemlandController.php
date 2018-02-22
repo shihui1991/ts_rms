@@ -120,7 +120,6 @@ class ItemlandController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
                 'address' => 'required|unique:item_land',
                 'land_prop_id' => 'required',
                 'land_source_id' => 'required',
@@ -145,6 +144,7 @@ class ItemlandController extends BaseitemController
                 $itemland = $model;
                 $itemland->fill($request->all());
                 $itemland->addOther($request);
+                $itemland->item_id=$this->item_id;
                 $itemland->save();
                 if (blank($itemland)) {
                     throw new \Exception('添加失败', 404404);
@@ -322,7 +322,7 @@ class ItemlandController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$itemland;
                 $edata=null;
-                $url=route('g_itemland');
+                $url=route('g_itemland_info',['id'=>$id,'item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){

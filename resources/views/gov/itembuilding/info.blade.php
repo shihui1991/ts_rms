@@ -6,9 +6,9 @@
 
     <div class="row">
         <div class="well well-sm">
-            <a class="btn" href="{{route('g_itemland_info',['id'=>$sdata['land_id'],'item_id'=>$sdata['item_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
-            <a href="{{route('g_itembuilding_edit',['id'=>$sdata['itembuilding']->id,'item_id'=>$sdata['item_id'],'land_id'=>$sdata['land_id']])}}" class="btn">修改楼栋信息</a>
-            <a href="{{route('g_itempublic_add',['item_id'=>$sdata['item_id'],'land_id'=>$sdata['land_id'],'building_id'=>$sdata['itembuilding']->id,'building'=>'buildingpublic'])}}" class="btn">添加公共附属物信息</a>
+            <a class="btn" href="{{route('g_itemland_info',['id'=>$sdata['land_id'],'item'=>$sdata['item_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
+            <a href="{{route('g_itembuilding_edit',['id'=>$sdata['itembuilding']->id,'item'=>$sdata['item_id'],'land_id'=>$sdata['land_id']])}}" class="btn">修改楼栋信息</a>
+            <a href="{{route('g_itempublic_add',['item'=>$sdata['item_id'],'land_id'=>$sdata['land_id'],'building_id'=>$sdata['itembuilding']->id,'building'=>'buildingpublic'])}}" class="btn">添加公共附属物信息</a>
         </div>
 
         <div class="well-sm">
@@ -135,7 +135,7 @@
                                         <td>{{$publicinfo->num_unit}}</td>
                                         <td>{{$publicinfo->number}}</td>
                                         <td>
-                                            <a href="{{route('g_itempublic_info',['id'=>$publicinfo->id,'land_id'=>$sdata['land_id'],'item_id'=>$sdata['item_id'],'building'=>'buildingpublic','building_id'=>$sdata['itembuilding']->id])}}" class="btn btn-sm">查看详情</a>
+                                            <a href="{{route('g_itempublic_info',['id'=>$publicinfo->id,'land_id'=>$sdata['land_id'],'item'=>$sdata['item_id'],'building'=>'buildingpublic','building_id'=>$sdata['itembuilding']->id])}}" class="btn btn-sm">查看详情</a>
                                         </td>
                                     </tr>
                                 @endforeach

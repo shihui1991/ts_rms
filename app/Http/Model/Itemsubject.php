@@ -25,7 +25,6 @@ class Itemsubject extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-        $this->attributes['item_id'] = $request->input('item_id');
         $this->attributes['subject_id'] = $request->input('subject_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */

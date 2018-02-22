@@ -6,11 +6,11 @@
 
     <div class="row">
         <div class="well well-sm">
-            <a class="btn" href="{{route('g_itemland')}}">
+            <a class="btn" href="{{route('g_itemland',['item'=>$sdata['item_id']])}}">
                 <i class="ace-icon fa fa-arrow-left bigger-110"></i>
                 返回
             </a>
-            <a href="{{route('g_itemland_edit',['id'=>$sdata['itemland']->id])}}" class="btn">修改地块信息</a>
+            <a href="{{route('g_itemland_edit',['id'=>$sdata['itemland']->id,'item'=>$sdata['item_id']])}}" class="btn">修改地块信息</a>
             <a href="{{route('g_itembuilding_add',['item'=>$sdata['item_id'],'land_id'=>$sdata['itemland']->id])}}" class="btn">添加楼栋信息</a>
             <a href="{{route('g_itempublic_add',['item'=>$sdata['item_id'],'land_id'=>$sdata['itemland']->id,'building'=>'landpublic'])}}" class="btn">添加公共附属物信息</a>
         </div>
