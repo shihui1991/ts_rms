@@ -15,7 +15,7 @@
 
     <form class="form-horizontal" role="form" action="{{route('g_itemland_add')}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item_id" value="{{$sdata['item_id']}}">
+        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="address"> 地址： </label>
             <div class="col-sm-9">
@@ -98,9 +98,9 @@
                     <label class="col-sm-3 control-label no-padding-right">
                         地块图片：<br>
                         <span class="btn btn-xs">
-                                        <span>上传图片</span>
-                                        <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
-                                    </span>
+                            <span>上传图片</span>
+                            <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
+                        </span>
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">

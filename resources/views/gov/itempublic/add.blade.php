@@ -16,6 +16,7 @@
     <form class="form-horizontal" role="form" action="{{route('g_itempublic_add')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="item_id" value="{{$sdata['item_id']}}">
+        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
         <input type="hidden" name="land_id" value="{{$sdata['land_id']}}">
         <input type="hidden" name="building" value="{{$sdata['building']}}">
         @if($sdata['building'] and $sdata['building']=='landpublic')

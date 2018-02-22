@@ -6,15 +6,15 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_itemobject_add',['item_id'=>$edata['item_id']])}}" class="btn">添加项目其他补偿事项</a>
+        <a href="{{route('g_itemobject_add',['item'=>$edata['item_id']])}}" class="btn">添加项目其他补偿事项</a>
     </div>
 
     <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
             <th>ID</th>
-            <th>项目</th>
             <th>其他补偿事项</th>
+            <th>补偿单价</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -23,10 +23,10 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$infos->id}}</td>
-                        <td>{{$infos->item->name}}</td>
                         <td>{{$infos->object->name}}</td>
+                        <td>{{$infos->price}}</td>
                         <td>
-                            <a href="{{route('g_itemobject_info',['id'=>$infos->id,'item_id'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_itemobject_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
                         </td>
                     </tr>
                 @endforeach

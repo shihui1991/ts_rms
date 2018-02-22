@@ -15,7 +15,7 @@
 
     <form class="form-horizontal" role="form" action="{{route('g_itemobject_add')}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item_id" value="{{$sdata['item_id']}}">
+        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="object_id"> 其他补偿事项： </label>
             <div class="col-sm-9">

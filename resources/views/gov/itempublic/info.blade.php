@@ -11,7 +11,7 @@
             返回
         </a>
 
-        <a class="btn" href="{{route('g_itempublic_edit',['id'=>$sdata->id,'item_id'=>$edata['item_id'],'land_id'=>$edata['land_id'],'building_id'=>$edata['building_id'],'building'=>$edata['building']])}}">
+        <a class="btn" href="{{route('g_itempublic_edit',['id'=>$sdata->id,'item'=>$edata['item_id'],'land_id'=>$edata['land_id'],'building_id'=>$edata['building_id'],'building'=>$edata['building']])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>

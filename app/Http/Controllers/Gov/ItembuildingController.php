@@ -24,15 +24,7 @@ class ItembuildingController extends BaseitemController
 
     /* ========== 查询地块下所有楼栋 ========== */
     public function index(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
 
         $land_id=$request->input('land_id');
         if(!$land_id){
@@ -128,15 +120,7 @@ class ItembuildingController extends BaseitemController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
@@ -174,7 +158,6 @@ class ItembuildingController extends BaseitemController
             $land_id = $request->input('land_id');
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
                 'land_id' => 'required',
                 'building' => ['required',Rule::unique('item_building')->where(function ($query) use($land_id){
                     $query->where('land_id', $land_id);
@@ -201,6 +184,7 @@ class ItembuildingController extends BaseitemController
                 $itembuilding = $model;
                 $itembuilding->fill($request->input());
                 $itembuilding->addOther($request);
+                $itembuilding->item_id=$this->item_id;
                 $itembuilding->save();
                 if (blank($itembuilding)) {
                     throw new \Exception('添加失败', 404404);
@@ -210,7 +194,7 @@ class ItembuildingController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $itembuilding;
                 $edata = null;
-                $url = route('g_itemland_info',['id'=>$land_id,'item_id'=>$item_id]);
+                $url = route('g_itemland_info',['id'=>$land_id,'item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -237,15 +221,7 @@ class ItembuildingController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
@@ -331,15 +307,7 @@ class ItembuildingController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
@@ -430,7 +398,7 @@ class ItembuildingController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$itembuilding;
                 $edata=null;
-                $url = route('g_itemland_info',['id'=>$land_id,'item_id'=>$item_id]);
+                $url = route('g_itembuilding_info',['id'=>$id,'land_id'=>$land_id,'item'=>$item_id]);
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';

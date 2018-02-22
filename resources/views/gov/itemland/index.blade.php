@@ -4,7 +4,7 @@
 {{-- 页面内容 --}}
 @section('content')
     <div class="well well-sm">
-        <a href="{{route('g_itemland_add',['item_id'=>$edata['item_id']])}}" class="btn">添加项目地块</a>
+        <a href="{{route('g_itemland_add',['item'=>$edata['item_id']])}}" class="btn">添加项目地块</a>
     </div>
     <div class="row">
         <div class="col-xs-12">
@@ -69,7 +69,7 @@
 
                                 </div>
                                 <div>
-                                    <a href="{{route('g_itemland_info',['id'=>$infos->id,'item_id'=>$infos->item_id])}}" class="btn btn-block btn-inverse">
+                                    <a href="{{route('g_itemland_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-block btn-inverse">
                                         <span>进入地块</span>
                                         <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
                                     </a>
