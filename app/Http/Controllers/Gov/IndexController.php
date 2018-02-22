@@ -69,6 +69,8 @@ class IndexController extends Controller
 
         /* ********** 生成session ********** */
         session(['gov_user'=>[
+            'dept_id'=>$user->dept_id,
+            'role_id'=>$user->role_id,
             'user_id'=>$user->id,
             'name'=>$user->name,
             'secret'=>$user->secret,

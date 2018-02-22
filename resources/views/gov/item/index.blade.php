@@ -12,7 +12,7 @@
                     <div class="col-xs-6 col-sm-3 pricing-box">
                         <div class="widget-box widget-color-dark">
                             <div class="widget-header">
-                                <h5 class="widget-title bigger lighter">{{$infos->name}}</h5>
+                                <h5 class="widget-title bigger lighter">{{$infos->item->name}}</h5>
                             </div>
 
                             <div class="widget-body">
@@ -23,14 +23,14 @@
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 征收范围： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click">{{str_limit($infos->place,50)}}</span>
+                                                <span class="editable editable-click">{{str_limit($infos->item->place,50)}}</span>
                                             </div>
                                         </div>
 
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 项目描述： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click">{{str_limit($infos->infos,50)}}</span>
+                                                <span class="editable editable-click">{{str_limit($infos->item->infos,50)}}</span>
                                             </div>
                                         </div>
 
@@ -38,7 +38,7 @@
                                             <div class="profile-info-name"> 项目负责人： </div>
                                             <div class="profile-info-value">
                                                 <span class="editable editable-click">
-                                                    {{$infos->itemadmins->implode('name','、')}}
+                                                    {{$infos->item->itemadmins->implode('name','、')}}
                                                 </span>
                                             </div>
                                         </div>
@@ -46,14 +46,16 @@
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 项目进度： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click">{{$infos->state->name}}</span>
+                                                <span class="editable editable-click">
+                                                    {{$infos->item->state->name}}
+                                                </span>
                                             </div>
                                         </div>
 
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 总户数： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click">{{number_format($infos->households_count)}}</span>
+                                                <span class="editable editable-click">{{number_format($infos->item->households_count)}}</span>
                                             </div>
                                         </div>
 
@@ -61,7 +63,7 @@
 
                                 </div>
                                 <div>
-                                    <a href="{{route('g_iteminfo',['item'=>$infos->id])}}" class="btn btn-block btn-inverse">
+                                    <a href="{{route('g_iteminfo',['item'=>$infos->item_id])}}" class="btn btn-block btn-inverse">
                                         <span>进入项目</span>
                                         <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
                                     </a>

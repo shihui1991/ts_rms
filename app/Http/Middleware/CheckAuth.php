@@ -30,7 +30,6 @@ class CheckAuth
             if(request()->ajax()){
                 return response()->json($result);
             }else{
-//                return back()->with($result);
                 return redirect()->route('g_error')->with($result);
             }
         }
@@ -38,7 +37,7 @@ class CheckAuth
         /* ++++++++++ 当前用户 ++++++++++ */
         $user=User::sharedLock()
             ->where('secret',session('gov_user.secret'))
-            ->select(['id','role_id','secret','session'])
+            ->select(['id','dept_id','role_id','secret','session'])
             ->first();
         if(blank($user)){
             $result=['code'=>'error','message'=>'用户不存在','sdata'=>null,'edata'=>null,'url'=>null];
@@ -48,6 +47,9 @@ class CheckAuth
                 return redirect()->route('g_index')->with($result);
             }
         }
+        session(['gov_user.dept_id'=>$user->dept_id]);
+        session(['gov_user.role_id'=>$user->role_id]);
+
         if($user->session != $request->session()->getId()){
             $result=['code'=>'error','message'=>'您的账号已被迫退出，请确认是否他人盗用','sdata'=>null,'edata'=>null,'url'=>null];
             session()->forget('gov_user');
@@ -68,7 +70,6 @@ class CheckAuth
                 if(request()->ajax()){
                     return response()->json($result);
                 }else{
-//                    return back()->with($result);
                     return redirect()->route('g_error')->with($result);
                 }
             }

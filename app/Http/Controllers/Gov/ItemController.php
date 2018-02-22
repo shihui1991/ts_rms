@@ -9,8 +9,10 @@ namespace App\Http\Controllers\Gov;
 use App\Http\Model\Filecate;
 use App\Http\Model\Filetable;
 use App\Http\Model\Item;
+use App\Http\Model\Itemuser;
 use App\Http\Model\Menu;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,8 +31,7 @@ class ItemController extends BaseController
                 ->orderBy('sort','asc')
                 ->get();
 
-            $cur_menu=session('menu.cur_menu');
-            $nav_menus=get_nav_li_list($menus,$cur_menu['id'],session('menu.cur_pids'),1,41);
+            $nav_menus=get_nav_li_list($menus,session('menu.cur_menu.id'),session('menu.cur_pids'),1,41);
 
             view()->share(['nav_menus'=>$nav_menus]);
 
@@ -40,17 +41,66 @@ class ItemController extends BaseController
 
     /* ========== 我的项目 ========== */
     public function index(Request $request){
+        /* ********** 查询 ********** */
+        DB::beginTransaction();
+        try{
+            $total=Itemuser::where('user_id',session('gov_user.user_id'))
+                ->sharedLock()
+                ->count(DB::raw('DISTINCT `item_id`'));
+            $per_page=15;
+            $page=$request->input('page',1);
+            $items=Itemuser::with(['item'=>function($query){
+                $query->with(['itemadmins'=>function($query){
+                    $query->select('name');
+                },'state'])->withCount('households');
+            }])
+                ->select(['item_id','user_id'])
+                ->distinct()
+                ->where('user_id',session('gov_user.user_id'))
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->orderBy('item_id','asc')
+                ->get();
 
+            $items=new LengthAwarePaginator($items,$total,$per_page,$page);
+            $items->withPath(route('g_item'));
+
+            if(blank($items)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+            $code='success';
+            $msg='查询成功';
+            $sdata=$items;
+            $edata=null;
+            $url=null;
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+        }
+        DB::commit();
+
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view('gov.item.index')->with($result);
+        }
     }
 
 
     /* ========== 所有项目 ========== */
     public function all(Request $request){
-        $select=['id','name','place','map','infos','code','created_at','updated_at','deleted_at'];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $items=Item::select($select)
+            $items=Item::withCount('households')
+                ->with(['itemadmins'=>function($query){
+                    $query->select('name');
+                },'state'])
                 ->sharedLock()
                 ->paginate();
 

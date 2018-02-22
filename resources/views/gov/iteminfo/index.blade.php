@@ -82,7 +82,7 @@
                                     </li>
                                 </ul>
                                 <p>
-                                    <a href="{{route('g_iteminfo_info')}}">查看详情 <i class="fa fa-angle-double-right"></i></a>
+                                    <a href="{{route('g_iteminfo_info',['item'=>$sdata->id])}}">查看详情 <i class="fa fa-angle-double-right"></i></a>
                                 </p>
                             </div>
 

@@ -23,8 +23,6 @@ class ItemadminController extends BaseitemController
 
     /* ========== 项目负责人 ========== */
     public function index(Request $request){
-        $item_id=1;
-
         DB::beginTransaction();
         try{
             $itemadmins=Itemadmin::with(['dept'=>function($query){
@@ -34,7 +32,7 @@ class ItemadminController extends BaseitemController
             },'user'=>function($query){
                 $query->select(['id','name']);
             }])
-                ->where('item_id',$item_id)
+                ->where('item_id',$this->item_id)
                 ->sharedLock()
                 ->get();
 
@@ -68,8 +66,6 @@ class ItemadminController extends BaseitemController
 
     /* ========== 添加负责人 ========== */
     public function add(Request $request){
-        $item_id=1;
-
         if($request->isMethod('get')){
 
         }
@@ -83,14 +79,14 @@ class ItemadminController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $where[]=['item_id',$item_id];
+                $where[]=['item_id',$this->item_id];
                 $where[]=['user_id',$user_id];
                 $itemadmin=Itemadmin::withTrashed()->where($where)->lockForUpdate()->first();
                 if(blank($itemadmin)){
                     $user=User::select(['id','dept_id','role_id'])->sharedLock()->find($user_id);
 
                     $pre_data=[
-                        'item_id'=>$item_id,
+                        'item_id'=>$this->item_id,
                         'dept_id'=>$user->dept_id,
                         'role_id'=>$user->role_id,
                         'user_id'=>$user->id,

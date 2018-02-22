@@ -15,18 +15,20 @@ class BaseController extends Controller
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
-        /* ++++++++++ 一级菜单 ++++++++++ */
-        $top_menus=Menu::sharedLock()
-            ->where([
-                ['parent_id',0],
-                ['module',0],
-                ['login',1],
-                ['display',1],
-            ])
-            ->orderBy('sort','asc')
-            ->get();
+        if(!request()->ajax()){
+            /* ++++++++++ 一级菜单 ++++++++++ */
+            $top_menus=Menu::sharedLock()
+                ->where([
+                    ['parent_id',0],
+                    ['module',0],
+                    ['login',1],
+                    ['display',1],
+                ])
+                ->orderBy('sort','asc')
+                ->get();
 
-        view()->share(['top_menus'=>$top_menus]);
+            view()->share(['top_menus'=>$top_menus]);
+        }
     }
 
 

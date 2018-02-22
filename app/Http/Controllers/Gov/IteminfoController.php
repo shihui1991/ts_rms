@@ -153,7 +153,7 @@ class IteminfoController extends BaseitemController
             $model=new Item();
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
-                'name'=>'required|unique:item,name,'.$id.',id',
+                'name'=>'required|unique:item,name,'.$this->item_id.',id',
                 'place'=>'required',
                 'map'=>'required'
             ];
@@ -203,7 +203,7 @@ class IteminfoController extends BaseitemController
                 $msg='保存成功';
                 $sdata=$item;
                 $edata=null;
-                $url=route('g_iteminfo_info');
+                $url=route('g_iteminfo_info',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){
