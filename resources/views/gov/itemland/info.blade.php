@@ -11,8 +11,8 @@
                 返回
             </a>
             <a href="{{route('g_itemland_edit',['id'=>$sdata['itemland']->id])}}" class="btn">修改地块信息</a>
-            <a href="{{route('g_itembuilding_add',['item_id'=>$sdata['item_id'],'land_id'=>$sdata['itemland']->id])}}" class="btn">添加楼栋信息</a>
-            <a href="{{route('g_itempublic_add',['item_id'=>$sdata['item_id'],'land_id'=>$sdata['itemland']->id,'building'=>'landpublic'])}}" class="btn">添加公共附属物信息</a>
+            <a href="{{route('g_itembuilding_add',['item'=>$sdata['item_id'],'land_id'=>$sdata['itemland']->id])}}" class="btn">添加楼栋信息</a>
+            <a href="{{route('g_itempublic_add',['item'=>$sdata['item_id'],'land_id'=>$sdata['itemland']->id,'building'=>'landpublic'])}}" class="btn">添加公共附属物信息</a>
         </div>
 
         <div class="well-sm">
@@ -165,7 +165,7 @@
                                         <td>{{$info->build_year}}</td>
                                         <td>{{$info->buildingstruct->name}}</td>
                                         <td>
-                                            <a href="{{route('g_itembuilding_info',['id'=>$info->id,'land_id'=>$sdata['itemland']->id,'item_id'=>$sdata['item_id']])}}" class="btn btn-sm">查看详情</a>
+                                            <a href="{{route('g_itembuilding_info',['id'=>$info->id,'land_id'=>$sdata['itemland']->id,'item'=>$sdata['item_id']])}}" class="btn btn-sm">查看详情</a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -194,7 +194,7 @@
                                         <td>{{$publicinfo->num_unit}}</td>
                                         <td>{{$publicinfo->number}}</td>
                                         <td>
-                                            <a href="{{route('g_itempublic_info',['id'=>$publicinfo->id,'land_id'=>$sdata['itemland']->id,'item_id'=>$sdata['item_id'],'building'=>'landpublic'])}}" class="btn btn-sm">查看详情</a>
+                                            <a href="{{route('g_itempublic_info',['id'=>$publicinfo->id,'land_id'=>$sdata['itemland']->id,'item'=>$sdata['item_id'],'building'=>'landpublic'])}}" class="btn btn-sm">查看详情</a>
                                         </td>
                                     </tr>
                                 @endforeach

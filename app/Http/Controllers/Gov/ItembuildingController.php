@@ -24,15 +24,7 @@ class ItembuildingController extends BaseitemController
 
     /* ========== 查询地块下所有楼栋 ========== */
     public function index(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
 
         $land_id=$request->input('land_id');
         if(!$land_id){
@@ -128,15 +120,7 @@ class ItembuildingController extends BaseitemController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
@@ -237,15 +221,7 @@ class ItembuildingController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
@@ -331,15 +307,7 @@ class ItembuildingController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
         $land_id=$request->input('land_id');
         if(!$land_id){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];

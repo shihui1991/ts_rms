@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class ItemlandController extends BaseauthController
+class ItemlandController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -24,17 +24,7 @@ class ItemlandController extends BaseauthController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        //        $item_id=$request->input('item_id');
-        $item_id=1;
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
@@ -112,16 +102,7 @@ class ItemlandController extends BaseauthController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-         $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         $model=new Itemland();
         if($request->isMethod('get')){
             $sdata['landprop'] = Landprop::select(['id','name'])->get()?:[];
@@ -173,7 +154,7 @@ class ItemlandController extends BaseauthController
                 $msg = '添加成功';
                 $sdata = $itemland;
                 $edata = null;
-                $url = route('g_itemland');
+                $url = route('g_itemland',['item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -191,16 +172,7 @@ class ItemlandController extends BaseauthController
 
     /* ========== 详情 ========== */
     public function info(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];

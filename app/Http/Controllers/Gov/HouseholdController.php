@@ -21,17 +21,7 @@ class HouseholdController extends BaseitemController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        //        $item_id=$request->input('item_id');
-        $item_id=1;
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
