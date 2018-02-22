@@ -37,21 +37,25 @@
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 项目负责人： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click"></span>
+                                                <span class="editable editable-click">
+                                                    {{$infos->item->itemadmins->implode('name','、')}}
+                                                </span>
                                             </div>
                                         </div>
 
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 项目进度： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click"></span>
+                                                <span class="editable editable-click">
+                                                    {{$infos->item->state->name}}
+                                                </span>
                                             </div>
                                         </div>
 
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 总户数： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click"></span>
+                                                <span class="editable editable-click">{{number_format($infos->item->households_count)}}</span>
                                             </div>
                                         </div>
 

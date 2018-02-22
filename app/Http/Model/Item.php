@@ -36,4 +36,19 @@ class Item extends Model
     public function editOther($request){
 
     }
+
+    /* ++++++++++ 项目状态 ++++++++++ */
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    }
+
+    /* ++++++++++ 项目负责人 ++++++++++ */
+    public function itemadmins(){
+        return $this->belongsToMany('App\Http\Model\User','item_admin','item_id','user_id');
+    }
+
+    /* ++++++++++ 被征收户 ++++++++++ */
+    public function households(){
+        return $this->hasMany('App\Http\Model\Household','item_id','id');
+    }
 }

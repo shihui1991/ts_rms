@@ -41,7 +41,6 @@ class ItemController extends BaseController
 
     /* ========== 我的项目 ========== */
     public function index(Request $request){
-        $select=['id','name','place','map','infos','code','created_at','updated_at','deleted_at'];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -50,8 +49,10 @@ class ItemController extends BaseController
                 ->count(DB::raw('DISTINCT `item_id`'));
             $per_page=15;
             $page=$request->input('page',1);
-            $items=Itemuser::with(['item'=>function($query) use ($select){
-                $query->select($select);
+            $items=Itemuser::with(['item'=>function($query){
+                $query->with(['itemadmins'=>function($query){
+                    $query->select('name');
+                },'state'])->withCount('households');
             }])
                 ->select(['item_id','user_id'])
                 ->distinct()
@@ -62,7 +63,7 @@ class ItemController extends BaseController
                 ->get();
 
             $items=new LengthAwarePaginator($items,$total,$per_page,$page);
-            $items->withPath($request->getPathInfo());
+            $items->withPath(route('g_item'));
 
             if(blank($items)){
                 throw new \Exception('没有符合条件的数据',404404);
@@ -93,11 +94,13 @@ class ItemController extends BaseController
 
     /* ========== 所有项目 ========== */
     public function all(Request $request){
-        $select=['id','name','place','map','infos','code','created_at','updated_at','deleted_at'];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $items=Item::select($select)
+            $items=Item::withCount('households')
+                ->with(['itemadmins'=>function($query){
+                    $query->select('name');
+                },'state'])
                 ->sharedLock()
                 ->paginate();
 
