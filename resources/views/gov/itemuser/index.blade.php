@@ -13,7 +13,7 @@
                     <h4 class="widget-title lighter smaller">项目负责人：</h4>
                     <div class="widget-toolbar">
 
-                        <a href="{{route('g_itemadmin')}}" class="orange2">
+                        <a href="{{route('g_itemadmin',['item'=>$edata['item_id']])}}" class="orange2">
                             <i class="ace-icon fa fa-edit"></i>
                             编辑
                         </a>
@@ -23,7 +23,7 @@
                 <div class="widget-body">
                     <div class="widget-main padding-8">
 
-                        @if(filled($edata))
+                        @if(filled($sdata['itemadmins']))
 
                             <table class="table table-hover table-bordered">
                                 <thead>
@@ -36,7 +36,7 @@
                                 </thead>
                                 <tbody>
 
-                                @foreach($edata as $itemadmin)
+                                @foreach($sdata['itemadmins'] as $itemadmin)
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$itemadmin->user->name}}</td>
@@ -63,10 +63,10 @@
                 <div class="widget-body">
                     <div class="widget-main padding-8">
 
-                        @if(filled($sdata))
+                        @if(filled($sdata['itemusers']))
 
                             <table class="table table-hover table-bordered treetable" id="tree-itemuser">
-                                @foreach($sdata as $schedule)
+                                @foreach($sdata['itemusers'] as $schedule)
                                     <tr data-tt-id="schedule-{{$schedule->schedule_id}}" data-tt-parent-id="0">
                                         <td colspan="2">{{$schedule->schedule->name}}</td>
                                     </tr>
@@ -75,7 +75,7 @@
                                             <td>
                                                 {{$process->process->name}}
                                             </td>
-                                            <td><a class="btn btn-xs" href="{{route('g_itemuser_edit',['process_id'=>$process->process_id])}}">调整</a></td>
+                                            <td><a class="btn btn-xs" href="{{route('g_itemuser_edit',['item'=>$edata['item_id'],'process_id'=>$process->process_id])}}">调整</a></td>
                                         </tr>
 
                                         @foreach($process->depts as $dept)
@@ -103,7 +103,7 @@
                                 还未配置项目工作人员！
                                 &nbsp;&nbsp;&nbsp;
                                 <i class="fa fa-hand-o-right"></i>
-                                <a href="{{route('g_itemuser_add')}}">去配置</a>
+                                <a href="{{route('g_itemuser_add',['item'=>$edata['item_id']])}}">去配置</a>
                                 <br>
                             </div>
                         @endif

@@ -6,7 +6,7 @@
 @section('content')
 
     <div class="well">
-        <a class="btn" href="{{route('g_itemuser')}}">
+        <a class="btn" href="{{route('g_itemuser',['item'=>$edata['item_id']])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
@@ -207,7 +207,7 @@
                         'process_id':'{{$edata['process']->id}}'
                         ,'user_id':userId
                     };
-                    ajaxAct('{{route('g_itemuser_edit')}}',data,'post');
+                    ajaxAct('{{route('g_itemuser_edit',['item'=>$edata['item_id']])}}',data,'post');
                     if(ajaxResp.code=='success'){
                         var str='<tr>' +
                             '<td>'+user.data('name')+ '</td>' +
@@ -229,7 +229,7 @@
         function trRemove(obj) {
             var that=$(obj);
             var id=that.data('id');
-            ajaxAct('{{route('g_itemuser_del')}}',{'id':id},'get');
+            ajaxAct('{{route('g_itemuser_del',['item'=>$edata['item_id']])}}',{'id':id},'get');
             if(ajaxResp.code=='success'){
                 that.parents('tr:first').remove();
             }else{
