@@ -23,18 +23,17 @@ class ItemtimeController extends BaseitemController
 
     /* ========== 时间规划 ========== */
     public function index(Request $request){
-        $item_id=1;
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $itemtimes=Schedule::with(['itemtime'=>function($query) use ($item_id){
-                $query->where('item_id',$item_id);
+            $itemtimes=Schedule::with(['itemtime'=>function($query){
+                $query->where('item_id',$this->item_id);
             }])
                 ->orderBy('sort','asc')
                 ->sharedLock()
                 ->get();
 
-            $itemcreate=Item::where('id',$item_id)->value('created_at');
+            $itemcreate=Item::where('id',$this->item_id)->value('created_at');
 
             if(blank($itemtimes)){
                 throw new \Exception('没有符合条件的数据',404404);
@@ -144,7 +143,7 @@ class ItemtimeController extends BaseitemController
                 $msg='保存成功';
                 $sdata=$itemtime;
                 $edata=null;
-                $url=route('g_itemtime');
+                $url=route('g_itemtime',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){

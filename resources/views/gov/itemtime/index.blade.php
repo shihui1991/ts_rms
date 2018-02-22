@@ -49,7 +49,7 @@
                                         <span>{{$itemtime->infos}}</span>
                                         <br>
                                         <i class="ace-icon fa fa-link blue"></i>
-                                        <a href="{{route('g_itemtime_edit',['id'=>$itemtime->itemtime->id])}}">修改</a>
+                                        <a href="{{route('g_itemtime_edit',['item'=>$itemtime->itemtime->item_id,'id'=>$itemtime->itemtime->id])}}">修改</a>
                                     </div>
                                 </div>
                             </div>
