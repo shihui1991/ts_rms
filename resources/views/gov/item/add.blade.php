@@ -34,6 +34,23 @@
                             </div>
                             <div class="space-4"></div>
 
+                            <div class="form-group img-box">
+                                <label class="col-sm-3 control-label no-padding-right">
+                                    征收范围红线地图<br>
+                                    <span class="btn btn-xs">
+                                        <span>上传图片</span>
+                                        <input type="file" accept="image/*" class="hidden" data-name="map" multiple onchange="uplfile(this)">
+                                    </span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <ul class="ace-thumbnails clearfix img-content">
+
+
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="space-4"></div>
+
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="infos">描述：</label>
                                 <div class="col-sm-9">
@@ -57,23 +74,6 @@
 
                     <div class="widget-body">
                         <div class="widget-main padding-8">
-
-                            <div class="form-group img-box">
-                                <label class="col-sm-3 control-label no-padding-right">
-                                    征收范围红线地图<br>
-                                    <span class="btn btn-xs">
-                                        <span>上传图片</span>
-                                        <input type="file" accept="image/*" class="hidden" data-name="map" multiple onchange="uplfile(this)">
-                                    </span>
-                                </label>
-                                <div class="col-sm-9">
-                                    <ul class="ace-thumbnails clearfix img-content">
-
-
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="space-4 header green"></div>
 
                             @foreach($sdata['filecates'] as $filecate)
                                 <div class="form-group img-box">

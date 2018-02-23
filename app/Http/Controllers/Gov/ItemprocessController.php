@@ -35,7 +35,9 @@ class ItemprocessController extends BaseitemController
                 },'user'=>function($query){
                     $query->select(['id','name']);
                 }])
-                    ->orderBy('created_at','desc')
+                    ->where('item_id',$this->item_id)
+                    ->whereNotIn('code',['0','20'])
+                    ->orderBy('updated_at','desc')
                     ->orderBy('id','desc');
             }])
                 ->orderBy('sort','asc')
@@ -64,7 +66,7 @@ class ItemprocessController extends BaseitemController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.process.index')->with($result);
+            return view('gov.itemprocess.index')->with($result);
         }
     }
 
@@ -80,7 +82,7 @@ class ItemprocessController extends BaseitemController
                 throw new \Exception('项目不存在',404404);
             }
             /* ++++++++++ 检查项目状态 ++++++++++ */
-            if($item->schedule_id!=1 || $item->process_id!=1 || $item->code != '0'){
+            if($item->schedule_id!=1 || $item->process_id!=1 || $item->code != '2'){
                 throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
             }
             $item->code='2';

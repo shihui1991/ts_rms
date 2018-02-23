@@ -51,15 +51,10 @@
                                                             <i class="ace-icon fa fa-user green bigger-125"></i>
                                                             <span>{{$worknotice->dept->name}} - {{$worknotice->role->name}} - {{$worknotice->user->name}}</span>
                                                             <br>
-                                                            @if(in_array($worknotice->code,[0,20]))
-                                                                <i class="ace-icon fa fa-link blue"></i>
-                                                                <a href="{{$worknotice->url}}">前往处理</a>
-                                                            @else
-                                                                <a href="{{route('g_infos_info',['id'=>$worknotice->id])}}" title="查看详情">
-                                                                    <i class="ace-icon fa fa-info-circle blue bigger-125"></i>
-                                                                </a>
-                                                                <span>{{$worknotice->infos}}</span>
-                                                            @endif
+                                                            <a href="{{route('g_infos_info',['id'=>$worknotice->id])}}" title="查看详情">
+                                                                <i class="ace-icon fa fa-info-circle blue bigger-125"></i>
+                                                            </a>
+                                                            <span>{{$worknotice->infos}}</span>
                                                         </div>
                                                     </div>
                                                 </div>
