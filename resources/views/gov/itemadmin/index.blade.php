@@ -6,7 +6,7 @@
 @section('content')
 
     <p>
-        <a class="btn" href="{{route('g_itemuser')}}">
+        <a class="btn" href="{{route('g_itemuser',['item'=>$edata['item_id']])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
@@ -28,8 +28,8 @@
         </thead>
         <tbody id="tbody-itemadmin">
 
-        @if(filled($sdata))
-        @foreach($sdata as $itemadmin)
+        @if(filled($sdata['itemadmins']))
+        @foreach($sdata['itemadmins'] as $itemadmin)
             <tr>
                 <td>{{$itemadmin->user->name}}</td>
                 <td>{{$itemadmin->dept->name}}</td>
@@ -59,7 +59,7 @@
                                 <label class="control-label no-padding-right" for="dept_id"> 部门： </label>
                                 <select name="dept_id" id="dept_id" class="form-control">
                                     <option value="">所有部门</option>
-                                    @foreach($edata as $dept)
+                                    @foreach($sdata['depts'] as $dept)
                                         <option value="{{$dept->id}}">{{$dept->name}}</option>
                                     @endforeach
                                 </select>
@@ -193,7 +193,7 @@
                     var data={
                         'user_id':userId
                     };
-                    ajaxAct('{{route('g_itemadmin_add')}}',data,'post');
+                    ajaxAct('{{route('g_itemadmin_add',['item'=>$edata['item_id']])}}',data,'post');
                     if(ajaxResp.code=='success'){
                         var str='<tr>' +
                             '<td>'+user.data('name')+ '</td>' +
@@ -217,7 +217,7 @@
         function trRemove(obj) {
             var that=$(obj);
             var id=that.data('id');
-            ajaxAct('{{route('g_itemadmin_del')}}',{'id':id},'get');
+            ajaxAct('{{route('g_itemadmin_del',['item'=>$edata['item_id']])}}',{'id':id},'get');
             if(ajaxResp.code=='success'){
                 that.parents('tr:first').remove();
             }else{

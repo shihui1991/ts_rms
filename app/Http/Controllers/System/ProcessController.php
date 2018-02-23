@@ -84,7 +84,7 @@ class ProcessController extends BaseController
             }
             $menus=Menu::sharedLock()
                 ->where([
-//                    ['module',0],
+                    ['module',0],
                     ['login',1],
                 ])
                 ->select(['id','parent_id','name',])
@@ -209,7 +209,7 @@ class ProcessController extends BaseController
 
             $menus=Menu::sharedLock()
                 ->where([
-//                    ['module',0],
+                    ['module',0],
                     ['login',1],
                 ])
                 ->select(['id','parent_id','name',])

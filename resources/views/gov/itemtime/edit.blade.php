@@ -6,14 +6,14 @@
 @section('content')
 
     <p>
-        <a class="btn" href="javascript:history.back()">
+        <a class="btn" href="{{route('g_itemtime',['item'=>$sdata->item_id])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemtime_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemtime_edit',['item'=>$sdata->item_id])}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
         <div class="form-group">

@@ -6,11 +6,6 @@
 @section('content')
 
     <p>
-        <a class="btn" href="{{route('g_iteminfo',['item'=>$sdata->id])}}">
-            <i class="ace-icon fa fa-arrow-left bigger-110"></i>
-            返回
-        </a>
-
         <a class="btn" href="{{route('g_iteminfo_edit',['item'=>$sdata->id])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改

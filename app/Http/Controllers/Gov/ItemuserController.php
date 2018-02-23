@@ -26,32 +26,30 @@ class ItemuserController extends BaseitemController
 
     /* ========== 项目人员 ========== */
     public function index(Request $request){
-        $item_id=1;
-
         /* ********** 查询 ********** */
         DB::beginTransaction();
 
         $itemusers=Itemuser::with(['schedule'=>function($query){
             $query->select(['id','name']);
-        },'processes'=>function($query) use ($item_id){
+        },'processes'=>function($query){
             $query->with(['process'=>function($query){
                 $query->select(['id','name']);
-            },'depts'=>function($query) use ($item_id){
+            },'depts'=>function($query){
                 $query->with(['dept'=>function($query){
                     $query->select(['id','name']);
-                },'users'=>function($query) use ($item_id){
+                },'users'=>function($query){
                     $query->with(['user'=>function($query){
                         $query->select(['id','name']);
                     }])
-                        ->where('item_id',$item_id)
+                        ->where('item_id',$this->item_id)
                         ->select(['item_id','schedule_id','process_id','dept_id','user_id'])
                         ->distinct();
                 }])
-                    ->where('item_id',$item_id)
+                    ->where('item_id',$this->item_id)
                     ->select(['item_id','schedule_id','process_id','dept_id'])
                     ->distinct();
             }])
-                ->where('item_id',$item_id)
+                ->where('item_id',$this->item_id)
                 ->select(['item_id','schedule_id','process_id'])
                 ->distinct();
         }])
@@ -67,7 +65,7 @@ class ItemuserController extends BaseitemController
         },'user'=>function($query){
             $query->select(['id','name']);
         }])
-            ->where('item_id',$item_id)
+            ->where('item_id',$this->item_id)
             ->sharedLock()
             ->get();
 
@@ -75,8 +73,8 @@ class ItemuserController extends BaseitemController
 
         $code='success';
         $msg='查询成功';
-        $sdata=$itemusers;
-        $edata=$itemadmins;
+        $sdata=['itemusers'=>$itemusers,'itemadmins'=>$itemadmins];
+        $edata=['item_id'=>$this->item_id];
         $url=null;
 
         /* ++++++++++ 结果 ++++++++++ */
@@ -90,7 +88,6 @@ class ItemuserController extends BaseitemController
 
     /* ========== 配置项目人员 ========== */
     public function add(Request $request){
-        $item_id=1;
         if($request->isMethod('get')){
             DB::beginTransaction();
             $processes=Schedule::with(['processes'=>function($query){
@@ -108,16 +105,16 @@ class ItemuserController extends BaseitemController
             if(blank($processes)){
                 $code='error';
                 $msg='数据错误';
-                $sdata=null;
-                $edata=$depts;
+                $sdata=['processes'=>null,'depts'=>$depts];
+                $edata=['item_id'=>$this->item_id];
                 $url=null;
 
                 $view='gov.error';
             }else{
                 $code='success';
                 $msg='查询成功';
-                $sdata=$processes;
-                $edata=$depts;
+                $sdata=['processes'=>$processes,'depts'=>$depts];
+                $edata=['item_id'=>$this->item_id];
                 $url=null;
 
                 $view='gov.itemuser.add';
@@ -168,7 +165,7 @@ class ItemuserController extends BaseitemController
                     foreach ($users as $user){
                         if(in_array($user->id,$itemusers[$process->id])){
                             $pre_data=[
-                                'item_id'=>$item_id,
+                                'item_id'=>$this->item_id,
                                 'schedule_id'=>$process->schedule_id,
                                 'process_id'=>$process->id,
                                 'menu_id'=>$process->menu_id,
@@ -187,7 +184,7 @@ class ItemuserController extends BaseitemController
                     }
                 }
 
-                $count=Itemuser::where('item_id',$item_id)->count();
+                $count=Itemuser::where('item_id',$this->item_id)->count();
                 if($count){
                     throw new \Exception('项目人员已配置',404404);
                 }
@@ -206,7 +203,7 @@ class ItemuserController extends BaseitemController
                 $msg='保存成功';
                 $sdata=null;
                 $edata=null;
-                $url=route('g_itemuser');
+                $url=route('g_itemuser',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){
@@ -226,7 +223,6 @@ class ItemuserController extends BaseitemController
 
     /* ========== 调整项目人员 ========== */
     public function edit(Request $request){
-        $item_id=1;
         $process_id=$request->input('process_id');
         if(!$process_id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
@@ -237,7 +233,7 @@ class ItemuserController extends BaseitemController
             }
         }
         if($request->isMethod('get')){
-            $where[]=['item_id',$item_id];
+            $where[]=['item_id',$this->item_id];
             $where[]=['process_id',$process_id];
             DB::beginTransaction();
             $process=Process::with(['schedule'=>function($query){
@@ -273,7 +269,7 @@ class ItemuserController extends BaseitemController
                 $code='success';
                 $msg='查询成功';
                 $sdata=$itemusers;
-                $edata=['depts'=>$depts,'process'=>$process];
+                $edata=['depts'=>$depts,'process'=>$process,'item_id'=>$this->item_id];
                 $url=null;
 
                 $view='gov.itemuser.edit';
@@ -295,7 +291,7 @@ class ItemuserController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $where[]=['item_id',$item_id];
+                $where[]=['item_id',$this->item_id];
                 $where[]=['process_id',$process_id];
                 $where[]=['user_id',$user_id];
                 $itemuser=Itemuser::withTrashed()->where($where)->lockForUpdate()->first();
@@ -306,7 +302,7 @@ class ItemuserController extends BaseitemController
                     $user=User::select(['id','dept_id','role_id'])->sharedLock()->find($user_id);
 
                     $pre_data=[
-                        'item_id'=>$item_id,
+                        'item_id'=>$this->item_id,
                         'schedule_id'=>$process->schedule_id,
                         'process_id'=>$process->id,
                         'menu_id'=>$process->menu_id,

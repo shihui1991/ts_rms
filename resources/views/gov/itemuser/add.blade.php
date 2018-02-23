@@ -12,11 +12,11 @@
         </a>
     </p>
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemuser_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemuser_add',['item'=>$edata['item_id']])}}" method="post">
         {{csrf_field()}}
 
         <table class="table table-hover table-bordered treetable" id="tree-itemuser">
-            @foreach($sdata as $schedule)
+            @foreach($sdata['processes'] as $schedule)
                 <tr data-tt-id="schedule-{{$schedule->id}}" data-tt-parent-id="0">
                     <td colspan="4">{{$schedule->name}}</td>
                 </tr>
@@ -62,7 +62,7 @@
                                 <label class="control-label no-padding-right" for="dept_id"> 部门： </label>
                                 <select name="dept_id" id="dept_id" class="form-control">
                                     <option value="">所有部门</option>
-                                    @foreach($edata as $dept)
+                                    @foreach($sdata['depts'] as $dept)
                                         <option value="{{$dept->id}}">{{$dept->name}}</option>
                                     @endforeach
                                 </select>

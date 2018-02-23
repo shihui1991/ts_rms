@@ -43,14 +43,14 @@ class ItemadminController extends BaseitemController
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$itemadmins;
-            $edata=$depts;
+            $sdata=['itemadmins'=>$itemadmins,'depts'=>$depts];
+            $edata=['item_id'=>$this->item_id];
             $url=null;
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=null;
-            $edata=$depts;
+            $sdata=['itemadmins'=>null,'depts'=>$depts];
+            $edata=['item_id'=>$this->item_id];
             $url=null;
         }
         DB::commit();
