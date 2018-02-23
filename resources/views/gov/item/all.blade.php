@@ -46,7 +46,9 @@
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 项目进度： </div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click">{{$infos->state->name}}</span>
+                                                <span class="editable editable-click">
+                                                    {{$infos->schedule->name}} - {{$infos->process->name}}({{$infos->state->name}})
+                                                </span>
                                             </div>
                                         </div>
 

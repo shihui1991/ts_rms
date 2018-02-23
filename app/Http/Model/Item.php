@@ -37,6 +37,16 @@ class Item extends Model
 
     }
 
+    /* ++++++++++ 项目进度 ++++++++++ */
+    public function schedule(){
+        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id')->withDefault();
+    }
+
+    /* ++++++++++ 项目流程 ++++++++++ */
+    public function process(){
+        return $this->belongsTo('App\Http\Model\Process','process_id','id')->withDefault();
+    }
+
     /* ++++++++++ 项目状态 ++++++++++ */
     public function state(){
         return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();

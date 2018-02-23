@@ -192,7 +192,6 @@ class IteminfoController extends BaseitemController
                 }
 
                 $item->fill($request->input());
-                $item->code=1;
 
                 $item->save();
                 if(blank($item)){

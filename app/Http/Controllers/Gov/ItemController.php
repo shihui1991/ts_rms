@@ -52,7 +52,13 @@ class ItemController extends BaseController
             $items=Itemuser::with(['item'=>function($query){
                 $query->with(['itemadmins'=>function($query){
                     $query->select('name');
-                },'state'])->withCount('households');
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                },'schedule'=>function($query){
+                    $query->select(['id','name']);
+                },'process'=>function($query){
+                    $query->select(['id','name']);
+                }])->withCount('households');
             }])
                 ->select(['item_id','user_id'])
                 ->distinct()
@@ -100,7 +106,13 @@ class ItemController extends BaseController
             $items=Item::withCount('households')
                 ->with(['itemadmins'=>function($query){
                     $query->select('name');
-                },'state'])
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                },'schedule'=>function($query){
+                    $query->select(['id','name']);
+                },'process'=>function($query){
+                    $query->select(['id','name']);
+                }])
                 ->sharedLock()
                 ->paginate();
 
@@ -186,7 +198,9 @@ class ItemController extends BaseController
                 $item=$model;
                 $item->fill($request->input());
                 $item->addOther($request);
-                $item->code=1;
+                $item->schedule_id=1;
+                $item->process_id=1;
+                $item->code=0;
 
                 $item->save();
                 if(blank($item)){
