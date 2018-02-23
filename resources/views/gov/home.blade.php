@@ -30,6 +30,51 @@
 {{-- 页面内容 --}}
 @section('content')
 
+    <h3 class="header smaller lighter blue">
+        <i class="ace-icon fa fa-bullhorn"></i>
+        工作提醒
+    </h3>
+    <div class="tabbable">
+        <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">
+            <li class="active">
+                <a data-toggle="tab" href="#new" aria-expanded="true">最新提醒</a>
+            </li>
+
+            @foreach($sdata['schedules'] as $schedule)
+                <li class="">
+                    <a data-toggle="tab" href="#schedule{{$schedule->id}}" aria-expanded="false">{{$schedule->name}}</a>
+                </li>
+            @endforeach
+
+        </ul>
+
+        <div class="tab-content">
+            <div id="new" class="tab-pane active">
+                @foreach($sdata['worknotices'] as $worknotice)
+                    <p>
+                        {{$loop->iteration}}、{{$worknotice->created_at}}，【{{$worknotice->item->name}}】 【{{$worknotice->schedule->name}}】 【{{$worknotice->process->name}}】。
+                        <a href="{{$worknotice->url}}">前往处理 &nbsp;<i class="ace-icon fa fa-angle-double-right"></i></a>
+                    </p>
+                @endforeach
+            </div>
+
+            @foreach($sdata['schedules'] as $schedule)
+                <div id="schedule{{$schedule->id}}" class="tab-pane">
+                    @foreach($sdata['worknotices'] as $worknotice)
+                        @if($worknotice->schedule_id==$schedule->id)
+                            <p>
+                                {{$loop->iteration}}、{{$worknotice->created_at}}，【{{$worknotice->item->name}}】 【{{$worknotice->schedule->name}}】 【{{$worknotice->process->name}}】。
+                                <a href="{{$worknotice->url}}">前往处理 &nbsp;<i class="ace-icon fa fa-angle-double-right"></i></a>
+                            </p>
+                        @endif
+
+                    @endforeach
+                </div>
+            @endforeach
+
+        </div>
+    </div>
+
 @endsection
 
 {{-- 样式 --}}

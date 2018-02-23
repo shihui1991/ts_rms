@@ -205,7 +205,7 @@ class ItemController extends BaseController
                 $item->addOther($request);
                 $item->schedule_id=1;
                 $item->process_id=1;
-                $item->code=0;
+                $item->code='2';
                 $item->save();
                 if(blank($item)){
                     throw new \Exception('保存失败',404404);
@@ -223,7 +223,7 @@ class ItemController extends BaseController
                     'role_id'=>session('gov_user.role_id'),
                     'user_id'=>session('gov_user.user_id'),
                     'url'=>route('g_item_add'),
-                    'code'=>2,
+                    'code'=>'2',
                     'created_at'=>date('Y-m-d H:i:s'),
                     'updated_at'=>date('Y-m-d H:i:s'),
                 ];
@@ -246,7 +246,7 @@ class ItemController extends BaseController
                         'role_id'=>$user->role_id,
                         'user_id'=>$user->id,
                         'url'=>route('g_iteminfo_info',['item'=>$item->id]),
-                        'code'=>0,
+                        'code'=>'0',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];

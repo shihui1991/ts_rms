@@ -30,7 +30,7 @@ class BaseitemController extends BaseController
                 }
             }
             $this->item_id=$item_id;
-            $this->item=Item::select(['id','name','schedule_id','process_id','code'])->sharedLock()->find($item_id);
+            $this->item=Item::sharedLock()->find($item_id);
 
             if(!$request->ajax()){
                 $menus=Menu::with(['childs'=>function($query){
