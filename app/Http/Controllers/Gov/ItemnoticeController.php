@@ -113,7 +113,6 @@ class ItemnoticeController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
                 'cate_id' => ['required',Rule::unique('item_notice')->where(function ($query) use($item_id){
                     $query->where('item_id', $item_id);
                 })],
@@ -137,6 +136,7 @@ class ItemnoticeController extends BaseitemController
                 $itemnotice = $model;
                 $itemnotice->fill($request->all());
                 $itemnotice->addOther($request);
+                $itemnotice->item_id=$this->item_id;
                 $itemnotice->save();
                 if (blank($itemnotice)) {
                     throw new \Exception('添加失败', 404404);
@@ -146,7 +146,7 @@ class ItemnoticeController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $itemnotice;
                 $edata = null;
-                $url = route('g_itemnotice');
+                $url = route('g_itemnotice',['item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -294,7 +294,7 @@ class ItemnoticeController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$itemnotice;
                 $edata=null;
-                $url=route('g_itemnotice');
+                $url=route('g_itemnotice',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){

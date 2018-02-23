@@ -143,6 +143,7 @@ class ItemtopicController extends BaseitemController
                 $itemtopic = $model;
                 $itemtopic->fill($request->all());
                 $itemtopic->addOther($request);
+                $itemtopic->item_id=$this->item_id;
                 $itemtopic->save();
                 if (blank($itemtopic)) {
                     throw new \Exception('添加失败', 404404);
@@ -152,7 +153,7 @@ class ItemtopicController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $itemtopic;
                 $edata = null;
-                $url = route('g_itemtopic');
+                $url = route('g_itemtopic',['item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -312,7 +313,7 @@ class ItemtopicController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$itemtopic;
                 $edata=null;
-                $url=route('g_itemtopic');
+                $url=route('g_itemtopic',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){
