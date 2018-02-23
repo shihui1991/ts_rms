@@ -42,7 +42,13 @@ class Schedule extends Model
         return $this->hasMany('App\Http\Model\Process','schedule_id','id');
     }
 
+    /* ++++++++++ 关联项目时间规划 ++++++++++ */
     public function itemtime(){
         return $this->hasOne('App\Http\Model\Itemtime','schedule_id','id');
+    }
+
+    /* ++++++++++ 关联项目流程工作提醒 ++++++++++ */
+    public function worknotices(){
+        return $this->hasMany('App\Http\Model\Worknotice','schedule_id','id');
     }
 }

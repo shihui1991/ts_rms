@@ -11,6 +11,8 @@ use App\Http\Model\Filetable;
 use App\Http\Model\Item;
 use App\Http\Model\Itemuser;
 use App\Http\Model\Menu;
+use App\Http\Model\Role;
+use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -201,11 +203,25 @@ class ItemController extends BaseController
                 $item->schedule_id=1;
                 $item->process_id=1;
                 $item->code=0;
-
                 $item->save();
                 if(blank($item)){
                     throw new \Exception('保存失败',404404);
                 }
+
+                $parent_role_id=Role::where('id',session('gov_user.role_id'))->sharedLock()->value('parent_id');
+
+                $work_notice=new Worknotice();
+                $work_notice->item_id=$item->id;
+                $work_notice->schedule_id=1;
+                $work_notice->process_id=1;
+                $work_notice->menu_id=44;
+                $work_notice->dept_id=session('gov_user.dept_id');
+                $work_notice->parent_id=$parent_role_id;
+                $work_notice->role_id=session('gov_user.role_id');
+                $work_notice->user_id=session('gov_user.user_id');
+                $work_notice->url=route('g_item_add');
+                $work_notice->code=2;
+                $work_notice->save();
 
                 $code='success';
                 $msg='保存成功';

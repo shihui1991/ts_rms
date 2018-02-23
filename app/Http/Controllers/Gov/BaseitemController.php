@@ -6,12 +6,14 @@
 */
 namespace App\Http\Controllers\Gov;
 
+use App\Http\Model\Item;
 use App\Http\Model\Menu;
 use Illuminate\Http\Request;
 
 class BaseitemController extends BaseController
 {
     public $item_id;
+    public $item;
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
@@ -28,6 +30,7 @@ class BaseitemController extends BaseController
                 }
             }
             $this->item_id=$item_id;
+            $this->item=Item::select(['id','name','schedule_id','process_id','code'])->sharedLock()->find($item_id);
 
             if(!$request->ajax()){
                 $menus=Menu::with(['childs'=>function($query){
@@ -47,7 +50,7 @@ class BaseitemController extends BaseController
 
                 $nav_menus=$this->makeMenu2($menus,session('menu.cur_menu.id'),session('menu.cur_pids'),1,41,$item_id);
 
-                view()->share(['nav_menus'=>$nav_menus]);
+                view()->share(['nav_menus'=>$nav_menus,'item'=>$this->item]);
             }
 
             return $next($request);
