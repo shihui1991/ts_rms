@@ -47,46 +47,46 @@ class Worknotice extends Model
 
     /* ++++++++++ 关联项目 ++++++++++ */
     public function item(){
-        return $this->belongsTo('App\Http\Model\Item','item_id','id');
+        return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联进度 ++++++++++ */
     public function schedule(){
-        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id');
+        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联流程 ++++++++++ */
     public function process(){
-        return $this->belongsTo('App\Http\Model\Process','process_id','id');
+        return $this->belongsTo('App\Http\Model\Process','process_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联菜单 ++++++++++ */
     public function menu(){
-        return $this->belongsTo('App\Http\Model\Menu','menu_id','id');
+        return $this->belongsTo('App\Http\Model\Menu','menu_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联部门 ++++++++++ */
     public function dept(){
-        return $this->belongsTo('App\Http\Model\Dept','dept_id','id');
+        return $this->belongsTo('App\Http\Model\Dept','dept_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联上级角色 ++++++++++ */
     public function parentrole(){
-        return $this->belongsTo('App\Http\Model\Role','parent_id','id');
+        return $this->belongsTo('App\Http\Model\Role','parent_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联角色 ++++++++++ */
     public function role(){
-        return $this->belongsTo('App\Http\Model\Role','role_id','id');
+        return $this->belongsTo('App\Http\Model\Role','role_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联人员 ++++++++++ */
     public function user(){
-        return $this->belongsTo('App\Http\Model\User','user_id','id');
+        return $this->belongsTo('App\Http\Model\User','user_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联状态 ++++++++++ */
     public function state(){
-        return $this->belongsTo('App\Http\Model\Statecode','code','code');
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 }

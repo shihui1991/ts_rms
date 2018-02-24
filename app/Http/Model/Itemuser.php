@@ -41,15 +41,15 @@ class Itemuser extends Model
     }
 
     public function item(){
-        return $this->belongsTo('App\Http\Model\Item','item_id','id');
+        return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
 
     public function schedule(){
-        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id');
+        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id')->withDefault();
     }
 
     public function process(){
-        return $this->belongsTo('App\Http\Model\Process','process_id','id');
+        return $this->belongsTo('App\Http\Model\Process','process_id','id')->withDefault();
     }
 
     public function processes(){
@@ -57,11 +57,11 @@ class Itemuser extends Model
     }
 
     public function menu(){
-        return $this->belongsTo('App\Http\Model\Menu','menu_id','id');
+        return $this->belongsTo('App\Http\Model\Menu','menu_id','id')->withDefault();
     }
 
     public function dept(){
-        return $this->belongsTo('App\Http\Model\Dept','dept_id','id');
+        return $this->belongsTo('App\Http\Model\Dept','dept_id','id')->withDefault();
     }
 
     public function depts(){
@@ -69,11 +69,11 @@ class Itemuser extends Model
     }
 
     public function role(){
-        return $this->belongsTo('App\Http\Model\Role','role_id','id');
+        return $this->belongsTo('App\Http\Model\Role','role_id','id')->withDefault();
     }
 
     public function user(){
-        return $this->belongsTo('App\Http\Model\User','user_id','id');
+        return $this->belongsTo('App\Http\Model\User','user_id','id')->withDefault();
     }
 
     public function users(){

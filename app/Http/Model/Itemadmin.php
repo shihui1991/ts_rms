@@ -38,19 +38,19 @@ class Itemadmin extends Model
     }
 
     public function item(){
-        return $this->belongsTo('App\Http\Model\Item','item_id','id');
+        return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
 
     public function dept(){
-        return $this->belongsTo('App\Http\Model\Dept','dept_id','id');
+        return $this->belongsTo('App\Http\Model\Dept','dept_id','id')->withDefault();
     }
 
     public function role(){
-        return $this->belongsTo('App\Http\Model\Role','role_id','id');
+        return $this->belongsTo('App\Http\Model\Role','role_id','id')->withDefault();
     }
 
     public function user(){
-        return $this->belongsTo('App\Http\Model\User','user_id','id');
+        return $this->belongsTo('App\Http\Model\User','user_id','id')->withDefault();
     }
 
 }

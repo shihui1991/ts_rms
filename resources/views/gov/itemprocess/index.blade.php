@@ -38,7 +38,7 @@
 
                                             <div class="timeline-item clearfix">
                                                 <div class="timeline-info">
-                                                    <span class="timeline-date">{{$worknotice->created_at}}</span>
+                                                    <span class="timeline-date">{{$worknotice->updated_at}}</span>
 
                                                     <i class="timeline-indicator btn btn-info no-hover"></i>
                                                 </div>
@@ -53,6 +53,7 @@
                                                             <br>
                                                             <a href="{{route('g_infos_info',['id'=>$worknotice->id])}}" title="查看详情">
                                                                 <i class="ace-icon fa fa-info-circle blue bigger-125"></i>
+                                                                @if($worknotice->process->getOriginal('type')==2) 审查意见： @endif
                                                             </a>
                                                             <span>{{$worknotice->infos}}</span>
                                                         </div>

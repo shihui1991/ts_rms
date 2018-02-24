@@ -8,6 +8,8 @@ namespace App\Http\Controllers\Gov;
 
 use App\Http\Model\Item;
 use App\Http\Model\Menu;
+use App\Http\Model\Process;
+use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 
 class BaseitemController extends BaseController
@@ -98,5 +100,41 @@ class BaseitemController extends BaseController
         $str ='<ul class="'.$ul_class.'">'.$str.'</ul>';
 
         return $str;
+    }
+
+    /* ========== 是否有工作提醒 ========== */
+    public function hasNotice(){
+        /* ++++++++++ 流程设置 ++++++++++ */
+        $process=Process::sharedLock()->where('menu_id',session('menu.cur_menu.id'))->first();
+        /* ++++++++++ 是否有工作推送 ++++++++++ */
+        $worknotice=Worknotice::sharedLock()
+            ->where([
+                ['item_id',$this->item->id],
+                ['schedule_id',$process->schedule_id],
+                ['process_id',$process->id],
+                ['menu_id',$process->menu_id],
+                ['user_id',session('gov_user.user_id')],
+            ])
+            ->whereIn('code',['0','20'])
+            ->first();
+        if(blank($worknotice)){
+            throw new \Exception('您没有执行此操作的权限',404404);
+        }
+        /* ++++++++++ 下级未完成数 ++++++++++ */
+        $worknotice_subs=Worknotice::sharedLock()
+            ->where([
+                ['item_id',$this->item->id],
+                ['schedule_id',$process->schedule_id],
+                ['process_id',$process->id],
+                ['menu_id',$process->menu_id],
+                ['parent_id',session('gov_user.role_id')],
+            ])
+            ->whereIn('code',['0','20'])
+            ->count();
+        if($worknotice_subs){
+            throw new \Exception('您的下级未完成此操作，您的操作暂时不能被执行',404404);
+        }
+
+        return ['process'=>$process,'worknotice'=>$worknotice];
     }
 }

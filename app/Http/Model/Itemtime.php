@@ -38,10 +38,10 @@ class Itemtime extends Model
     }
 
     public function item(){
-        return $this->belongsTo('App\Http\Model\Item','item_id','id');
+        return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
 
     public function schedule(){
-        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id');
+        return $this->belongsTo('App\Http\Model\Schedule','schedule_id','id')->withDefault();
     }
 }
