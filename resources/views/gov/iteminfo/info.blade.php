@@ -6,40 +6,17 @@
 @section('content')
 
 
-        @if($sdata->schedule_id==1 && in_array($sdata->process_id,[1,4,5]))
+        @if($sdata->schedule_id==1 && $sdata->process_id==1 && $sdata->code=='2')
         <p>
-            @if($sdata->process_id==1 && $sdata->code=='2')
+            <a class="btn" href="{{route('g_iteminfo_edit',['item'=>$sdata->id])}}">
+                <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
+                修改
+            </a>
 
-                <a class="btn" href="{{route('g_iteminfo_edit',['item'=>$sdata->id])}}">
-                    <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
-                    修改
-                </a>
-
-                <a class="btn" onclick="btnAct(this)" data-url="{{route('g_itemprocess_c2dc',['item'=>$sdata->id])}}">
-                    <i class="ace-icon fa fa-cloud-upload bigger-110"></i>
-                    提交部门审查
-                </a>
-
-            @elseif(($sdata->process_id==5 && $sdata->code=='2') || ($sdata->process_id==4 && $sdata->code=='1'))
-
-                <a class="btn" href="{{route('g_itemprocess_retry',['item'=>$sdata->id])}}">
-                    <i class="ace-icon fa fa-history bigger-110"></i>
-                    重新提交审查资料
-                </a>
-
-            @elseif($sdata->process_id==4 && $sdata->code=='2')
-
-                <a class="btn" href="{{route('g_itemprocess_retry',['item'=>$sdata->id])}}">
-                    <i class="ace-icon fa fa-history bigger-110"></i>
-                    重新提交审查资料
-                </a>
-
-                <a class="btn" onclick="btnAct(this)" data-url="{{route('g_itemprocess_c2dc',['item'=>$sdata->id])}}">
-                    <i class="ace-icon fa fa-cloud-upload bigger-110"></i>
-                    提交部门审查
-                </a>
-
-            @endif
+            <a class="btn" onclick="btnAct(this)" data-url="{{route('g_itemprocess_c2dc',['item'=>$sdata->id])}}">
+                <i class="ace-icon fa fa-cloud-upload bigger-110"></i>
+                提交部门审查
+            </a>
 
         </p>
         @endif

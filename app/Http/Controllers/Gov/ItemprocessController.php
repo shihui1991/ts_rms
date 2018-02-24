@@ -115,7 +115,7 @@ class ItemprocessController extends BaseitemController
             /* ++++++++++ 同级完成数达到限制 ++++++++++ */
             if(($worknotice_sames)==$process->number){
                 /* ++++++++++ 删除相同工作推送 ++++++++++ */
-                Worknotice::query()->sharedLock()
+                Worknotice::sharedLock()
                     ->where([
                         ['item_id',$item->id],
                         ['schedule_id',$process->schedule_id],
@@ -343,7 +343,7 @@ class ItemprocessController extends BaseitemController
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
                     if(($worknotice_sames)==$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
-                        Worknotice::query()->sharedLock()
+                        Worknotice::sharedLock()
                             ->where([
                                 ['item_id',$item->id],
                                 ['schedule_id',$process->schedule_id],
@@ -354,43 +354,61 @@ class ItemprocessController extends BaseitemController
                             ])
                             ->delete();
 
-                        /* ++++++++++ 提交区政府审查 可操作人员 ++++++++++ */
-                        $process=Process::with(['processusers'=>function($query){
-                            $query->with('role');
-                        }])
-                            ->select(['id','menu_id'])
-                            ->find(6);
-                        $values=[];
-                        /* ++++++++++ 提交区政府审查 工作提醒推送 ++++++++++ */
-                        foreach ($process->processusers as $user){
-                            $values[]=[
-                                'item_id'=>$item->id,
-                                'schedule_id'=>1,
-                                'process_id'=>6,
-                                'menu_id'=>$process->menu_id,
-                                'dept_id'=>$user->dept_id,
-                                'parent_id'=>$user->role->parent_id,
-                                'role_id'=>$user->role_id,
-                                'user_id'=>$user->id,
-                                'url'=>route('g_itemprocess_c2gc',['item'=>$this->item->id]),
-                                'code'=>'0',
-                                'created_at'=>date('Y-m-d H:i:s'),
-                                'updated_at'=>date('Y-m-d H:i:s'),
-                            ];
-                        }
+                        /* ++++++++++ 是否存在上级 ++++++++++ */
+                        $worknotice_par=Worknotice::sharedLock()
+                            ->where([
+                                ['item_id',$item->id],
+                                ['schedule_id',$process->schedule_id],
+                                ['process_id',$process->id],
+                                ['menu_id',$process->menu_id],
+                                ['role_id',$worknotice->parent_id],
+                                ['code','20'],
+                            ])
+                            ->count();
+                        /* ++++++++++ 存在上级 ++++++++++ */
+                        if($worknotice_par){
+                            $item->schedule_id=$worknotice->schedule_id;
+                            $item->process_id=$worknotice->process_id;
+                            $item->code='21';
+                        }else{
+                            /* ++++++++++ 提交区政府审查 可操作人员 ++++++++++ */
+                            $process=Process::with(['processusers'=>function($query){
+                                $query->with('role');
+                            }])
+                                ->select(['id','menu_id'])
+                                ->find(6);
+                            $values=[];
+                            /* ++++++++++ 提交区政府审查 工作提醒推送 ++++++++++ */
+                            foreach ($process->processusers as $user){
+                                $values[]=[
+                                    'item_id'=>$item->id,
+                                    'schedule_id'=>1,
+                                    'process_id'=>6,
+                                    'menu_id'=>$process->menu_id,
+                                    'dept_id'=>$user->dept_id,
+                                    'parent_id'=>$user->role->parent_id,
+                                    'role_id'=>$user->role_id,
+                                    'user_id'=>$user->id,
+                                    'url'=>route('g_itemprocess_c2gc',['item'=>$this->item->id]),
+                                    'code'=>'0',
+                                    'created_at'=>date('Y-m-d H:i:s'),
+                                    'updated_at'=>date('Y-m-d H:i:s'),
+                                ];
+                            }
 
-                        $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
-                        $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
-                        if(!$sqls){
-                            throw new \Exception('操作失败',404404);
-                        }
-                        foreach ($sqls as $sql){
-                            DB::statement($sql);
-                        }
+                            $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
+                            $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
+                            if(!$sqls){
+                                throw new \Exception('操作失败',404404);
+                            }
+                            foreach ($sqls as $sql){
+                                DB::statement($sql);
+                            }
 
-                        $item->schedule_id=$worknotice->schedule_id;
-                        $item->process_id=$worknotice->process_id;
-                        $item->code=$worknotice->code;
+                            $item->schedule_id=$worknotice->schedule_id;
+                            $item->process_id=$worknotice->process_id;
+                            $item->code=$worknotice->code;
+                        }
                     }
                     /* ++++++++++ 同级完成数未达限制 ++++++++++ */
                     else{
@@ -402,7 +420,7 @@ class ItemprocessController extends BaseitemController
                 /* ++++++++++ 审查驳回 ++++++++++ */
                 else{
                     /* ++++++++++ 删除相同工作推送 ++++++++++ */
-                    Worknotice::query()->sharedLock()
+                    Worknotice::sharedLock()
                         ->where([
                             ['item_id',$item->id],
                             ['schedule_id',$process->schedule_id],
@@ -430,7 +448,7 @@ class ItemprocessController extends BaseitemController
                             'parent_id'=>$user->role->parent_id,
                             'role_id'=>$user->role_id,
                             'user_id'=>$user->id,
-                            'url'=>route('g_itemprocess_c2gc',['item'=>$this->item->id]),
+                            'url'=>route('g_itemprocess_crb',['item'=>$this->item->id]),
                             'code'=>'0',
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),
@@ -464,7 +482,7 @@ class ItemprocessController extends BaseitemController
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$exception;
+                $edata=null;
                 $url=route('g_itemprocess',['item'=>$this->item->id]);
 
                 DB::rollBack();
@@ -474,5 +492,102 @@ class ItemprocessController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 项目审查 - 审查驳回处理 ========== */
+    public function check_roll_back(Request $request){
+        if($request->isMethod('get')){
+            /* ********** 查询 ********** */
+            DB::beginTransaction();
+            try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->schedule_id!=1 || !in_array($item->process_id,[3,7])){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                if($item->process_id==2 && $item->code=='21'){
+                    throw new \Exception('当前项目处于【'.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                if($item->process_id==3 && $item->code=='22'){
+                    throw new \Exception('当前项目【'.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+
+                $result=$this->hasNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
+
+                /* ++++++++++ 更新项目状态 ++++++++++ */
+                $item->schedule_id=$worknotice->schedule_id;
+                $item->process_id=$worknotice->process_id;
+                $item->code='21';
+                $item->save();
+
+                $worknotices=Worknotice::with(['process'=>function($query){
+                    $query->select(['id','name']);
+                },'dept'=>function($query){
+                    $query->select(['id','name']);
+                },'role'=>function($query){
+                    $query->select(['id','name']);
+                },'user'=>function($query){
+                    $query->select(['id','name']);
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                }])
+                    ->where('item_id',$this->item_id)
+                    ->where('process_id',$process->id)
+                    ->whereNotIn('code',['20'])
+                    ->orderBy('updated_at','desc')
+                    ->orderBy('id','desc')
+                    ->sharedLock()
+                    ->get();
+
+                $code='success';
+                $msg='查询成功';
+                $sdata=['item'=>$item,'worknotices'=>$worknotices];
+                $edata=null;
+                $url=null;
+
+                $view='gov.itemprocess.checkdeptcheck';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ++++++++++ 处理结果 ++++++++++ */
+        else{
+
+        }
+    }
+
+    /* ========== 项目审查 - 重新提交审查资料 ========== */
+    public function check_iteminfo_retry(Request $request){
+
+    }
+
+    /* ========== 项目审查 - 不予受理 ========== */
+    public function check_item_stop(Request $request){
+
+    }
+
+    /* ========== 项目审查 - 提交区政府审查 ========== */
+    public function check_to_gov_check(Request $request){
+
     }
 }
