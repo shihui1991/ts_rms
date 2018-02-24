@@ -94,3 +94,38 @@ function upDown(obj) {
         })
     }
 }
+
+// 按钮异步请求
+function btnAct(obj) {
+    var btn=$(obj);
+    var url=btn.data('url');
+    var datas=btn.data('datas');
+    var method=btn.data('method')?btn.data('method'):'get';
+    if(btn.data('loading') || btn.hasClass('disabled')){
+        return false;
+    }
+    btn.data('loading',true).addClass('disabled');
+    ajaxAct(url,datas,method);
+    if(ajaxResp.code=='success'){
+        toastr.success(ajaxResp.message);
+        if(ajaxResp.url){
+            setTimeout(function () {
+                location.href=ajaxResp.url;
+            },1000);
+        }else{
+            setTimeout(function () {
+                location.reload();
+            },1000);
+        }
+    }else{
+        toastr.error(ajaxResp.message);
+        if(ajaxResp.url){
+            setTimeout(function () {
+                location.href=ajaxResp.url;
+            },1000);
+        }else{
+            btn.data('loading',false).removeClass('disabled');
+        }
+    }
+    return false;
+}

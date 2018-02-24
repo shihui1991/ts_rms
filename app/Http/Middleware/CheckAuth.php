@@ -75,7 +75,8 @@ class CheckAuth
                 }
             }
         }
-
+        $parents_menus_ids=[];
+        $parents_menus=[];
         if(!request()->ajax()){
             /* ++++++++++ 所有父级菜单 ++++++++++ */
             $parents_menus=$this->get_parents_menus($current_menu);
@@ -83,14 +84,11 @@ class CheckAuth
                 $parents_menus_ids=$parents_menus['parents_menus_ids'];
                 $parents_menus=$parents_menus['parents_menus'];
                 krsort($parents_menus);
-            }else{
-                $parents_menus_ids=[];
-                $parents_menus=[];
             }
 
-            request()->session()->flash('menu',['cur_menu'=>$current_menu,'cur_pids'=>$parents_menus_ids]);
             view()->share(['parents_menus'=>$parents_menus,'current_menu'=>$current_menu]);
         }
+        request()->session()->flash('menu',['cur_menu'=>$current_menu,'cur_pids'=>$parents_menus_ids]);
 
         return $next($request);
     }
