@@ -6,7 +6,7 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_household_add',['item'=>$edata['item_id']])}}" class="btn">添加被征收户</a>
+        <a href="{{route('g_household_add',['item'=>$edata['item_id']])}}" class="btn">添加被征收户账号</a>
     </div>
 
     <table class="table table-hover table-bordered">
@@ -35,6 +35,8 @@
                         <td>{{$infos->state}}</td>
                         <td>
                             <a href="{{route('g_household_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_householdmember',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">家庭成员</a>
+                            <a href="{{route('g_household_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">其他补偿事项</a>
                         </td>
                     </tr>
                 @endforeach
