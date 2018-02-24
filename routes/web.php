@@ -30,6 +30,7 @@ Route::namespace('gov')->prefix('gov')->group(function (){
         /*---------- 工具 ----------*/
         Route::any('/error','ToolsController@error')->name('g_error'); // 错误提示
         Route::any('/upl','ToolsController@upl')->name('g_upl'); // 文件上传
+        Route::any('/noticenum','ToolsController@noticenum')->name('g_noticenum'); // 工作提醒数量
     });
 
     Route::middleware('CheckLogin:gov_user,g_index','CheckAuth')->group(function (){
