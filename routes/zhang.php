@@ -154,3 +154,6 @@ Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
 Route::get('/household_info','HouseholdController@info')->name('g_household_info');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
+/*---------- 项目-被征收户详情 ----------*/
+Route::any('/householddetail_add','HouseholddetailController@add')->name('g_householddetail_add');
+Route::any('/householddetail_edit','HouseholddetailController@edit')->name('g_householddetail_edit');

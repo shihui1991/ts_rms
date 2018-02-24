@@ -15,7 +15,7 @@
 
     <form class="form-horizontal" role="form" action="{{route('g_itemnotice_add')}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item_id" value="{{$sdata['item_id']}}">
+        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
         <input type="hidden" name="cate_id" value="{{$sdata['cate_id']}}">
 
 
