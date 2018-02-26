@@ -16,9 +16,9 @@
 @section('header_tools')
 
     <li class="green">
-        <a href="#" title="消息提醒">
+        <a href="{{route('g_infos')}}" title="消息提醒">
             <i class="ace-icon fa fa-bell icon-animated-bell"></i>
-            <span class="badge badge-success">5</span>
+            <span class="badge badge-success" id="notice-num">0</span>
         </a>
     </li>
 
@@ -106,5 +106,27 @@
 
         @endswitch
     @endisset
+
+    <script src="{{asset('js/func.js')}}"></script>
+    <script>
+        noticenum();
+        function noticenum() {
+            $.get('{{route('g_noticenum')}}',function (resp) {
+                if(resp.code=='success'){
+                    $('#notice-num').html(resp.sdata);
+                }else{
+                    toastr.error(resp.message);
+                    if(resp.url){
+                        setTimeout(function () {
+                            location.href=resp.url;
+                        },2000);
+                        return false;
+                    }
+                }
+            },'json');
+
+            setTimeout(noticenum,60000);
+        }
+    </script>
 
 @endsection

@@ -37,7 +37,7 @@ class CheckAuth
         /* ++++++++++ 当前用户 ++++++++++ */
         $user=User::sharedLock()
             ->where('secret',session('gov_user.secret'))
-            ->select(['id','dept_id','role_id','secret','session'])
+            ->select(['id','name','dept_id','role_id','secret','session'])
             ->first();
         if(blank($user)){
             $result=['code'=>'error','message'=>'用户不存在','sdata'=>null,'edata'=>null,'url'=>null];
@@ -47,6 +47,7 @@ class CheckAuth
                 return redirect()->route('g_index')->with($result);
             }
         }
+        session(['gov_user.name'=>$user->name]);
         session(['gov_user.dept_id'=>$user->dept_id]);
         session(['gov_user.role_id'=>$user->role_id]);
 
@@ -74,7 +75,8 @@ class CheckAuth
                 }
             }
         }
-
+        $parents_menus_ids=[];
+        $parents_menus=[];
         if(!request()->ajax()){
             /* ++++++++++ 所有父级菜单 ++++++++++ */
             $parents_menus=$this->get_parents_menus($current_menu);
@@ -82,14 +84,11 @@ class CheckAuth
                 $parents_menus_ids=$parents_menus['parents_menus_ids'];
                 $parents_menus=$parents_menus['parents_menus'];
                 krsort($parents_menus);
-            }else{
-                $parents_menus_ids=[];
-                $parents_menus=[];
             }
 
-            request()->session()->flash('menu',['cur_menu'=>$current_menu,'cur_pids'=>$parents_menus_ids]);
             view()->share(['parents_menus'=>$parents_menus,'current_menu'=>$current_menu]);
         }
+        request()->session()->flash('menu',['cur_menu'=>$current_menu,'cur_pids'=>$parents_menus_ids]);
 
         return $next($request);
     }

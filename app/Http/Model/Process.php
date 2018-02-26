@@ -75,4 +75,14 @@ class Process extends Model
         return $this->belongsTo('App\Http\Model\Menu','menu_id','id')->withDefault();
     }
 
+    /* ++++++++++ 关联授权人员 ++++++++++ */
+    public function processusers(){
+        return $this->belongsToMany('App\Http\Model\User','role_menu','menu_id','role_id','menu_id','role_id');
+    }
+
+    /* ++++++++++ 关联授权角色 ++++++++++ */
+    public function processroles(){
+        return $this->belongsToMany('App\Http\Model\Role','role_menu','menu_id','role_id','menu_id','id');
+    }
+
 }

@@ -11,6 +11,9 @@ use App\Http\Model\Filetable;
 use App\Http\Model\Item;
 use App\Http\Model\Itemuser;
 use App\Http\Model\Menu;
+use App\Http\Model\Process;
+use App\Http\Model\Role;
+use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -23,17 +26,19 @@ class ItemController extends BaseController
     {
         parent::__construct();
         $this->middleware(function ($request,$next){
-            $menus=Menu::sharedLock()
-                ->where([
-                    ['parent_id',41],
-                    ['display',1]
-                ])
-                ->orderBy('sort','asc')
-                ->get();
+            if(!$request->ajax()){
+                $menus=Menu::sharedLock()
+                    ->where([
+                        ['parent_id',41],
+                        ['display',1]
+                    ])
+                    ->orderBy('sort','asc')
+                    ->get();
 
-            $nav_menus=get_nav_li_list($menus,session('menu.cur_menu.id'),session('menu.cur_pids'),1,41);
+                $nav_menus=get_nav_li_list($menus,session('menu.cur_menu.id'),session('menu.cur_pids'),1,41);
 
-            view()->share(['nav_menus'=>$nav_menus]);
+                view()->share(['nav_menus'=>$nav_menus]);
+            }
 
             return $next($request);
         });
@@ -52,7 +57,13 @@ class ItemController extends BaseController
             $items=Itemuser::with(['item'=>function($query){
                 $query->with(['itemadmins'=>function($query){
                     $query->select('name');
-                },'state'])->withCount('households');
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                },'schedule'=>function($query){
+                    $query->select(['id','name']);
+                },'process'=>function($query){
+                    $query->select(['id','name']);
+                }])->withCount('households');
             }])
                 ->select(['item_id','user_id'])
                 ->distinct()
@@ -100,7 +111,13 @@ class ItemController extends BaseController
             $items=Item::withCount('households')
                 ->with(['itemadmins'=>function($query){
                     $query->select('name');
-                },'state'])
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                },'schedule'=>function($query){
+                    $query->select(['id','name']);
+                },'process'=>function($query){
+                    $query->select(['id','name']);
+                }])
                 ->sharedLock()
                 ->paginate();
 
@@ -186,11 +203,62 @@ class ItemController extends BaseController
                 $item=$model;
                 $item->fill($request->input());
                 $item->addOther($request);
-                $item->code=1;
-
+                $item->schedule_id=1;
+                $item->process_id=1;
+                $item->code='2';
                 $item->save();
                 if(blank($item)){
                     throw new \Exception('保存失败',404404);
+                }
+                /* ++++++++++ 上级角色ID ++++++++++ */
+                $parent_role_id=Role::where('id',session('gov_user.role_id'))->sharedLock()->value('parent_id');
+                /* ++++++++++ 新建项目 流程记录 ++++++++++ */
+                $values[]=[
+                    'item_id'=>$item->id,
+                    'schedule_id'=>1,
+                    'process_id'=>1,
+                    'menu_id'=>44,
+                    'dept_id'=>session('gov_user.dept_id'),
+                    'parent_id'=>$parent_role_id,
+                    'role_id'=>session('gov_user.role_id'),
+                    'user_id'=>session('gov_user.user_id'),
+                    'url'=>route('g_item_add'),
+                    'code'=>'2',
+                    'created_at'=>date('Y-m-d H:i:s'),
+                    'updated_at'=>date('Y-m-d H:i:s'),
+                ];
+
+                /* ++++++++++ 提交部门审查 可操作人员 ++++++++++ */
+                $process=Process::with(['processusers'=>function($query){
+                    $query->with('role');
+                }])
+                    ->select(['id','menu_id'])
+                    ->find(2);
+                /* ++++++++++ 提交部门审查 工作提醒推送 ++++++++++ */
+                foreach ($process->processusers as $user){
+                    $values[]=[
+                        'item_id'=>$item->id,
+                        'schedule_id'=>1,
+                        'process_id'=>2,
+                        'menu_id'=>$process->menu_id,
+                        'dept_id'=>$user->dept_id,
+                        'parent_id'=>$user->role->parent_id,
+                        'role_id'=>$user->role_id,
+                        'user_id'=>$user->id,
+                        'url'=>route('g_iteminfo_info',['item'=>$item->id]),
+                        'code'=>'0',
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
+                }
+
+                $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
+                if(!$sqls){
+                    throw new \Exception('保存失败',404404);
+                }
+                foreach ($sqls as $sql){
+                    DB::statement($sql);
                 }
 
                 $code='success';

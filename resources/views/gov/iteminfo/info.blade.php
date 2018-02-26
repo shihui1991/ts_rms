@@ -5,12 +5,22 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <p>
-        <a class="btn" href="{{route('g_iteminfo_edit',['item'=>$sdata->id])}}">
-            <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
-            修改
-        </a>
-    </p>
+
+        @if($sdata->schedule_id==1 && $sdata->process_id==1 && $sdata->code=='2')
+        <p>
+            <a class="btn" href="{{route('g_iteminfo_edit',['item'=>$sdata->id])}}">
+                <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
+                修改
+            </a>
+
+            <a class="btn" onclick="btnAct(this)" data-url="{{route('g_itemprocess_c2dc',['item'=>$sdata->id])}}">
+                <i class="ace-icon fa fa-cloud-upload bigger-110"></i>
+                提交部门审查
+            </a>
+
+        </p>
+        @endif
+
 
 
     <div class="profile-user-info profile-user-info-striped">
@@ -30,20 +40,6 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 描述： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->infos}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 状态： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">项目审查</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
             <div class="profile-info-name"> 征收范围红线地图： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">
@@ -59,6 +55,22 @@
                         </div>
                     </li>
                 </ul>
+                </span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 描述： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->infos}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 状态： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">
+                    {{$sdata->schedule->name}} - {{$sdata->process->name}} ({{$sdata->state->name}})
                 </span>
             </div>
         </div>

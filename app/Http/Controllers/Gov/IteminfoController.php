@@ -23,22 +23,15 @@ class IteminfoController extends BaseitemController
 
     /* ========== 项目概述 ========== */
     public function index(Request $request){
-        $select=['id','name','place','map','infos','code','created_at','updated_at','deleted_at'];
-        $where[]=['id',$this->item_id];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $item=Item::select($select)
-                ->where($where)
-                ->sharedLock()
-                ->first();
-
-            if(blank($item)){
+            if(blank($this->item)){
                 throw new \Exception('项目不存在',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$item;
+            $sdata=$this->item;
             $edata=null;
             $url=null;
 
@@ -65,24 +58,18 @@ class IteminfoController extends BaseitemController
 
     /* ========== 项目信息 ========== */
     public function info(Request $request){
-
-        $where[]=['id',$this->item_id];
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
             $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
             $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
 
-            $item=Item::where($where)
-                ->sharedLock()
-                ->first();
-
-            if(blank($item)){
+            if(blank($this->item)){
                 throw new \Exception('项目不存在',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$item;
+            $sdata=$this->item;
             $edata=$file_cates;
             $url=null;
 
@@ -110,37 +97,42 @@ class IteminfoController extends BaseitemController
 
     /* ========== 修改项目 ========== */
     public function edit(Request $request){
-        $where[]=['id',$this->item_id];
         if($request->isMethod('get')){
-            /* ********** 获取数据 ********** */
-            DB::beginTransaction();
+            try{
+                if(blank($this->item)){
+                    throw  new \Exception('数据不存在',404404);
+                }
 
-            $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
-            $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($this->item->schedule_id!=1 || $this->item->process_id!=1 || $this->item->code != '2'){
+                    throw new \Exception('当前项目处于【'.$this->item->schedule->name.' - '.$this->item->process->name.'('.$this->item->state->name.')】，不能进行当前操作',404404);
+                }
 
-            $item=Item::where($where)
-                ->sharedLock()
-                ->first();
+                /* ********** 获取数据 ********** */
+                DB::beginTransaction();
 
-            DB::commit();
-            /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($item)){
+                $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
+                $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+
+                DB::commit();
+
+                $code='success';
+                $msg='查询成功';
+                $sdata=$this->item;
+                $edata=$file_cates;
+                $url=null;
+
+                $view='gov.iteminfo.edit';
+            }catch (\Exception $exception){
                 $code='error';
-                $msg='数据不存在';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
                 $sdata=null;
                 $edata=null;
                 $url=null;
 
                 $view='gov.error';
-            }else{
-                $code='success';
-                $msg='查询成功';
-                $sdata=$item;
-                $edata=$file_cates;
-                $url=null;
-
-                $view='gov.iteminfo.edit';
             }
+
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
@@ -182,17 +174,18 @@ class IteminfoController extends BaseitemController
                 if($validator->fails()){
                     throw new \Exception($validator->errors()->first(),404404);
                 }
-                /* ++++++++++ 批量赋值 ++++++++++ */
-                $item=Item::where($where)
-                    ->sharedLock()
-                    ->first();
 
-                if(blank($item)){
+                if(blank($this->item)){
                     throw new \Exception('项目不存在',404404);
                 }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($this->item->schedule_id!=1 || $this->item->process_id!=1 || $this->item->code != '2'){
+                    throw new \Exception('当前项目处于【'.$this->item->schedule->name.' - '.$this->item->process->name.'('.$this->item->state->name.')】，不能进行当前操作',404404);
+                }
+
+                $item=$this->item;
 
                 $item->fill($request->input());
-                $item->code=1;
 
                 $item->save();
                 if(blank($item)){

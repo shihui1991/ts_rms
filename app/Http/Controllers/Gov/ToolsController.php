@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\Gov;
 
 use App\Http\Model\Houselayoutimg;
+use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -39,4 +40,13 @@ class ToolsController extends BaseController
         return view('gov.error')->with(['code'=>session('code'),'message'=>session('message')]);
     }
 
+    /* ========== 工作提醒数量 ========== */
+    public function noticenum(Request $request){
+        $num=Worknotice::where('user_id',session('gov_user.user_id'))
+            ->whereIn('code',['0','20'])
+            ->count();
+
+        $result=['code'=>'success','message'=>'获取成功','sdata'=>$num,'edata'=>null,'url'=>null];
+        return response()->json($result);
+    }
 }
