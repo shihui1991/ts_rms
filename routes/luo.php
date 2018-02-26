@@ -8,3 +8,4 @@ Route::any('/itemprocess_retry','ItemprocessController@check_iteminfo_retry')->n
 Route::any('/itemprocess_stop','ItemprocessController@check_item_stop')->name('g_itemprocess_stop'); //项目审查 -  不予受理
 Route::any('/itemprocess_c2gc','ItemprocessController@check_to_gov_check')->name('g_itemprocess_c2gc'); //项目审查 -  提交区政府审查
 Route::any('/itemprocess_cgc','ItemprocessController@check_gov_check')->name('g_itemprocess_cgc'); //项目审查 -  提交区政府审查
+Route::any('/itemprocess_css','ItemprocessController@check_start_set')->name('g_itemprocess_css'); //项目审查 -  项目启动配置

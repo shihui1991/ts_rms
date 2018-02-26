@@ -27,7 +27,7 @@
     <label class="block clearfix">
         <span class="block input-icon input-icon-right">
             <input type="password" class="form-control" placeholder="安全码" name="security_code" />
-            <i class="ace-icon fa fa-lock"></i>
+            <i class="ace-icon fa fa-key"></i>
         </span>
     </label>
 @endsection
