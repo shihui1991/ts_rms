@@ -80,7 +80,7 @@
         <div class="col-sm-6">
             <div class="widget-box widget-color-grey">
                 <div class="widget-header">
-                    <h4 class="widget-title lighter smaller">审查记录</h4>
+                    <h4 class="widget-title lighter smaller">工作日志</h4>
                 </div>
                 <div class="widget-body">
                     <div class="widget-main padding-8">
@@ -108,7 +108,7 @@
                                                     <br>
                                                     <a href="{{route('g_infos_info',['id'=>$worknotice->id])}}" title="查看详情">
                                                         <i class="ace-icon fa fa-info-circle blue bigger-125"></i>
-                                                        审查意见：
+                                                        @if($worknotice->process->getOriginal('type')==2) 审查意见： @endif
                                                     </a>
                                                     <span>{{$worknotice->infos}}</span>
                                                 </div>

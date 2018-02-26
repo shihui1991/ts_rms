@@ -23,12 +23,12 @@ class Itemnotice extends Model
         'item_id'=>'项目',
         'cate_id'=>'分类',
         'infos'=>'通知摘要',
-        'picture'=>'通知书'
+        'picture'=>'通知文件'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-        $this->attributes['cate_id'] = $request->input('cate_id');
+
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){

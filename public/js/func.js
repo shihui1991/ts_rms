@@ -50,7 +50,7 @@ function uplfile(obj) {
 
                 toastr.info('【'+file.name+'】 上传成功！');
             }else{
-                toastr.warning('【'+file.name+'】 上传失败！');
+                toastr.warning('【'+file.name+'】上传失败！('+ajaxResp.message+')' );
             }
         });
         if(!that.prop('multiple') && ajaxResp.code=='success'){
