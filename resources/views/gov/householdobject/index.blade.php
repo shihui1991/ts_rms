@@ -6,19 +6,16 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_household_add',['item'=>$edata['item_id']])}}" class="btn">添加被征收户账号</a>
+        <a class="btn" href="javascript:history.back()"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
+        <a href="{{route('g_householdobject_add',['item'=>$edata['item_id'],'household_id'=>$edata['household_id']])}}" class="btn">添加其他补偿事项</a>
     </div>
 
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
             <th>ID</th>
-            <th>地块</th>
-            <th>楼栋</th>
-            <th>位置</th>
-            <th>房产类型</th>
-            <th>用户名</th>
-            <th>状态</th>
+            <th>其他补偿事项</th>
+            <th>数量</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -27,15 +24,10 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$infos->id}}</td>
-                        <td>{{$infos->itemland->address}}</td>
-                        <td>{{$infos->itembuilding->building}}</td>
-                        <td>{{$infos->unit?$infos->unit.'单元':''}}{{$infos->floor?$infos->floor.'楼':''}}{{$infos->number?$infos->number.'号':''}}</td>
-                        <td>{{$infos->type}}</td>
-                        <td>{{$infos->username}}</td>
-                        <td>{{$infos->state}}</td>
+                        <td>{{$infos->object->name}}</td>
+                        <td>{{$infos->number}}</td>
                         <td>
-                            <a href="{{route('g_household_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
-                            <a href="{{route('g_householddetail_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">入户摸底信息</a>
+                            <a href="{{route('g_householdobject_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
                         </td>
                     </tr>
                 @endforeach

@@ -6,7 +6,7 @@
 
 
     <div class="well well-sm">
-        <a class="btn" href="{{route('g_household',['item'=>$edata['item_id']])}}">
+        <a class="btn" href="{{route('g_householddetail',['item'=>$edata['item_id']])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>

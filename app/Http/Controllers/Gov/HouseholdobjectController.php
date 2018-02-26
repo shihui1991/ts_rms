@@ -1,20 +1,19 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-被征收户 家庭成员
+| 项目-被征收户-其他补偿事项
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
 use App\Http\Model\Household;
-use App\Http\Model\Householdmember;
-use App\Http\Model\Householdmembercrowd;
-use App\Http\Model\Nation;
+use App\Http\Model\Householdobject;
+use App\Http\Model\Itemobject;
+use App\Http\Model\Object;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
-class HouseholdmemberController extends BaseitemController
+class HouseholdobjectController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -32,8 +31,7 @@ class HouseholdmemberController extends BaseitemController
 
         $where[] = ['household_id',$request->input('household_id')];
         $infos['household_id'] = $request->input('household_id');
-
-        $select=['id','item_id','household_id','land_id','building_id','name','relation','card_num','phone','nation_id','sex','age','crowd','holder','portion','deleted_at'];
+        $select=['id','item_id','land_id','building_id','object_id','number','deleted_at'];
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -42,41 +40,45 @@ class HouseholdmemberController extends BaseitemController
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
+        /* ********** 每页条数 ********** */
+        $displaynum=$request->input('displaynum');
+        $displaynum=$displaynum?$displaynum:15;
+        $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
-        $model=new Householdmember();
+        $model=new Householdobject();
         DB::beginTransaction();
         try{
-            $householdmembers=$model
+            $householdobjects=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
-                    },
+                },
                     'itemland'=>function($query){
                         $query->select(['id','address']);
                     },
                     'itembuilding'=>function($query){
                         $query->select(['id','building']);
                     },
-                    'nation'=>function($query){
-                            $query->select(['id','name']);
+                    'object'=>function($query){
+                        $query->select(['id','name']);
                     }])
                 ->where($where)
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->get();
-            if(blank($householdmembers)){
+                ->paginate($displaynum);
+            if(blank($householdobjects)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$householdmembers;
+            $sdata=$householdobjects;
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $households=collect();
+            $householdobjects=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$households;
+            $sdata=$householdobjects;
             $edata=$infos;
             $url=null;
         }
@@ -87,83 +89,42 @@ class HouseholdmemberController extends BaseitemController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.householdmember.index')->with($result);
+            return view('gov.householdobject.index')->with($result);
         }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id = $this->item_id;
+        $item_id=$this->item_id;
+        $model=new Householdobject();
         $household_id = $request->input('household_id');
-        $model=new Householdmember();
         if($request->isMethod('get')){
-            $sdata['household'] = Household::select(['id','land_id','item_id','building_id','type'])->find($household_id);
-            $sdata['nation'] = Nation::select(['id','name'])->get();
-            $edata = $model;
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$edata,'url'=>null];
+            $sdata['object'] = Object::select(['id','name'])->get()?:[];
+            $sdata['item_id'] = $item_id;
+            $sdata['household_id'] = $household_id;
+            $sdata['household'] = Household::select(['id','land_id','building_id'])->where('item_id',$item_id)->where('id',$household_id)->first();
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.householdmember.add')->with($result);
+                return view('gov.householdobject.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
         else {
-           $item_ids = $request->input('item');
-            /* ++++++++++ 同一被征户是否存在第二个承租人【公产】 ++++++++++ */
-            $holder = $request->input('holder');
-            if($holder==2){
-               $holder2_count =  Householdmember::where('item_id',$item_ids)
-                    ->where('household_id',$household_id)
-                    ->where('holder',$holder)
-                    ->count();
-               if($holder2_count){
-                   $result=['code'=>'error','message'=>'承租人已经存在','sdata'=>null,'edata'=>null,'url'=>null];
-                   if($request->ajax()){
-                       return response()->json($result);
-                   }else{
-                       return view('gov.householdmember.add')->with($result);
-                   }
-               }
-            }
-            /* ++++++++++ 份额是否超过 ++++++++++ */
-            $portion = $request->input('portion');
-            $portion_sum = Householdmember::where('item_id',$item_ids)
-                ->where('household_id',$household_id)
-                ->sum('portion');
-            $sums = $portion+$portion_sum;
-            if($sums>100){
-                $result=['code'=>'error','message'=>'总份额超出限定范围(0-100)','sdata'=>null,'edata'=>null,'url'=>null];
-                if($request->ajax()){
-                    return response()->json($result);
-                }else{
-                    return view('gov.householdmember.add')->with($result);
-                }
-            }
-
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'household_id'=>'required',
-                'name' =>  ['required',Rule::unique('item_household_member')->where(function ($query) use($household_id){
-                    $query->where('household_id', $household_id);
-                })],
-                'land_id'=>'required',
-                'building_id'=>'required',
-                'relation'=>'required',
-                'card_num'=>'required',
-                'phone'=>'required',
-                'nation_id'=>'required',
-                'sex'=>'required',
-                'age'=>'required',
-                'crowd'=>'required',
-                'holder'=>'required',
-                'portion'=>'required',
-                'picture'=>'required'
+                'household_id' => 'required',
+                'land_id' => 'required',
+                'building_id' => 'required',
+                'object_id' => 'required',
+                'number' => 'required',
+                'picture' => 'required'
             ];
             $messages = [
-                'required' => ':attribute 为必须项',
-                'unique' => ':attribute 已存在'
+                'required' => ':attribute必须填写',
+                'unique' => ':attribute已存在'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -175,18 +136,18 @@ class HouseholdmemberController extends BaseitemController
             DB::beginTransaction();
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $householdmember = $model;
-                $householdmember->fill($request->input());
-                $householdmember->addOther($request);
-                $householdmember->item_id = $item_id;
-                $householdmember->save();
-                if (blank($householdmember)) {
+                $householdobject = $model;
+                $householdobject->fill($request->all());
+                $householdobject->addOther($request);
+                $householdobject->item_id=$this->item_id;
+                $householdobject->save();
+                if (blank($householdobject)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $householdmember;
+                $sdata = $householdobject;
                 $edata = null;
                 $url = route('g_householddetail_info',['item'=>$item_id,'id'=>$household_id]);
                 DB::commit();
@@ -194,7 +155,7 @@ class HouseholdmemberController extends BaseitemController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $householdmember;
+                $edata = $householdobject;
                 $url = null;
                 DB::rollBack();
             }
@@ -215,35 +176,33 @@ class HouseholdmemberController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
+        $item_id=$this->item_id;
+
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $householdmembercrowd = Householdmembercrowd::select(['id','item_id','crowd_id'])
-                        ->with(['crowd'=>function($query){
-                            $query->select(['id','name']);
-                        }])
-                        ->where('item_id',$this->item_id)->where('member_id',$id)->get();
-        $householdmember=Householdmember::with([
-            'nation'=>function($query){
+        $data['item_id'] = $item_id;
+        $householdobject=Householdobject::with([
+            'object'=>function($query){
                 $query->select(['id','name']);
             }])
             ->sharedLock()
             ->find($id);
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($householdmember)){
+        if(blank($householdobject)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
-            $edata=$householdmembercrowd;
+            $edata=$data;
             $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $sdata=$householdmember;
-            $edata=$householdmembercrowd;
+            $sdata=$householdobject;
+            $edata=$data;
             $url=null;
 
-            $view='gov.householdmember.info';
+            $view='gov.householdobject.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -269,18 +228,18 @@ class HouseholdmemberController extends BaseitemController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $data['household'] = Household::select(['id','land_id','item_id','building_id','type'])->find($household_id);
-            $data['nation'] = Nation::select(['id','name'])->get();
-            $data['householdmember'] = new Householdmember();
-            $householdmember=Householdmember::with([
-                'nation'=>function($query){
+            $data['item_id'] = $item_id;
+            $data['household_id'] = $household_id;
+            $data['object'] = Object::select(['id','name'])->get()?:[];
+            $householdobject=Householdobject::with([
+                'object'=>function($query){
                     $query->select(['id','name']);
                 }])
                 ->sharedLock()
                 ->find($id);
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($householdmember)){
+            if(blank($householdobject)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
@@ -289,10 +248,11 @@ class HouseholdmemberController extends BaseitemController
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$householdmember;
+                $sdata=$householdobject;
                 $edata=$data;
                 $url=null;
-                $view='gov.householdmember.edit';
+
+                $view='gov.householdobject.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -301,62 +261,17 @@ class HouseholdmemberController extends BaseitemController
                 return view($view)->with($result);
             }
         }else{
-            $item_ids = $request->input('item');
-            /* ++++++++++ 同一被征户是否存在第二个承租人【公产】 ++++++++++ */
-            $holder = $request->input('holder');
-            if($holder==2){
-                $holder2_count =  Householdmember::where('item_id',$item_ids)
-                    ->where('household_id',$household_id)
-                    ->where('holder',$holder)
-                    ->count();
-                if($holder2_count){
-                    $result=['code'=>'error','message'=>'承租人已经存在','sdata'=>null,'edata'=>null,'url'=>null];
-                    if($request->ajax()){
-                        return response()->json($result);
-                    }else{
-                        return view('gov.householdmember.add')->with($result);
-                    }
-                }
-            }
-            /* ++++++++++ 份额是否超过 ++++++++++ */
-            $portion = $request->input('portion');
-            $portion_sum = Householdmember::where('item_id',$item_ids)
-                ->where('household_id',$household_id)
-                ->where('id','<>',$id)
-                ->sum('portion');
-            $sums = $portion+$portion_sum;
-            if($sums>100){
-                $result=['code'=>'error','message'=>'总份额超出限定范围(0-100)','sdata'=>null,'edata'=>null,'url'=>null];
-                if($request->ajax()){
-                    return response()->json($result);
-                }else{
-                    return view('gov.householdmember.add')->with($result);
-                }
-            }
-
-            $model=new Household();
+            $model=new Householdobject();
             /* ********** 表单验证 ********** */
             $rules = [
-                'household_id'=>'required',
-                'name' =>['required',Rule::unique('item_household_member')->where(function ($query) use($household_id,$id){
-                    $query->where('household_id', $household_id)->where('id','<>',$id);
-                })],
-                'land_id'=>'required',
-                'building_id'=>'required',
-                'relation'=>'required',
-                'card_num'=>'required',
-                'phone'=>'required',
-                'nation_id'=>'required',
-                'sex'=>'required',
-                'age'=>'required',
-                'crowd'=>'required',
-                'holder'=>'required',
-                'portion'=>'required',
-                'picture'=>'required'
+                'household_id' => 'required',
+                'object_id' => 'required',
+                'number' => 'required',
+                'picture' => 'required'
             ];
             $messages = [
-                'required' => ':attribute 为必须项',
-                'unique' => ':attribute 已存在'
+                'required' => ':attribute必须填写',
+                'unique' => ':attribute已存在'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -367,29 +282,28 @@ class HouseholdmemberController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $householdmember=Householdmember::lockForUpdate()->find($id);
-                if(blank($householdmember)){
+                $householdobject=Householdobject::lockForUpdate()->find($id);
+                if(blank($householdobject)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $householdmember->fill($request->all());
-                $householdmember->editOther($request);
-                $householdmember->save();
-                if(blank($householdmember)){
+                $householdobject->fill($request->all());
+                $householdobject->editOther($request);
+                $householdobject->save();
+                if(blank($householdobject)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$householdmember;
+                $sdata=$householdobject;
                 $edata=null;
-                $url = route('g_householddetail_info',['id'=>$household_id,'item'=>$item_id]);
-
+                $url = route('g_householddetail_info',['item'=>$item_id,'id'=>$household_id]);
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$householdmember;
+                $edata=$householdobject;
                 $url=null;
                 DB::rollBack();
             }
@@ -398,6 +312,5 @@ class HouseholdmemberController extends BaseitemController
             return response()->json($result);
         }
     }
-
 
 }

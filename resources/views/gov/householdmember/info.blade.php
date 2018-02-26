@@ -7,6 +7,11 @@
     <div class="row">
         <div class="well well-sm">
             <p>
+                <a class="btn" href="{{route('g_householddetail_info',['item'=>$sdata->item_id,'id'=>$sdata->household_id])}}">
+                    <i class="ace-icon fa fa-arrow-left bigger-110"></i>
+                    返回被征户信息
+                </a>
+
                 <a class="btn" href="{{route('g_householdmember',['item'=>$sdata->item_id,'household_id'=>$sdata->household_id])}}">
                     <i class="ace-icon fa fa-arrow-left bigger-110"></i>
                     返回家庭成员
@@ -20,7 +25,7 @@
                 <a class="btn" href="{{route('g_householdmembercrowd_add',['item'=>$sdata->item_id,'id'=>$sdata->id,'household_id'=>$sdata->household_id,'member_id'=>$sdata->id])}}">
                     添加特殊人群信息
                 </a>
-                    @endif
+                @endif
             </p>
 
         </div>
