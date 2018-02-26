@@ -7,3 +7,4 @@ Route::any('/itemprocess_crb','ItemprocessController@check_roll_back')->name('g_
 Route::any('/itemprocess_retry','ItemprocessController@check_iteminfo_retry')->name('g_itemprocess_retry'); //项目审查 -  重新提交审查资料
 Route::any('/itemprocess_stop','ItemprocessController@check_item_stop')->name('g_itemprocess_stop'); //项目审查 -  不予受理
 Route::any('/itemprocess_c2gc','ItemprocessController@check_to_gov_check')->name('g_itemprocess_c2gc'); //项目审查 -  提交区政府审查
+Route::any('/itemprocess_cgc','ItemprocessController@check_gov_check')->name('g_itemprocess_cgc'); //项目审查 -  提交区政府审查
