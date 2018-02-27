@@ -27,10 +27,10 @@ class ItemhouseController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','house_id','type'];
+        $select=['item_id','house_id','type','created_at'];
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'id';
+        $ordername=$ordername?$ordername:'created_at';
         $infos['ordername']=$ordername;
 
         $orderby=$request->input('orderby');
@@ -45,21 +45,21 @@ class ItemhouseController extends BaseitemController
         DB::beginTransaction();
         try{
             $itemhouses=$model
-//                ->with(['item'=>function($query){
-//                    $query->select(['id','name']);
-//                },
-//                    'house'=>function($query){
-//                        $query->with([
-//                            'housecommunity'=> function ($query) {
-//                                $query->withTrashed()->select(['id','name']);
-//                            },
-//                            'layout'=> function ($query) {
-//                                $query->withTrashed()->select(['id','name']);
-//                            },
-//                            'housecompany'=> function ($query) {
-//                                $query->withTrashed()->select(['id','name']);
-//                            }]);
-//                    }])
+                ->with(['item'=>function($query){
+                    $query->select(['id','name']);
+                },
+                    'house'=>function($query){
+                        $query->with([
+                            'housecommunity'=> function ($query) {
+                                $query->withTrashed()->select(['id','name']);
+                            },
+                            'layout'=> function ($query) {
+                                $query->withTrashed()->select(['id','name']);
+                            },
+                            'housecompany'=> function ($query) {
+                                $query->withTrashed()->select(['id','name']);
+                            }]);
+                    }])
                 ->where($where)
                 ->select($select)
                 ->orderBy($ordername,$orderby)
@@ -74,6 +74,7 @@ class ItemhouseController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
+            dd($exception);
             $itemhouses=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';

@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>排序</th>
             <th>管理机构</th>
             <th>房源社区</th>
             <th>户型</th>
@@ -29,9 +29,9 @@
         </thead>
         <tbody>
             @if($code=='success')
-                @foreach($sdata as $infos)
+                @foreach($sdata as $k=>$infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$k+1}}</td>
                         <td>{{$infos->house->housecompany->name}}</td>
                         <td>{{$infos->house->housecommunity->name}}</td>
                         <td>{{$infos->house->layout->name}}</td>
@@ -44,7 +44,7 @@
                         <td>{{$infos->house->area}}</td>
                         <td>{{$infos->house->total_floor}}</td>
                         <td>{{$infos->house->lift}}</td>
-                        <td>{{$infos->house->is_real}}|{{$infos->is_buy}}|{{$infos->is_transit}}|{{$infos->is_public}}</td>
+                        <td>{{$infos->house->is_real}}|{{$infos->house->is_buy}}|{{$infos->house->is_transit}}|{{$infos->house->is_public}}</td>
                         <td>{{$infos->house->delive_at}}</td>
                         <td>{{$infos->house->state}}</td>
                         <td>{{$infos->type}}</td>
