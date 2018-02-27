@@ -1497,6 +1497,17 @@ class ItemprocessController extends BaseitemController
                     ->get();
                 /* ++++++++++ 项目启动配置 工作提醒推送 ++++++++++ */
                 foreach($processes as $process){
+                    switch ($process->id){
+                        case 9:
+                            $url=route('g_itemuser',['item'=>$this->item->id]);
+                            break;
+                        case 10:
+                            $url=route('g_itemtime',['item'=>$this->item->id]);
+                            break;
+                        case 16:
+                            $url=route('g_itemadmin',['item'=>$this->item->id]);
+                            break;
+                    }
                     foreach ($process->processusers as $user){
                         $values[]=[
                             'item_id'=>$item->id,
@@ -1507,7 +1518,7 @@ class ItemprocessController extends BaseitemController
                             'parent_id'=>$user->role->parent_id,
                             'role_id'=>$user->role_id,
                             'user_id'=>$user->id,
-                            'url'=>route('g_itemprocess_crb',['item'=>$this->item->id]),
+                            'url'=>$url,
                             'code'=>'0',
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),
