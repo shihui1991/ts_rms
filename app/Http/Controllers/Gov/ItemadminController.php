@@ -43,14 +43,14 @@ class ItemadminController extends BaseitemController
             }
             $code='success';
             $msg='查询成功';
-            $sdata=['itemadmins'=>$itemadmins,'depts'=>$depts];
-            $edata=['item_id'=>$this->item_id];
+            $sdata=['itemadmins'=>$itemadmins,'depts'=>$depts,'item_id'=>$this->item_id];
+            $edata=null;
             $url=null;
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=['itemadmins'=>null,'depts'=>$depts];
-            $edata=['item_id'=>$this->item_id];
+            $sdata=['itemadmins'=>null,'depts'=>$depts,'item_id'=>$this->item_id];
+            $edata=null;
             $url=null;
         }
         DB::commit();
@@ -78,6 +78,8 @@ class ItemadminController extends BaseitemController
             }
             DB::beginTransaction();
             try{
+                $this->checkNotice();
+
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $where[]=['item_id',$this->item_id];
                 $where[]=['user_id',$user_id];
@@ -130,6 +132,8 @@ class ItemadminController extends BaseitemController
         }
         DB::beginTransaction();
         try{
+            $this->checkNotice();
+
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $itemadmin=Itemadmin::lockForUpdate()->find($id);
             if(blank($itemadmin)){
@@ -163,5 +167,36 @@ class ItemadminController extends BaseitemController
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         return response()->json($result);
+    }
+
+
+    /* ========== 检查是否存在工作推送 ========== */
+    public function checkNotice(){
+        $item=$this->item;
+        if(blank($item)){
+            throw new \Exception('项目不存在',404404);
+        }
+        /* ++++++++++ 检查项目状态 ++++++++++ */
+        if($item->schedule_id!=1 || $item->process_id!=8 ||  $item->code!='1'){
+            throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+        }
+        /* ++++++++++ 流程设置 ++++++++++ */
+        $process=Process::sharedLock()->find(16);
+        /* ++++++++++ 是否有工作推送 ++++++++++ */
+        $worknotice=Worknotice::sharedLock()
+            ->where([
+                ['item_id',$this->item->id],
+                ['schedule_id',$process->schedule_id],
+                ['process_id',$process->id],
+                ['menu_id',$process->menu_id],
+                ['user_id',session('gov_user.user_id')],
+            ])
+            ->whereIn('code',['0','1'])
+            ->first();
+        if(blank($worknotice)){
+            throw new \Exception('您没有执行此操作的权限',404404);
+        }
+        $worknotice->code='1';
+        $worknotice->save();
     }
 }
