@@ -13,18 +13,17 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemtime_edit',['item'=>$sdata['item_id']])}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemtime_add',['item'=>$sdata['item_id']])}}" method="post">
         {{csrf_field()}}
 
-        @foreach($sdata['itemtimes'] as $itemtime)
+        @foreach($sdata['schedules'] as $schedule)
 
             <div class="form-group">
-                <label class="col-sm-3 control-label no-padding-right" for="data[{{$itemtime->id}}][start_at]"> {{$itemtime->schedule->name}}： </label>
+                <label class="col-sm-3 control-label no-padding-right" for="data[{{$schedule->id}}][start_at]"> {{$schedule->name}}： </label>
                 <div class="col-sm-9">
-                    <input type="text" id="data[{{$itemtime->schedule_id}}][start_at]" name="data[{{$itemtime->schedule_id}}][start_at]" value="{{$itemtime->start_at}}" class="laydate" required>
+                    <input type="text" id="data[{{$schedule->id}}][start_at]" name="data[{{$schedule->id}}][start_at]" class="laydate" required>
                     -
-                    <input type="text" name="data[{{$itemtime->schedule_id}}][end_at]" value="{{$itemtime->end_at}}" class="laydate" required>
-                    <input type="hidden" name="data[{{$itemtime->schedule_id}}][id]" value="{{$itemtime->id}}" >
+                    <input type="text" name="data[{{$schedule->id}}][end_at]" class="laydate" required>
                 </div>
             </div>
             <div class="space-4"></div>
