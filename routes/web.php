@@ -41,6 +41,7 @@ Route::namespace('gov')->prefix('gov')->group(function (){
         require 'zhang.php';
 
         require 'luo.php';
+        require 'jia.php';
     });
 
     Route::middleware('CheckLogin:gov_user,g_index','CheckAuth','CheckItem')->group(function (){
