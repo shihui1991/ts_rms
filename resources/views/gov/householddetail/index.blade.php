@@ -34,8 +34,9 @@
                         <td>{{$infos->username}}</td>
                         <td>{{$infos->state}}</td>
                         <td>
-                            <a href="{{route('g_household_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
-                            <a href="{{route('g_householddetail_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">入户摸底信息</a>
+                            <a href="{{route('g_householddetail_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_householdmember',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">家庭成员</a>
+                            <a href="{{route('g_householdobject',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">其他补偿事项</a>
                         </td>
                     </tr>
                 @endforeach

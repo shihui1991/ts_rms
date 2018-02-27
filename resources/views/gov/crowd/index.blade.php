@@ -69,9 +69,10 @@
                     if(ajaxResp.sdata.length){
                         var childs='';
                         $.each(ajaxResp.sdata,function (index,info) {
-                            childs +='<tr data-tt-id="'+info.id+'" data-tt-parent-id="'+info.parent_id+'" data-tt-branch="'+(info.childs_count?'true':'false')+'">';
+                            var infos =info.infos?info.infos:'';
+                             childs +='<tr data-tt-id="'+info.id+'" data-tt-parent-id="'+info.parent_id+'" data-tt-branch="'+(info.childs_count?'true':'false')+'">';
                             childs +='<td>'+info.name+'</td>';
-                            childs +='<td>'+info.infos+'</td>';
+                            childs +='<td>'+infos+'</td>';
                             childs +='<td><a href="{{route('g_crowd_info')}}?id='+info.id+'" class="btn btn-sm">查看详情</a></td>';
                             childs +='</tr>';
                         });

@@ -1,18 +1,19 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-被征收户
+| 项目-被征收户-其他补偿事项
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
 use App\Http\Model\Household;
-use App\Http\Model\Householddetail;
-use App\Http\Model\Itemland;
+use App\Http\Model\Householdobject;
+use App\Http\Model\Itemobject;
+use App\Http\Model\Object;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class HouseholdController extends BaseitemController
+class HouseholdobjectController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -27,7 +28,10 @@ class HouseholdController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','unit','floor','number','type','username','password','infos','state'];
+
+        $where[] = ['household_id',$request->input('household_id')];
+        $infos['household_id'] = $request->input('household_id');
+        $select=['id','item_id','land_id','building_id','object_id','number','deleted_at'];
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -41,10 +45,10 @@ class HouseholdController extends BaseitemController
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
-        $model=new Household();
+        $model=new Householdobject();
         DB::beginTransaction();
         try{
-            $households=$model
+            $householdobjects=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
                 },
@@ -53,25 +57,28 @@ class HouseholdController extends BaseitemController
                     },
                     'itembuilding'=>function($query){
                         $query->select(['id','building']);
+                    },
+                    'object'=>function($query){
+                        $query->select(['id','name']);
                     }])
                 ->where($where)
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->paginate($displaynum);
-            if(blank($households)){
+            if(blank($householdobjects)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$households;
+            $sdata=$householdobjects;
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $households=collect();
+            $householdobjects=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$households;
+            $sdata=$householdobjects;
             $edata=$infos;
             $url=null;
         }
@@ -82,22 +89,25 @@ class HouseholdController extends BaseitemController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.household.index')->with($result);
+            return view('gov.householdobject.index')->with($result);
         }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
         $item_id=$this->item_id;
-        $model=new Household();
+        $model=new Householdobject();
+        $household_id = $request->input('household_id');
         if($request->isMethod('get')){
-            $sdata['itemland'] = Itemland::select(['id','address'])->where('item_id',$item_id)->get()?:[];
+            $sdata['object'] = Object::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
+            $sdata['household_id'] = $household_id;
+            $sdata['household'] = Household::select(['id','land_id','building_id'])->where('item_id',$item_id)->where('id',$household_id)->first();
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.household.add')->with($result);
+                return view('gov.householdobject.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -105,14 +115,12 @@ class HouseholdController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
+                'household_id' => 'required',
                 'land_id' => 'required',
                 'building_id' => 'required',
-                'unit' => 'required',
-                'floor' => 'required',
+                'object_id' => 'required',
                 'number' => 'required',
-                'type' => 'required',
-                'username' => 'required|unique:item_household',
-                'password' => 'required'
+                'picture' => 'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -128,26 +136,26 @@ class HouseholdController extends BaseitemController
             DB::beginTransaction();
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $household = $model;
-                $household->fill($request->all());
-                $household->addOther($request);
-                $household->item_id=$this->item_id;
-                $household->save();
-                if (blank($household)) {
+                $householdobject = $model;
+                $householdobject->fill($request->all());
+                $householdobject->addOther($request);
+                $householdobject->item_id=$this->item_id;
+                $householdobject->save();
+                if (blank($householdobject)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $household;
+                $sdata = $householdobject;
                 $edata = null;
-                $url = route('g_household',['item'=>$this->item_id]);
+                $url = route('g_householddetail_info',['item'=>$item_id,'id'=>$household_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $household;
+                $edata = $householdobject;
                 $url = null;
                 DB::rollBack();
             }
@@ -171,32 +179,17 @@ class HouseholdController extends BaseitemController
         $item_id=$this->item_id;
 
         /* ********** 当前数据 ********** */
-        $data['item_id'] = $item_id;
-        $data['household'] = new Household();
-        $data['household_detail'] = Householddetail::with([
-                        'defbuildinguse'=>function($query){
-                            $query->select(['id','name']);
-                        },
-                        'realbuildinguse'=>function($query){
-                            $query->select(['id','name']);
-                        },
-                        'layout'=>function($query){
-                            $query->select(['id','name']);
-                        }])
-                        ->where('household_id',$id)->first();
         DB::beginTransaction();
-        $household=Household::with([
-                'itemland'=>function($query){
-                    $query->select(['id','address']);
-                  },
-                'itembuilding'=>function($query){
-                    $query->select(['id','building']);
-                }])
+        $data['item_id'] = $item_id;
+        $householdobject=Householdobject::with([
+            'object'=>function($query){
+                $query->select(['id','name']);
+            }])
             ->sharedLock()
             ->find($id);
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($household)){
+        if(blank($householdobject)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
@@ -205,11 +198,11 @@ class HouseholdController extends BaseitemController
         }else{
             $code='success';
             $msg='获取成功';
-            $sdata=$household;
+            $sdata=$householdobject;
             $edata=$data;
             $url=null;
 
-            $view='gov.household.info';
+            $view='gov.householdobject.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -231,26 +224,22 @@ class HouseholdController extends BaseitemController
             }
         }
         $item_id=$this->item_id;
-
+        $household_id = $request->input('household_id');
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
-            $data['itemland'] = Itemland::select(['id','address'])->where('item_id',$item_id)->get()?:[];
-            $data['item_id'] = $item_id;
-            $data['household'] = new Household();
             DB::beginTransaction();
-            $household=Household::with([
-                'itemland'=>function($query){
-                    $query->select(['id','address']);
-                },
-                'itembuilding'=>function($query){
-                    $query->select(['id','building']);
+            $data['item_id'] = $item_id;
+            $data['household_id'] = $household_id;
+            $data['object'] = Object::select(['id','name'])->get()?:[];
+            $householdobject=Householdobject::with([
+                'object'=>function($query){
+                    $query->select(['id','name']);
                 }])
                 ->sharedLock()
                 ->find($id);
             DB::commit();
-
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($household)){
+            if(blank($householdobject)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
@@ -259,11 +248,11 @@ class HouseholdController extends BaseitemController
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$household;
+                $sdata=$householdobject;
                 $edata=$data;
                 $url=null;
 
-                $view='gov.household.edit';
+                $view='gov.householdobject.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -272,15 +261,13 @@ class HouseholdController extends BaseitemController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Household();
+            $model=new Householdobject();
             /* ********** 表单验证 ********** */
             $rules = [
-                'unit' => 'required',
-                'floor' => 'required',
+                'household_id' => 'required',
+                'object_id' => 'required',
                 'number' => 'required',
-                'type' => 'required',
-                'username' => 'required|unique:item_household,username,'.$id.',id',
-                'password' => 'required'
+                'picture' => 'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -295,29 +282,28 @@ class HouseholdController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $household=Household::lockForUpdate()->find($id);
-                if(blank($household)){
+                $householdobject=Householdobject::lockForUpdate()->find($id);
+                if(blank($householdobject)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $household->fill($request->all());
-                $household->editOther($request);
-                $household->save();
-                if(blank($household)){
+                $householdobject->fill($request->all());
+                $householdobject->editOther($request);
+                $householdobject->save();
+                if(blank($householdobject)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$household;
+                $sdata=$householdobject;
                 $edata=null;
-                $url = route('g_household',['id'=>$id,'item'=>$item_id]);
-
+                $url = route('g_householddetail_info',['item'=>$item_id,'id'=>$household_id]);
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$household;
+                $edata=$householdobject;
                 $url=null;
                 DB::rollBack();
             }
@@ -326,4 +312,5 @@ class HouseholdController extends BaseitemController
             return response()->json($result);
         }
     }
+
 }

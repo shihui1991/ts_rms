@@ -206,7 +206,6 @@
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
 
-
                         </ul>
                     </div>
                 </div>
@@ -335,9 +334,6 @@
     <script src="{{asset('laydate/laydate.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
-        $('#name').focus();
-
-
         /*---------获取房源社区----------*/
         $('#company_id').on('change',function () {
             $('.imgs_layout').html('');
@@ -396,7 +392,7 @@
                     layoutimg+=' <div class=" radio">\n' +
                         '                    <label>\n' +
                         '                        <input name="layoutimgs" type="radio" class="ace img_radio" value="'+info.id+'">\n' +
-                        '                        <span class="lbl"><img src="'+info.picture+'"></span>\n' +
+                        '                        <span class="lbl"><img src="'+info.picture+'" width="400" height="300"></span>\n' +
                         '                    </label>\n' +
                         '            </div>'
                 });

@@ -78,7 +78,7 @@ Route::any('/houselayoutimg_add','HouselayoutimgController@add')->name('g_housel
 Route::get('/houselayoutimg_info','HouselayoutimgController@info')->name('g_houselayoutimg_info');
 Route::any('/houselayoutimg_edit','HouselayoutimgController@edit')->name('g_houselayoutimg_edit');
 /*---------- 房源 ----------*/
-Route::get('/house','HouseController@index')->name('g_house');
+Route::any('/house','HouseController@index')->name('g_house');
 Route::any('/house_add','HouseController@add')->name('g_house_add');
 Route::get('/house_info','HouseController@info')->name('g_house_info');
 Route::any('/house_edit','HouseController@edit')->name('g_house_edit');
@@ -149,11 +149,33 @@ Route::any('/itemprogram_add','ItemprogramController@add')->name('g_itemprogram_
 Route::get('/itemprogram_info','ItemprogramController@info')->name('g_itemprogram_info');
 Route::any('/itemprogram_edit','ItemprogramController@edit')->name('g_itemprogram_edit');
 
-/*---------- 项目-被征收户 ----------*/
+/*---------- 项目-被征收户账号 ----------*/
 Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
 Route::get('/household_info','HouseholdController@info')->name('g_household_info');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
-/*---------- 项目-被征收户详情 ----------*/
+/*---------- 项目-被征收户详细信息 ----------*/
+Route::any('/householddetail','HouseholddetailController@index')->name('g_householddetail');
 Route::any('/householddetail_add','HouseholddetailController@add')->name('g_householddetail_add');
+Route::any('/householddetail_info','HouseholddetailController@info')->name('g_householddetail_info');
 Route::any('/householddetail_edit','HouseholddetailController@edit')->name('g_householddetail_edit');
+/*---------- 项目-被征户-家庭成员 ----------*/
+Route::any('/householdmember','HouseholdmemberController@index')->name('g_householdmember');
+Route::any('/householdmember_add','HouseholdmemberController@add')->name('g_householdmember_add');
+Route::get('/householdmember_info','HouseholdmemberController@info')->name('g_householdmember_info');
+Route::any('/householdmember_edit','HouseholdmemberController@edit')->name('g_householdmember_edit');
+/*---------- 项目-被征户-家庭成员（特殊人群） ----------*/
+Route::any('/householdmembercrowd_add','HouseholdmembercrowdController@add')->name('g_householdmembercrowd_add');
+Route::get('/householdmembercrowd_info','HouseholdmembercrowdController@info')->name('g_householdmembercrowd_info');
+Route::any('/householdmembercrowd_edit','HouseholdmembercrowdController@edit')->name('g_householdmembercrowd_edit');
+/*---------- 项目-被征户-其他补偿事项 ----------*/
+Route::any('/householdobject','HouseholdobjectController@index')->name('g_householdobject');
+Route::any('/householdobject_add','HouseholdobjectController@add')->name('g_householdobject_add');
+Route::get('/householdobject_info','HouseholdobjectController@info')->name('g_householdobject_info');
+Route::any('/householdobject_edit','HouseholdobjectController@edit')->name('g_householdobject_edit');
+
+/*---------- 项目-冻结房源 ----------*/
+Route::any('/itemhouse','ItemhouseController@index')->name('g_itemhouse');
+Route::any('/itemhouse_add','ItemhouseController@add')->name('g_itemhouse_add');
+Route::get('/itemhouse_info','ItemhouseController@info')->name('g_itemhouse_info');
+Route::any('/itemhouse_edit','ItemhouseController@edit')->name('g_itemhouse_edit');
