@@ -5,8 +5,8 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <p class="center">
-        <a class="btn" onclick="btnAct(this)" data-url="{{route('g_itemprocess_css',['item'=>$sdata['item']->id])}}" data-method="post">
+    <p>
+        <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_itemprocess_css',['item'=>$sdata['item']->id])}}" data-method="post">
             <i class="ace-icon fa fa-support bigger-110"></i>
             开启项目启动配置
         </a>

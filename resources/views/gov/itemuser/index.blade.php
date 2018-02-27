@@ -49,6 +49,15 @@
 
                         @else
 
+                            <div class="alert alert-warning">
+                                <strong>注意：</strong>
+                                还未配置项目负责人！
+                                &nbsp;&nbsp;&nbsp;
+                                <i class="fa fa-hand-o-right"></i>
+                                <a href="{{route('g_itemadmin',['item'=>$edata['item_id']])}}">去配置</a>
+                                <br>
+                            </div>
+
                         @endif
                     </div>
                 </div>
