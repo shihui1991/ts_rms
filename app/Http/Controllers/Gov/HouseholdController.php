@@ -23,11 +23,25 @@ class HouseholdController extends BaseitemController
     /* ========== 首页 ========== */
     public function index(Request $request){
         $item_id=$this->item_id;
+        /* ++++++++++ 是否调取接口(分页) ++++++++++ */
+        $app = $request->input('app');
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
         $select=['id','item_id','land_id','building_id','unit','floor','number','type','username','password','infos','state'];
+        /* ********** 地块 ********** */
+        $land_id=$request->input('land_id');
+        if(is_numeric($land_id)){
+            $where[] = ['land_id',$land_id];
+            $infos['land_id'] = $land_id;
+        }
+        /* ********** 楼栋 ********** */
+        $building_id=$request->input('building_id');
+        if(is_numeric($building_id)){
+            $where[] = ['building_id',$building_id];
+            $infos['building_id'] = $building_id;
+        }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -44,21 +58,39 @@ class HouseholdController extends BaseitemController
         $model=new Household();
         DB::beginTransaction();
         try{
-            $households=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },
-                    'itemland'=>function($query){
-                        $query->select(['id','address']);
+            if($app){
+                $households=$model
+                    ->with(['item'=>function($query){
+                        $query->select(['id','name']);
                     },
-                    'itembuilding'=>function($query){
-                        $query->select(['id','building']);
-                    }])
-                ->where($where)
-                ->select($select)
-                ->orderBy($ordername,$orderby)
-                ->sharedLock()
-                ->paginate($displaynum);
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        },
+                        'itembuilding'=>function($query){
+                            $query->select(['id','building']);
+                        }])
+                    ->where($where)
+                    ->select($select)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->get();
+            }else{
+                $households=$model
+                    ->with(['item'=>function($query){
+                        $query->select(['id','name']);
+                    },
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        },
+                        'itembuilding'=>function($query){
+                            $query->select(['id','building']);
+                        }])
+                    ->where($where)
+                    ->select($select)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->paginate($displaynum);
+            }
             if(blank($households)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

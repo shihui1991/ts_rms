@@ -1,25 +1,29 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-冻结房源 模型
+| 项目-选定评估机构 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Itemhouse extends Model
+class Itemcompany extends Model
 {
     use SoftDeletes;
-    protected $table='item_house';
-    protected $fillable=['house_id','type'];
+    protected $table='item_company';
+    protected $primaryKey='id';
+    protected $fillable=['company_id','type','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [];
+    protected $casts = [
+        'picture'=>'array'
+    ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'item_id'=>'项目',
-        'house_id'=>'房源',
-        'type'=>'添加时期'
+        'type'=>'评估机构类型',
+        'company_id'=>'评估机构',
+        'picture'=>'评估委托书'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
@@ -31,10 +35,10 @@ class Itemhouse extends Model
 
     }
 
-    /* ++++++++++ 获取添加时期状态 ++++++++++ */
+    /* ++++++++++ 获取评估机构类型 ++++++++++ */
     public function getTypeAttribute($key=null)
     {
-        $array=[0=>'筹备期',1=>'补充期'];
+        $array=[0=>'房产评估机构',1=>'资产评估机构'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
@@ -46,8 +50,10 @@ class Itemhouse extends Model
     public function item(){
         return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
-    /* ++++++++++ 关联房源 ++++++++++ */
-    public function house(){
-        return $this->belongsTo('App\Http\Model\House','house_id','id')->withDefault();
+
+    /* ++++++++++ 关联评估机构 ++++++++++ */
+    public function company(){
+        return $this->belongsTo('App\Http\Model\Company','company_id','id')->withDefault();
     }
+
 }

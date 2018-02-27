@@ -128,12 +128,14 @@
             };
             ajaxAct('{{route('g_house')}}',data,'post');
             if(ajaxResp.code=='error'){
-                $("#search_house").html('');
+                $('.search_house').html('&nbsp; 暂无对应房源');
                 toastr.error(ajaxResp.message);
             }else{
                 $("#search_house").html('');
-                console.log(ajaxResp.sdata.data);
                 var houseinfo = '';
+                if(ajaxResp.sdata.data.length>0){
+                    $('.search_house').html('');
+                }
                 $.each(ajaxResp.sdata.data,function (index,info) {
                     var unit = info.unit?info.unit+'单元':'';
                     var building = info.building?info.building+'楼':'';
@@ -152,7 +154,7 @@
                         '                        <td>'+info.is_real+'|'+info.is_buy+'|'+info.is_transit+'|'+info.is_public+'</td>\n' +
                         '                        <td>'+info.delive_at+'</td>\n' +
                         '                        <td>'+info.state+'</td>\n' +
-                        '            </tr>'
+                        '            </tr>';
                 });
                 $("#search_house").html(houseinfo);
             }

@@ -20,7 +20,7 @@ Route::any('/buildinguse_add','BuildinguseController@add')->name('g_buildinguse_
 Route::get('/buildinguse_info','BuildinguseController@info')->name('g_buildinguse_info');
 Route::any('/buildinguse_edit','BuildinguseController@edit')->name('g_buildinguse_edit');
 /*---------- 评估机构 ----------*/
-Route::get('/company','CompanyController@index')->name('g_company');
+Route::any('/company','CompanyController@index')->name('g_company');
 Route::any('/company_add','CompanyController@add')->name('g_company_add');
 Route::get('/company_info','CompanyController@info')->name('g_company_info');
 Route::any('/company_edit','CompanyController@edit')->name('g_company_edit');
@@ -154,6 +154,7 @@ Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
 Route::get('/household_info','HouseholdController@info')->name('g_household_info');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
+
 /*---------- 项目-被征收户详细信息 ----------*/
 Route::any('/householddetail','HouseholddetailController@index')->name('g_householddetail');
 Route::any('/householddetail_add','HouseholddetailController@add')->name('g_householddetail_add');
@@ -179,3 +180,9 @@ Route::any('/itemhouse','ItemhouseController@index')->name('g_itemhouse');
 Route::any('/itemhouse_add','ItemhouseController@add')->name('g_itemhouse_add');
 Route::get('/itemhouse_info','ItemhouseController@info')->name('g_itemhouse_info');
 Route::any('/itemhouse_edit','ItemhouseController@edit')->name('g_itemhouse_edit');
+
+/*---------- 项目-选定评估机构 ----------*/
+Route::any('/itemcompany','ItemcompanyController@index')->name('g_itemcompany');
+Route::any('/itemcompany_add','ItemcompanyController@add')->name('g_itemcompany_add');
+Route::get('/itemcompany_info','ItemcompanyController@info')->name('g_itemcompany_info');
+Route::any('/itemcompany_edit','ItemcompanyController@edit')->name('g_itemcompany_edit');

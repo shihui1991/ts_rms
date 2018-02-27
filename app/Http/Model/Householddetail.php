@@ -130,6 +130,10 @@ class Householddetail extends Model
     public function itemland(){
         return $this->belongsTo('App\Http\Model\Itemland','land_id','id')->withDefault();
     }
+    /* ++++++++++ 关联被征收户账号 ++++++++++ */
+    public function household(){
+        return $this->belongsTo('App\Http\Model\Household','household_id','id')->withDefault();
+    }
     /* ++++++++++ 关联楼栋 ++++++++++ */
     public function itembuilding(){
         return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
