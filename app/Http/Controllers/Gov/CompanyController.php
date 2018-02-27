@@ -22,7 +22,8 @@ class CompanyController extends BaseauthController
     /* ========== 首页 ========== */
     public function index(Request $request){
         $select=['id','type','name','address','phone','fax','contact_man','contact_tel','logo','infos','user_id','state','deleted_at'];
-
+        /* ++++++++++ 是否调取接口(分页)  ++++++++++ */
+        $app = $request->input('app');
         /* ********** 查询条件 ********** */
         $where=[];
         /* ++++++++++ 名称 ++++++++++ */
@@ -64,7 +65,12 @@ class CompanyController extends BaseauthController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $companys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            if($app){
+                $companys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->get();
+            }else{
+                $companys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            }
+
             if(blank($companys)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

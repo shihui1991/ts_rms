@@ -8,7 +8,7 @@
         "php": ">=7.0.0",
         "barryvdh/laravel-debugbar": "^3.1",
         "fideloper/proxy": "~3.3",
-        "laravel/framework": "5.5.*",
+        "laravel/framework": "v5.5.*",
         "laravel/tinker": "~1.0"
     },
     "require-dev": {
