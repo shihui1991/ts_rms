@@ -9,12 +9,12 @@
         <div class="col-sm-6">
             <div class="widget-box widget-color-red">
                 <div class="widget-header">
-                    <h4 class="widget-title lighter smaller">我的审查意见</h4>
+                    <h4 class="widget-title lighter smaller">区政府审查意见</h4>
                 </div>
 
                 <div class="widget-body">
                     <div class="widget-main padding-8">
-                        <form class="form-horizontal" role="form" action="{{route('g_itemprocess_cdc',['item'=>$sdata['item']->id])}}" method="post">
+                        <form class="form-horizontal" role="form" action="{{route('g_itemprocess_cgc',['item'=>$sdata['item']->id])}}" method="post">
                             {{csrf_field()}}
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="code">审查结果：</label>

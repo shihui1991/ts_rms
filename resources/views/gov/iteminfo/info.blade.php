@@ -19,6 +19,18 @@
             </a>
 
         </p>
+
+        @elseif($sdata->schedule_id==1 && $sdata->process_id==4 && $sdata->code=='2')
+            <p><a class="btn" onclick="btnAct(this)" data-url="{{route('g_itemprocess_c2dc',['item'=>$sdata->id])}}">
+                <i class="ace-icon fa fa-cloud-upload bigger-110"></i>
+                提交部门审查
+            </a></p>
+
+        @elseif($sdata->schedule_id==1 && $sdata->process_id==3 && $sdata->code=='22')
+            <p><a class="btn" onclick="btnAct(this)" data-url="{{route('g_itemprocess_c2gc',['item'=>$sdata->id])}}">
+                    <i class="ace-icon fa fa-cloud-upload bigger-110"></i>
+                    提交区政府审查
+                </a></p>
         @endif
 
 
