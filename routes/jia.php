@@ -1,11 +1,11 @@
 <?php
-/*---------- 项目进度与流程 ----------*/
-Route::any('/itemprocess','ItemprocessController@index')->name('g_itemprocess'); //项目进度与流程
-Route::any('/itemprocess_c2dc','ItemprocessController@check_to_dept_check')->name('g_itemprocess_c2dc'); //项目审查 -  提交部门审查
-Route::any('/itemprocess_cdc','ItemprocessController@check_dept_check')->name('g_itemprocess_cdc'); //项目审查 -  部门审查
-Route::any('/itemprocess_crb','ItemprocessController@check_roll_back')->name('g_itemprocess_crb'); //项目审查 -  审查驳回处理
-Route::any('/itemprocess_retry','ItemprocessController@check_iteminfo_retry')->name('g_itemprocess_retry'); //项目审查 -  重新提交审查资料
-Route::any('/itemprocess_stop','ItemprocessController@check_item_stop')->name('g_itemprocess_stop'); //项目审查 -  不予受理
-Route::any('/itemprocess_c2gc','ItemprocessController@check_to_gov_check')->name('g_itemprocess_c2gc'); //项目审查 -  提交区政府审查
-Route::any('/itemprocess_cgc','ItemprocessController@check_gov_check')->name('g_itemprocess_cgc'); //项目审查 -  提交区政府审查
-Route::any('/itemprocess_css','ItemprocessController@check_start_set')->name('g_itemprocess_css'); //项目审查 -  项目启动配置
+/*---------- 征收意见稿 ----------*/
+Route::any('/itemdraft','ItemdraftController@index')->name('g_itemdraft');
+Route::any('/itemdraft_add','ItemdraftController@add')->name('g_itemdraft_add');
+Route::any('/itemdraft_edit','ItemdraftController@edit')->name('g_itemdraft_edit');
+
+/*---------- 听证会意见 ----------*/
+Route::any('/itemdraftreport','ItemdraftreportController@index')->name('g_itemdraftreport');
+Route::any('/itemdraftreport_add','ItemdraftreportController@add')->name('g_itemdraftreport_add');
+Route::any('/itemdraftreport_edit','ItemdraftreportController@edit')->name('g_itemdraftreport_edit');
+Route::any('/itemdraftreport_info','ItemdraftreportController@info')->name('g_itemdraftreport_info');
