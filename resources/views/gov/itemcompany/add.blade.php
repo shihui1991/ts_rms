@@ -16,50 +16,17 @@
     <form class="form-horizontal" role="form" action="{{route('g_itemcompany_add')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="item" id="item" value="{{$sdata['item_id']}}">
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="type"> 类型： </label>
-            <div class="col-sm-9">
-                <select class="col-xs-5 col-sm-5" name="type" id="type">
-                    <option value="">--请选择--</option>
-                    <option value="0">--房产评估机构--</option>
-                    <option value="1">--资产评估机构--</option>
-                </select>
-            </div>
-        </div>
-        <div class="space-4"></div>
+        <input type="hidden" name="type" id="type" value="{{$sdata['type']}}">
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="company_id"> 评估机构： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="company_id"> @if($sdata['type']==0) 房产@else资产@endif评估机构： </label>
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="company_id" id="company_id">
-                    <option value="">--请先选择类型--</option>
+                    <option value="">--请选择--</option>
                 </select>
             </div>
         </div>
         <div class="space-4"></div>
-
-        <div class="widget-body">
-            <div class="widget-main padding-8">
-
-                <div class="form-group img-box">
-                    <label class="col-sm-3 control-label no-padding-right">
-                        评估委托书：<br>
-                        <span class="btn btn-xs">
-                                        <span>上传图片</span>
-                                        <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
-                                    </span>
-                    </label>
-                    <div class="col-sm-9">
-                        <ul class="ace-thumbnails clearfix img-content viewer">
-
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="space-4 header green"></div>
-
-            </div>
-        </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right"> <span class="btn"  data-toggle="modal"  data-target="#myModal">【查询被征户】</span> </label>
@@ -87,6 +54,7 @@
                 </tbody>
             </table>
             <p class="search_household">&nbsp; 请先查询被征收户</p>
+            <input type="hidden" id="household_ids" value="">
         </div>
         <div class="space-4"></div>
 
@@ -164,31 +132,29 @@
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
         /*---------查询评估机构----------*/
-        $('#type').on('change',function() {
-            var type = $(this).val();
-            if(!type){
-                toastr.error('请先选择类型');
-                $("#company_id").html('<option value="">--请先选择类型--</option>');
-                return false;
-            }
-            var data = {
-                'app':'app',
-                'type':type
-            };
-            ajaxAct('{{route('g_company')}}',data,'post');
-            if(ajaxResp.code=='error'){
-                $("#company_id").html('<option value="">--请先选择类型--</option>');
-                toastr.error(ajaxResp.message);
-            }else {
-                $("#company_id").html('');
-                var companyinfo = '<option value="">--请选择--</option>';
-                $.each(ajaxResp.sdata,function (index,info) {
-                    companyinfo+='<option value="'+info.id+'">--'+info.name+'--</option>';
-                });
-                $("#company_id").html(companyinfo);
-            }
-
-        });
+       window.onload=function (ev) {
+           var type = $('#type').val();
+           if(!type){
+               toastr.error('请先选择类型');
+               return false;
+           }
+           var data = {
+               'app':'app',
+               'type':type
+           };
+           ajaxAct('{{route('g_company')}}',data,'post');
+           if(ajaxResp.code=='error'){
+               $("#company_id").html('<option value="">--暂无相关数据--</option>');
+               toastr.error(ajaxResp.message);
+           }else {
+               $("#company_id").html('');
+               var companyinfo = '<option value="">--请选择--</option>';
+               $.each(ajaxResp.sdata,function (index,info) {
+                   companyinfo+='<option value="'+info.id+'">--'+info.name+'--</option>';
+               });
+               $("#company_id").html(companyinfo);
+           }
+       };
         /*---------查询被征收户----------*/
         $(".search_household_checked").on('click',function(){
             var land_id = $('#land_id').val();
@@ -198,39 +164,60 @@
                 toastr.error('请先选择地块');
                 return false;
             }
-            var data = {
-                'item':item,
-                'land_id':land_id,
-                'building_id':building_id,
-                'app':'app'
-            };
+            var type = $('#type').val();
+            if(type==1){
+                var data = {
+                    'item':item,
+                    'land_id':land_id,
+                    'has_assets':1,
+                    'building_id':building_id,
+                    'app':'app'
+                };
+            }else{
+                var data = {
+                    'item':item,
+                    'land_id':land_id,
+                    'building_id':building_id,
+                    'app':'app'
+                };
+            }
+
             ajaxAct('{{route('g_householddetail')}}',data,'post');
             if(ajaxResp.code=='error'){
                 $('.search_household').html('&nbsp; 暂无对应被征收户');
                 $('#search_household').html('');
                 toastr.error(ajaxResp.message);
             }else{
-                $("#search_household").html('');
                 var houseinfo = '';
                 if(ajaxResp.sdata.length>0){
                     $('.search_household').html('');
                 }
+                var household_ids = $("#household_ids").val();
+                var household_ids_arr = [];
+                if(household_ids){
+                  household_ids_arr = household_ids.split(",");
+                }
                 $.each(ajaxResp.sdata,function (index,info) {
-                    var unit = info.household.unit?info.household.unit+'单元':'';
-                    var building = info.household.building?info.household.building+'楼':'';
-                    var floor = info.household.floor?info.household.floor+'层':'';
-                    var number = info.household.number?info.household.number+'号':'';
-                    houseinfo+=' <tr>\n' +
-                        '                    <td><input type="checkbox" name="household_id[]" value="'+info.household_id+'"></td>\n'+
-                        '                        <td>'+info.id+'</td>\n' +
-                        '                        <td>'+info.itemland.address+'</td>\n' +
-                        '                        <td>'+info.itembuilding.building+'</td>\n' +
-                        '                        <td>'+unit+building+floor+number+'</td>\n' +
-                        '                        <td>'+info.household.type+'</td>\n' +
-                        '                        <td>'+info.has_assets+'</td>\n' +
-                        '            </tr>';
+                        if($.inArray(info.household_id.toString(),household_ids_arr) == -1){
+                            household_ids_arr.push(info.household_id.toString());
+                            var unit = info.household.unit?info.household.unit+'单元':'';
+                            var building = info.household.building?info.household.building+'楼':'';
+                            var floor = info.household.floor?info.household.floor+'层':'';
+                            var number = info.household.number?info.household.number+'号':'';
+                            houseinfo+=' <tr>\n' +
+                                '                        <td><input type="checkbox" name="household_id[]" value="'+info.household_id+'"></td>\n'+
+                                '                        <td>'+info.household_id+'</td>\n' +
+                                '                        <td>'+info.itemland.address+'</td>\n' +
+                                '                        <td>'+info.itembuilding.building+'</td>\n' +
+                                '                        <td>'+unit+building+floor+number+'</td>\n' +
+                                '                        <td>'+info.household.type+'</td>\n' +
+                                '                        <td>'+info.has_assets+'</td>\n' +
+                                '            </tr>';
+                        }
                 });
-                $("#search_household").html(houseinfo);
+                $("#search_household").append(houseinfo);
+
+                $("#household_ids").val(household_ids_arr.join(','));
             }
             $('#myModal').modal('hide');
         });

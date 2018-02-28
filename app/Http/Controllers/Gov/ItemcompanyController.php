@@ -57,6 +57,14 @@ class ItemcompanyController extends BaseitemController
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->paginate($displaynum);
+            $infos['typecount'] = $model
+                ->where($where)
+                ->where('type',0)
+                ->count();
+            $infos['typecounts'] = $model
+                ->where($where)
+                ->where('type',1)
+                ->count();
             if(blank($itemcompanys)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -90,6 +98,7 @@ class ItemcompanyController extends BaseitemController
         $model=new Itemcompany();
         if($request->isMethod('get')){
             $sdata['item_id'] = $item_id;
+            $sdata['type'] = $request->input('type');
             $sdata['itemland'] = Itemland::select(['id','address'])->where('item_id',$item_id)->get()?:[];
             $sdata['itembuilding'] = Itembuilding::select(['id','building'])->distinct()->where('item_id',$item_id)->get()?:[];
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
@@ -105,8 +114,7 @@ class ItemcompanyController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'type'=>'required',
-                'company_id'=>'required',
-                'picture'=>'required',
+                'company_id'=>'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写'
@@ -259,6 +267,17 @@ class ItemcompanyController extends BaseitemController
                 ->where('item_company_id',$id)
                 ->where('item_id',$item_id)
                 ->get()?:[];
+            $household_ids_str = '';
+            if(!blank($edata['companyhousehold'])){
+                foreach ($edata['companyhousehold'] as $k=>$v){
+                    if($k+1 == count($edata['companyhousehold'])){
+                        $household_ids_str .= $v->household_id;
+                    }else{
+                        $household_ids_str .= $v->household_id.',';
+                    }
+                }
+            }
+            $edata['household_ids_str'] = $household_ids_str;
             $sdata = Itemcompany::with([
                 'company'=>function($query){
                     $query->select(['id','name']);
@@ -279,8 +298,7 @@ class ItemcompanyController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'type'=>'required',
-                'company_id'=>'required',
-                'picture'=>'required',
+                'company_id'=>'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写'

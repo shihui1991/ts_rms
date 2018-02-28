@@ -62,6 +62,12 @@ class HouseholddetailController extends BaseitemController
         DB::beginTransaction();
         try{
             if($app){
+                /* ********** 资产评估 ********** */
+                $has_assets=$request->input('has_assets');
+                if(is_numeric($has_assets)){
+                    $where[] = ['has_assets',$has_assets];
+                    $infos['has_assets'] = $has_assets;
+                }
                 $households=Householddetail::with([
                         'item'=>function($query){
                             $query->select(['id','name']);
@@ -195,7 +201,7 @@ class HouseholddetailController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $householddetail;
                 $edata = null;
-                $url = route('g_household_info',['id'=>$household_id,'item'=>$this->item_id]);
+                $url = route('g_householddetail_info',['id'=>$household_id,'item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
