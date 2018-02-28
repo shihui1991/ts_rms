@@ -6,7 +6,7 @@
 @section('content')
 
     <p>
-        <a class="btn" href="{{route('g_itemuser',['item'=>$sdata['item_id']])}}">
+        <a class="btn" href="{{route('g_itemuser',['item'=>$sdata['item']->id])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回项目人员
         </a>
@@ -15,9 +15,15 @@
             <i class="ace-icon fa fa-plus bigger-110"></i>
             添加负责人
         </a>
+
+        @if(filled($sdata['itemadmins']) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
+            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_itemprocess_csia',['item'=>$sdata['item']->id])}}" data-method="post">
+                <i class="ace-icon fa fa-check-circle bigger-110"></i>
+                提交配置
+            </a>
+        @endif
     </p>
 
-    @if(filled($sdata['itemadmins']))
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
@@ -29,27 +35,25 @@
         </thead>
         <tbody id="tbody-itemadmin">
 
-
-        @foreach($sdata['itemadmins'] as $itemadmin)
-            <tr>
-                <td>{{$itemadmin->user->name}}</td>
-                <td>{{$itemadmin->dept->name}}</td>
-                <td>{{$itemadmin->role->name}}</td>
-                <td><a class="btn btn-xs" onclick="trRemove(this)" data-id="{{$itemadmin->id}}" data-user="{{$itemadmin->user_id}}">删除</a></td>
-            </tr>
-        @endforeach
+        @if(filled($sdata['itemadmins']))
+            @foreach($sdata['itemadmins'] as $itemadmin)
+                <tr>
+                    <td>{{$itemadmin->user->name}}</td>
+                    <td>{{$itemadmin->dept->name}}</td>
+                    <td>{{$itemadmin->role->name}}</td>
+                    <td><a class="btn btn-xs" onclick="trRemove(this)" data-id="{{$itemadmin->id}}" data-user="{{$itemadmin->user_id}}">删除</a></td>
+                </tr>
+            @endforeach
+        @else
+            <div class="alert alert-warning">
+                <strong>注意：</strong>
+                请点击【添加负责人】
+                <br>
+            </div>
+        @endif
 
         </tbody>
     </table>
-
-    @else
-        <div class="alert alert-warning">
-            <strong>注意：</strong>
-            请点击【添加负责人】
-            <br>
-        </div>
-    @endif
-
 
     <!-- Modal -->
     <div class="modal fade" id="model-itemuser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -201,7 +205,7 @@
                     var data={
                         'user_id':userId
                     };
-                    ajaxAct('{{route('g_itemadmin_add',['item'=>$sdata['item_id']])}}',data,'post');
+                    ajaxAct('{{route('g_itemadmin_add',['item'=>$sdata['item']->id])}}',data,'post');
                     if(ajaxResp.code=='success'){
                         var str='<tr>' +
                             '<td>'+user.data('name')+ '</td>' +
@@ -225,7 +229,7 @@
         function trRemove(obj) {
             var that=$(obj);
             var id=that.data('id');
-            ajaxAct('{{route('g_itemadmin_del',['item'=>$sdata['item_id']])}}',{'id':id},'get');
+            ajaxAct('{{route('g_itemadmin_del',['item'=>$sdata['item']->id])}}',{'id':id},'get');
             if(ajaxResp.code=='success'){
                 that.parents('tr:first').remove();
             }else{

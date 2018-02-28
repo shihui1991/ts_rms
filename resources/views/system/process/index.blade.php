@@ -15,7 +15,7 @@
                 <th>名称 - 排序</th>
                 <th>项目进度</th>
                 <th>类型 - 限制人数</th>
-                <th>菜单</th>
+                <th>菜单ID - 菜单名称</th>
                 <th>地址</th>
                 <th>ID</th>
                 <th>操作</th>
@@ -27,7 +27,7 @@
                     <td>{{$process->name}} - {{$process->sort}}</td>
                     <td>{{$process->schedule->name}}</td>
                     <td>{{$process->type}} - {{$process->number}}</td>
-                    <td>{{$process->menu->name}}</td>
+                    <td>{{$process->menu->id}} - {{$process->menu->name}}</td>
                     <td>{{$process->menu->url}}</td>
                     <td>{{$process->id}}</td>
                     <td>
@@ -85,7 +85,7 @@
                             childs +='<td>'+info.name+' - '+info.sort+'</td>';
                             childs +='<td>'+info.schedule.name+'</td>';
                             childs +='<td>'+info.type+' - '+info.number+'</td>';
-                            childs +='<td>'+info.menu.name+'</td>';
+                            childs +='<td>'+info.menu.id+' - '+info.menu.name+'</td>';
                             childs +='<td>'+info.menu.url+'</td>';
                             childs +='<td>'+info.id+'</td>';
                             childs +='<td><div class="btn-group">' +

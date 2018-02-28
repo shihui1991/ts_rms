@@ -74,8 +74,8 @@ class ItemuserController extends BaseitemController
 
         $code='success';
         $msg='查询成功';
-        $sdata=['itemusers'=>$itemusers,'itemadmins'=>$itemadmins];
-        $edata=['item_id'=>$this->item_id];
+        $sdata=['itemusers'=>$itemusers,'itemadmins'=>$itemadmins,'item'=>$this->item];
+        $edata=null;
         $url=null;
 
         /* ++++++++++ 结果 ++++++++++ */
@@ -93,8 +93,8 @@ class ItemuserController extends BaseitemController
             DB::beginTransaction();
             try{
                 $result=$this->checkNotice();
-                $process=$request['process'];
-                $worknotice=$request['worknotice'];
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 $count=Itemuser::where('item_id',$this->item_id)->count();
                 if($count){
@@ -116,7 +116,7 @@ class ItemuserController extends BaseitemController
 
                 $code='success';
                 $msg='查询成功';
-                $sdata=['processes'=>$processes,'depts'=>$depts,'item_id'=>$this->item_id];
+                $sdata=['processes'=>$processes,'depts'=>$depts,'item'=>$this->item];
                 $edata=null;
                 $url=null;
 
@@ -153,8 +153,8 @@ class ItemuserController extends BaseitemController
             DB::beginTransaction();
             try{
                 $result=$this->checkNotice();
-                $process=$request['process'];
-                $worknotice=$request['worknotice'];
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 $count=Itemuser::where('item_id',$this->item_id)->count();
                 if($count){
@@ -257,8 +257,8 @@ class ItemuserController extends BaseitemController
             DB::beginTransaction();
             try{
                 $result=$this->checkNotice();
-                $process=$request['process'];
-                $worknotice=$request['worknotice'];
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 /* ++++++++++ 流程数据 ++++++++++ */
                 $process=Process::with(['schedule'=>function($query){
@@ -287,7 +287,7 @@ class ItemuserController extends BaseitemController
                 }
                 $code='success';
                 $msg='查询成功';
-                $sdata=['itemusers'=>$itemusers,'depts'=>$depts,'process'=>$process,'item_id'=>$this->item_id];
+                $sdata=['itemusers'=>$itemusers,'depts'=>$depts,'process'=>$process,'item'=>$this->item];
                 $edata=null;
                 $url=null;
 
@@ -321,8 +321,8 @@ class ItemuserController extends BaseitemController
             DB::beginTransaction();
             try{
                 $result=$this->checkNotice();
-                $process=$request['process'];
-                $worknotice=$request['worknotice'];
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 $worknotice->code='1';
                 $worknotice->save();
@@ -386,8 +386,8 @@ class ItemuserController extends BaseitemController
         DB::beginTransaction();
         try{
             $result=$this->checkNotice();
-            $process=$request['process'];
-            $worknotice=$request['worknotice'];
+            $process=$result['process'];
+            $worknotice=$result['worknotice'];
 
             $worknotice->code='1';
             $worknotice->save();
@@ -441,7 +441,7 @@ class ItemuserController extends BaseitemController
         /* ++++++++++ 流程设置 ++++++++++ */
         $process=Process::sharedLock()->find(9);
         /* ++++++++++ 是否有工作推送 ++++++++++ */
-        $worknotice=Worknotice::sharedLock()
+        $worknotice=Worknotice::lockForUpdate()
             ->where([
                 ['item_id',$this->item->id],
                 ['schedule_id',$process->schedule_id],

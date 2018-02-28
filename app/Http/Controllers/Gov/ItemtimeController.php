@@ -8,7 +8,9 @@ namespace App\Http\Controllers\Gov;
 
 use App\Http\Model\Item;
 use App\Http\Model\Itemtime;
+use App\Http\Model\Process;
 use App\Http\Model\Schedule;
+use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -43,13 +45,14 @@ class ItemtimeController extends BaseitemController
         }
     }
 
+    /* ========== 添加时间规划 ========== */
     public function add(Request $request){
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
                 $result=$this->checkNotice();
-                $process=$request['process'];
-                $worknotice=$request['worknotice'];
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 $count=Itemtime::where('item_id',$this->item_id)->count();
                 if($count){
@@ -66,7 +69,7 @@ class ItemtimeController extends BaseitemController
 
                 $code='success';
                 $msg='查询成功';
-                $sdata=['schedules'=>$schedules,'item_id'=>$this->item_id];
+                $sdata=['schedules'=>$schedules,'item'=>$this->item];
                 $edata=null;
                 $url=null;
 
@@ -94,8 +97,11 @@ class ItemtimeController extends BaseitemController
             DB::beginTransaction();
             try{
                 $result=$this->checkNotice();
-                $process=$request['process'];
-                $worknotice=$request['worknotice'];
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
+
+                $worknotice->code='1';
+                $worknotice->save();
 
                 $count=Itemtime::where('item_id',$this->item_id)->count();
                 if($count){
@@ -108,7 +114,7 @@ class ItemtimeController extends BaseitemController
                 }
                 $datas=$request->input('data');
                 foreach($schedules as $schedule){
-                    if(!is_array($datas) || !isset($datas[$schedule->id]) || !isset($datas[$schedule->id]['start_at']) || !isset($datas[$schedule->id]['end_at']) || !isset($datas[$schedule->id]['id'])){
+                    if(!is_array($datas) || !isset($datas[$schedule->id]) || !isset($datas[$schedule->id]['start_at']) || !isset($datas[$schedule->id]['end_at'])){
                         throw new \Exception('时间数据必须填写',404404);
                     }
                     if(blank($datas[$schedule->id]['start_at'])){
@@ -137,9 +143,6 @@ class ItemtimeController extends BaseitemController
                 foreach ($sqls as $sql){
                     DB::statement($sql);
                 }
-
-                $worknotice->code='1';
-                $worknotice->save();
 
                 $code='success';
                 $msg='保存成功';
@@ -182,7 +185,7 @@ class ItemtimeController extends BaseitemController
 
                 $code='success';
                 $msg='查询成功';
-                $sdata=['itemtimes'=>$itemtimes,'item_id'=>$this->item_id];
+                $sdata=['itemtimes'=>$itemtimes,'item'=>$this->item];
                 $edata=null;
                 $url=null;
 
@@ -210,8 +213,8 @@ class ItemtimeController extends BaseitemController
             DB::beginTransaction();
             try {
                 $result = $this->checkNotice();
-                $process = $request['process'];
-                $worknotice = $request['worknotice'];
+                $process = $result['process'];
+                $worknotice = $result['worknotice'];
 
                 $values = [];
                 $schedules = Schedule::sharedLock()->select(['id', 'name', 'sort'])->orderBy('sort', 'asc')->get();
@@ -220,7 +223,7 @@ class ItemtimeController extends BaseitemController
                 }
                 $datas = $request->input('data');
                 foreach ($schedules as $schedule) {
-                    if (!is_array($datas) || !isset($datas[$schedule->id]) || !isset($datas[$schedule->id]['start_at']) || !isset($datas[$schedule->id]['end_at'])) {
+                    if (!is_array($datas) || !isset($datas[$schedule->id]) || !isset($datas[$schedule->id]['start_at']) || !isset($datas[$schedule->id]['end_at'])|| !isset($datas[$schedule->id]['id'])) {
                         throw new \Exception('时间数据必须填写', 404404);
                     }
                     if (blank($datas[$schedule->id]['start_at'])) {
@@ -242,7 +245,7 @@ class ItemtimeController extends BaseitemController
                     ];
                 }
                 $int_field = ['id','item_id', 'schedule_id', 'start_at', 'end_at', 'updated_at'];
-                $upd_field = ['item_id', 'schedule_id', 'start_at', 'end_at', 'updated_at'];
+                $upd_field = ['start_at', 'end_at', 'updated_at'];
                 $sqls = batch_update_sql('item_time', $int_field, $values, $upd_field,'id');
                 if (!$sqls) {
                     throw new \Exception('数据错误', 404404);
@@ -251,7 +254,7 @@ class ItemtimeController extends BaseitemController
                     DB::statement($sql);
                 }
 
-                $worknotice->code = '1';
+                $worknotice->code='1';
                 $worknotice->save();
 
                 $code = 'success';
@@ -289,7 +292,7 @@ class ItemtimeController extends BaseitemController
         /* ++++++++++ 流程设置 ++++++++++ */
         $process=Process::sharedLock()->find(10);
         /* ++++++++++ 是否有工作推送 ++++++++++ */
-        $worknotice=Worknotice::sharedLock()
+        $worknotice=Worknotice::lockForUpdate()
             ->where([
                 ['item_id',$this->item->id],
                 ['schedule_id',$process->schedule_id],

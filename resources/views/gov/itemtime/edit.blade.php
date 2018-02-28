@@ -6,14 +6,14 @@
 @section('content')
 
     <p>
-        <a class="btn" href="{{route('g_itemtime',['item'=>$sdata['item_id']])}}">
+        <a class="btn" href="{{route('g_itemtime',['item'=>$sdata['item']->id])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemtime_edit',['item'=>$sdata['item_id']])}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemtime_edit',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
 
         @foreach($sdata['itemtimes'] as $itemtime)

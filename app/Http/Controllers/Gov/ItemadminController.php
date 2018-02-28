@@ -8,7 +8,9 @@ namespace App\Http\Controllers\Gov;
 
 use App\Http\Model\Dept;
 use App\Http\Model\Itemadmin;
+use App\Http\Model\Process;
 use App\Http\Model\User;
+use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -43,13 +45,13 @@ class ItemadminController extends BaseitemController
             }
             $code='success';
             $msg='查询成功';
-            $sdata=['itemadmins'=>$itemadmins,'depts'=>$depts,'item_id'=>$this->item_id];
+            $sdata=['itemadmins'=>$itemadmins,'depts'=>$depts,'item'=>$this->item];
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=['itemadmins'=>null,'depts'=>$depts,'item_id'=>$this->item_id];
+            $sdata=['itemadmins'=>null,'depts'=>$depts,'item'=>$this->item];
             $edata=null;
             $url=null;
         }
@@ -183,7 +185,7 @@ class ItemadminController extends BaseitemController
         /* ++++++++++ 流程设置 ++++++++++ */
         $process=Process::sharedLock()->find(16);
         /* ++++++++++ 是否有工作推送 ++++++++++ */
-        $worknotice=Worknotice::sharedLock()
+        $worknotice=Worknotice::lockForUpdate()
             ->where([
                 ['item_id',$this->item->id],
                 ['schedule_id',$process->schedule_id],
