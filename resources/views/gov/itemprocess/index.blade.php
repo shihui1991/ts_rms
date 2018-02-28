@@ -12,7 +12,7 @@
                     @foreach($sdata['schedules'] as $schedule)
 
                         <li data-step="{{$schedule->id}}" @if($item->schedule_id>$schedule->id) class="complete" @elseif($item->schedule_id==$schedule->id) class="active"@else class="" @endif style="cursor: pointer;">
-                            <span class="step">{{$schedule->id}}</span>
+                            <span class="step">{{$loop->iteration}}</span>
                             <span class="title">{{$schedule->name}}</span>
                         </li>
 
@@ -48,9 +48,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="widget-box widget-color-green2">
+                        <div class="widget-box widget-color-grey collapsed">
                             <div class="widget-header">
                                 <h4 class="widget-title lighter smaller">工作日志</h4>
+                                <div class="widget-toolbar">
+                                    <a href="#" data-action="collapse">
+                                        <i class="ace-icon fa fa-chevron-down"></i>
+                                        展开/关闭
+                                    </a>
+                                </div>
                             </div>
 
                             <div class="widget-body">

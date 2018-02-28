@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2018-02-26 11:28:27
+Date: 2018-02-27 15:24:09
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -175,7 +175,7 @@ CREATE TABLE `a_menu` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`) COMMENT '上级ID'
-) ENGINE=MyISAM AUTO_INCREMENT=230 DEFAULT CHARSET=utf8 COMMENT='功能与菜单';
+) ENGINE=MyISAM AUTO_INCREMENT=232 DEFAULT CHARSET=utf8 COMMENT='功能与菜单';
 
 -- ----------------------------
 -- Records of a_menu
@@ -408,6 +408,8 @@ INSERT INTO `a_menu` VALUES ('226', '203', '被征收户详情', null, '0', '/go
 INSERT INTO `a_menu` VALUES ('227', '211', '其他事项', null, '0', '/gov/householddetails', null, '1', '1', '1', '0', null, '2018-02-26 09:46:27', '2018-02-26 09:47:08', null);
 INSERT INTO `a_menu` VALUES ('228', '211', '被征户-其他补偿事项', null, '0', '/gov/householdobject', null, '1', '1', '1', '0', null, '2018-02-26 11:05:59', '2018-02-26 11:05:59', null);
 INSERT INTO `a_menu` VALUES ('229', '228', '添加其他事项', null, '0', '/gov/householdobject_add', null, '1', '1', '1', '0', null, '2018-02-26 11:06:57', '2018-02-26 11:06:57', null);
+INSERT INTO `a_menu` VALUES ('230', '207', '区政府审查（项目审查）', null, '0', '/gov/itemprocess_cgc', null, '1', '1', '0', '0', null, '2018-02-26 15:58:15', '2018-02-26 15:59:38', null);
+INSERT INTO `a_menu` VALUES ('231', '207', '开启项目启动配置（项目审查）', null, '0', '/gov/itemprocess_css', null, '1', '1', '0', '0', null, '2018-02-26 16:52:22', '2018-02-26 19:56:18', null);
 
 -- ----------------------------
 -- Table structure for a_news_cate
@@ -469,7 +471,7 @@ CREATE TABLE `a_process` (
   UNIQUE KEY `sort` (`sort`) COMMENT '顺序唯一',
   UNIQUE KEY `menu_id` (`menu_id`) COMMENT '菜单 ID',
   KEY `schedule_id` (`schedule_id`) COMMENT '进度ID'
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='项目流程';
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COMMENT='项目流程';
 
 -- ----------------------------
 -- Records of a_process
@@ -480,15 +482,16 @@ INSERT INTO `a_process` VALUES ('3', '1', '0', '部门审查', '2', '218', '20',
 INSERT INTO `a_process` VALUES ('4', '1', '3', '重新提交审查资料', '1', '223', '9', '1', null, '2018-02-23 12:03:32', '2018-02-24 18:20:58', null);
 INSERT INTO `a_process` VALUES ('5', '1', '3', '审查驳回处理', '1', '222', '21', '1', null, '2018-02-23 12:04:06', '2018-02-24 18:29:29', null);
 INSERT INTO `a_process` VALUES ('6', '1', '0', '提交区政府审查', '1', '224', '30', '1', null, '2018-02-23 12:04:29', '2018-02-24 18:21:38', null);
-INSERT INTO `a_process` VALUES ('7', '1', '0', '区政府审查', '2', '43', '40', '1', null, '2018-02-23 12:04:53', '2018-02-23 12:04:53', null);
-INSERT INTO `a_process` VALUES ('8', '1', '0', '项目启动配置', '1', '45', '50', '1', null, '2018-02-23 12:05:41', '2018-02-23 12:05:41', null);
-INSERT INTO `a_process` VALUES ('9', '1', '8', '配置项目人员', '1', '196', '51', '1', null, '2018-02-23 13:34:31', '2018-02-23 13:34:50', null);
-INSERT INTO `a_process` VALUES ('10', '1', '8', '项目时间规划', '1', '194', '52', '1', null, '2018-02-23 13:35:40', '2018-02-23 13:35:40', null);
+INSERT INTO `a_process` VALUES ('7', '1', '0', '区政府审查', '2', '230', '40', '1', null, '2018-02-23 12:04:53', '2018-02-26 15:59:03', null);
+INSERT INTO `a_process` VALUES ('8', '1', '0', '项目启动配置', '1', '231', '50', '1', null, '2018-02-23 12:05:41', '2018-02-26 16:52:39', null);
+INSERT INTO `a_process` VALUES ('9', '1', '8', '配置项目人员', '1', '197', '51', '1', null, '2018-02-23 13:34:31', '2018-02-26 18:07:41', null);
+INSERT INTO `a_process` VALUES ('10', '1', '8', '项目时间规划', '1', '195', '52', '1', null, '2018-02-23 13:35:40', '2018-02-26 16:55:21', null);
 INSERT INTO `a_process` VALUES ('11', '1', '0', '项目配置提交审查', '1', '46', '60', '1', null, '2018-02-23 13:36:37', '2018-02-23 13:36:37', null);
 INSERT INTO `a_process` VALUES ('12', '1', '0', '项目配置审查', '2', '47', '70', '1', null, '2018-02-23 13:37:14', '2018-02-23 13:37:14', null);
 INSERT INTO `a_process` VALUES ('13', '1', '0', '项目启动', '1', '48', '80', '1', null, '2018-02-23 13:37:45', '2018-02-23 13:37:45', null);
 INSERT INTO `a_process` VALUES ('14', '2', '0', '项目初步预算', '1', '52', '90', '1', null, '2018-02-23 13:38:11', '2018-02-23 13:38:11', null);
 INSERT INTO `a_process` VALUES ('15', '1', '3', '不予受理', '1', '225', '22', '1', null, '2018-02-24 18:32:07', '2018-02-24 18:34:43', null);
+INSERT INTO `a_process` VALUES ('16', '1', '8', '项目负责人', '1', '201', '53', '1', null, '2018-02-26 19:36:44', '2018-02-26 19:36:44', null);
 
 -- ----------------------------
 -- Table structure for a_schedule
@@ -1307,7 +1310,7 @@ CREATE TABLE `item` (
 -- ----------------------------
 -- Records of item
 -- ----------------------------
-INSERT INTO `item` VALUES ('1', '西关片区棚户区改造项目', '东至自由路、西至双桥路、北至成纪大道、南至解放路', '/storage/180223/mK5owDrG1mq9Ptpa2IgHCB3sz3F2n75jW92myUDV.png', null, '{\"file1\":[\"\\/storage\\/180223\\/NZjbyaVk6rZ6HJIWyoR3pkOSrRsQTdsvfiNjE6Rg.jpeg\"],\"file2\":[\"\\/storage\\/180223\\/JftNYwrUVh0Pg5xDxEfiU829gJSm245TOjAAUZWu.png\"],\"file3\":[\"\\/storage\\/180223\\/0PHJnAKiV91iIyomMMyQstD3IgkgCDusHxki0Kxr.jpeg\"],\"file4\":[\"\\/storage\\/180223\\/kjwiM1uWs7uk1wfnTVtwnD8FK0eBMOYJIxmQBVdR.jpeg\"]}', '1', '4', '1', '2018-02-23 17:35:06', '2018-02-26 11:04:18', null);
+INSERT INTO `item` VALUES ('1', '西关片区棚户区改造项目', '东至自由路、西至双桥路、北至成纪大道、南至解放路', '/storage/180223/mK5owDrG1mq9Ptpa2IgHCB3sz3F2n75jW92myUDV.png', null, '{\"file1\":[\"\\/storage\\/180223\\/NZjbyaVk6rZ6HJIWyoR3pkOSrRsQTdsvfiNjE6Rg.jpeg\"],\"file2\":[\"\\/storage\\/180223\\/JftNYwrUVh0Pg5xDxEfiU829gJSm245TOjAAUZWu.png\"],\"file3\":[\"\\/storage\\/180223\\/0PHJnAKiV91iIyomMMyQstD3IgkgCDusHxki0Kxr.jpeg\"],\"file4\":[\"\\/storage\\/180223\\/kjwiM1uWs7uk1wfnTVtwnD8FK0eBMOYJIxmQBVdR.jpeg\"]}', '1', '7', '22', '2018-02-23 17:35:06', '2018-02-26 17:56:22', null);
 
 -- ----------------------------
 -- Table structure for item_admin
@@ -1323,12 +1326,11 @@ CREATE TABLE `item_admin` (
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='项目-负责人';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目-负责人';
 
 -- ----------------------------
 -- Records of item_admin
 -- ----------------------------
-INSERT INTO `item_admin` VALUES ('1', '1', '1', '3', '4', '2018-02-22 16:47:24', '2018-02-22 16:47:24', null);
 
 -- ----------------------------
 -- Table structure for item_assess_report
@@ -2015,12 +2017,13 @@ CREATE TABLE `item_notice` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='项目-内部通知';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='项目-内部通知';
 
 -- ----------------------------
 -- Records of item_notice
 -- ----------------------------
 INSERT INTO `item_notice` VALUES ('1', '1', '1', '通知摘要内容1', '[\"\\/storage\\/180222\\/c3ldGxfqeU5ZHpGUldKNEf2ybihj1G1TGyHQ6MaS.jpeg\"]', '2018-02-22 17:07:24', '2018-02-22 17:08:10', null);
+INSERT INTO `item_notice` VALUES ('2', '1', '1', '不予受理', '[\"\\/storage\\/180226\\/MQ4XdJnQwL0jCzsNYpMMJRxuHWbjvCtD6T3Ruosi.jpeg\"]', '2018-02-26 15:05:02', '2018-02-26 15:05:02', null);
 
 -- ----------------------------
 -- Table structure for item_object
@@ -2274,17 +2277,11 @@ CREATE TABLE `item_user` (
   KEY `user_id` (`user_id`),
   KEY `schedule_id` (`schedule_id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='项目-流程人员配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目-流程人员配置';
 
 -- ----------------------------
 -- Records of item_user
 -- ----------------------------
-INSERT INTO `item_user` VALUES ('1', '1', '1', '3', '6', '1', '3', '4', '2018-02-22 16:53:24', '2018-02-22 16:53:24', null);
-INSERT INTO `item_user` VALUES ('2', '1', '1', '1', '4', '1', '3', '4', '2018-02-22 16:53:24', '2018-02-22 16:53:24', null);
-INSERT INTO `item_user` VALUES ('3', '1', '1', '2', '5', '1', '3', '4', '2018-02-22 16:53:24', '2018-02-22 16:53:24', null);
-INSERT INTO `item_user` VALUES ('4', '1', '1', '4', '9', '1', '3', '4', '2018-02-22 16:53:24', '2018-02-22 16:53:24', null);
-INSERT INTO `item_user` VALUES ('5', '1', '1', '5', '10', '1', '3', '4', '2018-02-22 16:53:24', '2018-02-22 16:53:24', null);
-INSERT INTO `item_user` VALUES ('6', '1', '1', '6', '12', '1', '3', '4', '2018-02-22 16:53:24', '2018-02-22 16:53:24', null);
 
 -- ----------------------------
 -- Table structure for item_work_notice
@@ -2317,7 +2314,7 @@ CREATE TABLE `item_work_notice` (
   KEY `schedule_id` (`schedule_id`),
   KEY `dept_id` (`dept_id`),
   KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COMMENT='项目-工作提醒及处理结果';
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='项目-工作提醒及处理结果';
 
 -- ----------------------------
 -- Records of item_work_notice
@@ -2333,9 +2330,29 @@ INSERT INTO `item_work_notice` VALUES ('10', '1', '1', '3', '218', '1', '2', '3'
 INSERT INTO `item_work_notice` VALUES ('11', '1', '1', '5', '222', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_crb?item=1', '0', null, null, null, '2018-02-26 09:36:16', '2018-02-26 10:21:37', '2018-02-26 10:21:37');
 INSERT INTO `item_work_notice` VALUES ('12', '1', '1', '5', '222', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_crb?item=1', '2', null, null, null, '2018-02-26 09:36:16', '2018-02-26 10:58:59', null);
 INSERT INTO `item_work_notice` VALUES ('13', '1', '1', '5', '222', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/itemprocess_crb?item=1', '0', null, null, null, '2018-02-26 09:36:16', '2018-02-26 10:21:37', '2018-02-26 10:21:37');
-INSERT INTO `item_work_notice` VALUES ('14', '1', '1', '4', '223', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_retry?item=1', '0', null, null, null, '2018-02-26 10:58:59', '2018-02-26 10:58:59', null);
-INSERT INTO `item_work_notice` VALUES ('15', '1', '1', '4', '223', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_retry?item=1', '0', null, null, null, '2018-02-26 10:58:59', '2018-02-26 10:58:59', null);
-INSERT INTO `item_work_notice` VALUES ('16', '1', '1', '4', '223', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/itemprocess_retry?item=1', '0', null, null, null, '2018-02-26 10:58:59', '2018-02-26 10:58:59', null);
+INSERT INTO `item_work_notice` VALUES ('14', '1', '1', '4', '223', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_retry?item=1', '0', null, null, null, '2018-02-26 10:58:59', '2018-02-26 14:38:10', '2018-02-26 14:38:10');
+INSERT INTO `item_work_notice` VALUES ('15', '1', '1', '4', '223', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_retry?item=1', '2', null, null, null, '2018-02-26 10:58:59', '2018-02-26 14:38:10', null);
+INSERT INTO `item_work_notice` VALUES ('16', '1', '1', '4', '223', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/itemprocess_retry?item=1', '0', null, null, null, '2018-02-26 10:58:59', '2018-02-26 14:38:10', '2018-02-26 14:38:10');
+INSERT INTO `item_work_notice` VALUES ('17', '1', '1', '2', '209', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/iteminfo_info?item=1', '0', null, null, null, '2018-02-26 14:38:10', '2018-02-26 14:38:59', '2018-02-26 14:38:59');
+INSERT INTO `item_work_notice` VALUES ('18', '1', '1', '2', '209', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/iteminfo_info?item=1', '2', null, null, null, '2018-02-26 14:38:10', '2018-02-26 14:38:59', null);
+INSERT INTO `item_work_notice` VALUES ('19', '1', '1', '2', '209', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/iteminfo_info?item=1', '0', null, null, null, '2018-02-26 14:38:10', '2018-02-26 14:38:59', '2018-02-26 14:38:59');
+INSERT INTO `item_work_notice` VALUES ('20', '1', '1', '3', '218', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_cdc?item=1', '20', null, null, null, '2018-02-26 14:38:59', '2018-02-26 14:42:18', '2018-02-26 14:42:18');
+INSERT INTO `item_work_notice` VALUES ('21', '1', '1', '3', '218', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_cdc?item=1', '22', null, '通过', null, '2018-02-26 14:38:59', '2018-02-26 15:40:11', null);
+INSERT INTO `item_work_notice` VALUES ('22', '1', '1', '3', '218', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/itemprocess_cdc?item=1', '20', null, null, null, '2018-02-26 14:38:59', '2018-02-26 14:42:18', '2018-02-26 14:42:18');
+INSERT INTO `item_work_notice` VALUES ('23', '1', '1', '5', '222', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_crb?item=1', '0', null, null, null, '2018-02-26 14:42:18', '2018-02-26 14:43:42', '2018-02-26 14:43:42');
+INSERT INTO `item_work_notice` VALUES ('24', '1', '1', '5', '222', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_crb?item=1', '2', null, null, null, '2018-02-26 14:42:18', '2018-02-26 14:43:42', null);
+INSERT INTO `item_work_notice` VALUES ('25', '1', '1', '5', '222', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/itemprocess_crb?item=1', '0', null, null, null, '2018-02-26 14:42:18', '2018-02-26 14:43:42', '2018-02-26 14:43:42');
+INSERT INTO `item_work_notice` VALUES ('26', '1', '1', '15', '225', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_stop?item=1', '0', null, null, null, '2018-02-26 14:43:42', '2018-02-26 15:05:02', '2018-02-26 15:05:02');
+INSERT INTO `item_work_notice` VALUES ('27', '1', '1', '15', '225', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_stop?item=1', '2', null, null, null, '2018-02-26 14:43:42', '2018-02-26 15:05:02', null);
+INSERT INTO `item_work_notice` VALUES ('28', '1', '1', '15', '225', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/itemprocess_stop?item=1', '0', null, null, null, '2018-02-26 14:43:42', '2018-02-26 15:05:02', '2018-02-26 15:05:02');
+INSERT INTO `item_work_notice` VALUES ('29', '1', '1', '6', '224', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/iteminfo_info?item=1', '0', null, null, null, '2018-02-26 15:40:11', '2018-02-26 16:09:31', '2018-02-26 16:09:31');
+INSERT INTO `item_work_notice` VALUES ('30', '1', '1', '6', '224', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/iteminfo_info?item=1', '2', null, null, null, '2018-02-26 15:40:11', '2018-02-26 16:09:31', null);
+INSERT INTO `item_work_notice` VALUES ('31', '1', '1', '6', '224', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/iteminfo_info?item=1', '0', null, null, null, '2018-02-26 15:40:11', '2018-02-26 16:09:31', '2018-02-26 16:09:31');
+INSERT INTO `item_work_notice` VALUES ('32', '1', '1', '7', '230', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_cgc?item=1', '20', null, null, null, '2018-02-26 16:09:31', '2018-02-26 17:56:22', '2018-02-26 17:56:22');
+INSERT INTO `item_work_notice` VALUES ('33', '1', '1', '7', '230', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_cgc?item=1', '22', null, '通过', null, '2018-02-26 16:09:31', '2018-02-26 17:56:22', null);
+INSERT INTO `item_work_notice` VALUES ('34', '1', '1', '7', '230', '1', '2', '3', '4', 'http://ts.rms.cn:8008/gov/itemprocess_cgc?item=1', '20', null, null, null, '2018-02-26 16:09:31', '2018-02-26 17:56:22', '2018-02-26 17:56:22');
+INSERT INTO `item_work_notice` VALUES ('35', '1', '1', '8', '231', '0', '0', '1', '1', 'http://ts.rms.cn:8008/gov/itemprocess_css?item=1', '0', null, null, null, '2018-02-26 17:56:22', '2018-02-26 17:56:22', null);
+INSERT INTO `item_work_notice` VALUES ('36', '1', '1', '8', '231', '1', '0', '1', '3', 'http://ts.rms.cn:8008/gov/itemprocess_css?item=1', '0', null, null, null, '2018-02-26 17:56:22', '2018-02-26 17:56:22', null);
 
 -- ----------------------------
 -- Table structure for land_prop
@@ -3012,6 +3029,10 @@ INSERT INTO `role_menu` VALUES ('1', '209', null, null);
 INSERT INTO `role_menu` VALUES ('1', '218', null, null);
 INSERT INTO `role_menu` VALUES ('1', '222', null, null);
 INSERT INTO `role_menu` VALUES ('1', '223', null, null);
+INSERT INTO `role_menu` VALUES ('1', '224', null, null);
+INSERT INTO `role_menu` VALUES ('1', '225', null, null);
+INSERT INTO `role_menu` VALUES ('1', '230', null, null);
+INSERT INTO `role_menu` VALUES ('1', '231', null, null);
 INSERT INTO `role_menu` VALUES ('2', '39', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
 INSERT INTO `role_menu` VALUES ('2', '40', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
 INSERT INTO `role_menu` VALUES ('2', '41', '2018-02-11 13:39:18', '2018-02-11 13:39:18');
@@ -3051,18 +3072,30 @@ INSERT INTO `role_menu` VALUES ('2', '209', null, null);
 INSERT INTO `role_menu` VALUES ('2', '218', null, null);
 INSERT INTO `role_menu` VALUES ('2', '222', null, null);
 INSERT INTO `role_menu` VALUES ('2', '223', null, null);
+INSERT INTO `role_menu` VALUES ('2', '224', null, null);
+INSERT INTO `role_menu` VALUES ('2', '225', null, null);
+INSERT INTO `role_menu` VALUES ('2', '230', null, null);
 INSERT INTO `role_menu` VALUES ('3', '209', null, null);
 INSERT INTO `role_menu` VALUES ('3', '218', null, null);
 INSERT INTO `role_menu` VALUES ('3', '222', null, null);
 INSERT INTO `role_menu` VALUES ('3', '223', null, null);
+INSERT INTO `role_menu` VALUES ('3', '224', null, null);
+INSERT INTO `role_menu` VALUES ('3', '225', null, null);
+INSERT INTO `role_menu` VALUES ('3', '230', null, null);
 INSERT INTO `role_menu` VALUES ('4', '209', null, null);
 INSERT INTO `role_menu` VALUES ('4', '218', null, null);
 INSERT INTO `role_menu` VALUES ('4', '222', null, null);
 INSERT INTO `role_menu` VALUES ('4', '223', null, null);
+INSERT INTO `role_menu` VALUES ('4', '224', null, null);
+INSERT INTO `role_menu` VALUES ('4', '225', null, null);
+INSERT INTO `role_menu` VALUES ('4', '230', null, null);
 INSERT INTO `role_menu` VALUES ('5', '209', null, null);
 INSERT INTO `role_menu` VALUES ('5', '218', null, null);
 INSERT INTO `role_menu` VALUES ('5', '222', null, null);
 INSERT INTO `role_menu` VALUES ('5', '223', null, null);
+INSERT INTO `role_menu` VALUES ('5', '224', null, null);
+INSERT INTO `role_menu` VALUES ('5', '225', null, null);
+INSERT INTO `role_menu` VALUES ('5', '230', null, null);
 
 -- ----------------------------
 -- Table structure for tear
@@ -3159,5 +3192,5 @@ CREATE TABLE `user` (
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` VALUES ('1', '0', '1', 'demo', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA9', '测试演示账号', null, null, null, '2018-02-26 09:04:12', '127.0.0.1', 'KTO1zA28ThcJC29ZFNzTMWhqOZMq1jo1LjH5Nolr', '2018-02-26 10:32:35', '2018-02-05 09:38:29', '2018-02-26 10:32:35', null);
-INSERT INTO `user` VALUES ('3', '1', '1', 'admin', 'eyJpdiI6IlpzbzB5UUJvc2d6dWZSVlZvQmtIWXc9PSIsInZhbHVlIjoiclM5WkdYVk1sc0FQZ1lzbHRwVnY1dz09IiwibWFjIjoiMzNiNjZiYWZiMjEyZjAwNDkyMzFjZDEwN2I1Mzk3ZWJhNmRkYWMyZmE1MjQ2M2RmOWJiOTE5ODgxMjQzM2QwOCJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA8', '我是主管', null, null, null, '2018-02-26 08:48:34', '127.0.0.1', 'yDw6xuwnzncGPMpQZ6GaLpolMzYhMMYgId7EWeot', '2018-02-26 11:22:47', '2018-02-05 09:38:29', '2018-02-26 11:22:47', null);
+INSERT INTO `user` VALUES ('3', '1', '1', 'admin', 'eyJpdiI6IlpzbzB5UUJvc2d6dWZSVlZvQmtIWXc9PSIsInZhbHVlIjoiclM5WkdYVk1sc0FQZ1lzbHRwVnY1dz09IiwibWFjIjoiMzNiNjZiYWZiMjEyZjAwNDkyMzFjZDEwN2I1Mzk3ZWJhNmRkYWMyZmE1MjQ2M2RmOWJiOTE5ODgxMjQzM2QwOCJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA8', '我是主管', null, null, null, '2018-02-27 08:48:05', '127.0.0.1', 'GUohwqRo0KDuCKCKFu1hyEa3HqgIXcNFEi2jF74I', '2018-02-27 14:58:40', '2018-02-05 09:38:29', '2018-02-27 14:58:40', null);
 INSERT INTO `user` VALUES ('4', '1', '3', 'user', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA1', '分管', null, null, null, '2018-02-11 14:53:53', '127.0.0.1', 'xpqasUo0jZY12LoGRgUQmSHThFHlOg8BHh0BN1W8', '2018-02-11 14:54:37', '2018-02-05 09:38:29', '2018-02-11 14:54:37', null);

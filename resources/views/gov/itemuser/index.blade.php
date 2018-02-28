@@ -13,7 +13,14 @@
                     <h4 class="widget-title lighter smaller">项目负责人：</h4>
                     <div class="widget-toolbar">
 
-                        <a href="{{route('g_itemadmin',['item'=>$edata['item_id']])}}" class="orange2">
+                        @if(filled($sdata['itemadmins']) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
+                            <a onclick="btnAct(this)" data-url="{{route('g_itemprocess_csia',['item'=>$sdata['item']->id])}}" data-method="post" class="btn btn-danger">
+                                <i class="ace-icon fa fa-check-circle"></i>
+                                提交配置
+                            </a>
+                        @endif
+
+                        <a href="{{route('g_itemadmin',['item'=>$sdata['item']->id])}}" class="orange2">
                             <i class="ace-icon fa fa-edit"></i>
                             编辑
                         </a>
@@ -49,6 +56,15 @@
 
                         @else
 
+                            <div class="alert alert-warning">
+                                <strong>注意：</strong>
+                                还未配置项目负责人！
+                                &nbsp;&nbsp;&nbsp;
+                                <i class="fa fa-hand-o-right"></i>
+                                <a href="{{route('g_itemadmin',['item'=>$sdata['item']->id])}}">去配置</a>
+                                <br>
+                            </div>
+
                         @endif
                     </div>
                 </div>
@@ -59,6 +75,15 @@
             <div class="widget-box widget-color-green2">
                 <div class="widget-header">
                     <h4 class="widget-title lighter smaller">项目工作人员：</h4>
+                    <div class="widget-toolbar">
+
+                        @if(filled($sdata['itemusers']) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
+                            <a onclick="btnAct(this)" data-url="{{route('g_itemprocess_csiu',['item'=>$sdata['item']->id])}}" data-method="post" class="btn btn-danger">
+                                <i class="ace-icon fa fa-check-circle"></i>
+                                提交配置
+                            </a>
+                        @endif
+                    </div>
                 </div>
                 <div class="widget-body">
                     <div class="widget-main padding-8">
@@ -75,7 +100,7 @@
                                             <td>
                                                 {{$process->process->name}}
                                             </td>
-                                            <td><a class="btn btn-xs" href="{{route('g_itemuser_edit',['item'=>$edata['item_id'],'process_id'=>$process->process_id])}}">调整</a></td>
+                                            <td><a class="btn btn-xs" href="{{route('g_itemuser_edit',['item'=>$sdata['item']->id,'process_id'=>$process->process_id])}}">调整</a></td>
                                         </tr>
 
                                         @foreach($process->depts as $dept)
@@ -103,7 +128,7 @@
                                 还未配置项目工作人员！
                                 &nbsp;&nbsp;&nbsp;
                                 <i class="fa fa-hand-o-right"></i>
-                                <a href="{{route('g_itemuser_add',['item'=>$edata['item_id']])}}">去配置</a>
+                                <a href="{{route('g_itemuser_add',['item'=>$sdata['item']->id])}}">去配置</a>
                                 <br>
                             </div>
                         @endif

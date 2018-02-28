@@ -6,7 +6,7 @@
 @section('content')
 
     <div class="well">
-        <a class="btn" href="{{route('g_itemuser',['item'=>$edata['item_id']])}}">
+        <a class="btn" href="{{route('g_itemuser',['item'=>$sdata['item']->id])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
@@ -19,9 +19,9 @@
 
     <p>
         <i class="ace-icon fa fa-hand-o-right bigger-110 blue"></i>
-        {{$edata['process']->schedule->name}}
+        {{$sdata['process']->schedule->name}}
         <i class="ace-icon fa fa-angle-right bigger-110 "></i>
-        {{$edata['process']->name}}
+        {{$sdata['process']->name}}
     </p>
     <table class="table table-hover table-bordered">
         <thead>
@@ -33,7 +33,7 @@
         </tr>
         </thead>
         <tbody id="tbody-itemuser">
-        @foreach($sdata as $itemuser)
+        @foreach($sdata['itemusers'] as $itemuser)
             <tr>
                 <td>{{$itemuser->user->name}}</td>
                 <td>{{$itemuser->dept->name}}</td>
@@ -61,7 +61,7 @@
                                 <label class="control-label no-padding-right" for="dept_id"> 部门： </label>
                                 <select name="dept_id" id="dept_id" class="form-control">
                                     <option value="">所有部门</option>
-                                    @foreach($edata['depts'] as $dept)
+                                    @foreach($sdata['depts'] as $dept)
                                         <option value="{{$dept->id}}">{{$dept->name}}</option>
                                     @endforeach
                                 </select>
@@ -204,10 +204,10 @@
 
                 if($.inArray(userId,curUserIds) == -1){
                     var data={
-                        'process_id':'{{$edata['process']->id}}'
+                        'process_id':'{{$sdata['process']->id}}'
                         ,'user_id':userId
                     };
-                    ajaxAct('{{route('g_itemuser_edit',['item'=>$edata['item_id']])}}',data,'post');
+                    ajaxAct('{{route('g_itemuser_edit',['item'=>$sdata['item']->id])}}',data,'post');
                     if(ajaxResp.code=='success'){
                         var str='<tr>' +
                             '<td>'+user.data('name')+ '</td>' +
@@ -229,7 +229,7 @@
         function trRemove(obj) {
             var that=$(obj);
             var id=that.data('id');
-            ajaxAct('{{route('g_itemuser_del',['item'=>$edata['item_id']])}}',{'id':id},'get');
+            ajaxAct('{{route('g_itemuser_del',['item'=>$sdata['item']->id])}}',{'id':id},'get');
             if(ajaxResp.code=='success'){
                 that.parents('tr:first').remove();
             }else{

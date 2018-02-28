@@ -107,7 +107,7 @@ class BaseitemController extends BaseController
         /* ++++++++++ 流程设置 ++++++++++ */
         $process=Process::sharedLock()->where('menu_id',session('menu.cur_menu.id'))->first();
         /* ++++++++++ 是否有工作推送 ++++++++++ */
-        $worknotice=Worknotice::sharedLock()
+        $worknotice=Worknotice::lockForUpdate()
             ->where([
                 ['item_id',$this->item->id],
                 ['schedule_id',$process->schedule_id],

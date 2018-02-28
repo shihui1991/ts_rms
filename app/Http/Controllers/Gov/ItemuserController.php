@@ -12,6 +12,7 @@ use App\Http\Model\Itemuser;
 use App\Http\Model\Process;
 use App\Http\Model\Schedule;
 use App\Http\Model\User;
+use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -73,8 +74,8 @@ class ItemuserController extends BaseitemController
 
         $code='success';
         $msg='查询成功';
-        $sdata=['itemusers'=>$itemusers,'itemadmins'=>$itemadmins];
-        $edata=['item_id'=>$this->item_id];
+        $sdata=['itemusers'=>$itemusers,'itemadmins'=>$itemadmins,'item'=>$this->item];
+        $edata=null;
         $url=null;
 
         /* ++++++++++ 结果 ++++++++++ */
@@ -90,35 +91,47 @@ class ItemuserController extends BaseitemController
     public function add(Request $request){
         if($request->isMethod('get')){
             DB::beginTransaction();
-            $processes=Schedule::with(['processes'=>function($query){
-                $query->select(['id','schedule_id','name','sort'])->orderBy('sort','asc');
-            }])
-                ->select(['id','name','sort'])
-                ->orderBy('sort','asc')
-                ->sharedLock()
-                ->get();
+            try{
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
-            $depts=Dept::select(['id','name'])->sharedLock()->get();
-            DB::commit();
+                $count=Itemuser::where('item_id',$this->item_id)->count();
+                if($count){
+                    throw new \Exception('项目人员已配置',404404);
+                }
+                /* ++++++++++ 获取全部流程 ++++++++++ */
+                $processes=Schedule::with(['processes'=>function($query){
+                    $query->select(['id','schedule_id','name','sort'])->orderBy('sort','asc');
+                }])
+                    ->select(['id','name','sort'])
+                    ->orderBy('sort','asc')
+                    ->sharedLock()
+                    ->get();
+                if(blank($processes)){
+                    throw new \Exception('数据错误',404404);
+                }
 
-            /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($processes)){
-                $code='error';
-                $msg='数据错误';
-                $sdata=['processes'=>null,'depts'=>$depts];
-                $edata=['item_id'=>$this->item_id];
-                $url=null;
+                $depts=Dept::select(['id','name'])->sharedLock()->get();
 
-                $view='gov.error';
-            }else{
                 $code='success';
                 $msg='查询成功';
-                $sdata=['processes'=>$processes,'depts'=>$depts];
-                $edata=['item_id'=>$this->item_id];
+                $sdata=['processes'=>$processes,'depts'=>$depts,'item'=>$this->item];
+                $edata=null;
                 $url=null;
 
                 $view='gov.itemuser.add';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
             }
+            DB::commit();
+
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
@@ -139,6 +152,15 @@ class ItemuserController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try{
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
+
+                $count=Itemuser::where('item_id',$this->item_id)->count();
+                if($count){
+                    throw new \Exception('项目人员已配置',404404);
+                }
+
                 $processes=Process::select(['id','schedule_id','name','menu_id','sort'])
                     ->orderBy('schedule_id','asc')
                     ->orderBy('sort','asc')
@@ -184,11 +206,6 @@ class ItemuserController extends BaseitemController
                     }
                 }
 
-                $count=Itemuser::where('item_id',$this->item_id)->count();
-                if($count){
-                    throw new \Exception('项目人员已配置',404404);
-                }
-
                 /* ++++++++++ 批量添加 ++++++++++ */
                 $field=['item_id','schedule_id','process_id','menu_id','dept_id','role_id', 'user_id','created_at','updated_at'];
                 $sqls=batch_update_or_insert_sql('item_user',$field,$data,$field);
@@ -198,6 +215,9 @@ class ItemuserController extends BaseitemController
                 foreach ($sqls as $sql){
                     DB::statement($sql);
                 }
+
+                $worknotice->code='1';
+                $worknotice->save();
 
                 $code='success';
                 $msg='保存成功';
@@ -232,48 +252,58 @@ class ItemuserController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
+
         if($request->isMethod('get')){
-            $where[]=['item_id',$this->item_id];
-            $where[]=['process_id',$process_id];
             DB::beginTransaction();
-            $process=Process::with(['schedule'=>function($query){
-                $query->select(['id','name']);
-            }])
-                ->select(['id','schedule_id','name'])
-                ->sharedLock()
-                ->find($process_id);
+            try{
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
-            $depts=Dept::select(['id','name'])->sharedLock()->get();
+                /* ++++++++++ 流程数据 ++++++++++ */
+                $process=Process::with(['schedule'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                    ->select(['id','schedule_id','name'])
+                    ->sharedLock()
+                    ->find($process_id);
 
-            $itemusers=Itemuser::with(['dept'=>function($query){
-                $query->select(['id','name']);
-            },'role'=>function($query){
-                $query->select(['id','name']);
-            },'user'=>function($query){
-                $query->select(['id','name']);
-            }])
-                ->where($where)
-                ->sharedLock()
-                ->get();
-            DB::commit();
-            /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($itemusers)){
+                $depts=Dept::select(['id','name'])->sharedLock()->get();
+
+                $where[]=['item_id',$this->item_id];
+                $where[]=['process_id',$process_id];
+                $itemusers=Itemuser::with(['dept'=>function($query){
+                    $query->select(['id','name']);
+                },'role'=>function($query){
+                    $query->select(['id','name']);
+                },'user'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                    ->where($where)
+                    ->sharedLock()
+                    ->get();
+                if(blank($itemusers)){
+                    throw new \Exception('数据不存在',404404);
+                }
+                $code='success';
+                $msg='查询成功';
+                $sdata=['itemusers'=>$itemusers,'depts'=>$depts,'process'=>$process,'item'=>$this->item];
+                $edata=null;
+                $url=null;
+
+                $view='gov.itemuser.edit';
+            }catch (\Exception $exception){
                 $code='error';
-                $msg='数据不存在';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
                 $sdata=null;
                 $edata=null;
                 $url=null;
 
                 $view='gov.error';
-            }else{
-                $code='success';
-                $msg='查询成功';
-                $sdata=$itemusers;
-                $edata=['depts'=>$depts,'process'=>$process,'item_id'=>$this->item_id];
-                $url=null;
-
-                $view='gov.itemuser.edit';
             }
+
+            DB::commit();
+
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
@@ -290,6 +320,13 @@ class ItemuserController extends BaseitemController
             }
             DB::beginTransaction();
             try{
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
+
+                $worknotice->code='1';
+                $worknotice->save();
+
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $where[]=['item_id',$this->item_id];
                 $where[]=['process_id',$process_id];
@@ -348,6 +385,13 @@ class ItemuserController extends BaseitemController
         }
         DB::beginTransaction();
         try{
+            $result=$this->checkNotice();
+            $process=$result['process'];
+            $worknotice=$result['worknotice'];
+
+            $worknotice->code='1';
+            $worknotice->save();
+
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $itemuser=Itemuser::lockForUpdate()->find($id);
             if(blank($itemuser)){
@@ -382,5 +426,35 @@ class ItemuserController extends BaseitemController
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         return response()->json($result);
+    }
+
+    /* ========== 检查是否存在工作推送 ========== */
+    public function checkNotice(){
+        $item=$this->item;
+        if(blank($item)){
+            throw new \Exception('项目不存在',404404);
+        }
+        /* ++++++++++ 检查项目状态 ++++++++++ */
+        if($item->schedule_id!=1 || $item->process_id!=8 ||  $item->code!='1'){
+            throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+        }
+        /* ++++++++++ 流程设置 ++++++++++ */
+        $process=Process::sharedLock()->find(9);
+        /* ++++++++++ 是否有工作推送 ++++++++++ */
+        $worknotice=Worknotice::lockForUpdate()
+            ->where([
+                ['item_id',$this->item->id],
+                ['schedule_id',$process->schedule_id],
+                ['process_id',$process->id],
+                ['menu_id',$process->menu_id],
+                ['user_id',session('gov_user.user_id')],
+            ])
+            ->whereIn('code',['0','1'])
+            ->first();
+        if(blank($worknotice)){
+            throw new \Exception('您没有执行此操作的权限',404404);
+        }
+
+        return ['process'=>$process,'worknotice'=>$worknotice];
     }
 }

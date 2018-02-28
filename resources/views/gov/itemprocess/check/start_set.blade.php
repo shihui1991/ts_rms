@@ -5,53 +5,22 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <div class="widget-box widget-color-red">
-        <div class="widget-header">
-            <h4 class="widget-title lighter smaller">审查驳回处理</h4>
-        </div>
-
-        <div class="widget-body">
-            <div class="widget-main padding-8">
-                <form class="form-horizontal" role="form" action="{{route('g_itemprocess_crb',['item'=>$sdata['item']->id])}}" method="post">
-                    {{csrf_field()}}
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="way">处理方式：</label>
-                        <div class="col-sm-9 radio">
-                            <label>
-                                <input name="way" type="radio" class="ace" value="0" checked >
-                                <span class="lbl">重新提交审查资料</span>
-                            </label>
-
-                            <label>
-                                <input name="way" type="radio" class="ace" value="1" >
-                                <span class="lbl">不予受理</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="space-4"></div>
-
-                    <div class="clearfix form-actions">
-                        <div class="col-md-offset-3 col-md-9">
-                            <button class="btn btn-info" type="button" onclick="sub(this)">
-                                <i class="ace-icon fa fa-check bigger-110"></i>
-                                保存
-                            </button>
-                            &nbsp;&nbsp;&nbsp;
-                            <button class="btn" type="reset">
-                                <i class="ace-icon fa fa-undo bigger-110"></i>
-                                重置
-                            </button>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-    </div>
+    <p>
+        <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_itemprocess_css',['item'=>$sdata['item']->id])}}" data-method="post">
+            <i class="ace-icon fa fa-support bigger-110"></i>
+            开启项目启动配置
+        </a>
+    </p>
 
     <div class="widget-box widget-color-grey">
         <div class="widget-header">
             <h4 class="widget-title lighter smaller">工作日志</h4>
+            <div class="widget-toolbar">
+                <a href="#" data-action="collapse">
+                    <i class="ace-icon fa fa-chevron-up"></i>
+                    展开/关闭
+                </a>
+            </div>
         </div>
         <div class="widget-body">
             <div class="widget-main padding-8">
@@ -100,15 +69,19 @@
 
 {{-- 样式 --}}
 @section('css')
-
+    
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
 
 @endsection
 
 {{-- 插件 --}}
 @section('js')
     @parent
-
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('js/func.js')}}"></script>
-
+    <script>
+        $('#name').focus();
+        $('.img-content').viewer();
+    </script>
 
 @endsection

@@ -232,14 +232,14 @@ class ItemController extends BaseController
                 $process=Process::with(['processusers'=>function($query){
                     $query->with('role');
                 }])
-                    ->select(['id','menu_id'])
+                    ->select(['id','schedule_id','menu_id'])
                     ->find(2);
                 /* ++++++++++ 提交部门审查 工作提醒推送 ++++++++++ */
                 foreach ($process->processusers as $user){
                     $values[]=[
                         'item_id'=>$item->id,
-                        'schedule_id'=>1,
-                        'process_id'=>2,
+                        'schedule_id'=>$process->schedule_id,
+                        'process_id'=>$process->id,
                         'menu_id'=>$process->menu_id,
                         'dept_id'=>$user->dept_id,
                         'parent_id'=>$user->role->parent_id,

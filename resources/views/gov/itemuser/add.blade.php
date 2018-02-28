@@ -12,7 +12,7 @@
         </a>
     </p>
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemuser_add',['item'=>$edata['item_id']])}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemuser_add',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
 
         <table class="table table-hover table-bordered treetable" id="tree-itemuser">
