@@ -42,36 +42,28 @@ class LandpropController extends BaseauthController
         $displaynum=$request->input('displaynum');
         $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
-        /* ********** 是否删除 ********** */
-        $deleted=$request->input('deleted');
-
-        $model=new Landprop();
-        if(is_numeric($deleted) && in_array($deleted,[0,1])){
-            $infos['deleted']=$deleted;
-            if($deleted){
-                $model=$model->onlyTrashed();
-            }
-        }else{
-            $model=$model->withTrashed();
-        }
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $landprops=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
-            if(blank($landprops)){
+            $props=Landprop::with([
+                'landsources'=>function($query){
+                    $query->with(['landstates']);
+                 }])
+                ->sharedLock()
+                ->get();
+            if(blank($props)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$landprops;
+            $sdata=$props;
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
-            $landprops=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=$landprops;
+            $edata=null;
             $url=null;
         }
         DB::commit();

@@ -30,4 +30,9 @@ class Landprop extends Model
     public function editOther($request){
 
     }
+
+    /* ++++++++++ 关联土地来源 ++++++++++ */
+    public function landsources(){
+        return $this->hasMany('App\Http\Model\Landsource','prop_id','id');
+    }
 }

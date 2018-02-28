@@ -36,4 +36,8 @@ class Landsource extends Model
     public function landprop(){
         return $this->belongsTo('App\Http\Model\Landprop','prop_id','id')->withDefault();
     }
+
+    public function landstates(){
+        return $this->hasMany('App\Http\Model\landstate','source_id','id');
+    }
 }
