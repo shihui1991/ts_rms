@@ -5,19 +5,19 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <p>
-        <a class="btn" href="{{route('g_itemtime_edit',['item'=>$sdata['item']->id])}}">
-            <i class="ace-icon fa fa-edit bigger-110"></i>
-            修改
-        </a>
+    @if(filled($sdata['itemtimes'][0]->itemtime) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
+        <p>
+            <a class="btn" href="{{route('g_itemtime_edit',['item'=>$sdata['item']->id])}}">
+                <i class="ace-icon fa fa-edit bigger-110"></i>
+                修改
+            </a>
 
-        @if(filled($sdata['itemtimes'][0]->itemtime) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
             <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_itemprocess_csit',['item'=>$sdata['item']->id])}}" data-method="post">
                 <i class="ace-icon fa fa-check-circle bigger-110"></i>
                 提交配置
             </a>
-        @endif
-    </p>
+        </p>
+    @endif
 
     <div class="row">
         <div class="col-xs-12 col-sm-10 col-sm-offset-1">

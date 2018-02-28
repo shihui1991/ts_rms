@@ -14,3 +14,4 @@ Route::any('/itemprocess_csiu','ItemprocessController@check_set_itemuser')->name
 Route::any('/itemprocess_csit','ItemprocessController@check_set_itemtime')->name('g_itemprocess_csit'); //项目审查 -  配置项目时间规划
 Route::any('/itemprocess_cs2c','ItemprocessController@check_set_to_check')->name('g_itemprocess_cs2c'); //项目审查 -  项目配置提交审查
 Route::any('/itemprocess_csc','ItemprocessController@check_set_check')->name('g_itemprocess_csc'); //项目审查 -  项目配置审查
+Route::any('/itemprocess_cis','ItemprocessController@check_item_start')->name('g_itemprocess_cis'); //项目审查 -  项目启动

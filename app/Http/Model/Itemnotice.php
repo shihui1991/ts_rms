@@ -40,7 +40,7 @@ class Itemnotice extends Model
         return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
     /* ++++++++++ 关联分类 ++++++++++ */
-    public function newscate(){
-        return $this->belongsTo('App\Http\Model\Newscate','cate_id','id')->withDefault();
+    public function noticecate(){
+        return $this->belongsTo('App\Http\Model\Noticecate','cate_id','id')->withDefault();
     }
 }
