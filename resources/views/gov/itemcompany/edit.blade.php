@@ -13,16 +13,17 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemcompany_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemcompany_edit')}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item" id="item" value="{{$sdata['item_id']}}">
+        <input type="hidden" name="id" id="id" value="{{$sdata->id}}">
+        <input type="hidden" name="item" id="item" value="{{$edata['item_id']}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="type"> 类型： </label>
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="type" id="type">
                     <option value="">--请选择--</option>
-                    <option value="0">--房产评估机构--</option>
-                    <option value="1">--资产评估机构--</option>
+                    <option value="0" @if($sdata->type == 0) selected @endif>--房产评估机构--</option>
+                    <option value="1" @if($sdata->type == 1) selected @endif>--资产评估机构--</option>
                 </select>
             </div>
         </div>
@@ -51,7 +52,22 @@
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
-
+                            @if($sdata->picture)
+                                @foreach($sdata->picture as $pic)
+                                    <li>
+                                        <div>
+                                            <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                            <input type="hidden" name="picture[]" value="{!! $pic !!}">
+                                            <div class="text">
+                                                <div class="inner">
+                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                    <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            @endif
                         </ul>
                     </div>
                 </div>
@@ -72,21 +88,33 @@
         <div class="form-group">
             <table class="table table-hover table-bordered">
                 <thead>
-                <tr>
-                    <th><input type="checkbox"></th>
-                    <th>ID</th>
-                    <th>地块</th>
-                    <th>楼栋</th>
-                    <th>位置</th>
-                    <th>房产类型</th>
-                    <th>是否需要资产评估</th>
-                </tr>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>ID</th>
+                        <th>地块</th>
+                        <th>楼栋</th>
+                        <th>位置</th>
+                        <th>房产类型</th>
+                        <th>是否需要资产评估</th>
+                    </tr>
                 </thead>
                 <tbody id="search_household">
-
+                    @foreach($edata['companyhousehold'] as $info)
+                        <tr>
+                            <td><input type="checkbox" name="household_id[]" value="{{$info->household->id}}" checked></td>
+                            <td>{{$info->household->id}}</td>
+                            <td>{{$info->household->itemland->address}}</td>
+                            <td>{{$info->household->itembuilding->building}}</td>
+                            <td>{{$info->household->unit?$info->household->unit.'单元':''}}
+                                {{$info->household->floor?$info->household->floor.'楼':''}}
+                                {{$info->household->number?$info->household->number.'号':''}}</td>
+                            <td>{{$info->household->type}}</td>
+                            <td>{{$info->household->householddetail->has_assets}}</td>
+                        </tr>
+                        @endforeach
                 </tbody>
             </table>
-            <p class="search_household">&nbsp; 请先查询被征收户</p>
+            <p class="search_household">@if(blank($edata['companyhousehold']))&nbsp; 请先查询被征收户@endif</p>
         </div>
         <div class="space-4"></div>
 
@@ -120,7 +148,7 @@
                         <div class="col-sm-9">
                             <select class="col-xs-8 col-sm-8" name="land_id" id="land_id">
                                 <option value="">--请选择--</option>
-                                @foreach($sdata['itemland'] as $itemland)
+                                @foreach($edata['itemland'] as $itemland)
                                     <option value="{{$itemland->id}}">{{$itemland->address}}</option>
                                 @endforeach
                             </select>
@@ -134,7 +162,7 @@
                         <div class="col-sm-9">
                             <select class="col-xs-8 col-sm-8" name="building_id" id="building_id">
                                 <option value="">--请选择--</option>
-                                @foreach($sdata['itembuilding'] as $itembuilding)
+                                @foreach($edata['itembuilding'] as $itembuilding)
                                     <option value="{{$itembuilding->id}}">{{$itembuilding->building}}</option>
                                 @endforeach
                             </select>
@@ -163,6 +191,37 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
+        $('.img-content').viewer('update');
+        /*---------加载执行----------*/
+        window.onload=function() {
+            var type = '{{$sdata->type}}';
+            if(!type){
+                toastr.error('请先选择类型');
+                $("#company_id").html('<option value="">--请先选择类型--</option>');
+                return false;
+            }
+            var data = {
+                'app':'app',
+                'type':type
+            };
+            ajaxAct('{{route('g_company')}}',data,'post');
+            if(ajaxResp.code=='error'){
+                $("#company_id").html('<option value="">--请先选择类型--</option>');
+                toastr.error(ajaxResp.message);
+            }else {
+                $("#company_id").html('');
+                var companyinfo = '<option value="">--请选择--</option>';
+                var _selected = '';
+                var company_id = '{{$sdata->company_id}}';
+                $.each(ajaxResp.sdata,function (index,info) {
+                    if(info.id==company_id){
+                        _selected = 'selected';
+                    }
+                    companyinfo+='<option value="'+info.id+'" '+_selected+'>--'+info.name+'--</option>';
+                });
+                $("#company_id").html(companyinfo);
+            }
+        };
         /*---------查询评估机构----------*/
         $('#type').on('change',function() {
             var type = $(this).val();

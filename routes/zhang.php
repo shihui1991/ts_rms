@@ -178,8 +178,6 @@ Route::any('/householdobject_edit','HouseholdobjectController@edit')->name('g_ho
 /*---------- 项目-冻结房源 ----------*/
 Route::any('/itemhouse','ItemhouseController@index')->name('g_itemhouse');
 Route::any('/itemhouse_add','ItemhouseController@add')->name('g_itemhouse_add');
-Route::get('/itemhouse_info','ItemhouseController@info')->name('g_itemhouse_info');
-Route::any('/itemhouse_edit','ItemhouseController@edit')->name('g_itemhouse_edit');
 
 /*---------- 项目-选定评估机构 ----------*/
 Route::any('/itemcompany','ItemcompanyController@index')->name('g_itemcompany');

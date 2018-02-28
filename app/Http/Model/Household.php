@@ -83,6 +83,10 @@ class Household extends Model
     public function itembuilding(){
         return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
     }
+    /* ++++++++++ 关联被征户 ++++++++++ */
+    public function householddetail(){
+        return $this->belongsTo('App\Http\Model\Householddetail','id','household_id')->withDefault();
+    }
 
 
     /* ++++++++++ 密钥 ++++++++++ */
