@@ -9,10 +9,10 @@
         <a href="{{route('g_housecompany_add')}}" class="btn">添加房源管理机构</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>名称</th>
             <th>地址</th>
             <th>电话</th>
@@ -26,7 +26,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->address}}</td>
                         <td>{{$infos->phone}}</td>
@@ -61,8 +61,8 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>
-
 @endsection

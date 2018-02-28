@@ -21,7 +21,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>类型</th>
                                 <th>评估机构名称</th>
                                 <th>操作</th>
@@ -32,7 +32,7 @@
                                 @foreach($sdata as $infos)
                                     @if($infos->getOriginal('type')==0)
                                     <tr>
-                                        <td>{{$infos->id}}</td>
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{$infos->type}}</td>
                                         <td>{{$infos->company->name}}</td>
                                         <td>
@@ -70,7 +70,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>类型</th>
                                 <th>评估机构名称</th>
                                 <th>操作</th>
@@ -81,7 +81,7 @@
                                 @foreach($sdata as $infos)
                                     @if($infos->getOriginal('type')==1)
                                         <tr>
-                                            <td>{{$infos->id}}</td>
+                                            <td>{{$loop->iteration}}</td>
                                             <td>{{$infos->type}}</td>
                                             <td>{{$infos->company->name}}</td>
                                             <td>

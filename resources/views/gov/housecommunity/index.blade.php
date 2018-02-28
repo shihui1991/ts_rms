@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>房源管理机构</th>
             <th>名称</th>
             <th>地址</th>
@@ -25,7 +25,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->housecompany->name}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->address}}</td>
@@ -58,8 +58,8 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>
-
 @endsection

@@ -119,7 +119,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>名称</th>
                                 <th>计量单位</th>
                                 <th>数量</th>
@@ -130,7 +130,7 @@
                             @if($code=='success')
                                 @foreach($sdata['itempublic'] as $publicinfo)
                                     <tr>
-                                        <td>{{$publicinfo->id}}</td>
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{$publicinfo->name}}</td>
                                         <td>{{$publicinfo->num_unit}}</td>
                                         <td>{{$publicinfo->number}}</td>

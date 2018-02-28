@@ -183,7 +183,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>名称</th>
                                 <th>操作</th>
                             </tr>
@@ -192,7 +192,7 @@
                             @if($code=='success')
                                 @foreach($edata as $info)
                                     <tr>
-                                        <td>{{$info->id}}</td>
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{$info->crowd->name}}</td>
                                         <td>
                                             <a href="{{route('g_householdmembercrowd_info',['id'=>$info->id,'item'=>$info->item_id])}}" class="btn btn-sm">查看详情</a>

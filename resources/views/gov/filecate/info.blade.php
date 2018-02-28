@@ -15,13 +15,6 @@
 
     <div class="profile-user-info profile-user-info-striped">
         <div class="profile-info-row">
-            <div class="profile-info-name"> 表名： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->filetable->name}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
             <div class="profile-info-name"> 名称： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->name}}</span>

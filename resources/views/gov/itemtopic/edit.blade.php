@@ -59,7 +59,7 @@
     @parent
     <script src="{{asset('js/func.js')}}"></script>
     <script>
-        $('#name').focus();
+
     </script>
 
 @endsection

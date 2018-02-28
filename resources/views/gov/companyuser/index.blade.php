@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>【类型】评估机构</th>
             <th>是否为管理账号</th>
             <th>名称</th>
@@ -26,7 +26,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>【{{$infos->company->type}}】{{$infos->company->name}}</td>
                         <td>@if($infos->id == $infos->company->user_id) 是@else 否@endif</td>
                         <td>{{$infos->name}}</td>

@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>地块</th>
             <th>楼栋</th>
             <th>位置</th>
@@ -26,7 +26,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->itemland->address}}</td>
                         <td>{{$infos->itembuilding->building}}</td>
                         <td>{{$infos->unit?$infos->unit.'单元':''}}{{$infos->floor?$infos->floor.'楼':''}}{{$infos->number?$infos->number.'号':''}}</td>

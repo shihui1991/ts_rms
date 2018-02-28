@@ -64,10 +64,9 @@
 
 {{-- 插件 --}}
 @section('js')
-
     <script src="{{asset('js/func.js')}}"></script>
     <script>
-        $('#name').focus();
+
     </script>
 
 @endsection

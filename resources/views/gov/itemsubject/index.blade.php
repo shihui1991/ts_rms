@@ -9,10 +9,10 @@
         <a href="{{route('g_itemsubject_add',['item'=>$edata['item_id']])}}" class="btn">添加项目重要补偿事项</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>重要补偿科目</th>
             <th>操作</th>
         </tr>
@@ -21,7 +21,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->subject->name}}</td>
                         <td>
                             <a href="{{route('g_itemsubject_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
@@ -51,6 +51,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>

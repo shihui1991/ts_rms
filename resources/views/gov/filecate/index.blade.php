@@ -8,11 +8,10 @@
     <div class="well well-sm">
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-crowd">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>表名</th>
+            <th>序号</th>
             <th>名称</th>
             <th>文件名称</th>
             <th>操作</th>
@@ -23,8 +22,7 @@
         @if($code=='success')
             @foreach($sdata as $infos)
                 <tr>
-                    <td>{{$infos->id}}</td>
-                    <td>{{$infos->filetable->name}}</td>
+                    <td>{{$loop->iteration}}</td>
                     <td>{{$infos->name}}</td>
                     <td>{{$infos->filename}}</td>
                     <td>

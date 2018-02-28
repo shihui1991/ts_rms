@@ -3,16 +3,14 @@
 
 {{-- 页面内容 --}}
 @section('content')
-
-
     <div class="well well-sm">
         <a href="{{route('g_houselayoutimg_add')}}" class="btn">添加户型图</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>社区</th>
             <th>户型</th>
             <th>名称</th>
@@ -23,7 +21,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->housecommunity->name}}</td>
                         <td>{{$infos->layout->name}}</td>
                         <td>{{$infos->name}}</td>
@@ -55,8 +53,8 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>
-
 @endsection

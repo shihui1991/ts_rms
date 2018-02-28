@@ -9,10 +9,10 @@
         <a href="{{route('g_itemobject_add',['item'=>$edata['item_id']])}}" class="btn">添加项目其他补偿事项</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>其他补偿事项</th>
             <th>补偿单价</th>
             <th>操作</th>
@@ -22,7 +22,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->object->name}}</td>
                         <td>{{$infos->price}}</td>
                         <td>
@@ -53,6 +53,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>

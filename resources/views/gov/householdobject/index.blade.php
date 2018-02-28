@@ -13,7 +13,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>其他补偿事项</th>
             <th>数量</th>
             <th>操作</th>
@@ -23,7 +23,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->object->name}}</td>
                         <td>{{$infos->number}}</td>
                         <td>

@@ -158,6 +158,7 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
+        $('.img-content').viewer('update');
         window.onload=function () {
             $("#land_prop_id").trigger('change');
             $("#land_source_id").trigger('change');

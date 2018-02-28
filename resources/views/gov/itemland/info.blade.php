@@ -145,7 +145,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>楼栋号</th>
                                 <th>总楼层</th>
                                 <th>占地面积</th>
@@ -158,7 +158,7 @@
                             @if($code=='success')
                                 @foreach($sdata['itembuilding'] as $info)
                                     <tr>
-                                        <td>{{$info->id}}</td>
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{$info->building}}</td>
                                         <td>{{$info->total_floor}}</td>
                                         <td>{{$info->area}}</td>
@@ -178,7 +178,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>名称</th>
                                 <th>计量单位</th>
                                 <th>数量</th>
@@ -189,7 +189,7 @@
                             @if($code=='success')
                                 @foreach($sdata['itempublic'] as $publicinfo)
                                     <tr>
-                                        <td>{{$publicinfo->id}}</td>
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{$publicinfo->name}}</td>
                                         <td>{{$publicinfo->num_unit}}</td>
                                         <td>{{$publicinfo->number}}</td>

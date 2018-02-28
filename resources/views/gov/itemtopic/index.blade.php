@@ -9,10 +9,10 @@
         <a href="{{route('g_itemtopic_add',['item_id'=>$edata['item_id']])}}" class="btn">添加项目话题</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>项目</th>
             <th>话题</th>
             <th>操作</th>
@@ -22,7 +22,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->item->name}}</td>
                         <td>{{$infos->topic->name}}</td>
                         <td>

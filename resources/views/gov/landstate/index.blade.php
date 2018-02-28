@@ -15,7 +15,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>名称</th>
             <th>描述</th>
             <th>操作</th>
@@ -25,7 +25,7 @@
             @if($code=='success')
                 @foreach($sdata['landstate'] as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->infos}}</td>
                         <td>

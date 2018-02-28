@@ -1,4 +1,5 @@
 <?php
+/*============================================ 【基础资料】 ================================================*/
 /*---------- 公产单位 ----------*/
 Route::get('/adminunit','AdminunitController@index')->name('g_adminunit');
 Route::any('/adminunit_add','AdminunitController@add')->name('g_adminunit_add');
@@ -19,21 +20,6 @@ Route::get('/buildinguse','BuildinguseController@index')->name('g_buildinguse');
 Route::any('/buildinguse_add','BuildinguseController@add')->name('g_buildinguse_add');
 Route::get('/buildinguse_info','BuildinguseController@info')->name('g_buildinguse_info');
 Route::any('/buildinguse_edit','BuildinguseController@edit')->name('g_buildinguse_edit');
-/*---------- 评估机构 ----------*/
-Route::any('/company','CompanyController@index')->name('g_company');
-Route::any('/company_add','CompanyController@add')->name('g_company_add');
-Route::get('/company_info','CompanyController@info')->name('g_company_info');
-Route::any('/company_edit','CompanyController@edit')->name('g_company_edit');
-/*---------- 评估机构(操作员) ----------*/
-Route::get('/companyuser','CompanyuserController@index')->name('g_companyuser');
-Route::any('/companyuser_add','CompanyuserController@add')->name('g_companyuser_add');
-Route::get('/companyuser_info','CompanyuserController@info')->name('g_companyuser_info');
-Route::any('/companyuser_edit','CompanyuserController@edit')->name('g_companyuser_edit');
-/*---------- 评估机构(评估师) ----------*/
-Route::get('/companyvaluer','CompanyvaluerController@index')->name('g_companyvaluer');
-Route::any('/companyvaluer_add','CompanyvaluerController@add')->name('g_companyvaluer_add');
-Route::get('/companyvaluer_info','CompanyvaluerController@info')->name('g_companyvaluer_info');
-Route::any('/companyvaluer_edit','CompanyvaluerController@edit')->name('g_companyvaluer_edit');
 /*---------- 特殊人群 ----------*/
 Route::get('/crowd','CrowdController@index')->name('g_crowd');
 Route::any('/crowd_add','CrowdController@add')->name('g_crowd_add');
@@ -62,6 +48,22 @@ Route::get('/topic','TopicController@index')->name('g_topic');
 Route::any('/topic_add','TopicController@add')->name('g_topic_add');
 Route::get('/topic_info','TopicController@info')->name('g_topic_info');
 Route::any('/topic_edit','TopicController@edit')->name('g_topic_edit');
+/*---------- 土地性质 ----------*/
+Route::get('/landprop','LandpropController@index')->name('g_landprop');
+Route::any('/landprop_add','LandpropController@add')->name('g_landprop_add');
+Route::get('/landprop_info','LandpropController@info')->name('g_landprop_info');
+Route::any('/landprop_edit','LandpropController@edit')->name('g_landprop_edit');
+/*---------- 土地来源 ----------*/
+Route::any('/landsource','LandsourceController@index')->name('g_landsource');
+Route::any('/landsource_add','LandsourceController@add')->name('g_landsource_add');
+Route::get('/landsource_info','LandsourceController@info')->name('g_landsource_info');
+Route::any('/landsource_edit','LandsourceController@edit')->name('g_landsource_edit');
+/*---------- 土地权益状况 ----------*/
+Route::any('/landstate','LandstateController@index')->name('g_landstate');
+Route::any('/landstate_add','LandstateController@add')->name('g_landstate_add');
+Route::get('/landstate_info','LandstateController@info')->name('g_landstate_info');
+Route::any('/landstate_edit','LandstateController@edit')->name('g_landstate_edit');
+/*============================================ 【房源】 ================================================*/
 /*---------- 房源管理机构 ----------*/
 Route::get('/housecompany','HousecompanyController@index')->name('g_housecompany');
 Route::any('/housecompany_add','HousecompanyController@add')->name('g_housecompany_add');
@@ -92,23 +94,25 @@ Route::get('/housemanageprice','HousemanagepriceController@index')->name('g_hous
 Route::any('/housemanageprice_add','HousemanagepriceController@add')->name('g_housemanageprice_add');
 Route::get('/housemanageprice_info','HousemanagepriceController@info')->name('g_housemanageprice_info');
 Route::any('/housemanageprice_edit','HousemanagepriceController@edit')->name('g_housemanageprice_edit');
-/*---------- 土地性质 ----------*/
-Route::get('/landprop','LandpropController@index')->name('g_landprop');
-Route::any('/landprop_add','LandpropController@add')->name('g_landprop_add');
-Route::get('/landprop_info','LandpropController@info')->name('g_landprop_info');
-Route::any('/landprop_edit','LandpropController@edit')->name('g_landprop_edit');
-/*---------- 土地来源 ----------*/
-Route::any('/landsource','LandsourceController@index')->name('g_landsource');
-Route::any('/landsource_add','LandsourceController@add')->name('g_landsource_add');
-Route::get('/landsource_info','LandsourceController@info')->name('g_landsource_info');
-Route::any('/landsource_edit','LandsourceController@edit')->name('g_landsource_edit');
-/*---------- 土地权益状况 ----------*/
-Route::any('/landstate','LandstateController@index')->name('g_landstate');
-Route::any('/landstate_add','LandstateController@add')->name('g_landstate_add');
-Route::get('/landstate_info','LandstateController@info')->name('g_landstate_info');
-Route::any('/landstate_edit','LandstateController@edit')->name('g_landstate_edit');
 
+/*============================================ 【评估机构】 ================================================*/
+/*---------- 评估机构 ----------*/
+Route::any('/company','CompanyController@index')->name('g_company');
+Route::any('/company_add','CompanyController@add')->name('g_company_add');
+Route::get('/company_info','CompanyController@info')->name('g_company_info');
+Route::any('/company_edit','CompanyController@edit')->name('g_company_edit');
+/*---------- 评估机构(操作员) ----------*/
+Route::get('/companyuser','CompanyuserController@index')->name('g_companyuser');
+Route::any('/companyuser_add','CompanyuserController@add')->name('g_companyuser_add');
+Route::get('/companyuser_info','CompanyuserController@info')->name('g_companyuser_info');
+Route::any('/companyuser_edit','CompanyuserController@edit')->name('g_companyuser_edit');
+/*---------- 评估机构(评估师) ----------*/
+Route::get('/companyvaluer','CompanyvaluerController@index')->name('g_companyvaluer');
+Route::any('/companyvaluer_add','CompanyvaluerController@add')->name('g_companyvaluer_add');
+Route::get('/companyvaluer_info','CompanyvaluerController@info')->name('g_companyvaluer_info');
+Route::any('/companyvaluer_edit','CompanyvaluerController@edit')->name('g_companyvaluer_edit');
 
+/*============================================ 【项目】 ================================================*/
 /*---------- 项目-地块 ----------*/
 Route::any('/itemland','ItemlandController@index')->name('g_itemland');
 Route::any('/itemland_add','ItemlandController@add')->name('g_itemland_add');

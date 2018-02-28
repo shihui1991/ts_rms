@@ -65,7 +65,7 @@
                     <table class="table table-hover table-bordered">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>地块</th>
                                 <th>楼栋</th>
                                 <th>位置</th>
@@ -76,7 +76,7 @@
                         <tbody>
                         @foreach($edata['companyhousehold'] as $info)
                             <tr>
-                                <td>{{$info->household->id}}</td>
+                                <td>{{$loop->iteration}}</td>
                                 <td>{{$info->household->itemland->address}}</td>
                                 <td>{{$info->household->itembuilding->building}}</td>
                                 <td>{{$info->household->unit?$info->household->unit.'单元':''}}

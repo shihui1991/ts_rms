@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>分类</th>
             <th>摘要</th>
             <th>操作</th>
@@ -22,7 +22,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->newscate->name}}</td>
                         <td>{{$infos->infos}}</td>
                         <td>

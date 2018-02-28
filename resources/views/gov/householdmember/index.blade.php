@@ -16,7 +16,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>姓名</th>
             <th>与户主关系</th>
             <th>身份证</th>
@@ -34,7 +34,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->relation}}</td>
                         <td>{{$infos->card_num}}</td>

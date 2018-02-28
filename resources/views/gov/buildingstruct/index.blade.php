@@ -9,10 +9,10 @@
         <a href="{{route('g_buildingstruct_add')}}" class="btn">添加建筑结构类型</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>名称</th>
             <th>描述</th>
             <th>操作</th>
@@ -22,7 +22,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->infos}}</td>
                         <td>
@@ -52,6 +52,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>

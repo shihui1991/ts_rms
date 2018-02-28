@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>名称</th>
             <th>计量单位</th>
             <th>描述</th>
@@ -23,7 +23,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->num_unit}}</td>
                         <td>{{$infos->infos}}</td>

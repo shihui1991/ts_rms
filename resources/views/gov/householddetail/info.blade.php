@@ -399,7 +399,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>姓名</th>
                                 <th>与户主关系</th>
                                 <th>身份证</th>
@@ -417,7 +417,7 @@
                             @if($code=='success')
                                 @foreach($edata['householdmember'] as $infos)
                                     <tr>
-                                        <td>{{$infos->id}}</td>
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{$infos->name}}</td>
                                         <td>{{$infos->relation}}</td>
                                         <td>{{$infos->card_num}}</td>
@@ -442,7 +442,7 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>其他补偿事项</th>
                                 <th>数量</th>
                                 <th>操作</th>
@@ -452,7 +452,7 @@
                             @if($code=='success')
                                 @foreach($edata['householdobject'] as $infos)
                                     <tr>
-                                        <td>{{$infos->id}}</td>
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{$infos->object->name}}</td>
                                         <td>{{$infos->number}}</td>
                                         <td>

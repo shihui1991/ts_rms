@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>【类型】机构名称</th>
             <th>名称</th>
             <th>电话</th>
@@ -25,7 +25,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>【{{$infos->company->type}}】{{$infos->company->name}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->phone}}</td>
