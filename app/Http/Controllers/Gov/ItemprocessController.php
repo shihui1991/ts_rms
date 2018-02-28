@@ -252,7 +252,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checkdeptcheck';
+                $view='gov.itemprocess.check.dept_check';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -541,7 +541,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checkrollback';
+                $view='gov.itemprocess.check.roll_back';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -750,7 +750,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checkiteminforetry';
+                $view='gov.itemprocess.check.iteminfo_retry';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -957,7 +957,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checkitemstop';
+                $view='gov.itemprocess.check.item_stop';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -1225,7 +1225,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checkgovcheck';
+                $view='gov.itemprocess.check.gov_check';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -1437,7 +1437,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checkstartset';
+                $view='gov.itemprocess.check.start_set';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -2004,7 +2004,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checksettocheck';
+                $view='gov.itemprocess.check.set_to_check';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -2207,7 +2207,7 @@ class ItemprocessController extends BaseitemController
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemprocess.checksetcheck';
+                $view='gov.itemprocess.check.set_check';
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
