@@ -2553,25 +2553,25 @@ class ItemprocessController extends BaseitemController
                     ->delete();
 
                 /* ++++++++++ 项目初步预算 可操作人员 ++++++++++ */
-                $process=Process::with(['processusers'=>function($query){
-                    $query->with('role');
+                $itemusers=Itemuser::with(['role'=>function($query){
+                    $query->select(['id','parent_id']);
                 }])
-                    ->select(['id','schedule_id','menu_id'])
-                    ->find(14);
+                    ->where('process_id',14)
+                    ->get();
                 $values=[];
                 /* ++++++++++ 项目初步预算 工作提醒推送 ++++++++++ */
-                foreach ($process->processusers as $user){
+                foreach ($itemusers as $user){
                     $values[]=[
-                        'item_id'=>$item->id,
-                        'schedule_id'=>$process->schedule_id,
-                        'process_id'=>$process->id,
-                        'menu_id'=>$process->menu_id,
+                        'item_id'=>$user->item_id,
+                        'schedule_id'=>$user->schedule_id,
+                        'process_id'=>$user->process_id,
+                        'menu_id'=>$user->menu_id,
                         'dept_id'=>$user->dept_id,
                         'parent_id'=>$user->role->parent_id,
                         'role_id'=>$user->role_id,
-                        'user_id'=>$user->id,
+                        'user_id'=>$user->user_id,
                         'url'=>route('g_itemprocess_csc',['item'=>$this->item->id]),
-                        'code'=>'20',
+                        'code'=>'0',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];

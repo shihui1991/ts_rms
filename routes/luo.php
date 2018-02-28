@@ -15,3 +15,9 @@ Route::any('/itemprocess_csit','ItemprocessController@check_set_itemtime')->name
 Route::any('/itemprocess_cs2c','ItemprocessController@check_set_to_check')->name('g_itemprocess_cs2c'); //项目审查 -  项目配置提交审查
 Route::any('/itemprocess_csc','ItemprocessController@check_set_check')->name('g_itemprocess_csc'); //项目审查 -  项目配置审查
 Route::any('/itemprocess_cis','ItemprocessController@check_item_start')->name('g_itemprocess_cis'); //项目审查 -  项目启动
+
+
+/*---------- 初步预算 ----------*/
+Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算
+Route::any('/initbudget_add','InitbudgetController@add')->name('g_initbudget_add'); //添加初步预算
+Route::any('/initbudget_edit','InitbudgetController@edit')->name('g_initbudget_edit'); //修改初步预算
