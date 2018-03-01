@@ -150,10 +150,12 @@ class HouseController extends BaseauthController
                 'is_real' => 'required',
                 'is_buy' => 'required',
                 'is_transit' => 'required',
-                'is_public' => 'required'
+                'is_public' => 'required',
+                'delive_at'=>'required_if:is_buy,1',
             ];
             $messages = [
-                'required' => ':attribute 为必须项'
+                'required' => ':attribute 为必须项',
+                'delive_at.required_if' => '购置房源必须填写交付日期',
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -163,15 +165,15 @@ class HouseController extends BaseauthController
             /*----- 房源-评估单价 -----*/
             $houseprice_model = new Houseprice();
             $rules1 = [
-                'houseprice.start_at' => 'required',
-                'houseprice.end_at' => 'required',
+                'start_at' => 'required',
+                'end_at' => 'required',
                 'market' => 'required',
-                'price' => 'required'
+                'price' => 'required',
             ];
             $messages1 = [
                 'required' => ':attribute 为必须项'
             ];
-            $validator1 = Validator::make($request->all(), $rules1, $messages1, $houseprice_model->columns);
+            $validator1 = Validator::make($request->input('houseprice'), $rules1, $messages1, $houseprice_model->columns);
             if ($validator1->fails()) {
                 $result=['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
@@ -208,21 +210,16 @@ class HouseController extends BaseauthController
                 }
                 /*----- 房源-评估单价添加 -----*/
                 $houseprice = $houseprice_model;
+                $houseprice->fill($request->input('houseprice'));
                 $houseprice->house_id = $house->id;
-                $houseprice->start_at = ($request->input('houseprice'))['start_at'];
-                $houseprice->end_at = ($request->input('houseprice'))['end_at'];
-                $houseprice->market = $request->input('market');
-                $houseprice->price = $request->input('price');
                 $houseprice->save();
                 if (blank($houseprice)) {
                     throw  new \Exception('添加失败', 404404);
                 }
                 /*----- 房源-购置管理费单价添加 -----*/
                 $housemanageprice = $housemanageprice_model;
+                $housemanageprice->fill($request->input());
                 $housemanageprice->house_id = $house->id;
-                $housemanageprice->start_at = $request->input('start_at');
-                $housemanageprice->end_at = $request->input('end_at');
-                $housemanageprice->manage_price = $request->input('manage_price');
                 $housemanageprice->save();
                 if (blank($housemanageprice)) {
                     throw  new \Exception('添加失败', 404404);
@@ -371,9 +368,11 @@ class HouseController extends BaseauthController
                 'is_buy'=>'required',
                 'is_transit'=>'required',
                 'is_public'=>'required',
+                'delive_at'=>'required_if:is_buy,1',
             ];
             $messages=[
-                'required'=>':attribute 为必须项'
+                'required'=>':attribute 为必须项',
+                'delive_at.required_if' => '购置房源必须填写交付日期',
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {

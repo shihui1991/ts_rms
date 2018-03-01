@@ -72,17 +72,17 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="unit"> 单元： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋： </label>
             <div class="col-sm-9">
-                <input type="number" id="unit" name="unit" value="{{old('unit')}}" class="col-xs-10 col-sm-5"  placeholder="请输入单元" required>
+                <input type="number" id="building" name="building" value="{{old('building')}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋" required>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="unit"> 单元： </label>
             <div class="col-sm-9">
-                <input type="number" id="building" name="building" value="{{old('building')}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋" required>
+                <input type="number" id="unit" name="unit" value="{{old('unit')}}" class="col-xs-10 col-sm-5"  placeholder="请输入单元" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -114,7 +114,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="total_floor"> 总楼层： </label>
             <div class="col-sm-9">
-                <input type="number" id="total_floor" name="total_floor" value="{{old('total_floor')}}" class="col-xs-10 col-sm-5"  placeholder="请输入面积" required>
+                <input type="number" id="total_floor" name="total_floor" value="{{old('total_floor')}}" class="col-xs-10 col-sm-5"  placeholder="请输入总楼层数" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -242,7 +242,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="market"> 市场评估价： </label>
             <div class="col-sm-9">
-                <input type="number" id="market" name="market" value="{{old('market')}}" class="col-xs-10 col-sm-5"  placeholder="请输入市场评估价" required>
+                <input type="number" id="market" name="houseprice[market]" value="{{old('market')}}" class="col-xs-10 col-sm-5"  placeholder="请输入市场评估价" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -250,7 +250,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="price">  安置优惠价： </label>
             <div class="col-sm-9">
-                <input type="number" id="price" name="price" value="{{old('price')}}" class="col-xs-10 col-sm-5"  placeholder="请输入安置优惠价" required>
+                <input type="number" id="price" name="houseprice[price]" value="{{old('price')}}" class="col-xs-10 col-sm-5"  placeholder="请输入安置优惠价" required>
             </div>
         </div>
         <div class="space-4"></div><br/>
