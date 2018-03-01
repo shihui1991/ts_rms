@@ -1,4 +1,5 @@
 <?php
+/*=========  【征收管理端】  ==========*/
 /*============================================ 【基础资料】 ================================================*/
 /*---------- 公产单位 ----------*/
 Route::get('/adminunit','AdminunitController@index')->name('g_adminunit');
@@ -188,3 +189,4 @@ Route::any('/itemcompany','ItemcompanyController@index')->name('g_itemcompany');
 Route::any('/itemcompany_add','ItemcompanyController@add')->name('g_itemcompany_add');
 Route::get('/itemcompany_info','ItemcompanyController@info')->name('g_itemcompany_info');
 Route::any('/itemcompany_edit','ItemcompanyController@edit')->name('g_itemcompany_edit');
+
