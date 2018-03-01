@@ -5,13 +5,13 @@
 |--------------------------------------------------------------------------
 */
 namespace  App\Http\Controllers\Gov;
-use App\Http\Model\Itemdraft;
+use App\Http\Model\Itemriskreport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class ItemdraftController extends BaseitemController
+class ItemriskreportController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -20,40 +20,37 @@ class ItemdraftController extends BaseitemController
     }
 
     /* ========== 详情页 ========== */
-        public function index(Request $request){
+    public function index(Request $request){
         $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','name','code','content','item_id','created_at','updated_at','deleted_at'];
 
         /* ********** 查询 ********** */
-        $model=new Itemdraft();
+        $model=new Itemriskreport();
         DB::beginTransaction();
         try{
-            $itemdraft=$model
+            $itemriskreport=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
                 }])
                 ->where($where)
-                ->select($select)
                 ->sharedLock()
                 ->first();
-            if(blank($itemdraft)){
+            if(blank($itemriskreport)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$itemdraft;
+            $sdata=$itemriskreport;
             $edata=$infos;
             $url=null;
         }catch(\Exception $exception){
-            $itemdraft=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemdraft;
-            $edata=$infos;
+            $sdata=null;
+            $edata=null;
             $url=null;
         }
         /* ********** 结果 ********** */
@@ -62,21 +59,21 @@ class ItemdraftController extends BaseitemController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.itemdraft.index')->with($result);
+            return view('gov.itemriskreport.index')->with($result);
         }
     }
 
     /* ========== 添加页 ========== */
     public function add(Request $request){
         $item_id=$this->item_id;
-        $model=new Itemdraft();
+        $model=new Itemriskreport();
         if($request->isMethod('get')){
             $sdata['item_id'] = $item_id;
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>new Itemriskreport(),'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemdraft.add')->with($result);
+                return view('gov.itemriskreport.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -86,7 +83,8 @@ class ItemdraftController extends BaseitemController
             $rules = [
                 'content'=>'required',
                 'name'=>'required',
-                'code' => 'required'
+                'code' => 'required',
+                'agree' => 'required',
             ];
             $messages = [
                 'required' => ':attribute必须填写'
@@ -100,25 +98,25 @@ class ItemdraftController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $itemdraft = $model;
-                $itemdraft->fill($request->all());
-                $itemdraft->addOther($request);
-                $itemdraft->item_id=$this->item_id;
-                $itemdraft->save();
-                if (blank($itemdraft)) {
+                $itemriskreport = $model;
+                $itemriskreport->fill($request->all());
+                $itemriskreport->addOther($request);
+                $itemriskreport->item_id=$this->item_id;
+                $itemriskreport->save();
+                if (blank($itemriskreport)) {
                     throw new \Exception('添加失败', 404404);
                 }
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $itemdraft;
+                $sdata = $itemriskreport;
                 $edata = null;
-                $url = route('g_itemdarft',['item'=>$this->item_id]);
+                $url = route('g_itemriskreport',['item'=>$this->item_id]);
                 DB::commit();
             }catch (\Exception $exception){
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $itemdraft;
+                $edata = $itemriskreport;
                 $url = null;
                 DB::rollBack();
             }
@@ -144,7 +142,7 @@ class ItemdraftController extends BaseitemController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $data=Itemdraft::sharedLock()
+            $data=Itemriskreport::sharedLock()
                 ->find($id);
 
             DB::commit();
@@ -160,11 +158,12 @@ class ItemdraftController extends BaseitemController
                 $code='success';
                 $msg='获取成功';
                 $sdata=$data;
-                $edata=null;
+                $edata=new Itemriskreport();
                 $url=null;
 
-                $view='gov.itemdraft.edit';
+                $view='gov.itemriskreport.edit';
             }
+
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
@@ -172,13 +171,13 @@ class ItemdraftController extends BaseitemController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Itemdraft();
+            $model=new Itemriskreport();
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'content'=>'required',
                 'name'=>'required',
-                'code' => 'required'
+                'agree' => 'required',
             ];
             $messages = [
                 'required' => ':attribute必须填写'
@@ -192,22 +191,22 @@ class ItemdraftController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $itemdraft=Itemdraft::lockForUpdate()->find($id);
-                if(blank($itemdraft)){
+                $itemriskreport=Itemriskreport::lockForUpdate()->find($id);
+                if(blank($itemriskreport)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $itemdraft->fill($request->all());
-                $itemdraft->editOther($request);
-                $itemdraft->save();
-                if(blank($itemdraft)){
+                $itemriskreport->fill($request->all());
+                $itemriskreport->editOther($request);
+                $itemriskreport->save();
+                if(blank($itemriskreport)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$itemdraft;
+                $sdata=$itemriskreport;
                 $edata=null;
-                $url=route('g_itemdraft',['item'=>$this->item_id]);
+                $url=route('g_itemriskreport',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){
