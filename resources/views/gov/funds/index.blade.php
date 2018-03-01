@@ -47,7 +47,7 @@
 
                                     <tfoot>
                                     <tr>
-                                        <th colspan="4">资金结余：{{number_format($total,2)}} &nbsp; @if($total>1)大写：{{bigRMB($total)}}@endif</th>
+                                        <th colspan="4">资金结余：{{number_format($total,2)}} &nbsp; 人民币（大写）：{{bigRMB(abs($total))}}</th>
                                     </tr>
                                     </tfoot>
                                 @endif
@@ -97,6 +97,7 @@
                                 <th>姓名</th>
                                 <th>金额</th>
                                 <th>到账时间</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -109,6 +110,11 @@
                                     <td>{{$funds->name}}</td>
                                     <td>{{number_format(abs($funds->amount),2)}}</td>
                                     <td>{{$funds->entry_at}}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{route('g_funds_info',['item'=>$sdata['item']->id,'id'=>$funds->id])}}" class="btn btn-xs">详情</a>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                             </tbody>

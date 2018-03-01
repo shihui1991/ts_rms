@@ -55,7 +55,7 @@ class FundsController extends BaseitemController
         }
     }
 
-    /* ========== 添加 ========== */
+    /* ========== 录入资金 ========== */
     public function add(Request $request){
         if($request->isMethod('get')){
             DB::beginTransaction();
@@ -126,6 +126,53 @@ class FundsController extends BaseitemController
             /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
+        }
+    }
+
+    /* ========== 转账详情 ========== */
+    public function info(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $result=['code'=>'error', 'message'=>'错误操作', 'sdata'=>null, 'edata'=>null, 'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else {
+                return view('gov.error')->with($result);
+            }
+        }
+
+        DB::beginTransaction();
+        $funds=Funds::with(['fundscate'=>function($query){
+            $query->select(['id','name']);
+        },'bank'=>function($query){
+            $query->select(['id','name']);
+        }])
+            ->sharedLock()
+            ->find($id);
+
+        DB::commit();
+        if(filled($funds)){
+            $code='success';
+            $msg='保存成功';
+            $sdata=['item'=>$this->item,'funds'=>$funds];
+            $edata=null;
+            $url=null;
+
+            $view='gov.funds.info';
+        }else{
+            $code='error';
+            $msg='数据不存在';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            $view='gov.error';
+        }
+        $result=['code'=>$code, 'message'=>$msg, 'sdata'=>$sdata, 'edata'=>$edata, 'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view($view)->with($result);
         }
     }
 }

@@ -26,3 +26,4 @@ Route::any('/initbudget_edit','InitbudgetController@edit')->name('g_initbudget_e
 /*---------- 资金管理 ----------*/
 Route::any('/funds','FundsController@index')->name('g_funds'); //项目资金
 Route::any('/funds_add','FundsController@add')->name('g_funds_add'); //录入资金
+Route::any('/funds_info','FundsController@info')->name('g_funds_info'); //转账详情
