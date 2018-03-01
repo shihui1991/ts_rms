@@ -24,6 +24,8 @@ class Itemdraft extends Model
         'code'=>'状态代码'
     ];
 
+
+
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
 
