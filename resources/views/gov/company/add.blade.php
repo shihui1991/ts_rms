@@ -15,21 +15,10 @@
 
     <form class="form-horizontal" role="form" action="{{route('g_company_add')}}" method="post">
         {{csrf_field()}}
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="type">类型：</label>
-            <div class="col-sm-9 radio">
-                @foreach($edata->type as $key => $value)
-                    <label>
-                        <input name="type" type="radio" class="ace" value="{{$key}}" @if($key==0) checked @endif >
-                        <span class="lbl">{{$value}}</span>
-                    </label>
-                @endforeach
-            </div>
-        </div>
-        <div class="space-4"></div>
+        <input type="hidden" name="type" id="type" value="{{$sdata['type']}}">
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="name"> @if($sdata['type']==0)房产评估机构@else资产评估机构@endif名称： </label>
             <div class="col-sm-9">
                 <input type="text" id="name" name="name" value="{{old('name')}}" class="col-xs-10 col-sm-5" placeholder="请输入名称" required>
             </div>

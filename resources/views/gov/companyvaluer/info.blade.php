@@ -10,11 +10,6 @@
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
-
-        <a class="btn" href="{{route('g_companyvaluer_edit',['id'=>$sdata->id])}}">
-            <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
-            修改
-        </a>
     </p>
 
 
