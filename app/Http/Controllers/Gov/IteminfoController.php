@@ -8,7 +8,9 @@ namespace App\Http\Controllers\Gov;
 
 use App\Http\Model\Filecate;
 use App\Http\Model\Filetable;
+use App\Http\Model\Household;
 use App\Http\Model\Item;
+use App\Http\Model\Itemadmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -29,9 +31,17 @@ class IteminfoController extends BaseitemController
             if(blank($this->item)){
                 throw new \Exception('项目不存在',404404);
             }
+            $itemadmins=Itemadmin::with(['user'=>function($query){
+                $query->select(['id','name']);
+            }])
+                ->sharedLock()
+                ->where('item_id',$this->item_id)
+                ->get();
+            $household_num=Household::sharedLock()->where('item_id',$this->item_id)->count();
+
             $code='success';
             $msg='查询成功';
-            $sdata=$this->item;
+            $sdata=['item'=>$this->item,'itemadmins'=>$itemadmins,'household_num'=>$household_num];
             $edata=null;
             $url=null;
 

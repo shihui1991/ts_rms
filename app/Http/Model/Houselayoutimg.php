@@ -15,9 +15,7 @@ class Houselayoutimg extends Model
     protected $primaryKey='id';
     protected $fillable=['community_id','layout_id','name','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [
-        'picture'=>'array'
-    ];
+    protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[

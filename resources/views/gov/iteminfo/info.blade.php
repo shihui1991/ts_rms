@@ -54,7 +54,6 @@
         <div class="profile-info-row">
             <div class="profile-info-name"> 征收范围红线地图： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">
                 <ul class="ace-thumbnails clearfix img-content">
                     <li>
                         <div>
@@ -67,7 +66,6 @@
                         </div>
                     </li>
                 </ul>
-                </span>
             </div>
         </div>
 
@@ -91,22 +89,20 @@
             <div class="profile-info-row">
                 <div class="profile-info-name"> {{$edata[$name]}}： </div>
                 <div class="profile-info-value">
-                <span class="editable editable-click">
                     <ul class="ace-thumbnails clearfix img-content">
                         @foreach($pictures as $pic)
                             <li>
-                            <div>
-                            <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
-                            <div class="text">
-                                <div class="inner">
-                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                <div>
+                                    <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                    <div class="text">
+                                        <div class="inner">
+                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            </div>
                             </li>
                         @endforeach
                     </ul>
-                </span>
                 </div>
             </div>
         @endforeach

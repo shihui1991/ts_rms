@@ -55,4 +55,63 @@ class HomeController extends BaseController
             return view('gov.home')->with($result);
         }
     }
+
+    /* ========== 工作提醒详情 ========== */
+    public function infos(Request $request){
+        DB::beginTransaction();
+        try{
+            $id=$request->input('id');
+            if(!$id){
+                throw new \Exception('错误操作',404404);
+            }
+            /* ++++++++++ 工作详情 ++++++++++ */
+            $worknotice=Worknotice::with(['item'=>function($query){
+                $query->select(['id','name']);
+            },'schedule'=>function($query){
+                $query->select(['id','name']);
+            },'process'=>function($query){
+                $query->select(['id','name']);
+            },'menu'=>function($query){
+                $query->select(['id','name']);
+            },'dept'=>function($query){
+                $query->select(['id','name']);
+            },'role'=>function($query){
+                $query->select(['id','name']);
+            },'user'=>function($query){
+                $query->select(['id','name']);
+            },'state'=>function($query){
+                $query->select(['code','name']);
+            }])
+                ->sharedLock()
+                ->find($id);
+
+            if(blank($worknotice)){
+                throw new \Exception('数据不存在',404404);
+            }
+
+            $code='success';
+            $msg='查询成功';
+            $sdata=$worknotice;
+            $edata=null;
+            $url=null;
+
+            $view='gov.infos';
+        }catch (\Exception $exception){
+            $code='error';
+            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            $view='gov.error';
+        }
+        DB::commit();
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view($view)->with($result);
+        }
+    }
 }

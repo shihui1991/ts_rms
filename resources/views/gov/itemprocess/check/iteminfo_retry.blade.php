@@ -170,7 +170,7 @@
                                             <i class="ace-icon fa fa-user green bigger-125"></i>
                                             <span>{{$worknotice->dept->name}} - {{$worknotice->role->name}} - {{$worknotice->user->name}}</span>
                                             <br>
-                                            <a href="{{route('g_infos_info',['id'=>$worknotice->id])}}" title="查看详情">
+                                            <a href="{{route('g_infos',['id'=>$worknotice->id])}}" title="查看详情">
                                                 <i class="ace-icon fa fa-info-circle blue bigger-125"></i>
                                                 @if($worknotice->process->getOriginal('type')==2) 审查意见： @endif
                                             </a>

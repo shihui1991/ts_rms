@@ -20,28 +20,6 @@ class LandpropController extends BaseauthController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','name','infos','deleted_at'];
-
-        /* ********** 查询条件 ********** */
-        $where=[];
-        /* ++++++++++ 名称 ++++++++++ */
-        $name=trim($request->input('name'));
-        if($name){
-            $where[]=['name','like','%'.$name.'%'];
-            $infos['name']=$name;
-        }
-        /* ********** 排序 ********** */
-        $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'id';
-        $infos['ordername']=$ordername;
-
-        $orderby=$request->input('orderby');
-        $orderby=$orderby?$orderby:'asc';
-        $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -88,9 +66,8 @@ class LandpropController extends BaseauthController
                 return view('gov.landprop.add')->with($result);
             }
         }
-        /* ++++++++++ 保存 ++++++++++ */
+        /* ********** 保存 ********** */
         else {
-            /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'name' => 'required|unique:land_prop'
@@ -133,47 +110,6 @@ class LandpropController extends BaseauthController
             /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
-        }
-    }
-
-    /* ========== 详情 ========== */
-    public function info(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-        /* ********** 当前数据 ********** */
-        DB::beginTransaction();
-        $landprop=Landprop::withTrashed()
-            ->sharedLock()
-            ->find($id);
-        DB::commit();
-        /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($landprop)){
-            $code='warning';
-            $msg='数据不存在';
-            $sdata=null;
-            $edata=null;
-            $url=null;
-        }else{
-            $code='success';
-            $msg='获取成功';
-            $sdata=$landprop;
-            $edata=new Landprop();
-            $url=null;
-
-            $view='gov.landprop.info';
-        }
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
-            return response()->json($result);
-        }else{
-            return view($view)->with($result);
         }
     }
 

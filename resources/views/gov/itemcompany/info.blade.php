@@ -37,58 +37,54 @@
         <div class="profile-info-row">
             <div class="profile-info-name"> 评估委托书： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">
-                    <ul class="ace-thumbnails clearfix img-content viewer">
-                          @if(isset($sdata->picture))
-                            @foreach($sdata->picture as $pic)
-                                <li>
-                                    <div>
-                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                        <div class="text">
-                                            <div class="inner">
-                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                            </div>
+                <ul class="ace-thumbnails clearfix img-content viewer">
+                    @if(isset($sdata->picture))
+                        @foreach($sdata->picture as $pic)
+                            <li>
+                                <div>
+                                    <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                    <div class="text">
+                                        <div class="inner">
+                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
                                         </div>
                                     </div>
-                                </li>
-                            @endforeach
-                        @endif
-                    </ul>
-                </span>
+                                </div>
+                            </li>
+                        @endforeach
+                    @endif
+                </ul>
             </div>
         </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 【征收范围】 &nbsp;<br/>【被征收户】： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">
-                    <table class="table table-hover table-bordered">
-                        <thead>
-                            <tr>
-                                <th>序号</th>
-                                <th>地块</th>
-                                <th>楼栋</th>
-                                <th>位置</th>
-                                <th>房产类型</th>
-                                <th>是否需要资产评估</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($edata['companyhousehold'] as $info)
-                            <tr>
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$info->household->itemland->address}}</td>
-                                <td>{{$info->household->itembuilding->building}}</td>
-                                <td>{{$info->household->unit?$info->household->unit.'单元':''}}
-                                    {{$info->household->floor?$info->household->floor.'楼':''}}
-                                    {{$info->household->number?$info->household->number.'号':''}}</td>
-                                <td>{{$info->household->type}}</td>
-                                <td>{{$info->household->householddetail->has_assets}}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </span>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>地块</th>
+                        <th>楼栋</th>
+                        <th>位置</th>
+                        <th>房产类型</th>
+                        <th>是否需要资产评估</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($edata['companyhousehold'] as $info)
+                        <tr>
+                            <td>{{$loop->iteration}}</td>
+                            <td>{{$info->household->itemland->address}}</td>
+                            <td>{{$info->household->itembuilding->building}}</td>
+                            <td>{{$info->household->unit?$info->household->unit.'单元':''}}
+                                {{$info->household->floor?$info->household->floor.'楼':''}}
+                                {{$info->household->number?$info->household->number.'号':''}}</td>
+                            <td>{{$info->household->type}}</td>
+                            <td>{{$info->household->householddetail->has_assets}}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
 

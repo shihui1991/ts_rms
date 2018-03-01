@@ -95,10 +95,17 @@
 {{-- 样式 --}}
 @section('css')
 
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+
 @endsection
 
 {{-- 插件 --}}
 @section('js')
+    @parent
 
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
+    <script>
+        $('.img-content').viewer();
+    </script>
 
 @endsection
