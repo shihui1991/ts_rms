@@ -29,7 +29,7 @@ class Funds extends Model
         'bank_id'=>'转账银行',
         'account'=>'银行账号',
         'name'=>'账户姓名',
-        'entry_at'=>'转账时间',
+        'entry_at'=>'到账时间',
         'infos'=>'款项说明',
         'picture'=>'转账凭证',
     ];
