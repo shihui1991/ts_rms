@@ -1,18 +1,19 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-补偿科目说明
+| 项目-被征收户-房屋建筑
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
-use App\Http\Model\Itemsubject;
-use App\Http\Model\Subject;
+use App\Http\Model\Buildingstruct;
+use App\Http\Model\Buildinguse;
+use App\Http\Model\Household;
+use App\Http\Model\Householdbuilding;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
-class ItemsubjectController extends BaseitemController
+class HouseholdbuildingController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -23,47 +24,25 @@ class ItemsubjectController extends BaseitemController
     /* ========== 首页 ========== */
     public function index(Request $request){
         $item_id=$this->item_id;
-        /* ********** 检测是否已添加所有的重要补偿科目【固定科目】 ********** */
-        DB::beginTransaction();
-        $subjects = Subject::where('main',1)
-            ->sharedLock()
-            ->pluck('infos','id');
-        $subject_ids=$subjects->keys();
-        $itemsubject_subids=Itemsubject::where('item_id',$item_id)->whereIn('subject_id',$subject_ids)->pluck('subject_id');
-        $diff = $subject_ids->diff($itemsubject_subids);
-        /*---------存在差集【添加】------------*/
-        if(filled($diff)){
-            $itemsubject_array = [];
-            foreach ($diff as $v){
-                    $itemsubject_array[] = [
-                        'item_id'=>$item_id,
-                        'subject_id'=>$v,
-                        'infos'=>$subjects[$v],
-                        'created_at'=>date('Y-m-d H:i:s'),
-                        'updated_at'=>date('Y-m-d H:i:s')
-                    ];
-            }
-            $fild_arr = ['item_id','subject_id','infos','created_at','updated_at'];
-            $sqls=batch_update_or_insert_sql('item_subject',$fild_arr,$itemsubject_array,$fild_arr);
-
-            if(!$sqls){
-                $result=['code'=>'warning','message'=>'暂无数据可更新','sdata'=>$itemsubject_array,'edata'=>null,'url'=>null];
-                if($request->ajax()){
-                    return response()->json($result);
-                }else {
-                    return view('gov.itemsubject.index')->with($result);
-                }
-            }
-            foreach ($sqls as $sql){
-                DB::statement($sql);
-            }
-        }
-        DB::commit();
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','subject_id'];
+
+        $where[] = ['household_id',$request->input('household_id')];
+        $infos['household_id'] = $request->input('household_id');
+        /* ********** 地块 ********** */
+        $land_id=$request->input('land_id');
+        if(is_numeric($land_id)){
+            $where[] = ['land_id',$land_id];
+            $infos['land_id'] = $land_id;
+        }
+        /* ********** 楼栋 ********** */
+        $building_id=$request->input('building_id');
+        if(is_numeric($building_id)){
+            $where[] = ['building_id',$building_id];
+            $infos['building_id'] = $building_id;
+        }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -72,36 +51,39 @@ class ItemsubjectController extends BaseitemController
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
-        $model=new Itemsubject();
+        $model=new Householdbuilding();
         DB::beginTransaction();
         try{
-            $itemsubjects=$model
-                ->with(['subject'=>function($query){
+            $householdbuildings=$model
+                ->with(['item'=>function($query){
+                        $query->select(['id','name']);
+                    },
+                    'itemland'=>function($query){
+                        $query->select(['id','address']);
+                    },
+                    'itembuilding'=>function($query){
+                        $query->select(['id','building']);
+                    },
+                    'buildingstruct'=>function($query){
                         $query->select(['id','name']);
                     }])
                 ->where($where)
-                ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
-            if(blank($itemsubjects)){
+                ->get();
+            if(blank($householdbuildings)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$itemsubjects;
+            $sdata=$householdbuildings;
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $itemsubjects=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemsubjects;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
@@ -112,23 +94,25 @@ class ItemsubjectController extends BaseitemController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.itemsubject.index')->with($result);
+            return view('gov.householdbuilding.index')->with($result);
         }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
         $item_id=$this->item_id;
-
-        $model=new Itemsubject();
+        $household_id=$request->input('household_id');
+        $model=new Householdbuilding();
         if($request->isMethod('get')){
-            $sdata['subject'] = Subject::select(['id','name'])->where('main',0)->get()?:[];
+            $sdata['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
+            $sdata['buildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
+            $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemsubject.add')->with($result);
+                return view('gov.householdbuilding.add')->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -136,45 +120,57 @@ class ItemsubjectController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
-                'subject_id' => ['required',Rule::unique('item_subject')->where(function ($query) use($item_id){
-                    $query->where('item_id', $item_id);
-                })],
-                'infos' => 'required'
+                'household_id' => 'required',
+                'land_id' => 'required',
+                'building_id' => 'required',
+                'register' => 'required',
+                'reg_inner' => 'required',
+                'reg_outer' => 'required',
+                'balcony' => 'required',
+                'dispute' => 'required',
+                'real_inner' => 'required',
+                'real_outer' => 'required',
+                'def_use' => 'required',
+                'real_use' => 'required',
+                'struct_id' => 'required',
+                'direct' => 'required',
+                'floor' => 'required',
+                'layout_img' => 'required',
+                'picture' => 'required'
             ];
             $messages = [
-                'required' => ':attribute必须填写',
-                'unique' => ':attribute已存在'
+                'required' => ':attribute必须填写'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
+
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $itemsubject = $model;
-                $itemsubject->fill($request->all());
-                $itemsubject->addOther($request);
-                $itemsubject->item_id=$this->item_id;
-                $itemsubject->save();
-                if (blank($itemsubject)) {
+                $householdbuilding = $model;
+                $householdbuilding->fill($request->all());
+                $householdbuilding->addOther($request);
+                $householdbuilding->item_id=$this->item_id;
+                $householdbuilding->save();
+                if (blank($householdbuilding)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $itemsubject;
+                $sdata = $householdbuilding;
                 $edata = null;
-                $url = route('g_itemsubject',['item'=>$this->item_id]);
+                $url = route('g_household',['item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $itemsubject;
+                $edata = $householdbuilding;
                 $url = null;
                 DB::rollBack();
             }
@@ -195,34 +191,49 @@ class ItemsubjectController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        /* ********** 当前数据 ********** */
-        DB::beginTransaction();
+        $item_id=$this->item_id;
 
-        $itemtopid=Itemsubject::with(
-            ['item'=>function($query){
+        /* ********** 当前数据 ********** */
+        $data['item_id'] = $item_id;
+
+        DB::beginTransaction();
+        $householdbuilding=Householdbuilding::with([
+            'item'=>function($query){
+                 $query->select(['id','name']);
+             },
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            },
+            'itembuilding'=>function($query){
+                $query->select(['id','building']);
+            },
+            'buildingstruct'=>function($query){
                 $query->select(['id','name']);
             },
-                'subject'=>function($query){
-                    $query->select(['id','name']);
-                }])
+             'buildinguse'=>function($query){
+                $query->select(['id','name']);
+            },
+            'buildinguses'=>function($query){
+                $query->select(['id','name']);
+            }])
             ->sharedLock()
             ->find($id);
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($itemtopid)){
+        if(blank($householdbuilding)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
-            $edata=null;
+            $edata=$data;
             $url=null;
         }else{
             $code='success';
             $msg='获取成功';
-            $sdata=$itemtopid;
-            $edata=null;
+            $sdata=$householdbuilding;
+            $edata=$data;
             $url=null;
 
-            $view='gov.itemsubject.info';
+            $view='gov.householdbuilding.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -234,7 +245,6 @@ class ItemsubjectController extends BaseitemController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
-        $item_id=$this->item_id;
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
@@ -244,33 +254,42 @@ class ItemsubjectController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
+        $item_id=$this->item_id;
+        $household_id = $request->input('household_id');
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
+            $data['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
+            $data['buildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
+            $data['item_id'] = $item_id;
+            $data['models'] = new Householdbuilding();
+            $data['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
             DB::beginTransaction();
-            $itemsubject=Itemsubject::with(
-                [ 'subject'=>function($query){
-                    $query->select(['id','name']);
-                 }])
+            $householdbuilding=Householdbuilding::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                }])
                 ->sharedLock()
                 ->find($id);
-            $data['subject'] = Subject::select(['id','name'])->get()?:[];
             DB::commit();
+
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($itemsubject)){
+            if(blank($householdbuilding)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
                 $edata=$data;
                 $url=null;
-
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$itemsubject;
+                $sdata=$householdbuilding;
                 $edata=$data;
                 $url=null;
 
-                $view='gov.itemsubject.edit';
+                $view='gov.householdbuilding.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -279,17 +298,27 @@ class ItemsubjectController extends BaseitemController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Itemsubject();
+            $model=new Household();
             /* ********** 表单验证 ********** */
-            $rules=[
-                'subject_id'=>['required',Rule::unique('item_subject')->where(function ($query) use($item_id,$id){
-                    $query->where('item_id', $item_id)->where('id','<>',$id);
-                })],
-                'infos' => 'required'
+            $rules = [
+                'household_id' => 'required',
+                'register' => 'required',
+                'reg_inner' => 'required',
+                'reg_outer' => 'required',
+                'balcony' => 'required',
+                'dispute' => 'required',
+                'real_inner' => 'required',
+                'real_outer' => 'required',
+                'def_use' => 'required',
+                'real_use' => 'required',
+                'struct_id' => 'required',
+                'direct' => 'required',
+                'floor' => 'required',
+                'layout_img' => 'required',
+                'picture' => 'required'
             ];
-            $messages=[
-                'required'=>':attribute必须填写',
-                'unique'=>':attribute已存在'
+            $messages = [
+                'required' => ':attribute必须填写'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -300,29 +329,29 @@ class ItemsubjectController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $itemsubject=Itemsubject::lockForUpdate()->find($id);
-                if(blank($itemsubject)){
+                $householdbuilding=Householdbuilding::lockForUpdate()->find($id);
+                if(blank($householdbuilding)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $itemsubject->fill($request->all());
-                $itemsubject->editOther($request);
-                $itemsubject->save();
-                if(blank($itemsubject)){
+                $householdbuilding->fill($request->all());
+                $householdbuilding->editOther($request);
+                $householdbuilding->save();
+                if(blank($householdbuilding)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$itemsubject;
+                $sdata=$householdbuilding;
                 $edata=null;
-                $url=route('g_itemsubject',['item'=>$this->item_id]);
+                $url = route('g_householdbuilding',['household_id'=>$household_id,'item'=>$item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$itemsubject;
+                $edata=$householdbuilding;
                 $url=null;
                 DB::rollBack();
             }

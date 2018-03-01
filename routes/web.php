@@ -57,3 +57,16 @@ Route::namespace('system')->prefix('sys')->group(function (){
         require 'web_sys_login.php';
     });
 });
+
+
+/*========== 评估机构端 ==========*/
+Route::namespace('com')->prefix('com')->group(function (){
+    /*---------- 登录后台 ----------*/
+    Route::any('/','IndexController@index')->name('c_index'); //登录页
+    Route::any('/login','IndexController@login')->name('c_login'); //登录
+    Route::any('/logout','IndexController@logout')->name('c_logout'); //退出
+
+    Route::middleware('CheckLogin:com_user,c_index')->group(function (){
+        require 'web_com_login.php';
+    });
+});

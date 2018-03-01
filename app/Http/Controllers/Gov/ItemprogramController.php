@@ -21,15 +21,7 @@ class ItemprogramController extends BaseauthController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
 
         $model=new Itemprogram();
         if($request->isMethod('get')){
@@ -95,15 +87,7 @@ class ItemprogramController extends BaseauthController
 
     /* ========== 详情 ========== */
     public function info(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
 
         $id=$request->input('id');
         if(!$id){
@@ -150,15 +134,7 @@ class ItemprogramController extends BaseauthController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
+        $item_id=$this->item_id;
 
         $id=$request->input('id');
         if(!$id){
