@@ -16,7 +16,7 @@
 @section('header_tools')
 
     <li class="green">
-        <a href="{{route('g_infos')}}" title="消息提醒">
+        <a href="{{route('g_home')}}" title="消息提醒">
             <i class="ace-icon fa fa-bell icon-animated-bell"></i>
             <span class="badge badge-success" id="notice-num">0</span>
         </a>
