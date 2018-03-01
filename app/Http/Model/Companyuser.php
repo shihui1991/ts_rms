@@ -21,8 +21,8 @@ class Companyuser extends Model
         'company_id'=>'评估机构',
         'name'=>'名称',
         'phone'=>'电话',
-        'username'=>'用户名',
-        'password'=>'密码',
+        'username'=>'登陆账号',
+        'password'=>'登陆密码',
         'secret'=>'密钥',
         'session'=>'登录sessionID',
         'action_at'=>'最近操作时间'

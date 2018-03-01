@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\Gov;
 use App\Http\Model\Company;
 use App\Http\Model\Companyuser;
+use App\Http\Model\Companyvaluer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -102,7 +103,8 @@ class CompanyController extends BaseauthController
     public function add(Request $request){
         $model=new Company();
         if($request->isMethod('get')){
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>$model,'url'=>null];
+            $sdata['type'] = $request->input('type');
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
@@ -132,12 +134,15 @@ class CompanyController extends BaseauthController
             /*--- 评估机构(操作员) ---*/
             $companyuser_model = new Companyuser();
             $rules1 = [
-                'username' => 'required|unique:company_user',
-                'password' => 'required',
+                'username'=>['required','alpha_num','between:4,20','unique:company_user'],
+                'password' => 'required|min:6',
             ];
             $messages1 = [
                 'required' => ':attribute 为必须项',
-                'unique' => ':attribute 已存在'
+                'alpha_num'=>':attribute 须为字母或与数字组合',
+                'between'=>':attribute 长度在 :min 到 :max 位之间',
+                'unique'=>':attribute 已占用',
+                'min'=>':attribute 长度至少 :min 位'
             ];
             $validator1 = Validator::make($request->all(), $rules1, $messages1, $companyuser_model->columns);
             if ($validator1->fails()) {
@@ -213,20 +218,32 @@ class CompanyController extends BaseauthController
             }])
             ->sharedLock()
             ->find($id);
+        $data['companyusers']=Companyuser::with(['company'=>function($query){
+                $query->withTrashed()->select(['id','name','user_id','type']);
+            }])
+            ->where('company_id',$id)
+            ->sharedLock()
+            ->get();
+        $data['companyvaluers']=Companyvaluer::with(['company'=>function($query){
+                $query->withTrashed()->select(['id','name','type']);
+            }])
+            ->where('company_id',$id)
+            ->sharedLock()
+            ->get();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($company)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
-            $edata=null;
+            $edata=$data;
             $url=null;
 
         }else{
             $code='success';
             $msg='获取成功';
             $sdata=$company;
-            $edata=new Company();
+            $edata=$data;
             $url=null;
 
             $view='gov.company.info';

@@ -6,10 +6,10 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_companyvaluer_add')}}" class="btn">添加评估师</a>
+        <a href="{{route('g_company')}}" class="btn"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回评估机构</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
             <th>序号</th>
@@ -41,12 +41,7 @@
     </table>
     <div class="row">
         <div class="col-xs-6">
-            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据</div>
-        </div>
-        <div class="col-xs-6">
-            <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
-                @if($code=='success') {{ $sdata->links() }} @endif
-            </div>
+            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata) }} @else 0 @endif 条数据</div>
         </div>
     </div>
 
@@ -59,6 +54,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>
