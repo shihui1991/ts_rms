@@ -31,6 +31,11 @@
 @endsection
 
 {{-- 侧边导航 --}}
+@section('nav')
+
+
+
+@endsection
 
 
 {{-- 面包屑 --}}

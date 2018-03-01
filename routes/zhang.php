@@ -179,6 +179,11 @@ Route::any('/householdobject','HouseholdobjectController@index')->name('g_househ
 Route::any('/householdobject_add','HouseholdobjectController@add')->name('g_householdobject_add');
 Route::get('/householdobject_info','HouseholdobjectController@info')->name('g_householdobject_info');
 Route::any('/householdobject_edit','HouseholdobjectController@edit')->name('g_householdobject_edit');
+/*---------- 项目-被征户-房屋建筑 ----------*/
+Route::any('/householdbuilding','HouseholdbuildingController@index')->name('g_householdbuilding');
+Route::any('/householdbuilding_add','HouseholdbuildingController@add')->name('g_householdbuilding_add');
+Route::get('/householdbuilding_info','HouseholdbuildingController@info')->name('g_householdbuilding_info');
+Route::any('/householdbuilding_edit','HouseholdbuildingController@edit')->name('g_householdbuilding_edit');
 
 /*---------- 项目-冻结房源 ----------*/
 Route::any('/itemhouse','ItemhouseController@index')->name('g_itemhouse');

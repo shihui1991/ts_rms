@@ -44,7 +44,7 @@ class IndexController extends Controller
         DB::beginTransaction();
         $user=Companyuser::select(['id','name','username','password','secret','company_id'])
             ->with(['company'=>function($query){
-                $query->select(['id','state']);
+                $query->select(['id','state','type']);
             }])
             ->where('username',$request->input('username'))
             ->sharedLock()
@@ -71,6 +71,8 @@ class IndexController extends Controller
         session(['com_user'=>[
             'user_id'=>$user->id,
             'name'=>$user->name,
+            'company_id'=>$user->company_id,
+            'type'=>$user->company->getOriginal('type'),
             'secret'=>$user->secret
         ]]);
 
