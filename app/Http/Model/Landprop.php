@@ -18,7 +18,7 @@ class Landprop extends Model
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
-        'name'=>'土地性质名称',
+        'name'=>'名称',
         'infos'=>'描述'
     ];
 

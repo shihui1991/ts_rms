@@ -11,6 +11,7 @@ use App\Http\Model\Landstate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class LandstateController extends BaseauthController
 {
@@ -20,89 +21,8 @@ class LandstateController extends BaseauthController
         parent::__construct();
     }
 
-    /* ========== 首页 ========== */
-    public function index(Request $request){
-        $prop_id = $request->input('prop_id');
-        if(!$prop_id){
-            $result=['code'=>'error','message'=>'请先选择土地性质','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-        $source_id = $request->input('source_id');
-        if(!$source_id){
-            $result=['code'=>'error','message'=>'请先选择土地来源','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
-        /* ********** 查询条件 ********** */
-        $where=[];
-        $where[]=['prop_id',$prop_id];
-        $where[]=['source_id',$source_id];
-        $select=['id','prop_id','source_id','name','infos','deleted_at'];
-        /* ********** 查询 ********** */
-        $model=new Landstate();
-        DB::beginTransaction();
-        try{
-            $landstates['prop_id'] =$prop_id;
-            $landstates['landprop'] =Landprop::withTrashed()->select(['id','name'])->find($prop_id);
-            $landstates['source_id'] =$source_id;
-            $landstates['landsource'] =Landsource::withTrashed()->select(['id','name'])->find($source_id);
-            $landstates['landstate']=$model->withTrashed()
-                        ->with(['landprop'=>function($query){
-                            $query->withTrashed()->select(['id','name']);
-                        },
-                        'landsource'=>function($query){
-                            $query->withTrashed()->select(['id','name']);
-                        }])
-                        ->where($where)
-                        ->select($select)
-                        ->sharedLock()
-                        ->get();
-            if(blank($landstates)){
-                throw new \Exception('没有符合条件的数据',404404);
-            }
-            $code='success';
-            $msg='查询成功';
-            $sdata=$landstates;
-            $edata=null;
-            $url=null;
-        }catch (\Exception $exception){
-            $landstates=collect();
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=null;
-            $edata=$landstates;
-            $url=null;
-        }
-        DB::commit();
-
-        /* ********** 结果 ********** */
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
-            return response()->json($result);
-        }else {
-            return view('gov.landstate.index')->with($result);
-        }
-    }
-
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $prop_id = $request->input('prop_id');
-        if(!$prop_id){
-            $result=['code'=>'error','message'=>'请先选择土地性质','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
         $source_id = $request->input('source_id');
         if(!$source_id){
             $result=['code'=>'error','message'=>'请先选择土地来源','sdata'=>null,'edata'=>null,'url'=>null];
@@ -113,15 +33,36 @@ class LandstateController extends BaseauthController
             }
         }
 
-
         if($request->isMethod('get')){
-            $edata['prop_id'] = $prop_id;
-            $edata['source_id'] = $source_id;
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>$edata,'url'=>null];
+            DB::beginTransaction();
+            try{
+                $landsource=Landsource::with('landprop')->sharedLock()->find($source_id);
+                if(blank($landsource)){
+                    throw new \Exception('土地来源不存在',404404);
+                }
+
+                $code = 'success';
+                $msg = '请求成功';
+                $sdata = $landsource;
+                $edata = null;
+                $url =null;
+
+                $view='gov.landstate.add';
+            }catch (\Exception $exception){
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url =null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.landstate.add')->with($result);
+                return view($view)->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -130,9 +71,9 @@ class LandstateController extends BaseauthController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'prop_id' => 'required',
-                'source_id' => 'required',
-                'name' => 'required|unique:land_state'
+                'name' => ['required',Rule::unique('land_state')->where(function ($query) use ($source_id){
+                    $query->where('source_id',$source_id);
+                })]
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
@@ -147,10 +88,15 @@ class LandstateController extends BaseauthController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+                $landsource=Landsource::sharedLock()->find($source_id);
+                if(blank($landsource)){
+                    throw new \Exception('数据错误', 404404);
+                }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $landstate = $model;
                 $landstate->fill($request->input());
                 $landstate->addOther($request);
+                $landstate->prop_id=$landsource->prop_id;
                 $landstate->save();
                 if (blank($landstate)) {
                     throw new \Exception('添加失败', 404404);
@@ -159,7 +105,7 @@ class LandstateController extends BaseauthController
                 $msg = '添加成功';
                 $sdata = $landstate;
                 $edata = null;
-                $url = route('g_landstate',['prop_id'=>$prop_id,'source_id'=>$source_id]);
+                $url = route('g_landprop');
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -172,53 +118,6 @@ class LandstateController extends BaseauthController
             /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
-        }
-    }
-
-    /* ========== 详情 ========== */
-    public function info(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-        /* ********** 当前数据 ********** */
-        DB::beginTransaction();
-        $landstate=Landstate::withTrashed()
-            ->with(['landprop'=>function($query){
-                    $query->withTrashed()->select(['id','name']);
-                },
-                  'landsource'=>function($query){
-                        $query->withTrashed()->select(['id','name']);
-                  }])
-            ->sharedLock()
-            ->find($id);
-        DB::commit();
-        /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($landstate)){
-            $code='warning';
-            $msg='数据不存在';
-            $sdata=null;
-            $edata=null;
-            $url=null;
-        }else{
-            $code='success';
-            $msg='获取成功';
-            $sdata=$landstate;
-            $edata=new Landstate();
-            $url=null;
-
-            $view='gov.landstate.info';
-        }
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
-            return response()->json($result);
-        }else{
-            return view($view)->with($result);
         }
     }
 
@@ -270,20 +169,6 @@ class LandstateController extends BaseauthController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Landstate();
-            /* ********** 表单验证 ********** */
-            $rules=[
-                'name'=>'required|unique:land_state,name,'.$id.',id'
-            ];
-            $messages=[
-                'required'=>':attribute 为必须项',
-                'unique'=>':attribute 已存在'
-            ];
-            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
-            if ($validator->fails()) {
-                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
-                return response()->json($result);
-            }
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
@@ -291,10 +176,23 @@ class LandstateController extends BaseauthController
                 $landstate=Landstate::withTrashed()
                     ->lockForUpdate()
                     ->find($id);
-                $prop_id = $landstate->prop_id;
-                $source_id = $landstate->source_id;
                 if(blank($landstate)){
                     throw new \Exception('指定数据项不存在',404404);
+                }
+                $source_id=$landstate->source_id;
+                /* ********** 表单验证 ********** */
+                $rules=[
+                    'name' => ['required',Rule::unique('land_state')->where(function ($query) use ($id,$source_id){
+                        $query->where('source_id',$source_id)->where('id','<>',$id);
+                    })]
+                ];
+                $messages=[
+                    'required'=>':attribute 为必须项',
+                    'unique'=>':attribute 已存在'
+                ];
+                $validator = Validator::make($request->all(), $rules, $messages, $landstate->columns);
+                if ($validator->fails()) {
+                    throw new \Exception($validator->errors()->first(),404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $landstate->fill($request->input());
@@ -307,7 +205,7 @@ class LandstateController extends BaseauthController
                 $msg='修改成功';
                 $sdata=$landstate;
                 $edata=null;
-                $url=route('g_landstate',['prop_id'=>$prop_id,'source_id'=>$source_id]);
+                $url=route('g_landprop');
 
                 DB::commit();
             }catch (\Exception $exception){
