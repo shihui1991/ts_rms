@@ -211,9 +211,7 @@ class  ItemriskController extends BaseController {
                 $url=null;
                 $view='household.itemrisk.edit';
             }
-
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>new Itemrisk(),'url'=>$url];
-            dd($result);
             if($request->ajax()){
                 return response()->json($result);
             }else{
