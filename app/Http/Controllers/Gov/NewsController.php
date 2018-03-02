@@ -1,19 +1,17 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-资金管理
+| 项目-通知公告
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Gov;
 
-use App\Http\Model\Bank;
-use App\Http\Model\Funds;
-use App\Http\Model\Fundscate;
+use App\Http\Model\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class FundsController extends BaseitemController
+class NewsController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -25,15 +23,12 @@ class FundsController extends BaseitemController
     public function index(Request $request){
         DB::beginTransaction();
 
-        $funds_details=Fundscate::with(['fundses'=>function($query){
-            $query->with(['bank'=>function($query){
-                $query->select(['id','name']);
-            }])
-                ->where('item_id',$this->item_id)
-                ->orderBy('entry_at','asc');
+        $newses=News::with(['newscate'=>function($query){
+            $query->select(['id','name']);
         }])
-            ->Select(['*',DB::raw('(SELECT SUM(`amount`) FROM `item_funds` WHERE `item_id`='.$this->item_id.' AND `item_funds`.`cate_id`=`a_item_funds_cate`.`id`) AS `total`')])
             ->sharedLock()
+            ->orderBy('is_top','desc')
+            ->orderBy('release_at','asc')
             ->get();
 
         DB::commit();
@@ -44,50 +39,47 @@ class FundsController extends BaseitemController
             'message'=>'请求成功',
             'sdata'=>[
                 'item'=>$this->item,
-                'funds_details'=>$funds_details,
+                'newses'=>$newses,
             ],
             'edata'=>null,
             'url'=>null];
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.funds.index')->with($result);
+            return view('gov.news.index')->with($result);
         }
     }
 
-    /* ========== 录入资金 ========== */
+    /* ========== 添加范围公告 ========== */
     public function add(Request $request){
+        $model=new News();
         if($request->isMethod('get')){
-            DB::beginTransaction();
-            $banks=Bank::sharedLock()->select('id','name')->get();
-            DB::commit();
 
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>['item'=>$this->item,'banks'=>$banks],'edata'=>null,'url'=>null];
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>['item'=>$this->item],'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.funds.add')->with($result);
+                return view('gov.news.add')->with($result);
             }
         }
         /* ********** 保存 ********** */
         else{
+
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
-                'amount'=>'required|min:1',
-                'voucher'=>'required',
-                'bank_id'=>'required',
-                'account'=>'required',
                 'name'=>'required',
-                'entry_at'=>'required|date_format:Y-m-d H:i:s',
+                'release_at'=>'required|date_format:Y-m-d',
                 'infos'=>'required',
+                'content'=>'required',
                 'picture'=>'required',
+                'is_top'=>'required|boolean',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
                 'date_format'=>':attribute 输入格式错误',
-                'min'=>':attribute 不能少于 :min',
+                'boolean'=>'请选择 :attribute 正确的选择',
             ];
-            $model=new Funds();
+            
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
@@ -98,21 +90,22 @@ class FundsController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $funds=$model;
-                $funds->fill($request->input());
-                $funds->addOther($request);
-                $funds->item_id=$this->item_id;
-                $funds->cate_id=1;
-                $funds->save();
-                if(blank($funds)){
+                $news=$model;
+                $news->fill($request->input());
+                $news->addOther($request);
+                $news->item_id=$this->item_id;
+                $news->cate_id=1;
+                $news->state=0;
+                $news->save();
+                if(blank($news)){
                     throw new \Exception('保存失败',404404);
                 }
 
                 $code='success';
                 $msg='保存成功';
-                $sdata=$funds;
+                $sdata=$news;
                 $edata=null;
-                $url=route('g_funds',['item'=>$this->item_id]);
+                $url=route('g_news',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){
@@ -130,7 +123,7 @@ class FundsController extends BaseitemController
         }
     }
 
-    /* ========== 转账详情 ========== */
+    /* ========== 公告详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){
@@ -143,23 +136,21 @@ class FundsController extends BaseitemController
         }
 
         DB::beginTransaction();
-        $funds=Funds::with(['fundscate'=>function($query){
-            $query->select(['id','name']);
-        },'bank'=>function($query){
+        $news=News::with(['newscate'=>function($query){
             $query->select(['id','name']);
         }])
             ->sharedLock()
             ->find($id);
 
         DB::commit();
-        if(filled($funds)){
+        if(filled($news)){
             $code='success';
             $msg='保存成功';
-            $sdata=['item'=>$this->item,'funds'=>$funds];
+            $sdata=['item'=>$this->item,'news'=>$news];
             $edata=null;
             $url=null;
 
-            $view='gov.funds.info';
+            $view='gov.news.info';
         }else{
             $code='error';
             $msg='数据不存在';

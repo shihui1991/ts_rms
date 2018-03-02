@@ -47,7 +47,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name"> 账户姓名： </label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{old('account')}}" class="col-xs-10 col-sm-5"  required>
+                <input type="text" id="name" name="name" value="{{old('name')}}" class="col-xs-10 col-sm-5"  required>
             </div>
         </div>
         <div class="space-4"></div>
