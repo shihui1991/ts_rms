@@ -211,15 +211,10 @@ class ItemlandController extends BaseitemController
             ->sharedLock()
             ->get();
         /* ++++++++++ 地块公共附属物 ++++++++++ */
-        $itempublics=Itempublic::with(
-                [
-                'itembuilding'=>function($query){
-                    $query->select(['id','building']);
-                }])
+        $itempublics=Itempublic::sharedLock()
             ->where('item_id',$item_id)
             ->where('land_id',$id)
             ->where('building_id',0)
-            ->sharedLock()
             ->get();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */

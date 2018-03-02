@@ -6,9 +6,9 @@
 
     <div class="row">
         <div class="well well-sm">
-            <a class="btn" href="{{route('g_itemland_info',['id'=>$sdata['land_id'],'item'=>$sdata['item_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
-            <a href="{{route('g_itembuilding_edit',['id'=>$sdata['itembuilding']->id,'item'=>$sdata['item_id'],'land_id'=>$sdata['land_id']])}}" class="btn">修改楼栋信息</a>
-            <a href="{{route('g_itempublic_add',['item'=>$sdata['item_id'],'land_id'=>$sdata['land_id'],'building_id'=>$sdata['itembuilding']->id,'building'=>'buildingpublic'])}}" class="btn">添加公共附属物信息</a>
+            <a class="btn" href="{{route('g_itemland_info',['id'=>$sdata['itembuilding']->land_id,'item'=>$sdata['item']->id])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
+            <a href="{{route('g_itembuilding_edit',['id'=>$sdata['itembuilding']->id,'item'=>$sdata['item']->id])}}" class="btn">修改楼栋信息</a>
+            <a href="{{route('g_itempublic_add',['item'=>$sdata['item']->id,'land_id'=>$sdata['itembuilding']->land_id,'building_id'=>$sdata['itembuilding']->id])}}" class="btn">添加公共附属物信息</a>
         </div>
 
         <div class="well-sm">
@@ -32,6 +32,13 @@
                 <div class="tab-content">
                     <div id="itembuilding" class="tab-pane fade active in">
                         <div class="profile-user-info profile-user-info-striped">
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 地块： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itembuilding']->itemland->address}}</span>
+                                </div>
+                            </div>
+                            
                             <div class="profile-info-row">
                                 <div class="profile-info-name"> 楼栋号： </div>
                                 <div class="profile-info-value">
@@ -77,24 +84,22 @@
                             <div class="profile-info-row">
                                 <div class="profile-info-name"> 图片： </div>
                                 <div class="profile-info-value">
-                <span class="editable editable-click">
-                    <ul class="ace-thumbnails clearfix img-content viewer">
-                          @if(isset($sdata['itembuilding']->picture))
-                            @foreach($sdata['itembuilding']->picture as $pic)
-                                <li>
-                                    <div>
-                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                        <div class="text">
-                                            <div class="inner">
-                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            @endforeach
-                        @endif
-                    </ul>
-                </span>
+                                    <ul class="ace-thumbnails clearfix img-content viewer">
+                                        @if(isset($sdata['itembuilding']->picture))
+                                            @foreach($sdata['itembuilding']->picture as $pic)
+                                                <li>
+                                                    <div>
+                                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                                        <div class="text">
+                                                            <div class="inner">
+                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
                                 </div>
                             </div>
 
@@ -127,15 +132,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @if($code=='success')
-                                @foreach($sdata['itempublic'] as $publicinfo)
+                            @if(filled($sdata['itempublics']))
+                                @foreach($sdata['itempublics'] as $public)
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{$publicinfo->name}}</td>
-                                        <td>{{$publicinfo->num_unit}}</td>
-                                        <td>{{$publicinfo->number}}</td>
+                                        <td>{{$public->name}}</td>
+                                        <td>{{$public->num_unit}}</td>
+                                        <td>{{$public->number}}</td>
                                         <td>
-                                            <a href="{{route('g_itempublic_info',['id'=>$publicinfo->id,'land_id'=>$sdata['land_id'],'item'=>$sdata['item_id'],'building'=>'buildingpublic','building_id'=>$sdata['itembuilding']->id])}}" class="btn btn-sm">查看详情</a>
+                                            <a href="{{route('g_itempublic_info',['id'=>$public->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
                                         </td>
                                     </tr>
                                 @endforeach

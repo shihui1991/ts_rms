@@ -13,10 +13,17 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itembuilding_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itembuilding_add',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
-        <input type="hidden" name="land_id" value="{{$sdata['land_id']}}">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="land_id"> 地块： </label>
+            <div class="col-sm-9">
+                <input type="text" id="land_id"  value="{{$sdata['itemland']->address}}" class="col-xs-10 col-sm-5"  readonly>
+                <input type="hidden" name="land_id" value="{{$sdata['itemland']->id}}">
+            </div>
+        </div>
+        <div class="space-4"></div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋号： </label>
@@ -55,8 +62,8 @@
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="struct_id" id="struct_id">
                     <option value="">--请选择--</option>
-                    @if($sdata['buildingstruct'])
-                        @foreach($sdata['buildingstruct'] as $buildingstruct)
+                    @if($sdata['buildingstructs'])
+                        @foreach($sdata['buildingstructs'] as $buildingstruct)
                             <option value="{{$buildingstruct->id}}">{{$buildingstruct->name}}</option>
                         @endforeach
                     @endif
