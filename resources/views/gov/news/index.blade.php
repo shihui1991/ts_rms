@@ -32,7 +32,7 @@
                         <td>{{$news->keys}}</td>
                         <td>{{$news->is_top}} | {{$news->state}}</td>
                         <td>
-                            <a href="{{route('g_news_info',['id'=>$news->id,'itme'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_news_info',['id'=>$news->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
                         </td>
                     </tr>
                 @endforeach

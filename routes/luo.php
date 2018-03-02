@@ -32,3 +32,4 @@ Route::any('/funds_info','FundsController@info')->name('g_funds_info'); //转账
 Route::any('/news','NewsController@index')->name('g_news'); //政务公告
 Route::any('/news_add','NewsController@add')->name('g_news_add'); //添加公告
 Route::any('/news_info','NewsController@info')->name('g_news_info'); //公告详情
+Route::any('/news_edit','NewsController@edit')->name('g_news_edit'); //修改公告
