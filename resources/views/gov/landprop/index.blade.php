@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered treetable" id="tree-landprop">
         <thead>
         <tr>
-            <th>名称</th>
+            <th>土地性质 > 土地来源 > 土地权益状况</th>
             <th>描述</th>
             <th>操作</th>
         </tr>
@@ -24,7 +24,10 @@
                         <td>{{$prop->name}}</td>
                         <td>{{$prop->infos}}</td>
                         <td>
-                            <a href="{{route('g_landprop_info',['id'=>$prop->id])}}" class="btn btn-sm">查看详情</a>
+                            <div class="btn-group">
+                                <a href="{{route('g_landprop_edit',['id'=>$prop->id])}}" class="btn btn-xs">编辑</a>
+                                <a href="{{route('g_landsource_add',['prop_id'=>$prop->id])}}" class="btn btn-xs">添加土地来源</a>
+                            </div>
                         </td>
                     </tr>
                     @foreach($prop->landsources as $source)
@@ -32,7 +35,10 @@
                             <td>{{$source->name}}</td>
                             <td>{{$source->infos}}</td>
                             <td>
-                                <a href="{{route('g_landsource_info',['id'=>$source->id])}}" class="btn btn-sm">查看详情</a>
+                                <div class="btn-group">
+                                    <a href="{{route('g_landsource_edit',['id'=>$source->id])}}" class="btn btn-xs">编辑</a>
+                                    <a href="{{route('g_landstate_add',['source_id'=>$source->id])}}" class="btn btn-xs">添加土地权益状况</a>
+                                </div>
                             </td>
                         </tr>
                         @foreach($source->landstates as $state)
@@ -40,7 +46,9 @@
                                 <td>{{$state->name}}</td>
                                 <td>{{$state->infos}}</td>
                                 <td>
-                                    <a href="{{route('g_landstate_info',['id'=>$state->id])}}" class="btn btn-sm">查看详情</a>
+                                    <div class="btn-group">
+                                        <a href="{{route('g_landstate_edit',['id'=>$state->id])}}" class="btn btn-xs">编辑</a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

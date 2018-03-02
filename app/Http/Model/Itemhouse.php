@@ -34,7 +34,7 @@ class Itemhouse extends Model
     /* ++++++++++ 获取添加时期状态 ++++++++++ */
     public function getTypeAttribute($key=null)
     {
-        $array=[0=>'筹备期',1=>'补充期'];
+        $array=[0=>'项目准备',1=>'项目实施'];
         if(is_numeric($key)){
             return $array[$key];
         }else{

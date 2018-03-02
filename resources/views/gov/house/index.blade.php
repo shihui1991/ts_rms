@@ -47,9 +47,11 @@
                         <td>{{$infos->delive_at}}</td>
                         <td>{{$infos->state}}</td>
                         <td>
-                            <a href="{{route('g_house_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
-                            <a href="{{route('g_houseprice',['house_id'=>$infos->id])}}" class="btn btn-sm">价格趋势</a>
-                            <a href="{{route('g_housemanageprice',['house_id'=>$infos->id])}}" class="btn btn-sm">管理费用</a>
+                            <div class="btn-group">
+                                <a href="{{route('g_house_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
+                                <a href="{{route('g_houseprice',['house_id'=>$infos->id])}}" class="btn btn-sm">价格趋势</a>
+                                <a href="{{route('g_housemanageprice',['house_id'=>$infos->id])}}" class="btn btn-sm">管理费单价</a>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

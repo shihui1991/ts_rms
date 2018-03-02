@@ -16,6 +16,15 @@
     <form class="form-horizontal" role="form" action="{{route('g_landsource_edit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="landprop"> 土地性质： </label>
+            <div class="col-sm-9">
+                <input type="text" id="landprop" value="{{$sdata->landprop->name}}" class="col-xs-10 col-sm-5" readonly>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
             <div class="col-sm-9">

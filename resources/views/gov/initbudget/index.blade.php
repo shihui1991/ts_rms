@@ -7,7 +7,18 @@
 
     @if(filled($sdata['init_budget']))
 
+        <p>
+            <a href="{{route('g_initbudget_edit',['item'=>$sdata['item']->id])}}" class="btn">修改</a>
+        </p>
+
         <div class="profile-user-info profile-user-info-striped">
+
+            <div class="profile-info-row">
+                <div class="profile-info-name"> 项目： </div>
+                <div class="profile-info-value">
+                    <span class="editable editable-click">{{$sdata['item']->name}}</span>
+                </div>
+            </div>
 
             <div class="profile-info-row">
                 <div class="profile-info-name"> 征收范围： </div>
@@ -26,7 +37,9 @@
             <div class="profile-info-row">
                 <div class="profile-info-name"> 预算总金额： </div>
                 <div class="profile-info-value">
-                    <span class="editable editable-click">{{number_format($sdata['init_budget']->money,2)}}</span>
+                    <span class="editable editable-click">
+                        <strong>{{number_format($sdata['init_budget']->money,2)}}</strong>
+                    </span>
                 </div>
             </div>
 
@@ -40,7 +53,7 @@
             <div class="profile-info-row">
                 <div class="profile-info-name"> 预算报告： </div>
                 <div class="profile-info-value">
-                <p class="editable editable-click">
+
                 <ul class="ace-thumbnails clearfix img-content">
                     @foreach($sdata['init_budget']->picture as $pic)
                         <li>
@@ -57,52 +70,38 @@
                     @endforeach
 
                 </ul>
-                </p>
+
                 </div>
             </div>
 
-            @if(filled($sdata['item_notice']))
-                <div class="profile-info-row">
-                    <div class="profile-info-name"> 摘要： </div>
-                    <div class="profile-info-value">
-                        <span class="editable editable-click">{{$sdata['item_notice']->infos}}</span>
-                    </div>
+            <div class="profile-info-row">
+                <div class="profile-info-name"> 摘要： </div>
+                <div class="profile-info-value">
+                    <span class="editable editable-click">{{$sdata['item_notice']->infos}}</span>
                 </div>
+            </div>
 
-                <div class="profile-info-row">
-                    <div class="profile-info-name"> 预算通知： </div>
-                    <div class="profile-info-value">
-                        <p class="editable editable-click">
-                        <ul class="ace-thumbnails clearfix img-content">
-                            @foreach($sdata['item_notice']->picture as $pic)
-                                <li>
-                                    <div>
-                                        <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
-                                        <div class="text">
-                                            <div class="inner">
-                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                            </div>
+            <div class="profile-info-row">
+                <div class="profile-info-name"> 预算通知： </div>
+                <div class="profile-info-value">
+                    <ul class="ace-thumbnails clearfix img-content">
+                        @foreach($sdata['item_notice']->picture as $pic)
+                            <li>
+                                <div>
+                                    <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                    <div class="text">
+                                        <div class="inner">
+                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
                                         </div>
                                     </div>
-                                </li>
+                                </div>
+                            </li>
 
-                            @endforeach
+                        @endforeach
 
-                        </ul>
-                        </p>
-                    </div>
+                    </ul>
                 </div>
-            @else
-
-                <div class="alert alert-warning">
-                    <strong>注意：</strong>
-                    还未提交房屋征收补偿资金总额预算通知！
-                    &nbsp;&nbsp;&nbsp;
-                    <i class="fa fa-hand-o-right"></i>
-                    <a href="{{route('g_initbudget_add',['item'=>$sdata['item']->id])}}">去添加</a>
-                    <br>
-                </div>
-            @endif
+            </div>
 
 
         </div>

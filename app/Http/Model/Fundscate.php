@@ -32,4 +32,8 @@ class Fundscate extends Model
 
     }
 
+    public function fundses(){
+        return $this->hasMany('App\Http\Model\Funds','cate_id','id');
+    }
+
 }

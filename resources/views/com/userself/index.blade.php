@@ -1,5 +1,5 @@
 {{-- 继承布局 --}}
-@extends('gov.main')
+@extends('com.main')
 
 
 {{-- 页面内容 --}}
@@ -11,9 +11,14 @@
             返回
         </a>
 
-        <a class="btn" href="{{route('g_landsource_edit',['id'=>$sdata->id])}}">
+        <a class="btn" href="{{route('c_userself_edit')}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
+        </a>
+
+        <a class="btn" href="{{route('c_userself_pwd')}}">
+            <i class="ace-icon fa fa-refresh bigger-110"></i>
+            修改密码
         </a>
     </p>
 
@@ -21,16 +26,30 @@
     <div class="profile-user-info profile-user-info-striped">
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 名称： </div>
+            <div class="profile-info-name"> 用户名： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->username}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 姓名： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->name}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 描述： </div>
+            <div class="profile-info-name"> 电话： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->infos}}</span>
+                <span class="editable editable-click">{{$sdata->phone}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 最近操作时间： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->action_at}}</span>
             </div>
         </div>
 
@@ -48,20 +67,6 @@
             </div>
         </div>
 
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 状态： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click"> @if($sdata->deleted_at) 已删除 @else 启用中 @endif</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 删除时间： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->deleted_at}}</span>
-            </div>
-        </div>
-
     </div>
 
 @endsection
@@ -73,6 +78,6 @@
 
 {{-- 插件 --}}
 @section('js')
-
+    @parent
 
 @endsection

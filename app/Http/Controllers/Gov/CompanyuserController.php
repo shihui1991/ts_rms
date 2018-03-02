@@ -25,6 +25,10 @@ class CompanyuserController extends BaseauthController
 
         /* ********** 查询条件 ********** */
         $where=[];
+        /* ++++++++++ 评估机构 ++++++++++ */
+        $company_id = $request->input('company_id');
+        $where[] = ['company_id',$company_id];
+        $infos['company_id'] = $company_id;
         /* ++++++++++ 名称 ++++++++++ */
         $name=trim($request->input('name'));
         if($name){
@@ -45,10 +49,6 @@ class CompanyuserController extends BaseauthController
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
@@ -72,7 +72,7 @@ class CompanyuserController extends BaseauthController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->get();
             if(blank($companyusers)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

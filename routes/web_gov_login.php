@@ -6,6 +6,7 @@
 */
 /*---------- 首页 ----------*/
 Route::any('/home','HomeController@index')->name('g_home');
+Route::any('/infos','HomeController@infos')->name('g_infos'); // 工作提醒详情
 
 /*---------- 个人中心 ----------*/
 Route::get('/userself','UserselfController@index')->name('g_userself'); // 个人信息

@@ -128,7 +128,8 @@ class HouselayoutimgController extends BaseauthController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'name' => 'required|unique:house_layout_img'
+                'name' => 'required|unique:house_layout_img',
+                'picture' => 'required',
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
@@ -269,7 +270,8 @@ class HouselayoutimgController extends BaseauthController
             $model=new Houselayoutimg();
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:house_layout_img,name,'.$id.',id'
+                'name'=>'required|unique:house_layout_img,name,'.$id.',id',
+                'picture' => 'required',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',

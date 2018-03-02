@@ -24,7 +24,6 @@
             <th>交付日期</th>
             <th>房源状态</th>
             <th>添加时期</th>
-            <th>操作</th>
         </tr>
         </thead>
         <tbody>
@@ -48,9 +47,6 @@
                         <td>{{$infos->house->delive_at}}</td>
                         <td>{{$infos->house->state}}</td>
                         <td>{{$infos->type}}</td>
-                        <td>
-                            <a href="{{route('g_itemhouse_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
-                        </td>
                     </tr>
                 @endforeach
             @endif

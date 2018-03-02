@@ -72,17 +72,17 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="unit"> 单元： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋： </label>
             <div class="col-sm-9">
-                <input type="number" id="unit" name="unit" value="{{$sdata->unit}}" class="col-xs-10 col-sm-5"  placeholder="请输入单元" required>
+                <input type="number" id="building" name="building" value="{{$sdata->building}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋" required>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="unit"> 单元： </label>
             <div class="col-sm-9">
-                <input type="number" id="building" name="building" value="{{$sdata->building}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋" required>
+                <input type="number" id="unit" name="unit" value="{{$sdata->unit}}" class="col-xs-10 col-sm-5"  placeholder="请输入单元" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -114,7 +114,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="total_floor"> 总楼层： </label>
             <div class="col-sm-9">
-                <input type="number" id="total_floor" name="total_floor" value="{{$sdata->total_floor}}" class="col-xs-10 col-sm-5"  placeholder="请输入面积" required>
+                <input type="number" id="total_floor" name="total_floor" value="{{$sdata->total_floor}}" class="col-xs-10 col-sm-5"  placeholder="请输入总楼层数" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -279,7 +279,7 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script>
         $('#name').focus();
-        $('.img-content').viewer('update');
+        $('.img-content').viewer();
         /*---------清空户型图----------*/
         $('#layout_id').on('change',function () {
             $('.imgs_layout').html('');
@@ -315,7 +315,7 @@
                     layoutimg+=' <div class=" radio">\n' +
                         '                    <label>\n' +
                         '                        <input name="layoutimgs" type="radio" class="ace img_radio" value="'+info.id+'">\n' +
-                        '                        <span class="lbl"><img src="'+info.picture+'"></span>\n' +
+                        '                        <span class="lbl"><img width="400" height="300" src="'+info.picture+'"></span>\n' +
                         '                    </label>\n' +
                         '            </div>'
                 });

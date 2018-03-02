@@ -23,10 +23,6 @@ Route::namespace('gov')->prefix('gov')->group(function (){
     Route::get('/logout','IndexController@logout')->name('g_logout');
 
     Route::middleware('CheckLogin:gov_user,g_index')->group(function (){
-        /*---------- 工作提醒 ----------*/
-        Route::any('/infos','InfosController@index')->name('g_infos'); // 列表
-        Route::any('/infos_info','InfosController@info')->name('g_infos_info'); // 详情
-
         /*---------- 工具 ----------*/
         Route::any('/error','ToolsController@error')->name('g_error'); // 错误提示
         Route::any('/upl','ToolsController@upl')->name('g_upl'); // 文件上传
@@ -59,5 +55,18 @@ Route::namespace('system')->prefix('sys')->group(function (){
 
     Route::middleware('CheckLogin:sys_user,sys_index')->group(function (){
         require 'web_sys_login.php';
+    });
+});
+
+
+/*========== 评估机构端 ==========*/
+Route::namespace('com')->prefix('com')->group(function (){
+    /*---------- 登录后台 ----------*/
+    Route::any('/','IndexController@index')->name('c_index'); //登录页
+    Route::any('/login','IndexController@login')->name('c_login'); //登录
+    Route::any('/logout','IndexController@logout')->name('c_logout'); //退出
+
+    Route::middleware('CheckLogin:com_user,c_index')->group(function (){
+        require 'web_com_login.php';
     });
 });
