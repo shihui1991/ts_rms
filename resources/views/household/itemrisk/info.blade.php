@@ -1,24 +1,28 @@
 {{-- 继承布局 --}}
-@extends('gov.main')
+@extends('household.home')
 
 
 {{-- 页面内容 --}}
 @section('content')
 
-    <p>
-        <a class="btn" href="javascript:history.back()">
-            <i class="ace-icon fa fa-arrow-left bigger-110"></i>
-            返回
-        </a>
-    </p>
 
+    <div class="well well-sm">
+        @if (blank($sdata))
+            <a href="{{route('h_itemrisk_add')}}" class="btn">添加社会稳定风险评估</a>
+        @else
+            <a href="{{route('h_itemrisk_edit',['id'=>$sdata->id])}}" class="btn">修改社会稳定风险评估</a>
+        @endif
+
+    </div>
+
+@if(filled($sdata))
 
     <div class="profile-user-info profile-user-info-striped">
 
         <div class="profile-info-row">
             <div class="profile-info-name">被征户账号： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->household->username}}</span>
+                <span class="editable editable-click">{{session('household_user.user_name')}}</span>
             </div>
         </div>
 
@@ -32,22 +36,16 @@
         <div class="profile-info-row">
             <div class="profile-info-name">项目地块： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click"></span>
+                <span class="editable editable-click">{{$sdata->land->address}}</span>
             </div>
         </div>
 
-        <div class="profile-info-row">
-            <div class="profile-info-name">户型： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->layout->name}}</span>
-            </div>
-        </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name">楼栋： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click"></span>
-            </div
+                <span class="editable editable-click">{{$sdata->building->building}}</span>
+            </div>
         </div>
         <div class="profile-info-row">
             <div class="profile-info-name">补偿方式： </div>
@@ -65,6 +63,12 @@
             <div class="profile-info-name">房源面积： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->house_area}}</span>
+            </div>
+        </div>
+        <div class="profile-info-row">
+            <div class="profile-info-name">房源户型： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->layout->name}}</span>
             </div>
         </div>
         <div class="profile-info-row">
@@ -140,7 +144,7 @@
             </div>
         </div>
     </div>
-
+@endif
 @endsection
 
 {{-- 样式 --}}

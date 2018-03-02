@@ -21,7 +21,7 @@
 {{-- 用户名 --}}
 @section('username')
 
-    {{session('sys_user.name')}}
+    {{session('household_user.user_name')}}
 
 @endsection
 
@@ -31,7 +31,7 @@
     <li class="divider"></li>
 
     <li>
-        <a href="{{route('sys_logout')}}">
+        <a href="{{route('h_logout')}}">
             <i class="ace-icon fa fa-power-off"></i>
             退出登录
         </a>

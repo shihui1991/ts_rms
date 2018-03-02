@@ -58,6 +58,18 @@ Route::namespace('system')->prefix('sys')->group(function (){
     });
 });
 
+/*========== 被征收户端 ==========*/
+Route::namespace('household')->prefix('household')->group(function (){
+    /*---------- 登录 ----------*/
+    Route::any('/','IndexController@index')->name('h_index'); //登录页
+    Route::any('/login','IndexController@login')->name('h_login'); //登录
+    Route::any('/logout','IndexController@logout')->name('h_logout'); //退出
+
+    Route::middleware('CheckLogin:household_user,h_index')->group(function (){
+        require 'web_household_login.php';
+    });
+});
+
 
 /*========== 评估机构端 ==========*/
 Route::namespace('com')->prefix('com')->group(function (){

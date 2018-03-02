@@ -4,10 +4,10 @@
 | 登录入口
 |--------------------------------------------------------------------------
 */
-namespace App\Http\Controllers\Gov;
+namespace App\Http\Controllers\Household;
 
 use App\Http\Controllers\Controller;
-use App\Http\Model\User;
+use App\Http\Model\Household;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +22,7 @@ class IndexController extends Controller
 
     /* ========== 登录页 ========== */
     public function index(Request $request){
-        return view('household_user.login')->with(session('code'),session('message'));
+        return view('household.login')->with(session('code'),session('message'));
     }
 
     /* ========== 登录 ========== */
@@ -46,7 +46,7 @@ class IndexController extends Controller
 
         /* ********** 查询用户 ********** */
         DB::beginTransaction();
-        $user=User::select(['id','dept_id','role_id','username','password','secret','name'])
+        $user=Household::select(['id','username','password','land_id','building_id','item_id'])
             ->where('username',$request->input('username'))
             ->sharedLock()
             ->first();
@@ -60,23 +60,17 @@ class IndexController extends Controller
             return response()->json(['code'=>'error','message'=>'密码错误','sdata'=>null,'edata'=>null,'url'=>null]);
         }
 
-        /* ********** 更新登录 ********** */
-        $user->session=session()->getId();
-        $user->action_at=date('Y-m-d H:i:s');
-        $user->login_at=date('Y-m-d H:i:s');
-        $user->login_ip=$request->ip();
-        $user->save();
-
         /* ********** 生成session ********** */
-        session(['gov_user'=>[
-            'dept_id'=>$user->dept_id,
-            'role_id'=>$user->role_id,
+        session(['household_user'=>[
             'user_id'=>$user->id,
-            'name'=>$user->name,
+            'user_name'=>$user->username,
             'secret'=>$user->secret,
+            'item_id'=>$user->item_id,
+            'building_id'=>$user->building_id,
+            'land_id'=>$user->land_id
         ]]);
 
-        return response()->json(['code'=>'success','message'=>'登录成功','sdata'=>session('household_user'),'edata'=>null,'url'=>route('g_home')]);
+        return response()->json(['code'=>'success','message'=>'登录成功','sdata'=>session('household_user'),'edata'=>null,'url'=>route('h_home')]);
     }
 
     /* ========== 退出登录 ========== */

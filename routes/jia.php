@@ -25,3 +25,5 @@ Route::any('/itemriskreport_edit','ItemriskreportController@edit')->name('g_item
 /*---------- 社会风险评估 ----------*/
 Route::any('/itemrisk','ItemriskController@index')->name('g_itemrisk');
 Route::any('/itemrisk_info','ItemriskController@info')->name('g_itemrisk_info');
+Route::any('/itemrisk_add','ItemriskController@add')->name('g_itemrisk_add');
+Route::any('/itemrisk_edit','ItemriskController@edit')->name('g_itemrisk_edit');

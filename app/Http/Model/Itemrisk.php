@@ -99,7 +99,12 @@ class Itemrisk extends Model{
 
     /* ++++++++++ 关联地块 ++++++++++ */
     public function land(){
-        return $this->belongsTo('App\Http\Model\Land','household_id','id')->withDefault();
+        return $this->belongsTo('App\Http\Model\Itemland','land_id','id')->withDefault();
+    }
+
+    /* ++++++++++ 关联楼栋 ++++++++++ */
+    public function building(){
+        return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
     }
 
     /* ++++++++++ 关联户型 ++++++++++ */
