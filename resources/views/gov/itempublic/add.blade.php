@@ -12,17 +12,32 @@
         </a>
     </p>
 
+    <h3 class="header smaller lighter blue">
+        <i class="ace-icon fa fa-bullhorn"></i>
+        @if(filled($sdata['itembuilding'])) 楼栋公共附属物 @else 地块公共附属物 @endif
+    </h3>
 
-    <form class="form-horizontal" role="form" action="{{route('g_itempublic_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itempublic_add',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item_id" value="{{$sdata['item_id']}}">
-        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
-        <input type="hidden" name="land_id" value="{{$sdata['land_id']}}">
-        <input type="hidden" name="building" value="{{$sdata['building']}}">
-        @if($sdata['building'] and $sdata['building']=='landpublic')
-                <input type="hidden" name="building_id" value="0">
-        @else
-            <input type="hidden" name="building_id" value="{{$sdata['building_id']}}">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="itemland"> 地块： </label>
+            <div class="col-sm-9">
+                <input type="text" id="itemland" value="{{$sdata['itemland']->address}}" class="col-xs-10 col-sm-5"  readonly>
+                <input type="hidden" name="land_id" value="{{$sdata['itemland']->id}}">
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        @if(filled($sdata['itembuilding']))
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="itembuilding"> 楼栋号： </label>
+                <div class="col-sm-9">
+                    <input type="text" id="itembuilding" value="{{$sdata['itembuilding']->building}}" class="col-xs-10 col-sm-5"  readonly>
+                    <input type="hidden" name="building_id" value="{{$sdata['itembuilding']->id}}">
+                </div>
+            </div>
+            <div class="space-4"></div>
         @endif
 
         <div class="form-group">
@@ -44,7 +59,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="number"> 数量： </label>
             <div class="col-sm-9">
-                <input type="text" id="number" name="number" value="{{old('number')}}" class="col-xs-10 col-sm-5"  placeholder="请输入计量单位" required>
+                <input type="text" id="number" name="number" value="{{old('number')}}" class="col-xs-10 col-sm-5"  placeholder="请输入数量" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -104,32 +119,5 @@
 @section('js')
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script>
-        /*-------获取楼栋-------*/
-        $("#land_id").on('change',function() {
-            var _this = $(this).val();
-            var data = {
-                'land_id':_this
-            };
-            ajaxAct('{{route('g_landsource')}}',data,'post');
-            if(ajaxResp.code == 'error'){
-                toastr.error(ajaxResp.message);
-            }else{
-                if(ajaxResp.sdata.landsource.length!=0){
-                    $('#land_source_id').html('');
-                    var land_source_info = '<option value="0">--请选择--</option>';
-                    $.each(ajaxResp.sdata.landsource,function (index,info) {
-                        land_source_info +='<option value="'+info.id+'">--'+info.name+'--</option>';
-                    });
-                    $('#land_source_id').html(land_source_info);
-                }else{
-                    $('#land_source_id').html('<option value="0">--请先选择土地性质--</option>');
-                    $('#land_state_id').html('<option value="0">--请先选择土地来源--</option>');
-                    toastr.error('暂无相关数据');
-                }
-            }
-
-        });
-    </script>
 
 @endsection
