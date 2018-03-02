@@ -104,10 +104,28 @@ class ItemlandController extends BaseitemController
         $item_id=$this->item_id;
         $model=new Itemland();
         if($request->isMethod('get')){
-            $sdata['landprop'] = Landprop::select(['id','name'])->get()?:[];
-            $sdata['adminunit'] = Adminunit::select(['id','name'])->get()?:[];
-            $sdata['item_id'] = $item_id;
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
+            DB::beginTransaction();
+            $landprops=Landprop::with([
+                'landsources'=>function($query){
+                    $query->with(['landstates']);
+                }])
+                ->select(['id','name'])
+                ->sharedLock()
+                ->get();
+            $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
+            DB::commit();
+
+            $result=[
+                'code'=>'success',
+                'message'=>'请求成功',
+                'sdata'=>[
+                    'item'=>$this->item,
+                    'landprops'=>$landprops,
+                    'adminunits'=>$adminunits,
+                ],
+                'edata'=>null,
+                'url'=>null];
+
             if($request->ajax()){
                 return response()->json($result);
             }else{
@@ -187,7 +205,6 @@ class ItemlandController extends BaseitemController
         /* ++++++++++ 地块信息 ++++++++++ */
         $data['itemland']=Itemland::sharedLock()->find($id);
         /* ++++++++++ 楼栋信息 ++++++++++ */
-        $itembuilding_select=['id','item_id','land_id','building','total_floor','area','build_year','struct_id','picture','deleted_at'];
         $data['itembuilding']=Itembuilding::with(
                 ['item'=>function($query){
                     $query->select(['id','name']);
@@ -200,11 +217,9 @@ class ItemlandController extends BaseitemController
                 }])
             ->where('item_id',$item_id)
             ->where('land_id',$id)
-            ->select($itembuilding_select)
             ->sharedLock()
             ->get();
         /* ++++++++++ 地块公共附属物 ++++++++++ */
-        $itempublic_select=['id','item_id','land_id','building_id','name','num_unit','number','infos','picture'];
         $data['itempublic']=Itempublic::with(
                 ['item'=>function($query){
                      $query->select(['id','name']);
@@ -218,7 +233,6 @@ class ItemlandController extends BaseitemController
             ->where('item_id',$item_id)
             ->where('land_id',$id)
             ->where('building_id',0)
-            ->select($itempublic_select)
             ->sharedLock()
             ->get();
         DB::commit();
@@ -261,22 +275,30 @@ class ItemlandController extends BaseitemController
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
             $itemland=Itemland::sharedLock()->find($id);
-            $data['landprop'] = Landprop::select(['id','name'])->get()?:[];
-            $data['adminunit'] = Adminunit::select(['id','name'])->get()?:[];
+            $landprops=Landprop::with([
+                'landsources'=>function($query){
+                    $query->with(['landstates']);
+                }])
+                ->select(['id','name'])
+                ->sharedLock()
+                ->get();
+            $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
+
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($itemland)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
-                $edata=$data;
+                $edata=null;
                 $url=null;
 
+                $view='gov.error';
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=$itemland;
-                $edata=$data;
+                $sdata=['itemland'=>$itemland,'landprops'=>$landprops,'adminunits'=>$adminunits,'item'=>$this->item];
+                $edata=null;
                 $url=null;
 
                 $view='gov.itemland.edit';
@@ -291,7 +313,12 @@ class ItemlandController extends BaseitemController
             $model=new Itemland();
             /* ********** 表单验证 ********** */
             $rules=[
-                'address'=>'required'
+                'address'=>'required|unique:item_land,address,'.$id.',id',
+                'land_prop_id' => 'required',
+                'land_source_id' => 'required',
+                'land_state_id' => 'required',
+                'admin_unit_id' => 'required',
+                'area' => 'required'
             ];
             $messages=[
                 'required'=>':attribute必须填写',
