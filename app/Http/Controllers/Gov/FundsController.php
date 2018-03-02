@@ -154,7 +154,7 @@ class FundsController extends BaseitemController
         DB::commit();
         if(filled($funds)){
             $code='success';
-            $msg='保存成功';
+            $msg='获取成功';
             $sdata=['item'=>$this->item,'funds'=>$funds];
             $edata=null;
             $url=null;

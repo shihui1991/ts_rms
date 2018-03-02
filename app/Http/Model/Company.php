@@ -67,4 +67,9 @@ class Company extends Model
     public function companyuser(){
         return $this->belongsTo('App\Http\Model\Companyuser','user_id','id')->withDefault();
     }
+
+
+    public function companyvotes(){
+        return $this->hasMany('App\Http\Model\Companyvote','company_id','id');
+    }
 }
