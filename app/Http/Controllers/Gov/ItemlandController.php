@@ -53,9 +53,7 @@ class ItemlandController extends BaseitemController
         DB::beginTransaction();
         try{
             $itemlands=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },
+                ->with([
                     'landprop'=>function($query){
                         $query->select(['id','name']);
                     },
@@ -201,18 +199,11 @@ class ItemlandController extends BaseitemController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $data['item_id'] = $item_id;
         /* ++++++++++ 地块信息 ++++++++++ */
-        $data['itemland']=Itemland::sharedLock()->find($id);
+        $itemland=Itemland::sharedLock()->find($id);
         /* ++++++++++ 楼栋信息 ++++++++++ */
-        $data['itembuilding']=Itembuilding::with(
-                ['item'=>function($query){
-                    $query->select(['id','name']);
-                },
-                'itemland'=>function($query){
-                    $query->select(['id','address']);
-                },
-                'buildingstruct'=>function($query){
+        $itembuildings=Itembuilding::with(
+                ['buildingstruct'=>function($query){
                     $query->select(['id','name']);
                 }])
             ->where('item_id',$item_id)
@@ -220,13 +211,8 @@ class ItemlandController extends BaseitemController
             ->sharedLock()
             ->get();
         /* ++++++++++ 地块公共附属物 ++++++++++ */
-        $data['itempublic']=Itempublic::with(
-                ['item'=>function($query){
-                     $query->select(['id','name']);
-                },
-                'itemland'=>function($query){
-                    $query->select(['id','address']);
-                },
+        $itempublics=Itempublic::with(
+                [
                 'itembuilding'=>function($query){
                     $query->select(['id','building']);
                 }])
@@ -237,7 +223,7 @@ class ItemlandController extends BaseitemController
             ->get();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($data)){
+        if(blank($itemland)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
@@ -246,7 +232,12 @@ class ItemlandController extends BaseitemController
         }else{
             $code='success';
             $msg='获取成功';
-            $sdata=$data;
+            $sdata=[
+                'item'=>$this->item,
+                'itemland'=>$itemland,
+                'itembuildings'=>$itembuildings,
+                'itempublics'=>$itempublics,
+                ];
             $edata=null;
             $url=null;
 
