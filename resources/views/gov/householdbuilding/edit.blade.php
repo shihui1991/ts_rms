@@ -75,18 +75,18 @@
             <label class="col-sm-3 control-label no-padding-right" for="dispute"> 面积争议： </label>
             <div class="col-sm-9 radio">
                 <label>
-                    <input name="dispute" type="radio" class="ace" value="0" @if($sdata->getOriginal('dispute')==0) checked @endif >
+                    <input name="dispute" type="radio" class="ace dispute_val" value="0" @if($sdata->getOriginal('dispute')==0) checked @endif >
                     <span class="lbl">没有争议</span>
                 </label>
                 <label>
-                    <input name="dispute" type="radio" class="ace" value="1"  @if($sdata->getOriginal('dispute')==1) checked @endif>
+                    <input name="dispute" type="radio" class="ace dispute_val" value="1"  @if($sdata->getOriginal('dispute')==1) checked @endif>
                     <span class="lbl">存在争议</span>
                 </label>
             </div>
         </div>
         <div class="space-4"></div>
 
-        <div class="form-group">
+        <div class="form-group dispute_state">
             <label class="col-sm-3 control-label no-padding-right" for="real_inner"> 实际套内面积： </label>
             <div class="col-sm-9">
                 <input type="text" id="real_inner" name="real_inner" value="{{$sdata->real_inner}}" class="col-xs-10 col-sm-5"  placeholder="请输入实际套内面积" required>
@@ -94,7 +94,7 @@
         </div>
         <div class="space-4"></div>
 
-        <div class="form-group">
+        <div class="form-group dispute_state">
             <label class="col-sm-3 control-label no-padding-right" for="real_outer"> 实际建筑面积： </label>
             <div class="col-sm-9">
                 <input type="text" id="real_outer" name="real_outer" value="{{$sdata->real_outer}}" class="col-xs-10 col-sm-5"  placeholder="请输入实际建筑面积" required>
@@ -216,7 +216,7 @@
 
         <div class="clearfix form-actions">
             <div class="col-md-offset-3 col-md-9">
-                <button class="btn btn-info" type="button" onclick="sub(this)">
+                <button class="btn btn-info" type="button" onclick="sub_ajax(this)">
                     <i class="ace-icon fa fa-check bigger-110"></i>
                     保存
                 </button>
@@ -243,6 +243,36 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script>
         $('.img-content').viewer('update');
+        window.onload=function () {
+            var dispute = '{{$sdata->getOriginal('dispute')}}';
+            if(dispute==1){
+                $('.dispute_state').css('display','block');
+            }else{
+                $('.dispute_state').css('display','none');
+            }
+        };
+
+        /*-------- 是否存在争议 -----------*/
+        $('.dispute_val').on('click',function(){
+            var dispute = $('input[name=dispute]:checked').val();
+            if(dispute==1){
+                $('.dispute_state').css('display','block');
+            }else{
+                $('.dispute_state').css('display','none');
+            }
+        });
+        /*-------- 修改 -----------*/
+        function sub_ajax(obj) {
+            var dispute = $('input[name=dispute]:checked').val();
+            var reg_inner = $('#reg_inner').val();
+            var reg_outer = $('#reg_outer').val();
+            $('.dispute_state').css('display','block');
+            if(dispute==0){
+                $('#real_inner').val(reg_inner);
+                $('#real_outer').val(reg_outer);
+            }
+            sub(obj);
+        }
     </script>
 
 @endsection
