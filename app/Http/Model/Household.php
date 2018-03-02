@@ -87,6 +87,10 @@ class Household extends Model
     public function householddetail(){
         return $this->belongsTo('App\Http\Model\Householddetail','id','household_id')->withDefault();
     }
+    /* ++++++++++ 关联被征户-家庭成员 ++++++++++ */
+    public function householdmember(){
+        return $this->belongsTo('App\Http\Model\Householdmember','id','household_id')->withDefault();
+    }
 
 
     /* ++++++++++ 密钥 ++++++++++ */

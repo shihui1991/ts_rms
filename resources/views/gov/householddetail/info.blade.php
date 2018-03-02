@@ -21,6 +21,7 @@
                     修改详细信息
                 </a>
             @endif
+            <a href="{{route('g_householdbuilding_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加房屋建筑</a>
             <a href="{{route('g_householdmember_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加家庭成员</a>
             <a href="{{route('g_householdobject_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加其他补偿事项</a>
         </div>
@@ -39,6 +40,12 @@
                         <a data-toggle="tab" href="#itempublic" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             详细信息
+                        </a>
+                    </li>
+                    <li class="">
+                        <a data-toggle="tab" href="#householdbuilding" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            房屋建筑
                         </a>
                     </li>
 
@@ -393,6 +400,49 @@
                             </div>
                         </div>
                         @endif
+                    </div>
+
+                    <div id="householdbuilding" class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>地块</th>
+                                <th>楼栋</th>
+                                <th>楼层</th>
+                                <th>朝向</th>
+                                <th>结构</th>
+                                <th>是否登记</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if($code=='success')
+                                @foreach($edata['householdbuilding'] as $infos)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$infos->itemland->address}}</td>
+                                        <td>{{$infos->itembuilding->building}}</td>
+                                        <td>{{$infos->floor}}</td>
+                                        <td>{{$infos->direct}}</td>
+                                        <td>{{$infos->buildingstruct->name}}</td>
+                                        <td>{{$infos->register}}</td>
+                                        <td>{{$infos->state}}</td>
+                                        <td>
+                                            <a href="{{route('g_householdbuilding_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div id="item" class="tab-pane fade">

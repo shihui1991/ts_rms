@@ -6,7 +6,7 @@
 
 
     <div class="well well-sm">
-        <a class="btn" href="{{route('g_household',['item'=>$edata['item_id'],'id'=>$edata['household_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
+        <a class="btn" href="{{route('g_householddetail',['item'=>$edata['item_id'],'id'=>$edata['household_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
         <a href="{{route('g_householdbuilding_add',['item'=>$edata['item_id'],'household_id'=>$edata['household_id']])}}" class="btn">添加房屋建筑</a>
     </div>
 

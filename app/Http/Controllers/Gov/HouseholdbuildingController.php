@@ -164,7 +164,7 @@ class HouseholdbuildingController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $householdbuilding;
                 $edata = null;
-                $url = route('g_household',['item'=>$this->item_id]);
+                $url = route('g_householddetail_info',['id'=>$household_id,'item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -344,7 +344,7 @@ class HouseholdbuildingController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$householdbuilding;
                 $edata=null;
-                $url = route('g_householdbuilding',['household_id'=>$household_id,'item'=>$item_id]);
+                $url = route('g_householddetail_info',['id'=>$household_id,'item'=>$item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){
