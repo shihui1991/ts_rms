@@ -34,13 +34,10 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <code id="testcon" style="display:none;">
-                {{$sdata->content}}
-            </code>
             <label class="col-sm-3 control-label no-padding-right" for="content">内容：</label>
             <div class="col-sm-9">
-                {{-- <textarea id="content" name="content" class="col-xs-10 col-sm-5" ></textarea>--}}
-                <script id="content" name="content" type="text/plain" style="width:90%;height:500px;">{{htmlspecialchars_decode($sdata->content)}}</script></div>
+                <textarea id="content" name="content" style="height: 500px;width: 90%">{{$sdata->content}}</textarea>
+            </div>
         </div>
         <div class="space-4"></div>
 

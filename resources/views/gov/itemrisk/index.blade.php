@@ -3,36 +3,32 @@
 
 {{-- 页面内容 --}}
 @section('content')
-
-
-    <div class="well well-sm">
+    <p>
         <a class="btn" href="javascript:history.back()">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
-        <a href="{{route('g_itemdraftreport_add',['item'=>$edata['item_id']])}}" class="btn">添加听证会意见</a>
-    </div>
-
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    </p>
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>标题</th>
-            <th>状态</th>
+            <th>被征户账号</th>
+            <th>征收意见稿态度</th>
             <th>操作</th>
         </tr>
         </thead>
         <tbody>
-            @if($code=='success')
-                @foreach($sdata as $infos)
-                    <tr>
-                        <td>{{$infos->name}}</td>
-                        <td>{{$infos->code}}</td>
-                        <td>
-                            <a href="{{route('g_itemdraftreport_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
-                        </td>
-                    </tr>
-                @endforeach
-            @endif
+        @if($code=='success')
+            @foreach($sdata as $infos)
+                <tr>
+                    <td>{{$infos->household->username}}</td>
+                    <td>{{$infos->agree}}</td>
+                    <td>
+                        <a href="{{route('g_itemrisk_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
+                    </td>
+                </tr>
+            @endforeach
+        @endif
         </tbody>
     </table>
     <div class="row">
@@ -55,6 +51,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script>
 
     </script>
