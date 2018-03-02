@@ -6,7 +6,7 @@
 @section('content')
 
     <div class="well well-sm">
-        <a href="javascript:history.back();" class="btn">
+        <a href="{{route('g_news',['item'=>$sdata['item']->id])}}" class="btn">
             返回
         </a>
 

@@ -4,6 +4,11 @@
 
 {{-- 页面内容 --}}
 @section('content')
+    <div class="well well-sm">
+        <a href="{{route('g_news_info',['item'=>$sdata['item']->id,'id'=>$sdata['news']->id])}}" class="btn">
+            返回
+        </a>
+    </div>
 
     <form class="form-horizontal" role="form" action="{{route('g_news_edit',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}

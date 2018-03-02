@@ -63,11 +63,10 @@ class HousepriceController extends BaseauthController
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
-            $houseprices=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=$houseprices;
+            $edata=null;
             $url=null;
         }
         DB::commit();

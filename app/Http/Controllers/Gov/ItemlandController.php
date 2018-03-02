@@ -82,10 +82,9 @@ class ItemlandController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $itemlands=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemlands;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
