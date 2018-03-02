@@ -28,7 +28,21 @@
             <div class="widget-body">
                 <div class="widget-main">
                     <div class="user-profile row">
-                        <div class="col-xs-12 col-sm-9">
+                        <div class="col-xs-12 col-sm-2 center">
+                            <ul class="ace-thumbnails clearfix img-content profile-picture">
+                                <li>
+                                    <div>
+                                        <img width="120" height="120" src="{{$sdata['company']->logo}}" alt="加载失败">
+                                        <div class="text">
+                                            <div class="inner">
+                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-12 col-sm-8">
                             <div class="profile-user-info profile-user-info-striped">
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 名称： </div>
@@ -53,24 +67,7 @@
                             </div>
 
                         </div>
-                        <div class="col-xs-12 col-sm-3 center">
-                            <div>
-                                <h6>LOGO：</h6>
-                                <ul class="ace-thumbnails clearfix img-content profile-picture">
-                                    <li>
-                                        <div>
-                                            <img width="120" height="120" src="{{$sdata['company']->logo}}" alt="加载失败">
-                                            <div class="text">
-                                                <div class="inner">
-                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
 
-                        </div>
                     </div>
                 </div>
             </div>
