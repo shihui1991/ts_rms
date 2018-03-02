@@ -78,12 +78,13 @@ class FundsController extends BaseitemController
                 'bank_id'=>'required',
                 'account'=>'required',
                 'name'=>'required',
-                'entry_at'=>'required',
+                'entry_at'=>'required|date_format:Y-m-d H:i:s',
                 'infos'=>'required',
                 'picture'=>'required',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
+                'date_format'=>':attribute 输入格式错误',
                 'min'=>':attribute 不能少于 :min',
             ];
             $model=new Funds();
@@ -153,7 +154,7 @@ class FundsController extends BaseitemController
         DB::commit();
         if(filled($funds)){
             $code='success';
-            $msg='保存成功';
+            $msg='获取成功';
             $sdata=['item'=>$this->item,'funds'=>$funds];
             $edata=null;
             $url=null;

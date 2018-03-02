@@ -13,7 +13,6 @@
         <thead>
         <tr>
             <th>序号</th>
-            <th>产权争议</th>
             <th>地块</th>
             <th>楼栋</th>
             <th>位置</th>
@@ -26,7 +25,6 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$loop->iteration}}</td>
-                        <td>{{$infos->household->householddetail->dispute}}</td>
                         <td>{{$infos->household->itemland->address}}</td>
                         <td>{{$infos->household->itembuilding->building}}</td>
                         <td>{{$infos->household->unit?$infos->household->unit.'单元':''}}
@@ -35,7 +33,7 @@
                         </td>
                         <td>{{$infos->household->type}}</td>
                         <td>
-                            <a href="{{route('g_bank_info',['id'=>$infos->id])}}" class="btn btn-sm">入户摸底</a>
+                            <a href="{{route('c_household_info',['id'=>$infos->household_id,'item'=>$infos->item_id])}}" class="btn btn-sm">入户摸底</a>
                         </td>
                     </tr>
                 @endforeach

@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\Gov;
 use App\Http\Model\Buildinguse;
 use App\Http\Model\Household;
+use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdobject;
@@ -113,10 +114,9 @@ class HouseholddetailController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $households=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$households;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
@@ -243,7 +243,8 @@ class HouseholddetailController extends BaseitemController
             'layout'=>function($query){
                 $query->select(['id','name']);
             }])
-            ->where('household_id',$id)->first();
+            ->where('household_id',$id)
+            ->first();
         DB::beginTransaction();
         $household=Household::with([
             'itemland'=>function($query){
@@ -284,6 +285,23 @@ class HouseholddetailController extends BaseitemController
                     'object'=>function($query){
                         $query->select(['id','name']);
                     }])
+                ->where('item_id',$item_id)
+                ->where('household_id',$id)
+                ->sharedLock()
+                ->get();
+            $data['householdbuilding']=Householdbuilding::with([
+                'item'=>function($query){
+                    $query->select(['id','name']);
+                 },
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                },
+                'buildingstruct'=>function($query){
+                    $query->select(['id','name']);
+                }])
                 ->where('item_id',$item_id)
                 ->where('household_id',$id)
                 ->sharedLock()

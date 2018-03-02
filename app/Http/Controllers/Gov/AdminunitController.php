@@ -74,11 +74,9 @@ class AdminunitController extends BaseauthController
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
-            $adminunits=collect();
-
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$adminunits;
+            $sdata=null;
             $edata=null;
             $url=null;
         }

@@ -34,7 +34,7 @@ class Itempublic extends Model
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
         $this->attributes['land_id'] = $request->input('land_id');
-        $this->attributes['building_id'] = $request->input('building_id');
+        $this->attributes['building_id'] = (int)$request->input('building_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){

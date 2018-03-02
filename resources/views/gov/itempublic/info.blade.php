@@ -11,40 +11,68 @@
             返回
         </a>
 
-        <a class="btn" href="{{route('g_itempublic_edit',['id'=>$sdata->id,'item'=>$edata['item_id'],'land_id'=>$edata['land_id'],'building_id'=>$edata['building_id'],'building'=>$edata['building']])}}">
+        <a class="btn" href="{{route('g_itempublic_edit',['id'=>$sdata['itempublic']->id,'item'=>$sdata['item']->id])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>
     </p>
 
 
+    <h3 class="header smaller lighter blue">
+        <i class="ace-icon fa fa-bullhorn"></i>
+        @if($sdata['itempublic']->building_id) 楼栋公共附属物 @else 地块公共附属物 @endif
+    </h3>
+
     <div class="profile-user-info profile-user-info-striped">
 
         <div class="profile-info-row">
+            <div class="profile-info-name"> 项目： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata['item']->name}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 地块： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata['itempublic']->itemland->address}}</span>
+            </div>
+        </div>
+
+        @if($sdata['itempublic']->building_id)
+            <div class="profile-info-row">
+                <div class="profile-info-name"> 楼栋： </div>
+                <div class="profile-info-value">
+                    <span class="editable editable-click red">{{$sdata['itempublic']->itembuilding->building}}</span>
+                </div>
+            </div>
+        @endif
+        
+        <div class="profile-info-row">
             <div class="profile-info-name"> 名称： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->name}}</span>
+                <span class="editable editable-click">{{$sdata['itempublic']->name}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 计量单位： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->num_unit}}</span>
+                <span class="editable editable-click">{{$sdata['itempublic']->num_unit}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 数量： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->number}}</span>
+                <span class="editable editable-click">{{$sdata['itempublic']->number}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 描述： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->total_floor}}</span>
+                <span class="editable editable-click">{{$sdata['itempublic']->total_floor}}</span>
             </div>
         </div>
 
@@ -52,8 +80,8 @@
             <div class="profile-info-name"> 图片： </div>
             <div class="profile-info-value">
                 <ul class="ace-thumbnails clearfix img-content viewer">
-                    @if(isset($sdata->picture))
-                        @foreach($sdata->picture as $pic)
+                    @if(isset($sdata['itempublic']->picture))
+                        @foreach($sdata['itempublic']->picture as $pic)
                             <li>
                                 <div>
                                     <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
@@ -73,14 +101,14 @@
         <div class="profile-info-row">
             <div class="profile-info-name"> 创建时间： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->created_at}}</span>
+                <span class="editable editable-click">{{$sdata['itempublic']->created_at}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 更新时间： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->updated_at}}</span>
+                <span class="editable editable-click">{{$sdata['itempublic']->updated_at}}</span>
             </div>
         </div>
 

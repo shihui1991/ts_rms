@@ -98,10 +98,9 @@ class ItemsubjectController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $itemsubjects=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemsubjects;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
