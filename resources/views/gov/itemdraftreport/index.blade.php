@@ -6,6 +6,10 @@
 
 
     <div class="well well-sm">
+        <a class="btn" href="javascript:history.back()">
+            <i class="ace-icon fa fa-arrow-left bigger-110"></i>
+            返回
+        </a>
         <a href="{{route('g_itemdraftreport_add',['item'=>$edata['item_id']])}}" class="btn">添加听证会意见</a>
     </div>
 

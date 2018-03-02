@@ -33,6 +33,12 @@
                 <span class="editable editable-click">{{$sdata->code}}</span>
             </div>
         </div>
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 内容： </div>
+            <div class="profile-info-value" >
+                <textarea name="content" id="content" >{{$sdata->content}}</textarea>
+            </div>
+        </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 创建时间： </div>
@@ -47,12 +53,7 @@
                 <span class="editable editable-click">{{$sdata->updated_at}}</span>
             </div>
         </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 内容： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{htmlspecialchars_decode($sdata->content)}}</span>
-            </div>
-        </div>
+
     </div>
 
 @endsection
@@ -65,4 +66,18 @@
 {{-- 插件 --}}
 @section('js')
     @parent
+    <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
+    <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>
+    <script>
+        var ue = UE.getEditor('content',{
+            toolbars:[],
+            //关闭字数统计
+            wordCount:false,
+            //关闭elementPath
+            elementPathEnabled:false,
+            //默认的编辑区域高度
+            initialFrameWidth:800,
+            readonly : true
+        });
+    </script>
 @endsection

@@ -12,22 +12,36 @@
         </a>
     </p>
 
-
-    <form class="form-horizontal" role="form" action="{{route('g_itempublic_edit')}}" method="post">
+    <h3 class="header smaller lighter blue">
+        <i class="ace-icon fa fa-bullhorn"></i>
+        @if($sdata['itempublic']->building_id) 楼栋公共附属物 @else 地块公共附属物 @endif
+    </h3>
+    <form class="form-horizontal" role="form" action="{{route('g_itempublic_edit',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="id" value="{{$sdata->id}}">
-        <input type="hidden" name="item" value="{{$sdata->item_id}}">
-        <input type="hidden" name="land_id" value="{{$sdata->land_id}}">
-        <input type="hidden" name="building" value="{{$edata['building']}}">
-        @if($sdata['building'] and $sdata['building']=='landpublic')
-            <input type="hidden" name="building_id" value="0">
-        @else
-            <input type="hidden" name="building_id" value="{{$edata['building_id']}}">
+        <input type="hidden" name="id" value="{{$sdata['itempublic']->id}}">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="itemland"> 地块： </label>
+            <div class="col-sm-9">
+                <input type="text" id="itemland" value="{{$sdata['itempublic']->itemland->address}}" class="col-xs-10 col-sm-5"  readonly>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        @if($sdata['itempublic']->building_id)
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="itembuilding"> 楼栋号： </label>
+                <div class="col-sm-9">
+                    <input type="text" id="itembuilding" value="{{$sdata['itempublic']->itembuilding->building}}" class="col-xs-10 col-sm-5"  readonly>
+                </div>
+            </div>
+            <div class="space-4"></div>
         @endif
+        
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
+                <input type="text" id="name" name="name" value="{{$sdata['itempublic']->name}}" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -35,7 +49,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="num_unit"> 计量单位： </label>
             <div class="col-sm-9">
-                <input type="text" id="num_unit" name="num_unit" value="{{$sdata->num_unit}}" class="col-xs-10 col-sm-5"  placeholder="请输入计量单位" required>
+                <input type="text" id="num_unit" name="num_unit" value="{{$sdata['itempublic']->num_unit}}" class="col-xs-10 col-sm-5"  placeholder="请输入计量单位" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -43,7 +57,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="number"> 数量： </label>
             <div class="col-sm-9">
-                <input type="text" id="number" name="number" value="{{$sdata->number}}" class="col-xs-10 col-sm-5"  placeholder="请输入数量" required>
+                <input type="text" id="number" name="number" value="{{$sdata['itempublic']->number}}" class="col-xs-10 col-sm-5"  placeholder="请输入数量" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -51,7 +65,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="infos">描述：</label>
             <div class="col-sm-9">
-                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" placeholder="请输入描述" >{{$sdata->infos}}</textarea>
+                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" placeholder="请输入描述" >{{$sdata['itempublic']->infos}}</textarea>
             </div>
         </div>
         <div class="space-4"></div>
@@ -68,8 +82,8 @@
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if($sdata->picture)
-                                @foreach($sdata->picture as $pic)
+                            @if($sdata['itempublic']->picture)
+                                @foreach($sdata['itempublic']->picture as $pic)
                                     <li>
                                         <div>
                                             <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">

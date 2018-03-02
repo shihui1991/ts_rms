@@ -67,11 +67,10 @@ class TopicController extends BaseauthController
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
-            $topics=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=$topics;
+            $edata=null;
             $url=null;
         }
         DB::commit();

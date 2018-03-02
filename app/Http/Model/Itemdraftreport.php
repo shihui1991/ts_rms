@@ -34,6 +34,8 @@ class Itemdraftreport extends Model
 
     }
 
+
+
     /* ++++++++++ 关联项目 ++++++++++ */
     public function item(){
         return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();

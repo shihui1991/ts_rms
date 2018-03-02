@@ -75,10 +75,9 @@ class ItemhouseController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $itemhouses=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemhouses;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
@@ -153,7 +152,7 @@ class ItemhouseController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = null;
                 $edata = null;
-                $url = route('g_house',['item'=>$item_id]);
+                $url = route('g_itemhouse',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';

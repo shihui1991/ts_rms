@@ -73,10 +73,9 @@ class HouseholdmemberController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            $households=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$households;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }

@@ -13,14 +13,13 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemland_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemland_edit',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="id" value="{{$sdata->id}}">
-        <input type="hidden" name="item" value="{{$sdata->item_id}}">
+        <input type="hidden" name="id" value="{{$sdata['itemland']->id}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="address"> 地址： </label>
             <div class="col-sm-9">
-                <input type="text" id="address" name="address" value="{{$sdata->address}}" class="col-xs-10 col-sm-5"  placeholder="请输入地址" required>
+                <input type="text" id="address" name="address" value="{{$sdata['itemland']->address}}" class="col-xs-10 col-sm-5"  placeholder="请输入地址" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -29,10 +28,10 @@
             <label class="col-sm-3 control-label no-padding-right" for="land_prop_id"> 土地性质： </label>
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="land_prop_id" id="land_prop_id">
-                    <option value="0">--请选择--</option>
-                    @if($edata['landprop'])
-                        @foreach($edata['landprop'] as $landprop)
-                            <option value="{{$landprop->id}}" @if($sdata->land_prop_id == $landprop->id) selected @endif>{{$landprop->name}}</option>
+                    @php $prop=[]; @endphp
+                    @if($sdata['landprops'])
+                        @foreach($sdata['landprops'] as $landprop)
+                            <option value="{{$landprop->id}}" data-index="{{$loop->index}}" @if($sdata['itemland']->land_prop_id == $landprop->id) @php $prop=$landprop; @endphp selected @endif>{{$landprop->name}}</option>
                         @endforeach
                     @endif
                 </select>
@@ -44,7 +43,12 @@
             <label class="col-sm-3 control-label no-padding-right" for="land_source_id"> 土地来源： </label>
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="land_source_id" id="land_source_id">
-                    <option value="0">--请先选择土地性质--</option>
+                    @if($prop)
+                        @php $source=[]; @endphp
+                        @foreach($prop->landsources as $landsource)
+                            <option value="{{$landsource->id}}" data-index="{{$loop->index}}" @if($sdata['itemland']->land_source_id == $landsource->id) @php $source=$landsource; @endphp selected @endif>{{$landsource->name}}</option>
+                        @endforeach
+                    @endif
                 </select>
             </div>
         </div>
@@ -54,7 +58,11 @@
             <label class="col-sm-3 control-label no-padding-right" for="land_state_id"> 土地权益状况： </label>
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="land_state_id" id="land_state_id">
-                    <option value="0">--请先选择土地来源--</option>
+                    @if($source)
+                        @foreach($source->landstates as $landstate)
+                            <option value="{{$landstate->id}}" data-index="{{$loop->index}}" @if($sdata['itemland']->land_state_id == $landstate->id) selected @endif>{{$landstate->name}}</option>
+                        @endforeach
+                    @endif
                 </select>
             </div>
         </div>
@@ -65,11 +73,11 @@
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="admin_unit_id" id="admin_unit_id">
                     <option value="0">--请选择公产单位--</option>
-                    @if($edata['adminunit'])
-                        @foreach($edata['adminunit'] as $adminunit)
-                            <option value="{{$adminunit->id}}" @if($adminunit->id == $sdata->admin_unit_id) selected @endif>--{{$adminunit->name}}--</option>
+                    @if($sdata['adminunits'])
+                        @foreach($sdata['adminunits'] as $adminunit)
+                            <option value="{{$adminunit->id}}" @if($adminunit->id == $sdata['itemland']->admin_unit_id) selected @endif>--{{$adminunit->name}}--</option>
                         @endforeach
-                     @endif
+                    @endif
                 </select>
             </div>
         </div>
@@ -78,7 +86,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="area"> 占地面积： </label>
             <div class="col-sm-9">
-                <input type="text" id="area" name="area" value="{{$sdata->area}}" class="col-xs-10 col-sm-5"  placeholder="请输入占地面积" required>
+                <input type="text" id="area" name="area" value="{{$sdata['itemland']->area}}" class="col-xs-10 col-sm-5"  placeholder="请输入占地面积" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -86,7 +94,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="infos">备注：</label>
             <div class="col-sm-9">
-                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" placeholder="请输入备注" >{{$sdata->infos}}</textarea>
+                <textarea id="infos" name="infos" class="col-xs-10 col-sm-5" placeholder="请输入备注" >{{$sdata['itemland']->infos}}</textarea>
             </div>
         </div>
         <div class="space-4"></div>
@@ -104,8 +112,8 @@
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if($sdata->picture)
-                                @foreach($sdata->picture as $pic)
+                            @if($sdata['itemland']->picture)
+                                @foreach($sdata['itemland']->picture as $pic)
                                     <li>
                                         <div>
                                             <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
@@ -159,72 +167,31 @@
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
         $('.img-content').viewer('update');
-        window.onload=function () {
-            $("#land_prop_id").trigger('change');
-            $("#land_source_id").trigger('change');
-        };
-
-        /*-------获取土地来源-------*/
-        $("#land_prop_id").on('change',function() {
-            var _this = $(this).val();
-            var data = {
-                'prop_id':_this
-            };
-            ajaxAct('{{route('g_landsource')}}',data,'post');
-            if(ajaxResp.code == 'error'){
-                toastr.error(ajaxResp.message);
-            }else{
-                if(ajaxResp.sdata.landsource.length!=0){
-                    $('#land_source_id').html('');
-                    var land_source_info = '<option value="0">--请选择--</option>';
-                    var _selected_val = '{{$sdata->land_source_id}}';
-                    $.each(ajaxResp.sdata.landsource,function (index,info) {
-                        var _selected = '';
-                        if(_selected_val == info.id){
-                            _selected = 'selected';
-                        }
-                        land_source_info +='<option value="'+info.id+'" '+_selected+'>--'+info.name+'--</option>';
-                    });
-                    $('#land_source_id').html(land_source_info);
-                }else{
-                    $('#land_source_id').html('<option value="0">--请先选择土地性质--</option>');
-                    $('#land_state_id').html('<option value="0">--请先选择土地来源--</option>');
-                    toastr.error('暂无相关数据');
-                }
-            }
-
+        var landprops=@json($sdata['landprops']);
+        $('#land_prop_id').on('change',function () {
+            var landprop_index=$(this).find('option:selected').data('index');
+            var landsources=landprops[landprop_index].landsources;
+            var landsources_opt='';
+            $.each(landsources,function (index,infos) {
+                landsources_opt +='<option value="'+infos.id+'" data-index="'+index+'" '+(infos.id=={{$sdata['itemland']->land_source_id}}?'selected':'')+'>'+infos.name+'</option>';
+            });
+            $('#land_source_id').html(landsources_opt);
+            var landstates_opt='';
+            $.each(landsources[0].landstates,function (index,infos) {
+                landstates_opt +='<option value="'+infos.id+'" data-index="'+index+'" '+(infos.id=={{$sdata['itemland']->land_state_id}}?'selected':'')+'>'+infos.name+'</option>';
+            });
+            $('#land_state_id').html(landstates_opt);
         });
-
-        /*-------获取土地权益状况-------*/
-        $("#land_source_id").on('change',function() {
-            var _this = $(this).val();
-            var land_prop_id = $('#land_prop_id').val();
-            var data = {
-                'prop_id':land_prop_id,
-                'source_id':_this
-            };
-            ajaxAct('{{route('g_landstate')}}',data,'post');
-            if(ajaxResp.code == 'error'){
-                toastr.error(ajaxResp.message);
-            }else{
-                if(ajaxResp.sdata.landstate.length!=0){
-                    $('#land_state_id').html('');
-                    var land_state_info = '<option value="0">--请选择--</option>';
-                    var _selected_val = '{{$sdata->land_state_id}}';
-                    $.each(ajaxResp.sdata.landstate,function (index,info) {
-                        var _selected = '';
-                        if(_selected_val == info.id){
-                            _selected = 'selected';
-                        }
-                        land_state_info +='<option value="'+info.id+'" '+_selected+'>--'+info.name+'--</option>';
-                    });
-                    $('#land_state_id').html(land_state_info);
-                }else{
-                    $('#land_state_id').html('<option value="0">--请先选择土地来源--</option>');
-                    toastr.error('暂无相关数据');
-                }
-            }
-
+        $('#land_source_id').on('change',function () {
+            var landprop_index=$('#land_prop_id').find('option:selected').data('index');
+            var landsources=landprops[landprop_index].landsources;
+            var landsource_index=$(this).find('option:selected').data('index');
+            var landstates=landsources[landsource_index].landstates;
+            var landstates_opt='';
+            $.each(landstates,function (index,infos) {
+                landstates_opt +='<option value="'+infos.id+'" data-index="'+index+'" '+(infos.id=={{$sdata['itemland']->land_state_id}}?'selected':'')+'>'+infos.name+'</option>';
+            });
+            $('#land_state_id').html(landstates_opt);
         });
     </script>
 

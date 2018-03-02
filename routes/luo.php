@@ -21,3 +21,15 @@ Route::any('/itemprocess_cis','ItemprocessController@check_item_start')->name('g
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算
 Route::any('/initbudget_add','InitbudgetController@add')->name('g_initbudget_add'); //添加初步预算
 Route::any('/initbudget_edit','InitbudgetController@edit')->name('g_initbudget_edit'); //修改初步预算
+
+
+/*---------- 资金管理 ----------*/
+Route::any('/funds','FundsController@index')->name('g_funds'); //项目资金
+Route::any('/funds_add','FundsController@add')->name('g_funds_add'); //录入资金
+Route::any('/funds_info','FundsController@info')->name('g_funds_info'); //转账详情
+
+/*---------- 通知公告 ----------*/
+Route::any('/news','NewsController@index')->name('g_news'); //政务公告
+Route::any('/news_add','NewsController@add')->name('g_news_add'); //添加公告
+Route::any('/news_info','NewsController@info')->name('g_news_info'); //公告详情
+Route::any('/news_edit','NewsController@edit')->name('g_news_edit'); //修改公告

@@ -20,7 +20,7 @@ class ItemdraftController extends BaseitemController
     }
 
     /* ========== 详情页 ========== */
-    public function index(Request $request){
+        public function index(Request $request){
         $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
         $where=[];
@@ -49,10 +49,9 @@ class ItemdraftController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch(\Exception $exception){
-            $itemdraft=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemdraft;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
