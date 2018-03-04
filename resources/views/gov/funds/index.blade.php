@@ -38,7 +38,7 @@
                                             <td>{{$loop->iteration}}</td>
                                             <td>{{$fundscate->name}}</td>
                                             <td>{{number_format(abs($fundscate->total),2)}}</td>
-                                            <td>@if($fundscate->total>0) 收入 @else 支出 @endif</td>
+                                            <td>@if($fundscate->total>0) 收入 @elseif($fundscate->total<0) 支出 @endif</td>
                                         </tr>
                                         @php $total += $fundscate->total; @endphp
                                     @endforeach

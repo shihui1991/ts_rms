@@ -22,7 +22,7 @@ class IndexController extends Controller
 
     /* ========== 登录页 ========== */
     public function index(Request $request){
-        return view('household_user.login')->with(session('code'),session('message'));
+        return view('gov.login')->with(session('code'),session('message'));
     }
 
     /* ========== 登录 ========== */
