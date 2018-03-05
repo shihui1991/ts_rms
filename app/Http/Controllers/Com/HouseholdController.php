@@ -5,16 +5,15 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\Com;
-use App\Http\Model\Comassess;
-use App\Http\Model\Comassessassets;
-use App\Http\Model\Comassessestate;
-use App\Http\Model\Comestatebuilding;
+use App\Http\Model\Assess;
+use App\Http\Model\Assets;
+use App\Http\Model\Estate;
+use App\Http\Model\Estatebuilding;
 use App\Http\Model\Companyhousehold;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Runner\Exception;
 
 class HouseholdController extends BaseitemController
 {
@@ -117,8 +116,8 @@ class HouseholdController extends BaseitemController
                 throw new \Exception('数据异常',404404);
             }
             /*----------- 添加评估-汇总---------------*/
-            $comassess = Comassess::where('item_id',$item_id)->where('household_id',$id)->count();
-            $comassesss = new Comassess();
+            $comassess = Assess::where('item_id',$item_id)->where('household_id',$id)->count();
+            $comassesss = new Assess();
             if($comassess==0){
                 $comassesss->item_id = $item_id;
                 $comassesss->household_id = $id;
@@ -137,8 +136,8 @@ class HouseholdController extends BaseitemController
             /*----------- 添加评估-[房产]【资产】---------------*/
             if($type==0){
                 /*=== 房产 ===*/
-                $comassessestate = new Comassessestate();
-                $state_count = Comassessestate::where('item_id',$item_id)->where('household_id',$id)->count();
+                $comassessestate = new Estate();
+                $state_count = Estate::where('item_id',$item_id)->where('household_id',$id)->count();
                 if($state_count==0){
                     $comassessestate->item_id = $item_id;
                     $comassessestate->household_id = $id;
@@ -158,8 +157,8 @@ class HouseholdController extends BaseitemController
 
             }else{
                 /*=== 资产 ===*/
-                $comassessassets = new Comassessassets();
-                $assets_count = Comassessassets::where('item_id',$item_id)->where('household_id',$id)->count();
+                $comassessassets = new Assets();
+                $assets_count = Assets::where('item_id',$item_id)->where('household_id',$id)->count();
                 if($assets_count==0){
                     $comassessassets->item_id = $item_id;
                     $comassessassets->household_id = $id;
@@ -256,9 +255,9 @@ class HouseholdController extends BaseitemController
             }
             if($type==0){
                 /*=== 房产 ===*/
-                $comassessestate = new Comassessestate();
+                $comassessestate = new Estate();
                 $comassessestate->where('item_id',$item_id)->where('household_id',$id)->first();
-                $comestatebuilding_count = Comestatebuilding::where('item_id',$item_id)->where('company_id',$company_id)->where('household_id',$id)->count();
+                $comestatebuilding_count = Estatebuilding::where('item_id',$item_id)->where('company_id',$company_id)->where('household_id',$id)->count();
                 if($comestatebuilding_count==0){
                     $householdbuilding = Householdbuilding::where('item_id',$item_id)->where('household_id',$id)->get();
 
@@ -271,7 +270,7 @@ class HouseholdController extends BaseitemController
                 }
             }else{
                 /*=== 资产 ===*/
-                $comassessassets = new Comassessassets();
+                $comassessassets = new Assets();
             }
 
             $code='success';

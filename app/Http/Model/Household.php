@@ -85,11 +85,15 @@ class Household extends Model
     }
     /* ++++++++++ 关联被征户 ++++++++++ */
     public function householddetail(){
-        return $this->belongsTo('App\Http\Model\Householddetail','id','household_id')->withDefault();
+        return $this->hasOne('App\Http\Model\Householddetail','household_id','id');
     }
     /* ++++++++++ 关联被征户-家庭成员 ++++++++++ */
-    public function householdmember(){
-        return $this->belongsTo('App\Http\Model\Householdmember','id','household_id')->withDefault();
+    public function householdmembers(){
+        return $this->hasMany('App\Http\Model\Householdmember','household_id','id');
+    }
+    /* ++++++++++ 兑付 ++++++++++ */
+    public function pay(){
+        return $this->hasOne('App\Http\Model\Pay','household_id','id');
     }
 
 

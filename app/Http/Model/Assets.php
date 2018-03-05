@@ -7,7 +7,7 @@
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 
-class Comassessassets extends Model
+class Assets extends Model
 {
     protected $table='com_assess_assets';
     protected $primaryKey='id';
