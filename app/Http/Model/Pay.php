@@ -77,7 +77,7 @@ class Pay extends Model
     }
 
     public function household(){
-        return $this->belongsTo('App\Http\Model\household','household_id','id')->withDefault();
+        return $this->belongsTo('App\Http\Model\Household','household_id','id')->withDefault();
     }
 
     public function itemland(){

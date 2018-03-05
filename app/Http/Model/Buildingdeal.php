@@ -1,19 +1,19 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-被征收户-其他补偿事项 模型
+| 被征收户-违建处理 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Householdobject extends Model
+class Buildingdeal extends Model
 {
     use SoftDeletes;
-    protected $table='item_household_object';
+    protected $table='item_household_building_deal';
     protected $primaryKey='id';
-    protected $fillable=['object_id','number','picture'];
+    protected $fillable=['way','price','state','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -24,20 +24,30 @@ class Householdobject extends Model
         'household_id'=>'被征收户',
         'land_id'=>'地块',
         'building_id'=>'楼栋',
-        'object_id'=>'其他补偿事项',
-        'number'=>'数量',
-        'picture'=>'图片'
+        'way'=>'处理方式',
+        'price'=>'拆除补助单价（罚款单价）',
+        'amount'=>'拆除补助总价（罚款总价）',
+        'state'=>'登记建筑面积',
+        'picture'=>'处理结果',
     ];
-
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-        $this->attributes['household_id'] = $request->input('household_id');
-        $this->attributes['land_id'] = $request->input('land_id');
-        $this->attributes['building_id'] = $request->input('building_id');
+
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
 
+    }
+
+    /* ++++++++++ 处理方式 ++++++++++ */
+    public function getWayAttribute($key=null)
+    {
+        $array=[0=>'自行拆除',1=>'转为合法'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
     }
 
     /* ++++++++++ 关联项目 ++++++++++ */
@@ -52,11 +62,12 @@ class Householdobject extends Model
     public function itembuilding(){
         return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
     }
-    /* ++++++++++ 关联其他补偿事项 ++++++++++ */
-    public function object(){
-        return $this->belongsTo('App\Http\Model\Object','object_id','id')->withDefault();
+    /* ++++++++++ 关联被征户 ++++++++++ */
+    public function household(){
+        return $this->belongsTo('App\Http\Model\Household','household_id','id')->withDefault();
     }
-    public function itemobject(){
-        return $this->hasOne('App\Http\Model\Itemobject','object_id','object_id')->withDefault();
+
+    public function householdbuilding(){
+        return $this->belongsTo('App\Http\Model\Householdbuilding','household_building_id','id')->withDefault();
     }
 }
