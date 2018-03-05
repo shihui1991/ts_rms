@@ -13,38 +13,35 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemprogram_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemhouserate_edit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
         <input type="hidden" name="item" value="{{$sdata->item_id}}">
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="start_area"> 起始面积（超出）： </label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
+                <input type="number" min="0" max="100" step="0.01" id="start_area" name="start_area" value="{{$sdata->start_area}}" class="col-xs-10 col-sm-5"  placeholder="请输入起始面积（超出）" required>&nbsp;&nbsp;<label class="control-label ">㎡</label>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="code"> 状态： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="end_area"> 截止面积（超出）： </label>
             <div class="col-sm-9">
-                <select name="code" id="code" class="col-xs-10 col-sm-5">
-                    @foreach($sdata['codeStage'] as $key=>$value)
-                        <option value="{{$key}}">{{$value}}</option>
-                    @endforeach
-                </select>
+                <input type="number" min="0" max="100" step="0.01" id="end_area" name="end_area" value="{{$sdata->end_area}}" class="col-xs-10 col-sm-5"  placeholder="请输入截止面积（超出）" required>&nbsp;&nbsp;<label  class="control-label ">㎡</label>
             </div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="content">内容：</label>
+            <label class="col-sm-3 control-label no-padding-right" for="rate"> 优惠上浮率： </label>
             <div class="col-sm-9">
-                <textarea  style="width:90%;height:500px;" id="content" name="content" class="col-xs-10 col-sm-5" placeholder="请输入内容" >{{$sdata->content}}</textarea>
+                <input type="number" min="0" max="100" step="0.1" id="rate" name="rate" value="{{$sdata->rate}}" class="col-xs-10 col-sm-5"  placeholder="请输入优惠上浮率" required>&nbsp;&nbsp;<label style="font-weight: bold" class="control-label ">%</label>
             </div>
         </div>
         <div class="space-4"></div>
+
 
         <div class="clearfix form-actions">
             <div class="col-md-offset-3 col-md-9">
@@ -65,18 +62,14 @@
 
 {{-- 样式 --}}
 @section('css')
-    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+
 @endsection
 
 {{-- 插件 --}}
 @section('js')
-    <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('js/func.js')}}"></script>
-    <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
-    <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>
     <script>
-        var ue = UE.getEditor('content');
-    </script>
 
+    </script>
 
 @endsection

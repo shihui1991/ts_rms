@@ -1,34 +1,31 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-征收方案 模型
+| 项目-冻结房源 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Itemprogram extends Model
+class Itemhouserate extends Model
 {
     use SoftDeletes;
-    protected $table='item_program';
-    protected $primaryKey='id';
-    protected $fillable=['name','content','code'];
+    protected $table='item_house_rate';
+    protected $fillable=['start_area','end_area','rate'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'item_id'=>'项目',
-        'name'=>'名称',
-        'content'=>'内容',
-        'code'=>'状态代码'
+        'start_area'=>'超出面积起始面积',
+        'end_area'=>'超出面积截止面积',
+        'rate'=>' 上浮率'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-      /*  $this->attributes['item_id'] = $request->input('item_id');
-//        $this->attributes['code'] = $request->input('code');
-        $this->attributes['code'] = 0;*/
+
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
@@ -40,8 +37,4 @@ class Itemprogram extends Model
         return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
 
-    /* ++++++++++ 项目状态 ++++++++++ */
-    public function state(){
-        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
-    }
 }

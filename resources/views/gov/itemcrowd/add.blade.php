@@ -13,23 +13,16 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemprogram_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemcrowd_add')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="item" value="{{$sdata['item_id']}}">
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="crowd_id"> 特殊人群分类： </label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="code"> 状态： </label>
-            <div class="col-sm-9">
-                <select name="code" id="code" class="col-xs-10 col-sm-5">
-                    @foreach($sdata['codeStage'] as $key=>$value)
-                        <option value="{{$key}}">{{$value}}</option>
+                <select class="col-xs-5 col-sm-5" name="crowd_id" id="crowd_id">
+                    <option value="">--请选择--</option>
+                    @foreach($sdata['crowd'] as $k=>$v)
+                    <option value="{{$k}}">{{$v}}</option>
                     @endforeach
                 </select>
             </div>
@@ -37,8 +30,10 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="content">内容：</label>
-            <div class="col-sm-9"><script id="content" name="content" type="text/plain" style="width:90%;height:500px;"></script></div>
+            <label class="col-sm-3 control-label no-padding-right" for="rate"> 优惠上浮率： </label>
+            <div class="col-sm-9">
+                <input type="number" min="0" max="100" step="0.1" id="rate" name="rate" value="" class="col-xs-10 col-sm-5"  placeholder="请输入优惠上浮率" required>&nbsp;&nbsp;<label style="font-weight: bold" class="control-label ">%</label>
+            </div>
         </div>
         <div class="space-4"></div>
 
@@ -68,10 +63,8 @@
 {{-- 插件 --}}
 @section('js')
     <script src="{{asset('js/func.js')}}"></script>
-    <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
-    <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>
     <script>
-        var ue = UE.getEditor('content');
+
     </script>
 
 @endsection

@@ -59,6 +59,7 @@ class  ItemriskController extends BaseController
             $edata = null;
             $url = null;
         }
+        DB::commit();
         $view = 'household.itemrisk.info';
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
         if ($request->ajax()) {
