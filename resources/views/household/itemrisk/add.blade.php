@@ -19,14 +19,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name">项目名称：</label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{$sdata->item->name}}" class="col-xs-10 col-sm-5" readonly>
+                <input type="text" id="item_name" name="item_name" value="{{$sdata->item->name}}" class="col-xs-10 col-sm-5" readonly>
             </div>
         </div>
         <div class="space-4"></div>
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="land_id">地块：</label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{$sdata->itemland->address}}" class="col-xs-10 col-sm-5" readonly>
+                <input type="text" id="land_name" name="land_name" value="{{$sdata->itemland->address}}" class="col-xs-10 col-sm-5" readonly>
             </div>
         </div>
         <div class="space-4"></div>
@@ -34,7 +34,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="land_id">楼栋：</label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{$sdata->itembuilding->building}}" class="col-xs-10 col-sm-5" readonly>
+                <input type="text" id="building_name" name="building_name" value="{{$sdata->itembuilding->building}}" class="col-xs-10 col-sm-5" readonly>
             </div>
         </div>
         <div class="space-4"></div>

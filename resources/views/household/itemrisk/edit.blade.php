@@ -15,7 +15,7 @@
 
     <form class="form-horizontal" role="form" action="{{route('h_itemrisk_edit')}}" method="post">
         {{csrf_field()}}
-
+        <input type="hidden" name="id" value="{{$sdata->id}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name">项目名称：</label>
             <div class="col-sm-9">
@@ -44,7 +44,7 @@
             <div class="col-sm-9">
                 @foreach($edata->agree as $key => $value)
                     <label>
-                        <input name="agree" type="radio" class="ace" value="{{$key}}"  checked/>
+                        <input name="agree" type="radio" class="ace" value="{{$key}}"  @if($sdata->agree==$key) checked  @endif/>
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
@@ -57,7 +57,7 @@
             <div class="col-sm-9">
                 @foreach($edata->repay_way as $key => $value)
                     <label>
-                        <input name="repay_way" type="radio" class="ace repay-val" value="{{$key}}" checked/>
+                        <input name="repay_way" type="radio" class="ace repay-val" value="{{$key}}"  @if($sdata->repay_way==$key) checked  @endif />
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
@@ -110,7 +110,7 @@
             <div class="col-sm-9 radio">
                 <select name="layout_id" id="layout_id" class="col-xs-10 col-sm-5">
                     @foreach($sdata->layout as $key => $value)
-                        <option value="{{$key}}">{{$value}}</option>
+                        <option value="{{$key}}" @if($key==$sdata->layout_id) selected @endif >{{$value}}</option>
                     @endforeach
                 </select>
             </div>
@@ -122,7 +122,7 @@
             <div class="col-sm-9">
                 @foreach($edata->transit_way as $key => $value)
                     <label>
-                        <input name="transit_way" type="radio" class="ace" value="{{$key}}" checked/>
+                        <input name="transit_way" type="radio" class="ace" value="{{$key}}" @if($sdata->transit_way==$key) checked  @endif/>
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
@@ -135,7 +135,7 @@
             <div class="col-sm-9">
                 @foreach($edata->move_way as $key => $value)
                     <label>
-                        <input name="move_way" type="radio" class="ace" value="{{$key}}" checked/>
+                        <input name="move_way" type="radio" class="ace" value="{{$key}}" @if($sdata->move_way==$key) checked  @endif/>
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach

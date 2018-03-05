@@ -12,14 +12,15 @@ class Companyvote extends Model
 {
 
     protected $table='item_company_vote';
-    protected $fillable=[];
-    protected $dates=['created_at'];
+    protected $primaryKey='id';
+    protected $fillable=['company_id'];
+    protected $dates=['created_at','updated_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'item_id'=>'项目',
-        'company_id'=>'评估机构',
-        'household_id'=>'被征收户',
+        'company_id'=>'房产评估机构',
+        'household_id'=>'被征收户'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */

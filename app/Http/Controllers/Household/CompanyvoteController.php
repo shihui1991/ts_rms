@@ -7,15 +7,15 @@
 
 namespace App\Http\Controllers\Household;
 
-use App\Http\Model\Itemrisk;
-
+use App\Http\Model\Companyvote;
+use App\Http\Model\Company;
 use App\Http\Model\Household;
-use App\Http\Model\Layout;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class  ItemriskController extends BaseController
+class  CompanyvoteController extends BaseController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -31,22 +31,23 @@ class  ItemriskController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
 
-        $itemrisk = Itemrisk::with(
+        $model = Companyvote::with(
             ['item' => function ($query) {
                 $query->select(['id', 'name']);
-            }, 'building' => function ($query) {
-                $query->select(['id', 'building']);
-            }, 'land' => function ($query) {
-                $query->select(['id', 'address']);
+            }, 'company' => function ($query) {
+                $query->select(['id', 'name']);
+            }, 'household' => function ($query) {
+                $query->select(['id', 'username']);
             }])
             ->where('household_id', $household_id)
             ->where('item_id', $item_id)
             ->sharedLock()
             ->first();
+
         DB::commit();
 
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if (blank($itemrisk)) {
+        if (blank($model)) {
             $code = 'warning';
             $msg = '数据不存在';
             $sdata = null;
@@ -55,11 +56,11 @@ class  ItemriskController extends BaseController
         } else {
             $code = 'success';
             $msg = '获取成功';
-            $sdata = $itemrisk;
+            $sdata = $model;
             $edata = null;
             $url = null;
         }
-        $view = 'household.itemrisk.info';
+        $view = 'household.itemcompanyvote.info';
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
         if ($request->ajax()) {
             return response()->json($result);
@@ -68,97 +69,75 @@ class  ItemriskController extends BaseController
         }
     }
 
-    /*社会稳定风险评估-添加页面*/
+    /*评估机构投票-添加页面*/
     public function add(Request $request)
     {
         $item_id = session('household_user.item_id');
         $household_id = session('household_user.user_id');
-        $land_id = session('household_user.land_id');
-        $building_id = session('household_user.building_id');
-
 
         if ($request->isMethod('get')) {
-
             DB::beginTransaction();
-            $itemrisk = Itemrisk::with(
-                ['item' => function ($query) {
-                    $query->select(['id', 'name']);
-                }, 'land' => function ($query) {
-                    $query->select(['id', 'address']);
-                }, 'building' => function ($query) {
-                    $query->select(['id', 'building']);
-                }])
-                ->where('household_id', $household_id)
+            $model = Companyvote::where('household_id', $household_id)
                 ->where('item_id', $item_id)
                 ->sharedLock()
                 ->first();
             DB::commit();
 
-            if (filled($itemrisk)) {
-                return response()->json(['code' => 'error', 'message' => '社会稳定风险评估不允许重复添加!', 'sdata' => null, 'edata' => null, 'url' => null]);
+            if (filled($model)) {
+                return response()->json(['code' => 'error', 'message' => '评估机构投票不允许重复添加!', 'sdata' => null, 'edata' => null, 'url' => null]);
             }
-
             $model = Household::with(
                 ['item' => function ($query) {
                     $query->select(['id', 'name']);
-                }, 'itemland' => function ($query) {
-                    $query->select(['id', 'address']);
-                }, 'itembuilding' => function ($query) {
-                    $query->select(['id', 'building']);
                 }])
                 ->where('item_id', $item_id)
                 ->sharedLock()
                 ->first();
-            $model->layout = Layout::pluck('name', 'id');
-            $result = ['code' => 'success', 'message' => '请求成功', 'sdata' => $model, 'edata' => new Itemrisk(), 'url' => null];
+            $model->company = Company::where('type',0)->pluck('name', 'id');
+            $result = ['code' => 'success', 'message' => '请求成功', 'sdata' => $model, 'edata' => null, 'url' => null];
 
             if ($request->ajax()) {
                 return response()->json($result);
             } else {
-                return view('household.itemrisk.add')->with($result);
+                return view('household.itemcompanyvote.add')->with($result);
             }
         } /*数据保存*/
         else {
-            $model = new Itemrisk();
-            /* ********** 保存 ********** */
-            /* ++++++++++ 表单验证 ++++++++++ */
-            $rules = [
-                'agree' => 'required',
-                'repay_way' => 'required',
-                'layout_id' => 'required',
-                'transit_way' => 'required',
-                'move_way' => 'required',
-                'move_fee' => 'required'
-            ];
-            $messages = [
-                'required' => ':attribute必须填写'
-            ];
-            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
-            if ($validator->fails()) {
-                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
-                return response()->json($result);
+
+            $company_id=$request->input('company_id');
+
+            if(!$company_id){
+                $result=['code'=>'error', 'message'=>'请选择评估机构', 'sdata'=>null, 'edata'=>null, 'url'=>null];
+                if($request->ajax()){
+                    return response()->json($result);
+                }else {
+                    return view('gov.error')->with($result);
+                }
             }
+
+            $model = new Companyvote();
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 批量赋值 ++++++++++ */
-                $itemrisk = $model;
-                $itemrisk->fill($request->all());
-                $itemrisk->addOther($request);
-                $itemrisk->item_id = $item_id;
-                $itemrisk->land_id = $land_id;
-                $itemrisk->household_id = $household_id;
-                $itemrisk->building_id = $building_id;
+                $company=Company::sharedLock()->find($company_id);
+                if(blank($company)){
+                    throw new \Exception('评估机构不存在',404404);
+                }
 
-                $itemrisk->save();
-                if (blank($itemrisk)) {
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $model->fill($request->all());
+                $model->addOther($request);
+                $model->item_id = $item_id;
+                $model->household_id = $household_id;
+                $model->save();
+                if (blank($model)) {
                     throw new \Exception('添加失败', 404404);
                 }
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $itemrisk;
+                $sdata = $model;
                 $edata = null;
-                $url = route('h_itemrisk_info', ['item' => $item_id]);
+                $url = route('h_itemcompanyvote_info', ['item' => $item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -178,6 +157,9 @@ class  ItemriskController extends BaseController
     public function edit(Request $request)
     {
         $id = $request->input('id');
+        $item_id = session('household_user.item_id');
+        $household_id = session('household_user.user_id');
+
         if (!$id) {
             $result = ['code' => 'error', 'message' => '请先选择数据', 'sdata' => null, 'edata' => null, 'url' => null];
             if ($request->ajax()) {
@@ -189,20 +171,18 @@ class  ItemriskController extends BaseController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $data = Itemrisk::with(['item' => function ($query) {
+            $model =Companyvote ::with(['item' => function ($query) {
                 $query->select(['id', 'name']);
-            }, 'building' => function ($query) {
-                $query->select(['id', 'building']);
-            }, 'land' => function ($query) {
-                $query->select(['id', 'address']);
+            }, 'household' => function ($query) {
+                $query->select(['id', 'username']);
             }])
                 ->sharedLock()
                 ->find($id);
-            $data->layout = Layout::pluck('name', 'id');
+            $model->company = Company::where('type',0)->pluck('name', 'id');
             DB::commit();
 
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if (blank($data)) {
+            if (blank($model)) {
                 $code = 'warning';
                 $msg = '数据不存在';
                 $sdata = null;
@@ -211,60 +191,64 @@ class  ItemriskController extends BaseController
             } else {
                 $code = 'success';
                 $msg = '获取成功';
-                $sdata = $data;
+                $sdata = $model;
                 $edata = null;
                 $url = null;
-                $view = 'household.itemrisk.edit';
+                $view = 'household.itemcompanyvote.edit';
             }
-            $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => new Itemrisk(), 'url' => $url];
+            $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' =>null, 'url' => $url];
             if ($request->ajax()) {
                 return response()->json($result);
             } else {
                 return view($view)->with($result);
             }
         } else {
-            $model = new Itemrisk();
-            /* ********** 保存 ********** */
-            /* ++++++++++ 表单验证 ++++++++++ */
-            $rules = [
-                'agree' => 'required',
-                'repay_way' => 'required'
-            ];
-            $messages = [
-                'required' => ':attribute必须填写'
-            ];
-            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
-            if ($validator->fails()) {
-                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
-                return response()->json($result);
+
+            $company_id=$request->input('company_id');
+
+            if(!$company_id){
+                $result=['code'=>'error', 'message'=>'请选择评估机构', 'sdata'=>null, 'edata'=>null, 'url'=>null];
+                if($request->ajax()){
+                    return response()->json($result);
+                }else {
+                    return view('household.error')->with($result);
+                }
             }
+
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try {
+                $company=Company::sharedLock()->find($company_id);
+                if(blank($company)){
+                    throw new \Exception('评估机构不存在',404404);
+                }
+
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $itemrisk = Itemrisk::lockForUpdate()->find($id);
-                if (blank($itemrisk)) {
+                $model = Companyvote::lockForUpdate()->find($id);
+                if (blank($model)) {
                     throw new \Exception('指定数据项不存在', 404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $itemrisk->fill($request->all());
-                $itemrisk->editOther($request);
-                $itemrisk->save();
-                if (blank($itemrisk)) {
+                $model->fill($request->all());
+                $model->editOther($request);
+                $model->item_id = $item_id;
+                $model->household_id = $household_id;
+                $model->save();
+                if (blank($model)) {
                     throw new \Exception('修改失败', 404404);
                 }
                 $code = 'success';
                 $msg = '修改成功';
-                $sdata = $itemrisk;
+                $sdata = $model;
                 $edata = null;
-                $url = route('h_itemrisk_info');
+                $url = route('h_itemcompanyvote_info');
 
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
                 $sdata = null;
-                $edata = null;
+                $edata = $exception->getMessage();
                 $url = null;
                 DB::rollBack();
             }
