@@ -130,4 +130,8 @@ class Householdbuilding extends Model
     public function buildinguses(){
         return $this->belongsTo('App\Http\Model\Buildinguse','real_use','id')->withDefault();
     }
+    /* ++++++++++ 违建处理 ++++++++++ */
+    public function buildingdeal(){
+        return $this->hasOne('App\Http\Model\Buildinguse','real_use','id')->withDefault();
+    }
 }

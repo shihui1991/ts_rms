@@ -158,6 +158,5 @@
 @section('js')
     @parent
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script src="{{asset('laydate/laydate.js')}}"></script>
 
 @endsection

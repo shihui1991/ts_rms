@@ -1,23 +1,21 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 兑付 模型
+| 兑付协议 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Pay extends Model
+class Pact extends Model
 {
     use SoftDeletes;
-    protected $table='pay';
+    protected $table='pact';
     protected $primaryKey='id';
-    protected $fillable=['repay_way','transit_way','move_way','picture'];
+    protected $fillable=['content','sign_at','sign','state'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [
-        'picture'=>'array'
-    ];
+    protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
@@ -25,43 +23,16 @@ class Pay extends Model
         'household_id'=>'被征收户',
         'land_id'=>'地块',
         'building_id'=>'楼栋',
-        'repay_way'=>'补偿方式',
-        'transit_way'=>'过渡方式',
-        'move_way'=>'搬迁方式',
-        'total'=>'补偿总额',
-        'picture'=>'征收决定',
+        'pay_id'=>'兑付汇总',
+        'cate_id'=>'协议分类',
+        'content'=>'协议内容',
+        'sign_at'=>'签约时间',
+        'sign'=>'签字',
+        'code'=>'状态代码',
+        'state'=>'有效状态',
     ];
 
-    /* ++++++++++ 补偿方式 ++++++++++ */
-    public function getRepayWayAttribute($key=null){
-        $array=[0=>'货币补偿',1=>'产权调换'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
 
-    /* ++++++++++ 补偿方式 ++++++++++ */
-    public function getTransitWayAttribute($key=null){
-        $array=[0=>'货币过渡',1=>'临时周转房'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
-
-    /* ++++++++++ 搬迁方式 ++++++++++ */
-    public function getMoveWayAttribute($key=null){
-        $array=[0=>'自行搬迁',1=>'政府协助'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
-    
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
 
@@ -86,5 +57,11 @@ class Pay extends Model
 
     public function itembuilding(){
         return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
+    }
+    public function pay(){
+        return $this->belongsTo('App\Http\Model\Pay','pay_id','id')->withDefault();
+    }
+    public function pactcate(){
+        return $this->belongsTo('App\Http\Model\Pactcate','cate_id','id')->withDefault();
     }
 }
