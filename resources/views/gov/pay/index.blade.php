@@ -11,6 +11,7 @@
             <th>地址</th>
             <th>被征收户</th>
             <th>类型</th>
+            <th>补偿总额</th>
             <th>状态</th>
             <th>操作</th>
         </tr>
@@ -23,13 +24,14 @@
                         <td>{{$household->itemland->address}}</td>
                         <td>{{$household->itembuilding->building}}栋{{$household->unit}}单元{{$household->floor}}楼{{$household->number}}@if(is_numeric($household->number))号@endif</td>
                         <td>{{$household->type}}</td>
+                        <td>{{number_format($household->pay->total,2)}}</td>
                         <td>{{$household->state}}</td>
                         <td>
                             <div class="btn-group">
-                                @if(filled($household->pay))
-                                    <a href="{{route('g_pay_info',['id'=>$household->pay->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">兑付详情</a>
+                                @if($household->pay->id)
+                                    <a href="{{route('g_pay_info',['id'=>$household->pay->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">补偿详情</a>
                                 @else
-                                    <a href="{{route('g_pay_add',['household_id'=>$household->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">开始兑付</a>
+                                    <a href="{{route('g_pay_add',['household_id'=>$household->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">计算补偿</a>
                                 @endif
 
                             </div>
@@ -40,6 +42,17 @@
             @endif
         </tbody>
     </table>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if(filled($sdata['households'])) {{ $sdata['households']->total() }} @else 0 @endif 条数据</div>
+        </div>
+        <div class="col-xs-6">
+            <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
+                @if(filled($sdata['households'])) {{ $sdata['households']->links() }} @endif
+            </div>
+        </div>
+    </div>
 
 @endsection
 

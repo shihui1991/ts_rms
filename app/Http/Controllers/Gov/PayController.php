@@ -14,7 +14,10 @@ use App\Http\Model\Household;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Pay;
+use App\Http\Model\Paybuilding;
+use App\Http\Model\Payobject;
 use App\Http\Model\Paypublic;
+use App\Http\Model\Paysubject;
 use App\Http\Model\Payunit;
 use App\Http\Model\Publicdetail;
 use Illuminate\Http\Request;
@@ -41,7 +44,7 @@ class PayController extends BaseitemController
             ->where('item_id',$this->item_id)
             ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
             ->sharedLock()
-            ->get();
+            ->paginate();
 
         DB::commit();
 
@@ -199,7 +202,7 @@ class PayController extends BaseitemController
                         ])
                         ->select(['id','item_id','household_id','assess_id','state'])
                         ->first();
-                    if(blank($assess)){
+                    if(blank($assets)){
                         throw new \Exception('暂无有效的资产评估数据',404404);
                     }
                 }
@@ -357,7 +360,7 @@ class PayController extends BaseitemController
 
                 /* ++++++++++ 公共附属物 ++++++++++ */
                 $public_total=0;
-                $pay_public=Paypublic::query()->sharedLock()
+                $pay_public=Paypublic::sharedLock()
                     ->select(DB::raw('count(*) as `public_count`,sum(`avg`) as `public_total`'))
                     ->where([
                         ['item_id',$this->item_id],
@@ -531,6 +534,9 @@ class PayController extends BaseitemController
                     $pay_unit->save();
                 }
 
+                $pay->total=$register_total+$legal_total+$destroy_total+$public_total+$object_total+$assess->assets;
+                $pay->save();
+
 
                 $code='success';
                 $msg='保存成功';
@@ -549,6 +555,222 @@ class PayController extends BaseitemController
                 DB::rollBack();
             }
             /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+    /* ========== 兑付详情 ========== */
+    public function info(Request $request){
+        $pay_id=$request->input('id');
+        DB::beginTransaction();
+        try{
+            if(!$pay_id){
+                throw new \Exception('请选择兑付数据',404404);
+            }
+            /* ++++++++++ 兑付汇总 ++++++++++ */
+            $pay=Pay::sharedLock()->find($pay_id);
+            if(blank($pay)){
+                throw new \Exception('兑付数据不存在',404404);
+            }
+            /* ++++++++++ 被征收户 ++++++++++ */
+            $household=Household::sharedLock()
+                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+                ->find($pay->household_id);
+            /* ++++++++++ 补偿科目 ++++++++++ */
+            $subjects=Paysubject::with('subject')
+                ->sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['pay_id',$pay_id],
+                ])
+                ->get();
+            /* ++++++++++ 公产单位、承租人 ++++++++++ */
+            $pay_unit=null;
+            $holder=null;
+            if($household->getOriginal('type')){
+                $pay_unit=Payunit::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['pay_id',$pay_id],
+                    ])
+                    ->first();
+                $holder=Household::sharedLock()
+                    ->select(['id','item_id','household_id','name','holder'])
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['holder',2],
+                    ])
+                    ->first();
+            }
+            /* ++++++++++ 房屋建筑 ++++++++++ */
+            $buildings=Paybuilding::with(['realuse'=>function($query){
+                $query->select(['id','name']);
+            },'buildingstruct'=>function($query){
+                $query->select(['id','name']);
+            }])
+                ->sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['household_id',$household->id],
+                    ['pay_id',$pay_id],
+                ])
+                ->orderBy('register','desc')
+                ->orderBy('state','asc')
+                ->orderBy('real_use','asc')
+                ->get();
+            /* ++++++++++ 公共附属物 ++++++++++ */
+            $publics=Paypublic::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['land_id',$household->land_id],
+                ])
+                ->orderBy('land_id','asc')
+                ->orderBy('building_id','asc')
+                ->get();
+            /* ++++++++++ 其他补偿事项 ++++++++++ */
+            $objects=Payobject::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['household_id',$household->id],
+                    ['pay_id',$pay_id],
+                ])
+                ->get();
+
+            $code='success';
+            $msg='请求成功';
+            $sdata=[
+                'item'=>$this->item,
+                'pay'=>$pay,
+                'household'=>$household,
+                'subjects'=>$subjects,
+                'pay_unit'=>$pay_unit,
+                'holder'=>$holder,
+                'buildings'=>$buildings,
+                'publics'=>$publics,
+                'objects'=>$objects,
+            ];
+            $edata=new Pay();
+            $url=null;
+
+            $view='gov.pay.info';
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            $view='gov.error';
+        }
+        DB::commit();
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+    }
+
+    public function edit(Request $request){
+        $pay_id=$request->input('id');
+        if(!$pay_id){
+            $result=['code'=>'error','message'=>'请选择兑付数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        if($request->isMethod('get')){
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 兑付汇总 ++++++++++ */
+                $pay=Pay::sharedLock()->find($pay_id);
+                if(blank($pay)){
+                    throw new \Exception('兑付数据不存在',404404);
+                }
+
+                $code='success';
+                $msg='请求成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                ];
+                $edata=new Pay();
+                $url=null;
+
+                $view='gov.pay.edit';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ********** 保存 ********** */
+        else {
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'repay_way' => 'required|boolean',
+                'transit_way' => 'required|boolean',
+                'move_way' => 'required|boolean',
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'boolean' => '请选择 :attribute 的正确选项',
+            ];
+            $model = new Pay();
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
+                return response()->json($result);
+            }
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 兑付汇总 ++++++++++ */
+                $pay=Pay::lockForUpdate()->find($pay_id);
+                if(blank($pay)){
+                    throw new \Exception('兑付数据不存在',404404);
+                }
+                $pay->fill($request->input());
+                $pay->save();
+                if(blank($pay)){
+                    throw new \Exception('保存失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                ];
+                $edata=new Pay();
+                $url=route('g_pay_info',['item'=>$pay->item_id,'id'=>$pay_id]);
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                DB::rollBack();
+            }
+
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }

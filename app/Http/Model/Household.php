@@ -85,7 +85,7 @@ class Household extends Model
     }
     /* ++++++++++ 关联被征户 ++++++++++ */
     public function householddetail(){
-        return $this->hasOne('App\Http\Model\Householddetail','household_id','id');
+        return $this->hasOne('App\Http\Model\Householddetail','household_id','id')->withDefault();
     }
     /* ++++++++++ 关联被征户-家庭成员 ++++++++++ */
     public function householdmembers(){
@@ -93,7 +93,7 @@ class Household extends Model
     }
     /* ++++++++++ 兑付 ++++++++++ */
     public function pay(){
-        return $this->hasOne('App\Http\Model\Pay','household_id','id');
+        return $this->hasOne('App\Http\Model\Pay','household_id','id')->withDefault();
     }
 
 
