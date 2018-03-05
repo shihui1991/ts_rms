@@ -257,15 +257,16 @@ class HouseholdController extends BaseitemController
             if($type==0){
                 /*=== 房产 ===*/
                 $comassessestate = new Comassessestate();
-                $comassessestate->where('item_id',$item_id)->where('household_id',$id)->first();
+                $comassessestates = $comassessestate->where('item_id',$item_id)->where('household_id',$id)->first();
                 $comestatebuilding_count = Comestatebuilding::where('item_id',$item_id)->where('company_id',$company_id)->where('household_id',$id)->count();
                 if($comestatebuilding_count==0){
                     $householdbuilding = Householdbuilding::where('item_id',$item_id)->where('household_id',$id)->get();
 
                     $comestatebuilding_data = [];
-                    foreach ($comestatebuilding_data as $k=>$v){
+                    foreach ($householdbuilding as $k=>$v){
                         $comestatebuilding_data[$k]['item_id'] = $item_id;
                         $comestatebuilding_data[$k]['company_id'] = $company_id;
+                        $comestatebuilding_data[$k]['assess_id'] = $company_id;
                     }
 
                 }
