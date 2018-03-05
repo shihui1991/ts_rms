@@ -42,3 +42,4 @@ Route::any('/companyvote_info','CompanyvoteController@info')->name('g_companyvot
 Route::any('/pay','PayController@index')->name('g_pay'); //兑付
 Route::any('/pay_add','PayController@add')->name('g_pay_add'); //生成兑付
 Route::any('/pay_info','PayController@info')->name('g_pay_info'); //兑付详情
+Route::any('/pay_edit','PayController@edit')->name('g_pay_edit'); //修改兑付

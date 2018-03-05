@@ -6,14 +6,18 @@
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Comassessestate extends Model
+class Estate extends Model
 {
+    use SoftDeletes;
     protected $table='com_assess_estate';
     protected $primaryKey='id';
-    protected $fillable=['main_total','tag_total','total','picture','state'];
+    protected $fillable=['picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [];
+    protected $casts = [
+        'picture'=>'array',
+    ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'item_id'=>'项目',
@@ -36,5 +40,29 @@ class Comassessestate extends Model
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
+    }
+
+    public function item(){
+        return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
+    }
+
+    public function household(){
+        return $this->belongsTo('App\Http\Model\Household','household_id','id')->withDefault();
+    }
+
+    public function itemland(){
+        return $this->belongsTo('App\Http\Model\Itemland','land_id','id')->withDefault();
+    }
+
+    public function itembuilding(){
+        return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
+    }
+
+    public function assess(){
+        return $this->belongsTo('App\Http\Model\Assess','assess_id','id')->withDefault();
+    }
+
+    public function company(){
+        return $this->belongsTo('App\Http\Model\Company','company_id','id')->withDefault();
     }
 }

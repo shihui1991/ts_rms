@@ -6,7 +6,10 @@
 */
 namespace App\Http\Controllers\Gov;
 
+use App\Http\Model\Assess;
+use App\Http\Model\Estatebuilding;
 use App\Http\Model\Household;
+use App\Http\Model\Householddetail;
 use App\Http\Model\Pay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -137,6 +140,24 @@ class PayController extends BaseitemController
                 if(blank($household)){
                     throw new \Exception('被征收户不存在',404404);
                 }
+                $household_detail=Householddetail::query()->sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household_id],
+                    ])
+                    ->select(['item_id','household_id','has_assets','agree','repay_way'])
+                    ->first();
+
+                $assess=Assess::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household_id],
+                        ['state',6],
+                    ])
+                    ->first();
+                if(blank($assess)){
+                    throw new \Exception('暂无有效的评估数据',404404);
+                }
                 
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $pay=$model;
@@ -151,6 +172,7 @@ class PayController extends BaseitemController
                 if(blank($pay)){
                     throw new \Exception('保存失败',404404);
                 }
+
 
                 $code='success';
                 $msg='保存成功';
