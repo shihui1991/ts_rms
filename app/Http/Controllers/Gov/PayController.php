@@ -44,7 +44,7 @@ class PayController extends BaseitemController
             ->where('item_id',$this->item_id)
             ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
             ->sharedLock()
-            ->paginate();
+            ->paginate(1);
 
         DB::commit();
 
@@ -85,7 +85,11 @@ class PayController extends BaseitemController
                 }
                 $household=Household::sharedLock()
                     ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
-                    ->find($household_id);
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$household_id],
+                    ])
+                    ->first();
                 if(blank($household)){
                     throw new \Exception('被征收户不存在',404404);
                 }
@@ -145,7 +149,10 @@ class PayController extends BaseitemController
                 }
                 $household=Household::lockForUpdate()
                     ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
-                    ->find($household_id);
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$household_id],
+                    ]);
                 if(blank($household)){
                     throw new \Exception('被征收户不存在',404404);
                 }
@@ -569,7 +576,12 @@ class PayController extends BaseitemController
                 throw new \Exception('请选择兑付数据',404404);
             }
             /* ++++++++++ 兑付汇总 ++++++++++ */
-            $pay=Pay::sharedLock()->find($pay_id);
+            $pay=Pay::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['id',$pay_id],
+                ])
+                ->first();
             if(blank($pay)){
                 throw new \Exception('兑付数据不存在',404404);
             }
@@ -674,6 +686,7 @@ class PayController extends BaseitemController
         }
     }
 
+    /* ========== 修改兑付方式 ========== */
     public function edit(Request $request){
         $pay_id=$request->input('id');
         if(!$pay_id){
@@ -688,7 +701,12 @@ class PayController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 兑付汇总 ++++++++++ */
-                $pay=Pay::sharedLock()->find($pay_id);
+                $pay=Pay::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$pay_id],
+                    ])
+                    ->first();
                 if(blank($pay)){
                     throw new \Exception('兑付数据不存在',404404);
                 }
@@ -741,7 +759,12 @@ class PayController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 兑付汇总 ++++++++++ */
-                $pay=Pay::lockForUpdate()->find($pay_id);
+                $pay=Pay::lockForUpdate()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$pay_id],
+                    ])
+                    ->first();
                 if(blank($pay)){
                     throw new \Exception('兑付数据不存在',404404);
                 }

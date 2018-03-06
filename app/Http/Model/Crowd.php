@@ -40,4 +40,8 @@ class Crowd extends Model
         return $this->hasMany('App\Http\Model\Crowd','parent_id','id');
     }
 
+    public function itemcrowds(){
+        return $this->hasMany('App\Http\Model\Itemcrowd','crowd_cate_id','id');
+    }
+
 }
