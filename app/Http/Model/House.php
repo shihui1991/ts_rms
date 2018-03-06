@@ -132,4 +132,8 @@ class House extends Model
     public function houselayoutimg(){
         return $this->belongsTo('App\Http\Model\Houselayoutimg','layout_img_id','id')->withDefault();
     }
+    /* ++++++++++ 项目房价 ++++++++++ */
+    public function itemhouseprice(){
+        return $this->hasOne('App\Http\Model\Houseprice','house_id','id')->withDefault();
+    }
 }

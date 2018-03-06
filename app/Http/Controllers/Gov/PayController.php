@@ -475,9 +475,10 @@ class PayController extends BaseitemController
                         ['household_id',$household_id],
                     ])
                     ->get();
+
+                $object_total=0;
                 if(filled($household_objects)){
                     $object_data=[];
-                    $object_total=0;
                     foreach($household_objects as $object){
                         $amount=$object->number*$object->itemobject->price;
                         $object_total +=$amount;
