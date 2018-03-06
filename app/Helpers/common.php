@@ -176,19 +176,20 @@ function batch_update_sql($table='', $insert_columns=[], $values=[], $update_col
         }
     }
 
-    /* ++++++++++ 创建虚拟表 ++++++++++ */
-    //创建虚拟表 表名
-    $temp_table='`'.$table.'_temp`';
-    //创建虚拟表 sql
-    $sqls[]='create temporary table '.$temp_table.' like `'.$table.'`';
-
-    /* ++++++++++ 添加数据 ++++++++++ */
     //数据字段
     $sql_insert_columns=[];
     foreach ($insert_columns as $insert_column){
         $sql_insert_columns[]='`'.$insert_column.'`';
     }
     $sql_insert_columns=implode(',',$sql_insert_columns);
+
+    /* ++++++++++ 创建虚拟表 ++++++++++ */
+    //创建虚拟表 表名
+    $temp_table='`'.$table.'_temp`';
+    //创建虚拟表 sql
+    $sqls[]='create temporary table '.$temp_table.' as ( select '.$sql_insert_columns.' from `'.$table.'` where 1<>1 )';
+
+    /* ++++++++++ 添加数据 ++++++++++ */
     //数据分页
     $num=100;
     $page_values=[];

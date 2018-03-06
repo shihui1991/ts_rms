@@ -232,6 +232,12 @@ class PaysubjectController extends BaseitemController
                         }
                     }
                 }
+                /* ++++++++++ 补偿总额 ++++++++++ */
+                $subject_total=Paysubject::sharedLock()
+                    ->where('pay_id',$pay->id)
+                    ->sum('amount');
+                $pay->total=$subject_total;
+                $pay->save();
 
                 $code='success';
                 $msg='保存成功';
