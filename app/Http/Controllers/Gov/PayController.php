@@ -21,6 +21,7 @@ use App\Http\Model\Paysubject;
 use App\Http\Model\Payunit;
 use App\Http\Model\Publicdetail;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,6 +37,12 @@ class PayController extends BaseitemController
     public function index(Request $request){
         DB::beginTransaction();
 
+        $total=Household::sharedLock()
+            ->where('item_id',$this->item_id)
+            ->count();
+
+        $per_page=15;
+        $page=$request->input('page',1);
         $households=Household::with(['itemland'=>function($query){
             $query->select(['id','address']);
         },'itembuilding'=>function($query){
@@ -44,7 +51,12 @@ class PayController extends BaseitemController
             ->where('item_id',$this->item_id)
             ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
             ->sharedLock()
-            ->paginate(1);
+            ->offset($per_page*($page-1))
+            ->limit($per_page)
+            ->get();
+
+        $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+        $households->withPath(route('g_pay',['item'=>$this->item_id]));
 
         DB::commit();
 
