@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\Com;
 use App\Http\Model\Assess;
 use App\Http\Model\Assets;
+use App\Http\Model\Comassessvaluer;
 use App\Http\Model\Companyvaluer;
 use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
@@ -296,6 +297,8 @@ class HouseholdController extends BaseitemController
                             $estatebuilding_data[$k]['picture'] = json_encode($v->picture);
                             $estatebuilding_data[$k]['price'] = 0;
                             $estatebuilding_data[$k]['amount'] = 0;
+                            $estatebuilding_data[$k]['created_at'] = date('Y-m-d H:i:s');
+                            $estatebuilding_data[$k]['updated_at'] = date('Y-m-d H:i:s');
                         }
                         $estatebuildings = Estatebuilding::insert($estatebuilding_data);
                         if(blank($estatebuildings)){
@@ -355,6 +358,8 @@ class HouseholdController extends BaseitemController
             }
         }else{
             /*------------------- 数据填写验证 -----------------------*/
+            $valuer_id = $request->input('valuer_id');
+            $picture = $request->input('picture');
             $prices = $request->input('price');
             $price_datas = [];
             $ids = [];
@@ -369,42 +374,68 @@ class HouseholdController extends BaseitemController
                 $price_datas[$i]['price'] = $v;
                 $i++;
             }
-//            $rules=[
-//                'valuer_id'=>'required',
-//                'picture'=>'required'
-//            ];
-//            $messages=[
-//                'required'=>':attribute 为必须项'
-//            ];
-//            $fild_msg = [
-//                'valuer_id'=>'评估师',
-//                'picture'=>'评估报告'
-//            ];
-//            $validator = Validator::make($request->all(), $rules, $messages, $fild_msg);
-//            if ($validator->fails()) {
-//                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-//                return response()->json($result);
-//            }
+            $rules=[
+                'valuer_id'=>'required',
+                'picture'=>'required'
+            ];
+            $messages=[
+                'required'=>':attribute 不能为空'
+            ];
+            $fild_msg = [
+                'valuer_id'=>'评估师',
+                'picture'=>'评估报告'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $fild_msg);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /*------------------- 被征户基本信息 -----------------------*/
+            $household=Household::sharedLock()->find($id);
+            /*------------------- 房产建筑信息 -----------------------*/
+            $estates = Estate::where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->first();
             /*------------------- 评估价格修改数据 -----------------------*/
-            $realputer = Estatebuilding::select(['id','real_outer'])->whereIn('id',$ids)->get();
+            $realputer = Estatebuilding::select(['id','real_outer','real_use'])->whereIn('id',$ids)->get();
             if(count($price_datas) == count($realputer)){
+                $main_total = 0;
+                $tag_total = 0;
                 foreach ($realputer as $k=>$v){
                     if($price_datas[$k]['id']==$v->id){
-                        $price_datas[$k]['amount'] = $price_datas[$k]['price']*$v->real_outer;
+                        $amount = $price_datas[$k]['price']*$v->real_outer;
+                        $price_datas[$k]['amount'] = $amount;
                         $price_datas[$k]['updated_at'] = date('Y-m-d H:i:s');
+                        if($v->real_use==5){
+                            $tag_total += $amount;
+                        }else{
+                            $main_total += $amount;
+                        }
                     }
                 }
+                $total = $tag_total+ $main_total;
             }else{
                 $result=['code'=>'error','message'=>'数据异常','sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
+            }
+            $valuer_datas = [];
+            foreach ($valuer_id as $key=>$val){
+                $valuer_datas[$key]['item_id'] = $item_id;
+                $valuer_datas[$key]['household_id'] = $id;
+                $valuer_datas[$key]['land_id'] = $household->land_id;
+                $valuer_datas[$key]['building_id'] = $household->building_id;
+                $valuer_datas[$key]['assess_id'] = $estates->assess_id;
+                $valuer_datas[$key]['assets_id'] = 0;
+                $valuer_datas[$key]['estate_id'] = $estates->id;
+                $valuer_datas[$key]['company_id'] = $company_id;
+                $valuer_datas[$key]['valuer_id'] = $val;
+                $valuer_datas[$key]['created_at'] = date('Y-m-d H:i:s');
+                $valuer_datas[$key]['updated_at'] = date('Y-m-d H:i:s');
             }
             /* ********** 评估 ********** */
             DB::beginTransaction();
             try{
                 /* ++++++++++ 评估房产建筑价格 ++++++++++ */
-                $field = ['id','item_id','company_id','assess_id','estate_id','household_id','land_id','building_id','household_building_id','real_outer','real_use','struct_id','direct','floor','layout_img','picture','price', 'amount', 'updated_at'];
                 $upd_field = ['id','price','amount','updated_at'];
-                $sqls = batch_update_sql('com_estate_building', $field, $price_datas,$upd_field);
+                $sqls = batch_update_sql('com_estate_building', $upd_field, $price_datas,$upd_field);
                 if (!$sqls) {
                     throw new \Exception('数据错误', 404404);
                 }
@@ -412,13 +443,21 @@ class HouseholdController extends BaseitemController
                     DB::statement($sql);
                 }
                 /* ++++++++++ 添加评估师评估记录 ++++++++++ */
-
+               $comassessvaluer = new Comassessvaluer();
+                $comassessvaluer::insert($valuer_datas);
+                if(blank($comassessvaluer)){
+                    throw new \Exception('数据错误', 404404);
+                }
                 /* ++++++++++ 修改房产评估汇总数据 ++++++++++ */
-
+                $estate = Estate::where('id',$estates->id)->update(['main_total'=>$main_total,'tag_total'=>$tag_total,'total'=>$total,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                if(blank($estate)){
+                    throw new \Exception('数据错误', 404404);
+                }
                 /* ++++++++++ 修改评估汇总数据 ++++++++++ */
-
-
-
+                $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'updated_at'=>date('Y-m-d H:i:s')]);
+                if(blank($comassess)){
+                    throw new \Exception('数据错误', 404404);
+                }
                 $code='success';
                 $msg='修改成功';
                 $sdata=null;

@@ -86,6 +86,7 @@
                             </div>
                         </div>
                         <form class="form-horizontal" role="form" action="{{route('c_household_edit')}}" method="post">
+                            <input type="hidden" name="id" value="{{$sdata->id}}">
                             <input type="hidden" name="item" value="{{$edata['item_id']}}">
                             <table class="table table-hover table-bordered">
                                 <thead>
@@ -113,21 +114,21 @@
                                             <td>{{$infos->buildingstruct->name}}</td>
                                             <td>{{$infos->real_outer}}</td>
                                             <td>{{$infos->realuse->name}}</td>
-                                            <td><input type="text" name="price[{{$infos->id}}]" value=""></td>
+                                            <td><input type="text" name="price[{{$infos->id}}]" value="{{$infos->price}}"></td>
                                         </tr>
                                     @endforeach
                                 @endif
                                 </tbody>
                             </table>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label no-padding-right" for="valuer_id"> 评估师： </label>
-                                <div class="col-sm-9">
-                                    <select class="col-xs-5 col-sm-5" name="valuer_id" id="valuer_id">
-                                        <option value="">--请选择--</option>
-                                        @foreach($edata['valuer'] as $valuer)
-                                            <option value="{{$valuer->id}}">{{$valuer->name}}</option>
-                                        @endforeach
-                                    </select>
+                                <label class="col-sm-3 control-label no-padding-right" for="valuer_id"> 评估师[注册号]： </label>
+                                <div class="col-sm-9 checkbox">
+                                    @foreach($edata['valuer'] as $valuer)
+                                        <label>
+                                            <input name="valuer_id[]" type="checkbox" class="ace" value="{{$valuer->id}}">
+                                            <span class="lbl">{{$valuer->name}}【{{$valuer->register}}】</span>
+                                        </label>
+                                    @endforeach
                                 </div>
                             </div>
                             <div class="space-4"></div>
