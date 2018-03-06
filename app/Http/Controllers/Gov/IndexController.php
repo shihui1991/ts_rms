@@ -76,14 +76,14 @@ class IndexController extends Controller
             'secret'=>$user->secret,
         ]]);
 
-        return response()->json(['code'=>'success','message'=>'登录成功','sdata'=>session('household_user'),'edata'=>null,'url'=>route('g_home')]);
+        return response()->json(['code'=>'success','message'=>'登录成功','sdata'=>session('gov_user'),'edata'=>null,'url'=>route('g_home')]);
     }
 
     /* ========== 退出登录 ========== */
     public function logout(Request $request){
-        $request->session()->forget('household_user');
+        $request->session()->forget('gov_user');
 
-        return redirect()->route('h_index');
+        return redirect()->route('g_index');
     }
 
 }

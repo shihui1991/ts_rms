@@ -44,4 +44,5 @@ Route::any('/pay_add','PayController@add')->name('g_pay_add'); //生成兑付
 Route::any('/pay_info','PayController@info')->name('g_pay_info'); //兑付详情
 Route::any('/pay_edit','PayController@edit')->name('g_pay_edit'); //修改兑付
 
+Route::any('/paysubject_add','PaysubjectController@add')->name('g_paysubject_add'); //添加补偿科目
 Route::any('/paysubject_edit','PaysubjectController@edit')->name('g_paysubject_edit'); //修改补偿科目

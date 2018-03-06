@@ -128,6 +128,12 @@
             </div>
         </div>
     </div>
+    
+    <div class="well well-sm">
+        <a href="{{route('g_paysubject_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
+            添加补偿科目
+        </a>
+    </div>
 
     <div class="tabbable">
         <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">
