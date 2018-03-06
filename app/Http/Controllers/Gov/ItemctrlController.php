@@ -59,6 +59,7 @@ class ItemctrlController extends BaseitemController
             return view('gov.itemctrl.index')->with($result);
         }
     }
+
     /* ========== 添加操作 ========== */
     public function add(Request $request){
         if($request->isMethod('get')){
@@ -107,13 +108,14 @@ class ItemctrlController extends BaseitemController
                         ['item_id',$this->item_id],
                         ['cate_id',request()->input('cate_id')],
                     ]);
-                })],
+                }),'size:1'],
                 'start_at' => 'required|date_format:Y-m-d H:i:s',
                 'end_at' => 'required|date_format:Y-m-d H:i:s|after:start_at',
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
                 'unique' => ':attribute 已存在',
+                'size' => ':attribute 长度必须为 :size',
                 'min' => ':attribute 不能少于 :min',
                 'date_format' => ':attribute 输入格式错误',
                 'after' => ':attribute 必须在 :date 之后',
@@ -235,13 +237,14 @@ class ItemctrlController extends BaseitemController
                             ['cate_id',$itemctrl->cate_id],
                             ['id','<>',$itemctrl->id],
                         ]);
-                    })],
+                    }),'size:1'],
                     'start_at' => 'required|date_format:Y-m-d H:i:s',
                     'end_at' => 'required|date_format:Y-m-d H:i:s|after:start_at',
                 ];
                 $messages = [
                     'required' => ':attribute 为必须项',
                     'unique' => ':attribute 已存在',
+                    'size' => ':attribute 长度必须为 :size',
                     'min' => ':attribute 不能少于 :min',
                     'date_format' => ':attribute 输入格式错误',
                     'after' => ':attribute 必须在 :date 之后',

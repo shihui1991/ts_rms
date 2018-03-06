@@ -44,7 +44,7 @@ class PayController extends BaseitemController
             ->where('item_id',$this->item_id)
             ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
             ->sharedLock()
-            ->paginate();
+            ->paginate(1);
 
         DB::commit();
 

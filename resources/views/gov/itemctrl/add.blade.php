@@ -30,7 +30,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="serial"> 序列（轮次）： </label>
             <div class="col-sm-9">
-                <input type="text" id="serial" name="serial" value="{{old('serial')}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="serial" name="serial" value="{{old('serial')}}" class="col-xs-10 col-sm-5" placeholder="如：A，B，C，……" required>
             </div>
         </div>
         <div class="space-4"></div>

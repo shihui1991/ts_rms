@@ -51,3 +51,7 @@ Route::any('/paysubject_edit','PaysubjectController@edit')->name('g_paysubject_e
 Route::any('/itemctrl','ItemctrlController@index')->name('g_itemctrl'); //操作控制
 Route::any('/itemctrl_add','ItemctrlController@add')->name('g_itemctrl_add'); //添加操作
 Route::any('/itemctrl_edit','ItemctrlController@edit')->name('g_itemctrl_edit'); //修改操作
+
+/*---------- 排队选房 ----------*/
+Route::any('/payreserve','PayreserveController@index')->name('g_payreserve'); //排队选房
+Route::any('/payreserve_house','PayreserveController@house')->name('g_payreserve_house'); //开始选房
