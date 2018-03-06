@@ -39,9 +39,9 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="content">内容：</label>
+            <label class="col-sm-3 control-label no-padding-right" for="content"> 内容：</label>
             <div class="col-sm-9">
-                <textarea  style="width:90%;height:500px;" id="content" name="content" class="col-xs-10 col-sm-5" placeholder="请输入内容" >{{$sdata->content}}</textarea>
+                <textarea  style="width:90%;height:500px;" id="content" name="content"  placeholder="请输入内容" >{{$sdata->content}}</textarea>
             </div>
         </div>
         <div class="space-4"></div>
