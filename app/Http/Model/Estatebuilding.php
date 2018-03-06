@@ -16,7 +16,8 @@ class Estatebuilding extends Model
     protected $fillable=['real_outer','real_use','struct_id','direct','floor','layout_img','picture','price'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
-        'picture'=>'array',
+        'layout_img'=>'array',
+        'picture'=>'array'
     ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
