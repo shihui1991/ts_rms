@@ -320,13 +320,21 @@ class HouseholdController extends BaseitemController
                             ->get();
                     }
                     $data['estatebuilding'] = $estatebuilding;
+
+                    $comassessvaluers = Comassessvaluer::where('estate_id','<>',0)->where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->pluck('valuer_id');
+                    $data['comassessvaluers'] = $comassessvaluers;
                 }else{
                     /*=== 资产 ===*/
-                    $assets = Assets::where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->frist();
+                    $asset = new Assets();
+                    $assets = $asset->where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->first();
                     if(blank($assets)){
                         throw new \Exception('数据异常',404404);
                     }
                     $data['assets'] = $assets;
+
+                    $comassessvaluers = Comassessvaluer::where('assets_id','<>',0)->where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->pluck('valuer_id');
+                    $data['comassessvaluers'] = $comassessvaluers;
+
                 }
 
                 $code='success';
@@ -344,7 +352,6 @@ class HouseholdController extends BaseitemController
                 $url=null;
                 DB::rollBack();
             }
-
             if($code=='error'){
                 $view='com.error';
             }else{
@@ -360,20 +367,23 @@ class HouseholdController extends BaseitemController
             /*------------------- 数据填写验证 -----------------------*/
             $valuer_id = $request->input('valuer_id');
             $picture = $request->input('picture');
-            $prices = $request->input('price');
-            $price_datas = [];
-            $ids = [];
-            $i = 0;
-            foreach ($prices as $k=>$v){
-                if(blank($v)){
-                    $result=['code'=>'error','message'=>'评估单价不能为空','sdata'=>null,'edata'=>null,'url'=>null];
-                    return response()->json($result);
+            if($type==0){
+                $prices = $request->input('price');
+                $price_datas = [];
+                $ids = [];
+                $i = 0;
+                foreach ($prices as $k=>$v){
+                    if(blank($v)){
+                        $result=['code'=>'error','message'=>'评估单价不能为空','sdata'=>null,'edata'=>null,'url'=>null];
+                        return response()->json($result);
+                    }
+                    $ids[] = $k;
+                    $price_datas[$i]['id'] = $k;
+                    $price_datas[$i]['price'] = $v;
+                    $i++;
                 }
-                $ids[] = $k;
-                $price_datas[$i]['id'] = $k;
-                $price_datas[$i]['price'] = $v;
-                $i++;
             }
+
             $rules=[
                 'valuer_id'=>'required',
                 'picture'=>'required'
@@ -392,55 +402,111 @@ class HouseholdController extends BaseitemController
             }
             /*------------------- 被征户基本信息 -----------------------*/
             $household=Household::sharedLock()->find($id);
-            /*------------------- 房产建筑信息 -----------------------*/
-            $estates = Estate::where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->first();
-            /*------------------- 评估价格修改数据 -----------------------*/
-            $realputer = Estatebuilding::select(['id','real_outer','real_use'])->whereIn('id',$ids)->get();
-            if(count($price_datas) == count($realputer)){
-                $main_total = 0;
-                $tag_total = 0;
-                foreach ($realputer as $k=>$v){
-                    if($price_datas[$k]['id']==$v->id){
-                        $amount = $price_datas[$k]['price']*$v->real_outer;
-                        $price_datas[$k]['amount'] = $amount;
-                        $price_datas[$k]['updated_at'] = date('Y-m-d H:i:s');
-                        if($v->real_use==5){
-                            $tag_total += $amount;
-                        }else{
-                            $main_total += $amount;
+            if($type==0){
+                /*------------------- 房产汇总信息 -----------------------*/
+                $estates = Estate::where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->first();
+                /*------------------- 评估价格修改数据 -----------------------*/
+                $realputer = Estatebuilding::select(['id','real_outer','real_use'])->whereIn('id',$ids)->get();
+                if(count($price_datas) == count($realputer)){
+                    $main_total = 0;
+                    $tag_total = 0;
+                    foreach ($realputer as $k=>$v){
+                        if($price_datas[$k]['id']==$v->id){
+                            $amount = $price_datas[$k]['price']*$v->real_outer;
+                            $price_datas[$k]['amount'] = $amount;
+                            $price_datas[$k]['updated_at'] = date('Y-m-d H:i:s');
+                            if($v->real_use==5){
+                                $tag_total += $amount;
+                            }else{
+                                $main_total += $amount;
+                            }
                         }
                     }
+                    $total = $tag_total+ $main_total;
+                }else{
+                    $result=['code'=>'error','message'=>'数据异常','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
                 }
-                $total = $tag_total+ $main_total;
+                /*------------------- 评估师评估记录数据 -----------------------*/
+                $valuer_datas = [];
+                foreach ($valuer_id as $key=>$val){
+                    $valuer_datas[$key]['item_id'] = $item_id;
+                    $valuer_datas[$key]['household_id'] = $id;
+                    $valuer_datas[$key]['land_id'] = $household->land_id;
+                    $valuer_datas[$key]['building_id'] = $household->building_id;
+                    $valuer_datas[$key]['assess_id'] = $estates->assess_id;
+                    $valuer_datas[$key]['assets_id'] = 0;
+                    $valuer_datas[$key]['estate_id'] = $estates->id;
+                    $valuer_datas[$key]['company_id'] = $company_id;
+                    $valuer_datas[$key]['valuer_id'] = $val;
+                    $valuer_datas[$key]['created_at'] = date('Y-m-d H:i:s');
+                    $valuer_datas[$key]['updated_at'] = date('Y-m-d H:i:s');
+                }
             }else{
-                $result=['code'=>'error','message'=>'数据异常','sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
+                /*------------------- 资产汇总信息 -----------------------*/
+                $assets = Assets::where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->first();
+                /*------------------- 评估师评估记录数据 -----------------------*/
+                $valuer_datas = [];
+                foreach ($valuer_id as $key=>$val){
+                    $valuer_datas[$key]['item_id'] = $item_id;
+                    $valuer_datas[$key]['household_id'] = $id;
+                    $valuer_datas[$key]['land_id'] = $household->land_id;
+                    $valuer_datas[$key]['building_id'] = $household->building_id;
+                    $valuer_datas[$key]['assess_id'] = $assets->assess_id;
+                    $valuer_datas[$key]['assets_id'] = $assets->id;
+                    $valuer_datas[$key]['estate_id'] = 0;
+                    $valuer_datas[$key]['company_id'] = $company_id;
+                    $valuer_datas[$key]['valuer_id'] = $val;
+                    $valuer_datas[$key]['created_at'] = date('Y-m-d H:i:s');
+                    $valuer_datas[$key]['updated_at'] = date('Y-m-d H:i:s');
+                }
             }
-            $valuer_datas = [];
-            foreach ($valuer_id as $key=>$val){
-                $valuer_datas[$key]['item_id'] = $item_id;
-                $valuer_datas[$key]['household_id'] = $id;
-                $valuer_datas[$key]['land_id'] = $household->land_id;
-                $valuer_datas[$key]['building_id'] = $household->building_id;
-                $valuer_datas[$key]['assess_id'] = $estates->assess_id;
-                $valuer_datas[$key]['assets_id'] = 0;
-                $valuer_datas[$key]['estate_id'] = $estates->id;
-                $valuer_datas[$key]['company_id'] = $company_id;
-                $valuer_datas[$key]['valuer_id'] = $val;
-                $valuer_datas[$key]['created_at'] = date('Y-m-d H:i:s');
-                $valuer_datas[$key]['updated_at'] = date('Y-m-d H:i:s');
-            }
+
+
             /* ********** 评估 ********** */
             DB::beginTransaction();
             try{
-                /* ++++++++++ 评估房产建筑价格 ++++++++++ */
-                $upd_field = ['id','price','amount','updated_at'];
-                $sqls = batch_update_sql('com_estate_building', $upd_field, $price_datas,$upd_field);
-                if (!$sqls) {
-                    throw new \Exception('数据错误', 404404);
-                }
-                foreach ($sqls as $sql) {
-                    DB::statement($sql);
+                if($type==0){
+                    /* ++++++++++ 评估房产建筑价格 ++++++++++ */
+                    $upd_field = ['id','price','amount','updated_at'];
+                    $sqls = batch_update_sql('com_estate_building', $upd_field, $price_datas,$upd_field);
+                    if (!$sqls) {
+                        throw new \Exception('数据错误', 404404);
+                    }
+                    foreach ($sqls as $sql) {
+                        DB::statement($sql);
+                    }
+                    /* ++++++++++ 修改房产评估汇总数据 ++++++++++ */
+                    $estate = Estate::where('id',$estates->id)->update(['main_total'=>$main_total,'tag_total'=>$tag_total,'total'=>$total,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($estate)){
+                        throw new \Exception('数据错误', 404404);
+                    }
+                    /* ++++++++++ 修改评估汇总数据 ++++++++++ */
+                    $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($comassess)){
+                        throw new \Exception('数据错误', 404404);
+                    }
+                    /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
+                    $comassessvaluers = Comassessvaluer::where('household_id',$id)->where('estate_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
+                    if(blank($comassessvaluers)){
+                        throw new \Exception('数据错误', 404404);
+                    }
+                }else{
+                    /* ++++++++++ 修改资产评估汇总数据 ++++++++++ */
+                    $assetss = Assets::where('id',$assets->id)->update(['total'=>$request->input('total'),'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($assetss)){
+                        throw new \Exception('数据错误', 404404);
+                    }
+                    /* ++++++++++ 修改评估汇总数据 ++++++++++ */
+                    $comassess = Assess::where('id',$assets->assess_id)->update(['assets'=>$request->input('total'),'updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($comassess)){
+                        throw new \Exception('数据错误', 404404);
+                    }
+                    /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
+                    $comassessvaluers = Comassessvaluer::where('household_id',$id)->where('assets_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
+                    if(blank($comassessvaluers)){
+                        throw new \Exception('数据错误', 404404);
+                    }
                 }
                 /* ++++++++++ 添加评估师评估记录 ++++++++++ */
                $comassessvaluer = new Comassessvaluer();
@@ -448,16 +514,7 @@ class HouseholdController extends BaseitemController
                 if(blank($comassessvaluer)){
                     throw new \Exception('数据错误', 404404);
                 }
-                /* ++++++++++ 修改房产评估汇总数据 ++++++++++ */
-                $estate = Estate::where('id',$estates->id)->update(['main_total'=>$main_total,'tag_total'=>$tag_total,'total'=>$total,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
-                if(blank($estate)){
-                    throw new \Exception('数据错误', 404404);
-                }
-                /* ++++++++++ 修改评估汇总数据 ++++++++++ */
-                $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'updated_at'=>date('Y-m-d H:i:s')]);
-                if(blank($comassess)){
-                    throw new \Exception('数据错误', 404404);
-                }
+
                 $code='success';
                 $msg='修改成功';
                 $sdata=null;
@@ -466,7 +523,7 @@ class HouseholdController extends BaseitemController
 
                 DB::commit();
             }catch (\Exception $exception){
-                dd($exception);
+                dd($exception->getMessage());
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
