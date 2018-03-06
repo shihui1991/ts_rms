@@ -26,3 +26,6 @@ Route::any('/householdmember_info','HouseholdmemberController@info')->name('h_ho
 Route::any('/householdmembercrowd_info','HouseholdmembercrowdController@info')->name('h_householdmembercrowd_info');
 Route::any('/householdobject_info','HouseholdobjectController@info')->name('h_householdobject_info');
 
+/*---------- 兑付--汇总 ----------*/
+Route::any('/pay','PayController@index')->name('h_pay');
+Route::any('/pay_info','PayController@info')->name('h_pay_info');
