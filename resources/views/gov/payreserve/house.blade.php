@@ -12,7 +12,7 @@
         <div class="widget-body">
             <div class="widget-main padding-8">
 
-                <form class="form-horizontal" role="form" action="{{route('g_payreserve_house',['item'=>$sdata['item']->id])}}" method="post">
+                <form class="form-horizontal" role="form" action="{{route('g_payreserve_house',['item'=>$sdata['item']->id])}}" method="post" id="house-choose-form">
                     {{csrf_field()}}
 
                     <input type="hidden" name="reserve_id" value="{{$sdata['reserve']->id}}">
@@ -25,6 +25,8 @@
                         <th>户型</th>
                         <th>面积</th>
                         <th>类型</th>
+                        <th>市场价</th>
+                        <th>优惠价</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -96,8 +98,13 @@
                         '<td>'+house_temp.layout.name+'</td>' +
                         '<td>'+house_temp.area+'</td>' +
                         '<td>'+house_temp.is_real+'</td>' +
+                        '<td>'+house_temp.itemhouseprice.market+'</td>' +
+                        '<td>'+house_temp.itemhouseprice.price+'</td>' +
                         '<td><input type="hidden" name="house_ids[]" value="'+house_temp.id+'">' +
-                        '<label><input type="checkbox" name="transit[]" value="'+house_temp.id+'">&nbsp;选择作为临时周转房</label></td>' +
+                        '<div class="btn-group">' +
+                        '<label class="btn btn-white btn-bold"><input type="checkbox" name="transit[]" value="'+house_temp.id+'">&nbsp;选择作为临时周转房</label>' +
+                        '<button class="btn btn-xs" onclick="removeHouse('+house_id+');">删除</button>' +
+                        '</div></td>' +
                         '</tr>';
                     $('#choose-house').append(str);
                 }
@@ -109,6 +116,17 @@
                 $('#house-'+house_temp.id).remove();
             }
         });
+        
+        function houseCalculate() {
+            ajaxAct('{{route('g_payreserve_cal',['item'=>$sdata['item']->id,'reserve_id'=>$sdata['reserve']->id])}}',$('#house-choose-form').serialize(),'post');
+
+        }
+        
+        function removeHouse(house_id) {
+            $('#house-'+house_id).remove();
+            choose_houses.splice($.inArray(house_id,choose_house_ids),1);
+            choose_house_ids.splice($.inArray(house_id,choose_house_ids),1);
+        }
 
         function getHouses(data) {
             ajaxAct('{{route('g_payreserve_house',['item'=>$sdata['item']->id,'reserve_id'=>$sdata['reserve']->id])}}',data,'get');
@@ -140,6 +158,8 @@
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.area+ ' ㎡</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.layout.name+ '</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.is_real+ '</li>'+
+                    '<li><i class="ace-icon fa fa-circle green"></i>市场评估价：'+ info.itemhouseprice.market+ '</li>'+
+                    '<li><i class="ace-icon fa fa-circle green"></i>安置优惠价：'+ info.itemhouseprice.price+ '</li>'+
                     '</ul>'+
                     '<hr>'+
                     '<div class="price checkbox">'+

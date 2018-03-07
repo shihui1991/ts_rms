@@ -31,4 +31,8 @@ class Filetable extends Model
     public function editOther($request){
 
     }
+
+    public function filecates(){
+        return $this->hasMany('App\Http\Model\filecate','file_table_id','id');
+    }
 }

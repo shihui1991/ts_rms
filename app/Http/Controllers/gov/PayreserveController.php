@@ -9,6 +9,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\House;
 use App\Http\Model\Itemctrl;
 use App\Http\Model\Itemhouse;
+use App\Http\Model\Pay;
 use App\Http\Model\Payreserve;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -185,7 +186,67 @@ class PayreserveController extends BaseitemController
         }
         /* ++++++++++ 保存 ++++++++++ */
         else{
+            DB::beginTransaction();
+            try{
+                $reserve=Payreserve::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$reserve_id],
+                    ])
+                    ->first();
+                if(blank($reserve)){
+                    throw new \Exception('错误操作',404404);
+                }
+                if($reserve->getOriginal('state')==1){
+                    throw new \Exception('当前被征收户已经选房了，请进入修改页面操作',404404);
+                }
+                if($reserve->getOriginal('state')==2){
+                    throw new \Exception('当前被征收户未在限定时间内来选房，预约失效',404404);
+                }
+                $pay=Pay::sharedLock()->find($reserve->pay_id);
+                $item_house_ids=Itemhouse::sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->pluck('house_id');
 
+                $houses=House::with(['housecommunity','layout','houselayoutimg','itemhouseprice'=>function($query){
+                    $query->where([
+                        ['start_at','<=',$this->item->created_at],
+                        ['end_at','>=',$this->item->created_at],
+                    ]);
+                }])
+                    ->sharedLock()
+                    ->whereIn('id',$item_house_ids)
+                    ->where('state',1)
+                    ->get();
+
+                $code='success';
+                $msg='请求成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'reserve'=>$reserve,
+                    'houses'=>$houses,
+                ];
+                $edata=null;
+                $url=null;
+
+                $view='gov.payreserve.house';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
+    }
+
+    /* ========== 选房计算 ========== */
+    public function calculate(Request $request){
+
     }
 }

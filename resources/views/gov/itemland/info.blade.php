@@ -72,7 +72,7 @@
                             </div>
                             @if($sdata['itemland']->admin_unit_id != 0)
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 公产单位： </div>
+                                    <div class="profile-info-name"> 公房单位： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['itemland']->adminunit->name}}</span>
                                     </div>

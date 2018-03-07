@@ -6,7 +6,7 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_adminunit_add')}}" class="btn">添加公产单位</a>
+        <a href="{{route('g_adminunit_add')}}" class="btn">添加公房单位</a>
     </div>
 
     <table class="table table-hover table-bordered">

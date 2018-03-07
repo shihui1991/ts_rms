@@ -53,7 +53,7 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="land_state_id"> 土地权益状况： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="land_state_id"> 土地权益状况：</label>
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="land_state_id" id="land_state_id">
                     @if($sdata['landprops'])
@@ -67,10 +67,10 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="admin_unit_id"> 公产单位： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="admin_unit_id"> 公房单位： </label>
             <div class="col-sm-9">
                 <select class="col-xs-10 col-sm-5" name="admin_unit_id" id="admin_unit_id">
-                    <option value="0">--请选择公产单位--</option>
+                    <option value="0">--请选择公房单位--</option>
                     @if($sdata['adminunits'])
                         @foreach($sdata['adminunits'] as $adminunit)
                             <option value="{{$adminunit->id}}">--{{$adminunit->name}}--</option>
