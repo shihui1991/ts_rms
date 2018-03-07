@@ -11,7 +11,7 @@ class Assets extends Model
 {
     protected $table='com_assess_assets';
     protected $primaryKey='id';
-    protected $fillable=['assets','estate','state'];
+    protected $fillable=['total','picture','state'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
