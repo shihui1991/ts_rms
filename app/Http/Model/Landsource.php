@@ -38,6 +38,6 @@ class Landsource extends Model
     }
 
     public function landstates(){
-        return $this->hasMany('App\Http\Model\landstate','source_id','id');
+        return $this->hasMany('App\Http\Model\Landstate','source_id','id');
     }
 }
