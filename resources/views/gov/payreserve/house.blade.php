@@ -24,6 +24,7 @@
                         <th>房号</th>
                         <th>户型</th>
                         <th>面积</th>
+                        <th>类型</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -87,12 +88,25 @@
                 if(!choose_house_ids || !choose_house_ids.length || $.inArray(house_id,choose_house_ids) == -1){
                     choose_houses.push(house_temp);
                     choose_house_ids.push(house_id);
+
+                    var str='<tr id="house-'+house_temp.id+'">' +
+                        '<td>'+house_temp.housecommunity.address+'</td>' +
+                        '<td>'+house_temp.housecommunity.name+'</td>' +
+                        '<td>'+ house_temp.building+ '栋'+house_temp.unit+'单元'+house_temp.floor+'楼'+house_temp.number+($.isNumeric(house_temp.number)?'号':'')+'</td>'+
+                        '<td>'+house_temp.layout.name+'</td>' +
+                        '<td>'+house_temp.area+'</td>' +
+                        '<td>'+house_temp.is_real+'</td>' +
+                        '<td><input type="hidden" name="house_ids[]" value="'+house_temp.id+'">' +
+                        '<label><input type="checkbox" name="transit[]" value="'+house_temp.id+'">&nbsp;选择作为临时周转房</label></td>' +
+                        '</tr>';
+                    $('#choose-house').append(str);
                 }
             }else{
                 if(choose_house_ids && choose_house_ids.length && $.inArray(house_id,choose_house_ids) != -1){
                     choose_houses.splice($.inArray(house_temp,houselist_temp),1);
                     choose_house_ids.splice($.inArray(house_id,choose_house_ids),1);
                 }
+                $('#house-'+house_temp.id).remove();
             }
         });
 
@@ -121,7 +135,7 @@
                     '<div class="widget-body">'+
                     '<div class="widget-main">'+
                     '<ul class="list-unstyled spaced2">'+
-                    '<li><i class="ace-icon fa fa-circle green"></i>'+ info.housecommunity.name+ '</li>'+
+                    '<li><i class="ace-icon fa fa-circle green"></i>'+ info.housecommunity.address+ '</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.building+ '栋'+info.unit+'单元'+info.floor+'楼'+info.number+($.isNumeric(info.number)?'号':'')+'</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.area+ ' ㎡</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.layout.name+ '</li>'+
