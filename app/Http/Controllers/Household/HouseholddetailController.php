@@ -129,6 +129,7 @@ class  HouseholddetailController extends BaseController
         $item_id=session('household_user.item_id');
 
         /* ********** 当前数据 ********** */
+        DB::beginTransaction();
         $data['item_id'] = $item_id;
         $data['household'] = new Household();
         $data['household_detail'] = Householddetail::with([
@@ -143,7 +144,7 @@ class  HouseholddetailController extends BaseController
             }])
             ->where('household_id',$id)
             ->first();
-        DB::beginTransaction();
+
         $household=Household::with([
             'itemland'=>function($query){
                 $query->select(['id','address']);

@@ -4,16 +4,15 @@
 
 {{-- 页面内容 --}}
 @section('content')
-
-
     <div class="well well-sm">
-        @if (blank($sdata))
-            <a href="{{route('h_itemcompanyvote_add')}}" class="btn">添加评估机构投票</a>
-        @else
-            <a href="{{route('h_itemcompanyvote_edit',['id'=>$sdata->id])}}" class="btn">修改评估机构投票</a>
-        @endif
+
+        <a class="btn" href="javascript:history.back()">
+            <i class="ace-icon fa fa-arrow-left bigger-110"></i>
+            返回
+        </a>
 
     </div>
+
 
 @if(filled($sdata))
 
@@ -33,7 +32,7 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name">评估机构： </div>
+            <div class="profile-info-name">投票机构： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->company->name}}</span>
             </div>
@@ -43,6 +42,13 @@
             <div class="profile-info-name">创建时间： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->created_at}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name">更新时间： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->updated_at}}</span>
             </div>
         </div>
     </div>
