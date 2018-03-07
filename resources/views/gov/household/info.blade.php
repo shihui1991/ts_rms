@@ -13,95 +13,79 @@
             </a>
         </div>
 
-        <div class="well-sm">
-            <div class="tabbable">
-                <ul class="nav nav-tabs" id="myTab">
-                    <li class="active">
-                        <a data-toggle="tab" href="#itembuilding" aria-expanded="true">
-                            <i class="green ace-icon fa fa-building bigger-120"></i>
-                           基本信息
-                        </a>
-                    </li>
+        <div id="itembuilding" class="tab-pane fade active in">
+            <div class="profile-user-info profile-user-info-striped">
 
-                </ul>
-
-                <div class="tab-content">
-                    <div id="itembuilding" class="tab-pane fade active in">
-                        <div class="profile-user-info profile-user-info-striped">
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 地块： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->itemland->address}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 楼栋： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->itembuilding->building}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 单元号： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->unit}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 楼层： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->floor}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房号： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->number}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房产类型： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->type}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 用户名： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->username}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 描述： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->infos}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 创建时间： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->created_at}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 更新时间： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->updated_at}}</span>
-                                </div>
-                            </div>
-
-                        </div>
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 地块： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->itemland->address}}</span>
                     </div>
                 </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 楼栋： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->itembuilding->building}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 单元号： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->unit}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 楼层： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->floor}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 房号： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->number}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 房产类型： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->type}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 用户名： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->username}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 描述： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->infos}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 创建时间： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->created_at}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 更新时间： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->updated_at}}</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

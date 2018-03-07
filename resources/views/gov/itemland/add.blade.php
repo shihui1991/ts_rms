@@ -71,7 +71,7 @@
             <div class="col-sm-9">
                 <select class="col-xs-10 col-sm-5" name="admin_unit_id" id="admin_unit_id">
                     <option value="0">--请选择公房单位--</option>
-                    @if($sdata['adminunits'])
+                    @if(filled($sdata['adminunits']))
                         @foreach($sdata['adminunits'] as $adminunit)
                             <option value="{{$adminunit->id}}">--{{$adminunit->name}}--</option>
                         @endforeach
