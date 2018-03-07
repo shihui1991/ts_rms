@@ -15,7 +15,11 @@ Route::any('/userself_pwd','UserselfController@password')->name('c_userself_pwd'
 
 /*---------- 项目 ----------*/
 Route::get('/item','ItemController@index')->name('c_item');
-/*---------- 入户摸底资料 ----------*/
+/*---------- 入户摸底【评估】 ----------*/
 Route::get('/household','HouseholdController@index')->name('c_household');
 Route::get('/household_info','HouseholdController@info')->name('c_household_info');
 Route::any('/household_edit','HouseholdController@edit')->name('c_household_edit');
+/*---------- 评估【公共附属物】 ----------*/
+Route::get('/compublic','CompublicController@index')->name('c_compublic');
+Route::any('/compublic_add','CompublicController@add')->name('c_compublic_add');
+Route::any('/compublic_edit','CompublicController@edit')->name('c_compublic_edit');
