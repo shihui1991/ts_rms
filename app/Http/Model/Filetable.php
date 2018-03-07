@@ -33,6 +33,6 @@ class Filetable extends Model
     }
 
     public function filecates(){
-        return $this->hasMany('App\Http\Model\filecate','file_table_id','id');
+        return $this->hasMany('App\Http\Model\Filecate','file_table_id','id');
     }
 }
