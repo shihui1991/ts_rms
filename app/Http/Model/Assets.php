@@ -28,12 +28,29 @@ class Assets extends Model
     ];
 
 
+    public function getStateAttribute($key=null){
+        $array=[0=>'待评估',1=>'评估中',2=>'完成',3=>'通过',4=>'驳回',5=>'反对',6=>'同意'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
 
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
+    }
+
+    public function assess(){
+        return $this->belongsTo('App\Http\Model\Assess','assess_id','id')->withDefault();
+    }
+
+    public function company(){
+        return $this->belongsTo('App\Http\Model\Company','company_id','id')->withDefault();
     }
 
 }

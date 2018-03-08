@@ -35,3 +35,10 @@ Route::any('/householdobject_info','HouseholdobjectController@info')->name('h_ho
 Route::any('/pay','PayController@index')->name('h_pay');
 Route::any('/pay_info','PayController@info')->name('h_pay_info');
 
+/*---------- 评估报告 ----------*/
+Route::any('/assess_info','AssessController@info')->name('h_assess');
+
+
+/*---------- 房源 ----------*/
+Route::any('/itemhouse','ItemhouseController@index')->name('h_itemhouse');
+
