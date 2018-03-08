@@ -23,7 +23,7 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$loop->iteration}}</td>
-                        <td>{{$infos->newscate->name}}</td>
+                        <td>{{$infos->noticecate->name}}</td>
                         <td>{{$infos->infos}}</td>
                         <td>
                             <a href="{{route('g_itemnotice_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>

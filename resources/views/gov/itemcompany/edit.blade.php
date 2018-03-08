@@ -206,8 +206,6 @@
 
             ajaxAct('{{route('g_householddetail')}}',data,'post');
             if(ajaxResp.code=='error'){
-                $('.search_household').html('&nbsp; 暂无对应被征收户');
-                $('#search_household').html('');
                 toastr.error(ajaxResp.message);
             }else{
                 var houseinfo = '';
