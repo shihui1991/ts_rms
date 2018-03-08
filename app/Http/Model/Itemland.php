@@ -57,7 +57,7 @@ class Itemland extends Model
     public function landstate(){
         return $this->belongsTo('App\Http\Model\Landstate','land_state_id','id')->withDefault();
     }
-    /* ++++++++++ 关联公产单位 ++++++++++ */
+    /* ++++++++++ 关联公房单位 ++++++++++ */
     public function adminunit(){
         return $this->belongsTo('App\Http\Model\Adminunit','admin_unit_id','id')->withDefault();
     }

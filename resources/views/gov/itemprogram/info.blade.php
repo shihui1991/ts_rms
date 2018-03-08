@@ -11,6 +11,11 @@
         @else
             <a href="{{route('g_itemprogram_edit',['id'=>$sdata->id,'item'=>$edata['item_id']])}}" class="btn">修改征收方案</a>
         @endif
+
+            <a href="{{route('g_itemsubject',['item'=>$edata['item_id']])}}" class="btn">补偿科目说明</a>
+            <a href="{{route('g_itemhouserate',['item'=>$edata['item_id']])}}" class="btn">产权调换优惠</a>
+            <a href="{{route('g_itemcrowd',['item'=>$edata['item_id']])}}" class="btn">特殊人群优惠</a>
+            <a href="{{route('g_itemobject',['item'=>$edata['item_id']])}}" class="btn">其他补偿事项</a>
     </div>
 
     @if (filled($sdata))

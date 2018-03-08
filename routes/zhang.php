@@ -1,7 +1,7 @@
 <?php
 /*=========  【征收管理端】  ==========*/
 /*============================================ 【基础资料】 ================================================*/
-/*---------- 公产单位 ----------*/
+/*---------- 公房单位 ----------*/
 Route::get('/adminunit','AdminunitController@index')->name('g_adminunit');
 Route::any('/adminunit_add','AdminunitController@add')->name('g_adminunit_add');
 Route::get('/adminunit_info','AdminunitController@info')->name('g_adminunit_info');
@@ -28,7 +28,8 @@ Route::get('/crowd_info','CrowdController@info')->name('g_crowd_info');
 Route::any('/crowd_edit','CrowdController@edit')->name('g_crowd_edit');
 /*---------- 必备附件分类 ----------*/
 Route::get('/filecate','FilecateController@index')->name('g_filecate');
-Route::get('/filecate_info','FilecateController@info')->name('g_filecate_info');
+Route::any('/filecate_add','FilecateController@add')->name('g_filecate_add');
+Route::any('/filecate_edit','FilecateController@edit')->name('g_filecate_edit');
 /*---------- 房屋户型 ----------*/
 Route::get('/layout','LayoutController@index')->name('g_layout');
 Route::any('/layout_add','LayoutController@add')->name('g_layout_add');

@@ -108,7 +108,7 @@
                                                 <br>
                                                 其中：
                                                 <br>
-                                                【{{$sdata['household']->itemland->adminunit->name}}（公产单位）】所得补偿款：
+                                                【{{$sdata['household']->itemland->adminunit->name}}（公房单位）】所得补偿款：
                                                 <strong>{{number_format($sdata['pay_unit']->amount,2)}}</strong>
                                                 人民币（大写）{{bigRMB($sdata['pay_unit']->amount)}}
                                                 <br>

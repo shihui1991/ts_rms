@@ -5,35 +5,55 @@
 @section('content')
 
 
-    <div class="well well-sm">
-    </div>
-
-    <table class="table table-hover table-bordered">
-        <thead>
-        <tr>
-            <th>序号</th>
-            <th>名称</th>
-            <th>文件名称</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        @if($code=='success')
-            @foreach($sdata as $infos)
-                <tr>
-                    <td>{{$loop->iteration}}</td>
-                    <td>{{$infos->name}}</td>
-                    <td>{{$infos->filename}}</td>
-                    <td>
-                        <a href="{{route('g_filecate_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
-                    </td>
-                </tr>
+    <div class="tabbable">
+        <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">
+            
+            @foreach($sdata as $filetable)
+                <li class="@if($loop->index==0) active @endif">
+                    <a data-toggle="tab" href="#filetable-{{$filetable->name}}" aria-expanded="@if($loop->index==0) true @endif">{{$filetable->infos}}</a>
+                </li>
             @endforeach
-        @endif
 
-        </tbody>
-    </table>
+        </ul>
+
+        <div class="tab-content">
+
+            @foreach($sdata as $filetable)
+                <div id="filetable-{{$filetable->name}}" class="tab-pane @if($loop->index==0) active @endif">
+
+                    <p>
+                        <a href="{{route('g_filecate_add',['file_table_id'=>$filetable->id])}}" class="btn">添加【{{$filetable->infos}}】分类</a>
+                    </p>
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>文件名称</th>
+                            <th>数据名称（英文）</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        @foreach($filetable->filecates as $filecate)
+                            <tr>
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{$filecate->name}}</td>
+                                <td>{{$filecate->filename}}</td>
+                                <td>
+                                    <a href="{{route('g_filecate_edit',['id'=>$filecate->id])}}" class="btn btn-sm">修改</a>
+                                </td>
+                            </tr>
+                        @endforeach
+
+                        </tbody>
+                    </table>
+
+                </div>
+            @endforeach
+
+        </div>
+    </div>
 
 @endsection
 

@@ -11,7 +11,7 @@
             @else
             <a href="{{route('g_itemdraft_edit',['id'=>$sdata->id,'item'=>$sdata->item_id])}}" class="btn">修改征收意见稿</a>
             @endif
-                <a href="{{route('g_itemdraftreport',['item'=>$sdata->item_id])}}" class="btn">听证会意见</a>
+                <a href="{{route('g_itemdraftreport',['item'=>$edata['item_id']])}}" class="btn">听证会意见</a>
         </div>
 
         @if (!blank($sdata))
