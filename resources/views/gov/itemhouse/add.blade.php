@@ -43,6 +43,7 @@
                 </tbody>
             </table>
             <p class="search_house">&nbsp; 请先查询房源</p>
+            <input type="hidden" id="house_ids" value="">
         </div>
         <div class="space-4"></div>
 
@@ -128,35 +129,43 @@
             };
             ajaxAct('{{route('g_house')}}',data,'post');
             if(ajaxResp.code=='error'){
-                $('.search_house').html('&nbsp; 暂无对应房源');
                 toastr.error(ajaxResp.message);
             }else{
-                $("#search_house").html('');
                 var houseinfo = '';
                 if(ajaxResp.sdata.data.length>0){
                     $('.search_house').html('');
                 }
+                var house_ids = $("#house_ids").val();
+                var house_ids_arr = [];
+                if(house_ids){
+                    house_ids_arr = house_ids.split(",");
+                }
                 $.each(ajaxResp.sdata.data,function (index,info) {
-                    var unit = info.unit?info.unit+'单元':'';
-                    var building = info.building?info.building+'楼':'';
-                    var floor = info.floor?info.floor+'层':'';
-                    var number = info.number?info.number+'号':'';
-                    houseinfo+=' <tr>\n' +
-                        '                    <td><input type="checkbox" name="house_id[]" value="'+info.id+'"></td>\n'+
-                        '                        <td>'+info.id+'</td>\n' +
-                        '                        <td>'+info.housecompany.name+'</td>\n' +
-                        '                        <td>'+info.housecommunity.name+'</td>\n' +
-                        '                        <td>'+info.layout.name+'</td>\n' +
-                        '                        <td>'+unit+building+floor+number+'</td>\n' +
-                        '                        <td>'+info.area+'</td>\n' +
-                        '                        <td>'+info.total_floor+'</td>\n' +
-                        '                        <td>'+info.lift+'</td>\n' +
-                        '                        <td>'+info.is_real+'|'+info.is_buy+'|'+info.is_transit+'|'+info.is_public+'</td>\n' +
-                        '                        <td>'+info.delive_at+'</td>\n' +
-                        '                        <td>'+info.state+'</td>\n' +
-                        '            </tr>';
+                    if($.inArray(info.id.toString(),house_ids_arr) == -1) {
+                        house_ids_arr.push(info.id.toString());
+                        var unit = info.unit ? info.unit + '单元' : '';
+                        var building = info.building ? info.building + '楼' : '';
+                        var floor = info.floor ? info.floor + '层' : '';
+                        var number = info.number ? info.number + '号' : '';
+                        houseinfo += ' <tr>\n' +
+                            '                    <td><input type="checkbox" name="house_id[]" value="' + info.id + '"></td>\n' +
+                            '                        <td>' + info.id + '</td>\n' +
+                            '                        <td>' + info.housecompany.name + '</td>\n' +
+                            '                        <td>' + info.housecommunity.name + '</td>\n' +
+                            '                        <td>' + info.layout.name + '</td>\n' +
+                            '                        <td>' + unit + building + floor + number + '</td>\n' +
+                            '                        <td>' + info.area + '</td>\n' +
+                            '                        <td>' + info.total_floor + '</td>\n' +
+                            '                        <td>' + info.lift + '</td>\n' +
+                            '                        <td>' + info.is_real + '|' + info.is_buy + '|' + info.is_transit + '|' + info.is_public + '</td>\n' +
+                            '                        <td>' + info.delive_at + '</td>\n' +
+                            '                        <td>' + info.state + '</td>\n' +
+                            '            </tr>';
+                    }
                 });
-                $("#search_house").html(houseinfo);
+                $("#search_house").append(houseinfo);
+
+                $("#house_ids").val(house_ids_arr.join(','));
             }
             $('#myModal').modal('hide');
         });

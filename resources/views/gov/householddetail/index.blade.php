@@ -4,11 +4,6 @@
 {{-- 页面内容 --}}
 @section('content')
 
-
-    <div class="well well-sm">
-        <a href="{{route('g_household_add',['item'=>$edata['item_id']])}}" class="btn">添加被征收户账号</a>
-    </div>
-
     <table class="table table-hover table-bordered">
         <thead>
         <tr>

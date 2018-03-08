@@ -145,8 +145,8 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <ul class="ace-thumbnails clearfix img-content viewer">
-                                                @if($edata['assets']->picture)
-                                                    @foreach(json_decode($edata['assets']->picture,true) as $pic)
+                                                @if($edata['estate']->picture)
+                                                    @foreach(json_decode($edata['estate']->picture,true) as $pic)
                                                         <li>
                                                             <div>
                                                                 <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">

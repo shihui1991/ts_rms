@@ -538,7 +538,7 @@ class PayController extends BaseController{
                 foreach ($sqls as $sql) {
                     DB::statement($sql);
                 }
-                /* ++++++++++ 公产单位补偿 ++++++++++ */
+                /* ++++++++++ 公房单位补偿 ++++++++++ */
                 if ($household->getOriginal('type')) {
                     $pay_unit = new Payunit();
                     $pay_unit->item_id = $this->item_id;

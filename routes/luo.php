@@ -55,3 +55,4 @@ Route::any('/itemctrl_edit','ItemctrlController@edit')->name('g_itemctrl_edit');
 /*---------- 排队选房 ----------*/
 Route::any('/payreserve','PayreserveController@index')->name('g_payreserve'); //排队选房
 Route::any('/payreserve_house','PayreserveController@house')->name('g_payreserve_house'); //开始选房
+Route::any('/payreserve_cal','PayreserveController@calculate')->name('g_payreserve_cal'); //选房计算

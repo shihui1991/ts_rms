@@ -44,7 +44,7 @@
 
                                         @if($infos->adminunit->name)
                                         <div class="profile-info-row">
-                                            <div class="profile-info-name"> 公产单位： </div>
+                                            <div class="profile-info-name"> 公房单位： </div>
                                             <div class="profile-info-value">
                                                 <span class="editable editable-click">{{$infos->adminunit->name}}</span>
                                             </div>

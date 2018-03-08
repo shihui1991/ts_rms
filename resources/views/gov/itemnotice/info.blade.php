@@ -23,7 +23,7 @@
         <div class="profile-info-row">
             <div class="profile-info-name"> 通知分类： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->newscate->name}}</span>
+                <span class="editable editable-click">{{$sdata->noticecate->name}}</span>
             </div>
         </div>
 

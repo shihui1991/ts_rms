@@ -323,6 +323,13 @@ class HouseholdController extends BaseitemController
 
                     $comassessvaluers = Comassessvaluer::where('estate_id','<>',0)->where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->pluck('valuer_id');
                     $data['comassessvaluers'] = $comassessvaluers;
+
+                    $estate = new Estate();
+                    $estates = $estate->where('item_id',$item_id)->where('household_id',$id)->where('company_id',$company_id)->first();
+                    if(blank($estates)){
+                        throw new \Exception('数据异常',404404);
+                    }
+                    $data['estate'] = $estates;
                 }else{
                     /*=== 资产 ===*/
                     $asset = new Assets();
