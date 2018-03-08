@@ -113,7 +113,7 @@ class DeptController extends BaseauthController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $dept=$model;
                 $dept->fill($request->input());
-                $dept->editOther($request);
+                $dept->addOther($request);
                 $dept->save();
                 if(blank($dept)){
                     throw new \Exception('保存失败',404404);
