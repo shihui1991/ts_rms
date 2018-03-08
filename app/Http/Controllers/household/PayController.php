@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\household;
 
 use App\Http\Model\Itemrisk;
+use App\Http\Model\Item;
 use App\Http\Model\Assess;
 use App\Http\Model\Assets;
 use App\Http\Model\Estate;
@@ -28,10 +29,12 @@ use Illuminate\Support\Facades\Validator;
 
 class PayController extends BaseController{
     public $item_id;
+    public $item;
 
-    public function index(){
+    public function info(Request $request){
         $household_id=session('household_user.user_id');
         $this->item_id=session('household_user.item_id');
+        $this->item=Item::sharedLock()->find($this->item_id);
         DB::beginTransaction();
         $model=Pay::with(['itemland' => function ($query) {
                 $query->select(['id', 'address']);
@@ -43,11 +46,93 @@ class PayController extends BaseController{
                 ->first();
         DB::commit();
         if (filled($model)){
-            $code = 'success';
-            $msg = '请求成功';
-            $sdata = $model;
-            $edata = null;
+            /* ++++++++++ 被征收户 ++++++++++ */
+            $household=Household::sharedLock()
+                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+                ->find($household_id);
+            /* ++++++++++ 补偿科目 ++++++++++ */
+            $subjects=Paysubject::with('subject')
+                ->sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['pay_id',$model->id],
+                ])
+                ->get();
+            /* ++++++++++ 公产单位、承租人 ++++++++++ */
+            $pay_unit=null;
+            $holder=null;
+            if($household->getOriginal('type')){
+                $pay_unit=Payunit::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['pay_id',$model->id],
+                    ])
+                    ->first();
+                $holder=Household::sharedLock()
+                    ->select(['id','item_id','household_id','name','holder'])
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['holder',2],
+                    ])
+                    ->first();
+            }
+            /* ++++++++++ 房屋建筑 ++++++++++ */
+            $buildings=Paybuilding::with(['realuse'=>function($query){
+                $query->select(['id','name']);
+            },'buildingstruct'=>function($query){
+                $query->select(['id','name']);
+            }])
+                ->sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['household_id',$household->id],
+                    ['pay_id',$model->id],
+                ])
+                ->orderBy('register','desc')
+                ->orderBy('state','asc')
+                ->orderBy('real_use','asc')
+                ->get();
+            /* ++++++++++ 公共附属物 ++++++++++ */
+            $publics=Paypublic::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['land_id',$household->land_id],
+                ])
+                ->orderBy('land_id','asc')
+                ->orderBy('building_id','asc')
+                ->get();
+            /* ++++++++++ 其他补偿事项 ++++++++++ */
+            $objects=Payobject::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['household_id',$household->id],
+                    ['pay_id',$model->id],
+                ])
+                ->get();
+
+            $code='success';
+            $msg='请求成功';
+            $sdata=[
+                'item'=>$this->item,
+                'pay'=>Pay::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$model->id],
+                    ])
+                    ->first(),
+                'household'=>$household,
+                'subjects'=>$subjects,
+                'pay_unit'=>$pay_unit,
+                'holder'=>$holder,
+                'buildings'=>$buildings,
+                'publics'=>$publics,
+                'objects'=>$objects,
+            ];
+            $edata=new Pay();
             $url = null;
+            $view='household.pay.info';
         }  else {
             DB::beginTransaction();
             try {
@@ -60,6 +145,8 @@ class PayController extends BaseController{
                 if (blank($itemrisk)) {
                     throw new \Exception('暂无社会稳定风险评估', 404404);
                 }
+
+
                 $household = Household::sharedLock()
                     ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'state'])
                     ->where([
@@ -70,6 +157,7 @@ class PayController extends BaseController{
                 if (blank($household)) {
                     throw new \Exception('被征收户不存在', 404404);
                 }
+
                 $household_detail = Householddetail::sharedLock()
                     ->where([
                         ['item_id', $this->item_id],
@@ -77,6 +165,7 @@ class PayController extends BaseController{
                     ])
                     ->select(['item_id', 'household_id', 'has_assets', 'agree', 'repay_way'])
                     ->first();
+
 
                 /* ++++++++++ 评估汇总 ++++++++++ */
                 $assess = Assess::sharedLock()
@@ -469,12 +558,88 @@ class PayController extends BaseController{
                 $pay->save();
 
 
-                $code = 'success';
-                $msg = '请求成功';
-                $sdata = $pay;
-                $edata = null;
-                $url = null;
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+                    ->find($pay->household_id);
+                /* ++++++++++ 补偿科目 ++++++++++ */
+                $subjects=Paysubject::with('subject')
+                    ->sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->get();
+                /* ++++++++++ 公产单位、承租人 ++++++++++ */
+                $pay_unit=null;
+                $holder=null;
+                if($household->getOriginal('type')){
+                    $pay_unit=Payunit::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$household->id],
+                            ['pay_id',$pay->id],
+                        ])
+                        ->first();
+                    $holder=Household::sharedLock()
+                        ->select(['id','item_id','household_id','name','holder'])
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$household->id],
+                            ['holder',2],
+                        ])
+                        ->first();
+                }
+                /* ++++++++++ 房屋建筑 ++++++++++ */
+                $buildings=Paybuilding::with(['realuse'=>function($query){
+                    $query->select(['id','name']);
+                },'buildingstruct'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                    ->sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->orderBy('register','desc')
+                    ->orderBy('state','asc')
+                    ->orderBy('real_use','asc')
+                    ->get();
+                /* ++++++++++ 公共附属物 ++++++++++ */
+                $publics=Paypublic::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['land_id',$household->land_id],
+                    ])
+                    ->orderBy('land_id','asc')
+                    ->orderBy('building_id','asc')
+                    ->get();
+                /* ++++++++++ 其他补偿事项 ++++++++++ */
+                $objects=Payobject::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->get();
 
+                $code='success';
+                $msg='请求成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                    'household'=>$household,
+                    'subjects'=>$subjects,
+                    'pay_unit'=>$pay_unit,
+                    'holder'=>$holder,
+                    'buildings'=>$buildings,
+                    'publics'=>$publics,
+                    'objects'=>$objects,
+                ];
+                $edata=new Pay();
+                $url = null;
+                $view='household.pay.info';
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -482,12 +647,18 @@ class PayController extends BaseController{
                 $sdata = null;
                 $edata = null;
                 $url = null;
-
+                $view='household.error';
                 DB::rollBack();
             }
         }
+
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        return view('household.pay.index')->with($result);
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+
 
     }
 }

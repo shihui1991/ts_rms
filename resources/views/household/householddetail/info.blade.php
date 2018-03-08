@@ -5,11 +5,6 @@
 @section('content')
 
     <div class="row">
-        <div class="well well-sm">
-            <a class="btn" href="javascript:history.back()">
-                <i class="ace-icon fa fa-arrow-left bigger-110"></i>返回
-            </a>
-        </div>
 
         <div class="well-sm">
             <div class="tabbable">
