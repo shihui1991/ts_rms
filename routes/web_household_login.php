@@ -13,10 +13,15 @@ Route::any('/itemrisk_info','ItemriskController@info')->name('h_itemrisk_info');
 Route::any('/itemrisk_add','ItemriskController@add')->name('h_itemrisk_add');
 Route::any('/itemrisk_edit','ItemriskController@edit')->name('h_itemrisk_edit');
 
+
 /*---------- 评估公司投票 ----------*/
-Route::any('/itemcompanyvote_info','CompanyvoteController@info')->name('h_itemcompanyvote_info');
-Route::any('/itemcompanyvote_add','CompanyvoteController@add')->name('h_itemcompanyvote_add');
+Route::any('/itemcompanyvote','CompanyvoteController@index')->name('h_itemcompanyvote');//投票机构
+Route::any('/itemcompanyvote_info','CompanyvoteController@info')->name('h_itemcompanyvote_info');//我的投票
+Route::any('/itemcompanyvote_add','CompanyvoteController@add')->name('h_itemcompanyvote_add');//被征户投票
 Route::any('/itemcompanyvote_edit','CompanyvoteController@edit')->name('h_itemcompanyvote_edit');
+Route::any('/itemcompany','ItemcompanyController@index')->name('h_itemcompanyvote');//入围机构
+Route::any('/company_info','CompanyController@info')->name('h_company_info');//评估机构详情
+
 
 /*---------- 被征户摸底情况 ----------*/
 Route::any('/householddetail','HouseholddetailController@index')->name('h_householddetail');
@@ -29,3 +34,4 @@ Route::any('/householdobject_info','HouseholdobjectController@info')->name('h_ho
 /*---------- 兑付--汇总 ----------*/
 Route::any('/pay','PayController@index')->name('h_pay');
 Route::any('/pay_info','PayController@info')->name('h_pay_info');
+

@@ -56,4 +56,8 @@ class Itemcompany extends Model
         return $this->belongsTo('App\Http\Model\Company','company_id','id')->withDefault();
     }
 
+    public function companyvotes(){
+        return $this->hasMany('App\Http\Model\Companyvote','company_id','company_id');
+    }
+
 }
