@@ -4,15 +4,12 @@
 | 征收管理端 限制登录路由
 |--------------------------------------------------------------------------
 */
-/*---------- 首页 ----------*/
+/*============================================ 【首页】 ================================================*/
 Route::any('/home','HomeController@index')->name('c_home');
-
-/*---------- 个人中心 ----------*/
-Route::get('/userself','UserselfController@index')->name('c_userself'); // 个人信息
-Route::any('/userself_edit','UserselfController@edit')->name('c_userself_edit'); // 修改信息
-Route::any('/userself_pwd','UserselfController@password')->name('c_userself_pwd'); // 修改密码
-
-
+/*============================================ 【简介】 ================================================*/
+Route::any('/company_info','CompanyController@info')->name('c_company_info');
+Route::any('/company_edit','CompanyController@edit')->name('c_company_edit');
+/*============================================ 【项目】 ================================================*/
 /*---------- 项目 ----------*/
 Route::get('/item','ItemController@index')->name('c_item');
 /*---------- 入户摸底【评估】 ----------*/
@@ -23,3 +20,19 @@ Route::any('/household_edit','HouseholdController@edit')->name('c_household_edit
 Route::get('/compublic','CompublicController@index')->name('c_compublic');
 Route::any('/compublic_add','CompublicController@add')->name('c_compublic_add');
 Route::any('/compublic_edit','CompublicController@edit')->name('c_compublic_edit');
+/*============================================ 【管理】 ================================================*/
+/*---------- 操作员 ----------*/
+Route::get('/companyuser','CompanyuserController@index')->name('c_companyuser');
+Route::any('/companyuser_add','CompanyuserController@add')->name('c_companyuser_add');
+Route::any('/companyuser_info','CompanyuserController@info')->name('c_companyuser_info');
+Route::any('/companyuser_edit','CompanyuserController@edit')->name('c_companyuser_edit');
+/*---------- 评估师 ----------*/
+Route::get('/companyvaluer','CompanyvaluerController@index')->name('c_companyvaluer');
+Route::any('/companyvaluer_add','CompanyvaluerController@add')->name('c_companyvaluer_add');
+Route::any('/companyvaluer_info','CompanyvaluerController@info')->name('c_companyvaluer_info');
+Route::any('/companyvaluer_edit','CompanyvaluerController@edit')->name('c_companyvaluer_edit');
+/*============================================ 【设置】 ================================================*/
+/*---------- 个人中心 ----------*/
+Route::get('/userself','UserselfController@index')->name('c_userself'); // 个人信息
+Route::any('/userself_edit','UserselfController@edit')->name('c_userself_edit'); // 修改信息
+Route::any('/userself_pwd','UserselfController@password')->name('c_userself_pwd'); // 修改密码
