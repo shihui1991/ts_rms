@@ -48,4 +48,9 @@ class Compublicdetail extends Model
     public function itembuilding(){
         return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
     }
+
+    /* ++++++++++ 关联项目公共附属物 ++++++++++ */
+    public function itempublic(){
+        return $this->belongsTo('App\Http\Model\Itempublic','item_public_id','id')->withDefault();
+    }
 }

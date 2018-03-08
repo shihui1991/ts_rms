@@ -13,9 +13,10 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('c_compublic_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('c_compublic_edit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="item" id="item" value="{{$sdata['item_id']}}">
+        <input type="hidden" name="id" id="id" value="{{$edata->id}}">
         <div class="widget-body">
             <div class="widget-main padding-8">
 
@@ -76,11 +77,21 @@
                 </tr>
                 </thead>
                 <tbody id="search_public">
-
+                    @foreach($sdata['compublicdetail'] as $info)
+                        <tr>
+                            <td><input type="checkbox" name="item_public_id[]" value="{{$info->item_public_id}}" checked></td>
+                            <td>{{$info->item_public_id}}</td>
+                            <td>{{$info->itemland->address}}</td>
+                            <td>{{$info->itempublic->name}}</td>
+                            <td>{{$info->itempublic->num_unit}}</td>
+                            <td>{{$info->itempublic->number}}</td>
+                            <td><input type="text" name="price[{{$info->item_public_id}}]" value="{{$info->price}}"></td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
-            <p class="search_public">&nbsp; 请先查询公共附属物</p>
-            <input type="hidden" id="public_ids" value="">
+            <p class="search_public">&nbsp; </p>
+            <input type="hidden" id="public_ids" value="{{$sdata['publicids']}}">
         </div>
         <div class="space-4"></div>
 
@@ -143,6 +154,7 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
+        $('.img-content').viewer('update');
         /*---------查询被征收户----------*/
         $(".search_public_checked").on('click',function(){
             var land_id = $('#land_id').val();

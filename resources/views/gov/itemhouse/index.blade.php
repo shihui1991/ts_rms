@@ -35,10 +35,10 @@
                         <td>{{$infos->house->housecommunity->name}}</td>
                         <td>{{$infos->house->layout->name}}</td>
                         <td>
-                            {{$infos->house->unit?$infos->unit.'单元':''}}
-                            {{$infos->house->building?$infos->building.'楼':''}}
-                            {{$infos->house->floor?$infos->floor.'层':''}}
-                            {{$infos->house->number?$infos->number.'号':''}}
+                            {{$infos->house->unit?$infos->house->unit.'单元':''}}
+                            {{$infos->house->building?$infos->house->building.'楼':''}}
+                            {{$infos->house->floor?$infos->house->floor.'层':''}}
+                            {{$infos->house->number?$infos->house->number.'号':''}}
                         </td>
                         <td>{{$infos->house->area}}</td>
                         <td>{{$infos->house->total_floor}}</td>

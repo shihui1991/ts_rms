@@ -152,15 +152,17 @@ class CompublicController extends BaseitemController
                 /* ++++++++++ 评估-公共附属物明细 ++++++++++ */
                 $totals = 0;
                 foreach ($itempublic as $k=>$v){
-                    if($publicdetail_datas[$k]['item_public_id']==$v->id){
-                        $amount = $publicdetail_datas[$k]['price']*$v->number;
-                        $publicdetail_datas[$k]['land_id'] = $v->land_id;
-                        $publicdetail_datas[$k]['building_id'] = $v->building_id;
-                        $publicdetail_datas[$k]['com_public_id'] = $compublic->id;
-                        $publicdetail_datas[$k]['amount'] = $amount;
-                        $publicdetail_datas[$k]['created_at'] = date('Y-m-d H:i:s');
-                        $publicdetail_datas[$k]['updated_at'] = date('Y-m-d H:i:s');
-                        $totals += $amount;
+                    for ($j=0;$j<count($itempublic);$j++) {
+                        if ($publicdetail_datas[$j]['item_public_id'] == $v->id) {
+                            $amount = $publicdetail_datas[$j]['price'] * $v->number;
+                            $publicdetail_datas[$j]['land_id'] = $v->land_id;
+                            $publicdetail_datas[$j]['building_id'] = $v->building_id;
+                            $publicdetail_datas[$j]['com_public_id'] = $compublic->id;
+                            $publicdetail_datas[$j]['amount'] = $amount;
+                            $publicdetail_datas[$j]['created_at'] = date('Y-m-d H:i:s');
+                            $publicdetail_datas[$j]['updated_at'] = date('Y-m-d H:i:s');
+                            $totals += $amount;
+                        }
                     }
                 }
                 $compublicdetail = Compublicdetail::insert($publicdetail_datas);
@@ -182,7 +184,7 @@ class CompublicController extends BaseitemController
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
-                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
                 $sdata = null;
                 $edata = null;
                 $url = null;
@@ -219,6 +221,21 @@ class CompublicController extends BaseitemController
                 if(blank($compublics)){
                     throw new \Exception('没有符合条件的数据',404404);
                 }
+
+                $data['compublicdetail'] = Compublicdetail::with([
+                    'itemland'=>function($query){
+                        $query->select(['id','address']);
+                    },
+                    'itempublic'=>function($query){
+                        $query->select(['id','name','num_unit','number']);
+                    }])
+                    ->where('com_public_id',$id)
+                    ->get();
+                $public_ids = [];
+                foreach ($data['compublicdetail'] as $k=>$v){
+                    $public_ids[] = $v->item_public_id;
+                }
+                $data['publicids'] = implode(',',$public_ids);
                 $code='success';
                 $msg='查询成功';
                 $sdata=$data;
@@ -235,7 +252,7 @@ class CompublicController extends BaseitemController
             if($code=='error'){
                 $view = 'com.error';
             }else{
-                $view = 'com.compublic.add';
+                $view = 'com.compublic.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -291,55 +308,54 @@ class CompublicController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 评估-公共附属物 ++++++++++ */
-                $compublic = $model;
-                $compublic->item_id = $item_id;
-                $compublic->company_id = $company_id;
-                $compublic->total = 0;
-                $compublic->picture = $picture;
-                $compublic->save();
+                /* ++++++++++ 【删除】评估-公共附属物明细 ++++++++++ */
+                $compublic = Compublicdetail::where('com_public_id',$id)->delete();
                 if (blank($compublic)) {
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('修改失败', 404404);
                 }
-                /* ++++++++++ 评估-公共附属物明细 ++++++++++ */
+                /* ++++++++++ 【添加】评估-公共附属物明细 ++++++++++ */
                 $totals = 0;
                 foreach ($itempublic as $k=>$v){
-                    if($publicdetail_datas[$k]['item_public_id']==$v->id){
-                        $amount = $publicdetail_datas[$k]['price']*$v->number;
-                        $publicdetail_datas[$k]['land_id'] = $v->land_id;
-                        $publicdetail_datas[$k]['building_id'] = $v->building_id;
-                        $publicdetail_datas[$k]['com_public_id'] = $compublic->id;
-                        $publicdetail_datas[$k]['amount'] = $amount;
-                        $publicdetail_datas[$k]['created_at'] = date('Y-m-d H:i:s');
-                        $publicdetail_datas[$k]['updated_at'] = date('Y-m-d H:i:s');
-                        $totals += $amount;
+                    for ($j=0;$j<count($itempublic);$j++){
+                        if($publicdetail_datas[$j]['item_public_id']==$v->id){
+                            $amount = $publicdetail_datas[$j]['price']*$v->number;
+                            $publicdetail_datas[$j]['land_id'] = $v->land_id;
+                            $publicdetail_datas[$j]['building_id'] = $v->building_id;
+                            $publicdetail_datas[$j]['com_public_id'] = $id;
+                            $publicdetail_datas[$j]['amount'] = $amount;
+                            $publicdetail_datas[$j]['created_at'] = date('Y-m-d H:i:s');
+                            $publicdetail_datas[$j]['updated_at'] = date('Y-m-d H:i:s');
+                            $totals += $amount;
+                        }
                     }
                 }
                 $compublicdetail = Compublicdetail::insert($publicdetail_datas);
                 if(blank($compublicdetail)){
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('修改失败', 404404);
                 }
                 /* ++++++++++ 【修改总价】评估-公共附属物 ++++++++++ */
-                $compublics_data =  Compublic::lockForUpdate()->find($compublic->id);
+                $compublics_data =  Compublic::lockForUpdate()->find($id);
                 $compublics_data->total = $totals;
+                $compublics_data->picture = $picture;
                 $compublics_data->save();
                 if(blank($compublics_data)){
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('修改失败', 404404);
                 }
                 $code = 'success';
-                $msg = '添加成功';
+                $msg = '修改成功';
                 $sdata = $compublic;
                 $edata = null;
                 $url = route('c_compublic',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
-                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
                 $sdata = null;
                 $edata = null;
                 $url = null;
                 DB::rollBack();
             }
+
             /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
