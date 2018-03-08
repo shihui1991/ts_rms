@@ -2,6 +2,7 @@
 
 // 表单保存
 function sub(obj) {
+    toastr.info('请稍等！处理中……');
     ajaxFormSub(obj);
     if(ajaxResp.code=='success'){
         toastr.success(ajaxResp.message);
@@ -27,6 +28,7 @@ function uplfile(obj) {
     }
 
     that.data('loading',true).prop('disabled',true);
+    toastr.info('请稍等！处理中……');
 
     if(obj.files && obj.files.length){
         $.each(obj.files,function (index,file) {
@@ -105,6 +107,7 @@ function btnAct(obj) {
         return false;
     }
     btn.data('loading',true).addClass('disabled');
+    toastr.info('请稍等！处理中……');
     ajaxAct(url,datas,method);
     if(ajaxResp.code=='success'){
         toastr.success(ajaxResp.message);

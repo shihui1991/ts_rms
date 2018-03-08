@@ -22,7 +22,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="cate_id"> 通知分类： </label>
             <div class="col-sm-9">
-                <input type="text" class="col-xs-10 col-sm-5" id="cate_id" value="{{$sdata->newscate->name}}" readonly>
+                <input type="text" class="col-xs-10 col-sm-5" id="cate_id" value="{{$sdata->noticecate->name}}" readonly>
             </div>
         </div>
         <div class="space-4"></div>

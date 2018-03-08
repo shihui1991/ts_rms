@@ -279,7 +279,7 @@ class DeptController extends BaseauthController
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
                 $sdata=null;
-                $edata=$dept;
+                $edata=null;
                 $url=null;
 
                 DB::rollBack();

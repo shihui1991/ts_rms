@@ -121,7 +121,7 @@
                     </table>
                     <div class="row">
                         <div class="col-xs-6">
-                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata) }} @else 0 @endif 条数据</div>
+                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdbuilding']) }} @else 0 @endif 条数据</div>
                         </div>
                     </div>
                 </div>

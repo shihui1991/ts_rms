@@ -72,4 +72,5 @@ class Company extends Model
     public function companyvotes(){
         return $this->hasMany('App\Http\Model\Companyvote','company_id','id');
     }
+
 }

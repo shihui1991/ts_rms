@@ -31,12 +31,12 @@ CREATE TABLE `admin_unit` (
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='公产单位';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='公房单位';
 
 -- ----------------------------
 -- Records of admin_unit
 -- ----------------------------
-INSERT INTO `admin_unit` VALUES ('1', '公产单位1', '渝北区', '023-88888888', '张三', '13012345678', null, '2018-02-22 15:25:24', '2018-02-22 15:25:24', null);
+INSERT INTO `admin_unit` VALUES ('1', '公房单位1', '渝北区', '023-88888888', '张三', '13012345678', null, '2018-02-22 15:25:24', '2018-02-22 15:25:24', null);
 
 -- ----------------------------
 -- Table structure for a_api
@@ -127,7 +127,7 @@ INSERT INTO `a_item_funds_cate` VALUES ('2', '补偿款与产权调换房价的�
 INSERT INTO `a_item_funds_cate` VALUES ('3', '货币补偿款', null, '2018-02-09 16:02:34', '2018-02-09 16:02:34', null);
 INSERT INTO `a_item_funds_cate` VALUES ('4', '产权调换结余补偿款', null, '2018-02-09 16:03:20', '2018-02-09 16:03:20', null);
 INSERT INTO `a_item_funds_cate` VALUES ('5', '补充协议补偿金', null, '2018-02-09 16:03:49', '2018-02-09 16:03:49', null);
-INSERT INTO `a_item_funds_cate` VALUES ('6', '公产单位补偿款', null, '2018-02-09 16:04:09', '2018-02-09 16:04:09', null);
+INSERT INTO `a_item_funds_cate` VALUES ('6', '公房单位补偿款', null, '2018-02-09 16:04:09', '2018-02-09 16:04:09', null);
 INSERT INTO `a_item_funds_cate` VALUES ('7', '项目拆除费', null, '2018-02-09 16:04:28', '2018-02-09 16:04:28', null);
 INSERT INTO `a_item_funds_cate` VALUES ('8', '项目评估费', null, '2018-02-09 16:04:40', '2018-02-09 16:04:55', null);
 
@@ -251,10 +251,10 @@ INSERT INTO `a_menu` VALUES ('68', '64', '重置密码', null, '0', '/gov/user_r
 INSERT INTO `a_menu` VALUES ('69', '52', '个人中心', null, '0', '/gov/userself', null, '1', '0', '1', '0', null, '2018-02-10 14:12:38', '2018-02-10 14:12:38', null);
 INSERT INTO `a_menu` VALUES ('70', '69', '修改个人资料', null, '0', '/gov/userself_edit', null, '1', '0', '0', '0', null, '2018-02-10 14:13:19', '2018-02-10 14:13:55', null);
 INSERT INTO `a_menu` VALUES ('71', '69', '修改密码', null, '0', '/gov/userself_pwd', null, '1', '0', '0', '0', null, '2018-02-10 14:14:26', '2018-02-10 14:14:26', null);
-INSERT INTO `a_menu` VALUES ('72', '51', '公产单位', null, '0', '/gov/adminunit', null, '1', '1', '1', '0', null, '2018-02-11 13:30:34', '2018-02-11 13:30:34', null);
-INSERT INTO `a_menu` VALUES ('73', '72', '添加公产单位', null, '0', '/gov/adminunit_add', null, '1', '1', '0', '0', null, '2018-02-11 13:31:16', '2018-02-11 13:31:16', null);
-INSERT INTO `a_menu` VALUES ('74', '72', '公产单位详情', null, '0', '/gov/adminunit_info', null, '1', '1', '0', '0', null, '2018-02-11 13:31:43', '2018-02-11 13:31:43', null);
-INSERT INTO `a_menu` VALUES ('75', '72', '修改公产单位', null, '0', '/gov/adminunit_edit', null, '1', '1', '0', '0', null, '2018-02-11 13:32:12', '2018-02-11 13:32:12', null);
+INSERT INTO `a_menu` VALUES ('72', '51', '公房单位', null, '0', '/gov/adminunit', null, '1', '1', '1', '0', null, '2018-02-11 13:30:34', '2018-02-11 13:30:34', null);
+INSERT INTO `a_menu` VALUES ('73', '72', '添加公房单位', null, '0', '/gov/adminunit_add', null, '1', '1', '0', '0', null, '2018-02-11 13:31:16', '2018-02-11 13:31:16', null);
+INSERT INTO `a_menu` VALUES ('74', '72', '公房单位详情', null, '0', '/gov/adminunit_info', null, '1', '1', '0', '0', null, '2018-02-11 13:31:43', '2018-02-11 13:31:43', null);
+INSERT INTO `a_menu` VALUES ('75', '72', '修改公房单位', null, '0', '/gov/adminunit_edit', null, '1', '1', '0', '0', null, '2018-02-11 13:32:12', '2018-02-11 13:32:12', null);
 INSERT INTO `a_menu` VALUES ('76', '51', '银行列表', null, '0', '/gov/bank', null, '1', '1', '1', '0', null, '2018-02-11 13:32:36', '2018-02-11 13:32:36', null);
 INSERT INTO `a_menu` VALUES ('77', '76', '添加银行', null, '0', '/gov/bank_add', null, '1', '1', '0', '0', null, '2018-02-11 13:32:55', '2018-02-11 13:32:55', null);
 INSERT INTO `a_menu` VALUES ('78', '76', '银行详情', null, '0', '/gov/bank_info', null, '1', '1', '0', '0', null, '2018-02-11 13:33:26', '2018-02-11 13:33:26', null);
@@ -1749,8 +1749,8 @@ DROP TABLE IF EXISTS `item_funds_total`;
 CREATE TABLE `item_funds_total` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_id` int(11) NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '兑付对象，0被征收户，1公产单位',
-  `val_id` int(11) NOT NULL DEFAULT '0' COMMENT '被征收户（公产单位）ID',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '兑付对象，0被征收户，1公房单位',
+  `val_id` int(11) NOT NULL DEFAULT '0' COMMENT '被征收户（公房单位）ID',
   `cate_id` int(11) NOT NULL DEFAULT '0' COMMENT '进出类型ID',
   `amount` decimal(30,2) NOT NULL DEFAULT '0.00' COMMENT '金额',
   `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '兑付状态，0待兑付，1兑付中，2已兑付',
@@ -2159,7 +2159,7 @@ CREATE TABLE `item_land` (
   `land_prop_id` int(11) NOT NULL COMMENT ' 土地性质ID',
   `land_source_id` int(11) NOT NULL COMMENT ' 土地来源ID',
   `land_state_id` int(11) NOT NULL COMMENT ' 土地权益状况ID',
-  `admin_unit_id` int(11) NOT NULL DEFAULT '0' COMMENT ' 所属公产单位ID，0为私产',
+  `admin_unit_id` int(11) NOT NULL DEFAULT '0' COMMENT ' 所属公房单位ID，0为私产',
   `area` decimal(30,2) NOT NULL COMMENT '占地面积，（㎡）',
   `infos` text COMMENT '备注',
   `picture` text COMMENT ' 图片',
@@ -3157,9 +3157,9 @@ CREATE TABLE `pay_unit` (
   `item_id` int(11) NOT NULL COMMENT ' 项目ID',
   `household_id` int(11) NOT NULL COMMENT ' 被征收户ID',
   `land_id` int(11) NOT NULL COMMENT ' 项目地块ID',
-  `unit_id` int(11) NOT NULL COMMENT ' 公产单位ID',
+  `unit_id` int(11) NOT NULL COMMENT ' 公房单位ID',
   `pay_id` int(11) NOT NULL COMMENT '兑付ID',
-  `pact_id` int(11) NOT NULL DEFAULT '0' COMMENT '公产单位协议ID',
+  `pact_id` int(11) NOT NULL DEFAULT '0' COMMENT '公房单位协议ID',
   `total_id` int(11) NOT NULL DEFAULT '0' COMMENT '兑付总单ID',
   `calculate` text NOT NULL COMMENT '计算公式',
   `amount` decimal(30,2) NOT NULL DEFAULT '0.00' COMMENT '补偿小计',
@@ -3174,7 +3174,7 @@ CREATE TABLE `pay_unit` (
   KEY `pay_id` (`pay_id`),
   KEY `unit_id` (`unit_id`) USING BTREE,
   KEY `pact_id` (`pact_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='兑付-公产单位';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='兑付-公房单位';
 
 -- ----------------------------
 -- Records of pay_unit
@@ -3187,11 +3187,11 @@ DROP TABLE IF EXISTS `pay_unit_pact`;
 CREATE TABLE `pay_unit_pact` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_id` int(11) NOT NULL COMMENT '项目ID',
-  `unit_id` int(11) NOT NULL COMMENT '公产单位ID',
+  `unit_id` int(11) NOT NULL COMMENT '公房单位ID',
   `cate_id` int(11) NOT NULL COMMENT ' 协议分类ID',
   `content` longtext NOT NULL COMMENT ' 协议内容',
   `sign_at` date DEFAULT NULL COMMENT ' 签约时间',
-  `sign` text COMMENT '公产单位签字',
+  `sign` text COMMENT '公房单位签字',
   `code` char(20) DEFAULT NULL COMMENT '状态代码',
   `state` tinyint(1) NOT NULL DEFAULT '0' COMMENT ' 有效状态，0未生效，1生效，2失效',
   `created_at` datetime DEFAULT NULL,
@@ -3201,7 +3201,7 @@ CREATE TABLE `pay_unit_pact` (
   KEY `item_id` (`item_id`),
   KEY `cate_id` (`cate_id`),
   KEY `unit_id` (`unit_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='兑付-公产单位协议';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='兑付-公房单位协议';
 
 -- ----------------------------
 -- Records of pay_unit_pact

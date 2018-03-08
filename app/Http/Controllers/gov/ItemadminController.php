@@ -80,7 +80,7 @@ class ItemadminController extends BaseitemController
             }
             DB::beginTransaction();
             try{
-                $this->checkNotice();
+//                $this->checkNotice();
 
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $where[]=['item_id',$this->item_id];
@@ -134,7 +134,7 @@ class ItemadminController extends BaseitemController
         }
         DB::beginTransaction();
         try{
-            $this->checkNotice();
+//            $this->checkNotice();
 
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $itemadmin=Itemadmin::lockForUpdate()->find($id);

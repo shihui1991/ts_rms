@@ -48,7 +48,7 @@ class ItemnoticeController extends BaseitemController
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
                 },
-                    'newscate'=>function($query){
+                    'noticecate'=>function($query){
                         $query->select(['id','name']);
                     }])
                 ->where($where)
@@ -179,7 +179,7 @@ class ItemnoticeController extends BaseitemController
             ['item'=>function($query){
                 $query->select(['id','name']);
             },
-                'newscate'=>function($query){
+                'noticecate'=>function($query){
                     $query->select(['id','name']);
                 }])
             ->sharedLock()
@@ -225,7 +225,7 @@ class ItemnoticeController extends BaseitemController
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
             $itemnotice=Itemnotice::with([
-                    'newscate'=>function($query){
+                    'noticecate'=>function($query){
                         $query->select(['id','name']);
                     }])
                     ->sharedLock()
