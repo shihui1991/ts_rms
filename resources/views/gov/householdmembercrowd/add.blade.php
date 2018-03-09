@@ -46,22 +46,7 @@
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if($sdata->picture)
-                                @foreach($sdata->picture as $pic)
-                                    <li>
-                                        <div>
-                                            <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                            <input type="hidden" name="picture[]" value="{!! $pic !!}">
-                                            <div class="text">
-                                                <div class="inner">
-                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                    <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            @endif
+
                         </ul>
                     </div>
                 </div>

@@ -11,6 +11,7 @@ use App\Http\Model\Itemland;
 use App\Http\Model\Itempublic;
 use App\Http\Model\Landprop;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -45,13 +46,16 @@ class ItemlandController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=20;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemland();
         DB::beginTransaction();
         try{
+            $total=$model->sharedLock()
+                ->where($where)
+                ->where('item_id',$item_id)
+                ->count();
             $itemlands=$model
                 ->with([
                     'landprop'=>function($query){
@@ -70,7 +74,11 @@ class ItemlandController extends BaseitemController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $itemlands=new LengthAwarePaginator($itemlands,$total,$per_page,$page);
+            $itemlands->withPath(route('g_itemland',['item'=>$item_id]));
             if(blank($itemlands)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

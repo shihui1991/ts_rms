@@ -57,46 +57,46 @@ class BaseitemController extends BaseController
         });
     }
 
-    public function makeMenu2($menus,$cur_id,$pids,$level=1,$pid=0,$item_id){
-        $str='';
-
-        foreach($menus as $menu){
-            if($level==1){
-                $menu_name='<span class="menu-text">'.$menu->name.'</span>';
-            }else{
-                $menu_name=$menu->name;
-            }
-            /* 第二级菜单图标改为箭头 */
-            if($level==2){
-                $icon='<i class="menu-icon fa fa-caret-right"></i>';
-            }else{
-                $icon=$menu->icon;
-            }
-            /* li标签class */
-            if(in_array($menu->id,$pids)){
-                $li_class=' class="active open" ';
-            }elseif($menu->id==$cur_id){
-                $li_class=' class="active" ';
-            }else{
-                $li_class='';
-            }
-
-            if($menu->childs_count){
-                $a_class=' class="dropdown-toggle" ';
-                $b_in_a='<b class="arrow fa fa-angle-down"></b>';
-                $str .= '<li '.$li_class.'><a href="'.$menu->url.'?item='.$item_id.'" '.$a_class.'>'.$icon.$menu_name.$b_in_a.'</a><b class="arrow"></b>';
-                $str .=$this->makeMenu2($menu->childs,$cur_id,$pids,$level+1,$menu->id,$item_id);;
-            }else{
-                $a_class='';
-                $b_in_a='';
-                $str .= '<li '.$li_class.'><a href="'.$menu->url.'?item='.$item_id.'" '.$a_class.'>'.$icon.$menu_name.'</span>'.$b_in_a.'</a><b class="arrow"></b>';
-            }
-            $str.='</li>';
-        }
-        /* ul标签class */
-        $ul_class=$level==1?'nav nav-list':'submenu';
-        $str ='<ul class="'.$ul_class.'">'.$str.'</ul>';
-
-        return $str;
-    }
+//    public function makeMenu2($menus,$cur_id,$pids,$level=1,$pid=0,$item_id){
+//        $str='';
+//
+//        foreach($menus as $menu){
+//            if($level==1){
+//                $menu_name='<span class="menu-text">'.$menu->name.'</span>';
+//            }else{
+//                $menu_name=$menu->name;
+//            }
+//            /* 第二级菜单图标改为箭头 */
+//            if($level==2){
+//                $icon='<i class="menu-icon fa fa-caret-right"></i>';
+//            }else{
+//                $icon=$menu->icon;
+//            }
+//            /* li标签class */
+//            if(in_array($menu->id,$pids)){
+//                $li_class=' class="active open" ';
+//            }elseif($menu->id==$cur_id){
+//                $li_class=' class="active" ';
+//            }else{
+//                $li_class='';
+//            }
+//
+//            if($menu->childs_count){
+//                $a_class=' class="dropdown-toggle" ';
+//                $b_in_a='<b class="arrow fa fa-angle-down"></b>';
+//                $str .= '<li '.$li_class.'><a href="'.$menu->url.'?item='.$item_id.'" '.$a_class.'>'.$icon.$menu_name.$b_in_a.'</a><b class="arrow"></b>';
+//                $str .=$this->makeMenu2($menu->childs,$cur_id,$pids,$level+1,$menu->id,$item_id);;
+//            }else{
+//                $a_class='';
+//                $b_in_a='';
+//                $str .= '<li '.$li_class.'><a href="'.$menu->url.'?item='.$item_id.'" '.$a_class.'>'.$icon.$menu_name.'</span>'.$b_in_a.'</a><b class="arrow"></b>';
+//            }
+//            $str.='</li>';
+//        }
+//        /* ul标签class */
+//        $ul_class=$level==1?'nav nav-list':'submenu';
+//        $str ='<ul class="'.$ul_class.'">'.$str.'</ul>';
+//
+//        return $str;
+//    }
 }

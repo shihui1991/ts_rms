@@ -98,4 +98,9 @@ class Householdmember extends Model
         return $this->belongsTo('App\Http\Model\Nation','nation_id','id')->withDefault();
     }
 
+    /* ++++++++++ 关联特殊人群 ++++++++++ */
+    public function householdmembercrowds(){
+        return $this->hasMany('App\Http\Model\Householdmembercrowd','member_id','id');
+    }
+
 }

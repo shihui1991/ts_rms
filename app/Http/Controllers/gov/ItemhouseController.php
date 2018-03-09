@@ -12,6 +12,7 @@ use App\Http\Model\Layout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ItemhouseController extends BaseitemController
 {
@@ -26,7 +27,7 @@ class ItemhouseController extends BaseitemController
         $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
         $where=[];
-        $where[] = ['item_id',$item_id];
+        $where[] = ['item_id',1];
         $infos['item_id'] = $item_id;
         $select=['item_id','house_id','type','created_at'];
         /* ********** 排序 ********** */
@@ -38,13 +39,15 @@ class ItemhouseController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemhouse();
         DB::beginTransaction();
         try{
+            $total=$model->sharedLock()
+                ->where('item_id',$item_id)
+                ->count();
             $itemhouses=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -65,7 +68,11 @@ class ItemhouseController extends BaseitemController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $itemhouses=new LengthAwarePaginator($itemhouses,$total,$per_page,$page);
+            $itemhouses->withPath(route('g_itemhouse',['item'=>$item_id]));
             if(blank($itemhouses)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

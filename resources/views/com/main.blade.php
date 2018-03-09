@@ -33,7 +33,7 @@
 {{-- 侧边导航 --}}
 @section('nav')
 
-    {!! $nav !!}
+    {{--{!! $nav !!}--}}
 
 @endsection
 

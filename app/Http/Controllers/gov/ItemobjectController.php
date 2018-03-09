@@ -8,6 +8,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Itemobject;
 use App\Http\Model\Object;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -37,13 +38,16 @@ class ItemobjectController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemobject();
         DB::beginTransaction();
         try{
+            $total=$model->sharedLock()
+                ->where('item_id',$item_id)
+                ->where($where)
+                ->count();
             $itemobjects=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -55,7 +59,11 @@ class ItemobjectController extends BaseitemController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $itemobjects=new LengthAwarePaginator($itemobjects,$total,$per_page,$page);
+            $itemobjects->withPath(route('g_itemobject',['item'=>$item_id]));
             if(blank($itemobjects)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

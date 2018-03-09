@@ -138,7 +138,8 @@
             }
             var data = {
                 'item':item,
-                'land_id':land_id
+                'land_id':land_id,
+                'app':'app'
             };
             ajaxAct('{{route('g_itempublic')}}',data,'post');
             if(ajaxResp.code=='error'){

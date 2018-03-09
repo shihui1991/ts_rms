@@ -127,8 +127,8 @@
     </div>
     
     <div class="well well-sm">
-        <a href="{{route('g_paysubject_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
-            添加补偿科目
+        <a href="" class="btn">
+            补偿科目明细
         </a>
     </div>
 
@@ -157,7 +157,7 @@
                         <th>计算公式</th>
                         <th>补偿小计</th>
                         <th>状态</th>
-                        <th>操作</th>
+
                     </tr>
                     </thead>
                     <tbody>
@@ -169,17 +169,7 @@
                                 <td>{{$subject->calculate}}</td>
                                 <td>{{number_format($subject->amount,2)}}</td>
                                 <td>{{$subject->state}}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        @if($subject->total_id)
-                                            已兑付
-                                        @else
-                                            <a href="{{route('g_paysubject_edit',['id'=>$subject->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">修改</a>
-                                        @endif
 
-                                    </div>
-
-                                </td>
                             </tr>
                         @endforeach
                     @endif

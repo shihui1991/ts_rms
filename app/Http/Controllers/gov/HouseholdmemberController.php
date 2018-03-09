@@ -216,11 +216,13 @@ class HouseholdmemberController extends BaseitemController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $householdmembercrowd = Householdmembercrowd::select(['id','item_id','crowd_id'])
+        $householdmembercrowd = Householdmembercrowd::select(['id','item_id','crowd_id','picture'])
                         ->with(['crowd'=>function($query){
                             $query->select(['id','name']);
                         }])
-                        ->where('item_id',$this->item_id)->where('member_id',$id)->get();
+                        ->where('item_id',$this->item_id)
+                        ->where('member_id',$id)
+                        ->get();
         $householdmember=Householdmember::with([
             'nation'=>function($query){
                 $query->select(['id','name']);
