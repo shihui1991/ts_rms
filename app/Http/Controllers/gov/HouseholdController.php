@@ -162,7 +162,7 @@ class HouseholdController extends BaseitemController
                 $household = $model;
                 $household->fill($request->all());
                 $household->addOther($request);
-                $household->item_id=$this->item_id;
+                $household->item_id=$item_id;
                 $household->save();
                 if (blank($household)) {
                     throw new \Exception('添加失败', 404404);
@@ -172,7 +172,7 @@ class HouseholdController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $household;
                 $edata = null;
-                $url = route('g_household',['item'=>$this->item_id]);
+                $url = route('g_householddetail',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -341,7 +341,7 @@ class HouseholdController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$household;
                 $edata=null;
-                $url = route('g_household',['id'=>$id,'item'=>$item_id]);
+                $url = route('g_householddetail',['item'=>$item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){

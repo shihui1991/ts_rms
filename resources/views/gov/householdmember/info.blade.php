@@ -22,7 +22,7 @@
                     修改家庭成员详情
                 </a>
                 @if($sdata->getOriginal('crowd')==1)
-                <a class="btn" href="{{route('g_householdmembercrowd_add',['item'=>$sdata->item_id,'id'=>$sdata->id,'household_id'=>$sdata->household_id,'member_id'=>$sdata->id])}}">
+                <a class="btn" href="{{route('g_householdmembercrowd_add',['item'=>$sdata->item_id,'household_id'=>$sdata->household_id,'member_id'=>$sdata->id])}}">
                     添加特殊人群信息
                 </a>
                 @endif
@@ -180,32 +180,54 @@
 
                     @if($sdata->getOriginal('crowd')==1)
                     <div id="itempublic" class="tab-pane fade">
-                        <table class="table table-hover table-bordered">
-                            <thead>
-                            <tr>
-                                <th>序号</th>
-                                <th>名称</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if($code=='success')
-                                @foreach($edata as $info)
-                                    <tr>
-                                        <td>{{$loop->iteration}}</td>
-                                        <td>{{$info->crowd->name}}</td>
-                                        <td>
-                                            <a href="{{route('g_householdmembercrowd_info',['id'=>$info->id,'item'=>$info->item_id])}}" class="btn btn-sm">查看详情</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata) }} @endif 条数据</div>
-                            </div>
+                        <div class="col-xs-12">
+                            @foreach($edata as $crowd)
+                                <div class="col-xs-6 col-sm-3 pricing-box">
+                                    <div class="widget-box widget-color-dark">
+                                        <div class="widget-header">
+                                            <h5 class="widget-title bigger lighter">{{$crowd->crowd->name}}</h5>
+                                            <div class="widget-toolbar">
+                                                <a href="{{route('g_householdmembercrowd_edit',['item'=>$crowd->item_id,'id'=>$crowd->id,'household_id'=>$crowd->household_id])}}" class="orange2">
+                                                    <i class="ace-icon fa fa-edit"></i>
+                                                    编辑
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="widget-body">
+                                            <div class="widget-main">
+
+                                                <div class="profile-user-info profile-user-info-striped">
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 证件： </div>
+                                                        <div class="profile-info-value">
+                                                                <span class="editable editable-click">
+                                                                    <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                          @if($crowd->picture)
+                                                                            @foreach($crowd->picture as $pic)
+                                                                                <li>
+                                                                                    <div>
+                                                                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                                                                        <div class="text">
+                                                                                            <div class="inner">
+                                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            @endforeach
+                                                                        @endif
+                                                                    </ul>
+                                                                </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                     @endif
