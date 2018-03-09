@@ -46,7 +46,7 @@ class AdminunitController extends BaseauthController
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
         $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:1;
+        $displaynum=$displaynum?$displaynum:15;
         $infos['displaynum']=$displaynum;
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
