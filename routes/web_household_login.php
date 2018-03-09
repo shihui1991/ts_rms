@@ -39,6 +39,11 @@ Route::any('/pay_info','PayController@info')->name('h_pay_info');
 Route::any('/assess_info','AssessController@info')->name('h_assess');
 
 
+/*个人中心*/
+Route::any('/itemhousehold_info','ItemhouseholdController@info')->name('h_itemhousehold_info');
+Route::any('/itemhousehold_edit','ItemhouseholdController@edit')->name('h_itemhousehold_edit');
+Route::any('/itemhousehold_password','ItemhouseholdController@password')->name('h_itemhousehold_password');
+
 /*---------- 房源 ----------*/
 Route::any('/itemhouse','ItemhouseController@index')->name('h_itemhouse');
 
