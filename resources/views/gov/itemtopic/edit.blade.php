@@ -16,7 +16,7 @@
     <form class="form-horizontal" role="form" action="{{route('g_itemtopic_edit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
-        <input type="hidden" name="item_id" value="{{$sdata->item_id}}">
+        <input type="hidden" name="item" value="{{$sdata->item_id}}">
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="topic_id"> 话题： </label>

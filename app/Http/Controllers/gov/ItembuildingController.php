@@ -10,6 +10,7 @@ use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemland;
 use App\Http\Model\Itempublic;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -35,7 +36,8 @@ class ItembuildingController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-
+        /* ********** 是否分页 ********** */
+        $app = $request->input('app');
         /* ********** 查询条件 ********** */
         $where=[];
         $where[]=['item_id',$item_id];
@@ -52,14 +54,18 @@ class ItembuildingController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itembuilding();
         DB::beginTransaction();
         try{
             /* ********** 是否分页 ********** */
-            if($displaynum){
+            if(blank($app)){
+                $total=$model->sharedLock()
+                    ->where('item_id',$item_id)
+                    ->where($where)
+                    ->count();
                 $itembuildings=$model
                     ->with(['item'=>function($query){
                         $query->select(['id','name']);
@@ -73,7 +79,11 @@ class ItembuildingController extends BaseitemController
                     ->where($where)
                     ->orderBy($ordername,$orderby)
                     ->sharedLock()
-                    ->paginate($displaynum);
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
+                $itembuildings=new LengthAwarePaginator($itembuildings,$total,$per_page,$page);
+                $itembuildings->withPath(route('g_itembuilding',['item'=>$item_id]));
             }else{
                 $itembuildings=$model
                     ->with(['item'=>function($query){

@@ -8,6 +8,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Itemtopic;
 use App\Http\Model\Topic;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -22,9 +23,7 @@ class ItemtopicController extends BaseitemController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-                $item_id=$this->item_id;
-
-
+        $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
@@ -39,13 +38,16 @@ class ItemtopicController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemtopic();
         DB::beginTransaction();
         try{
+            $total=$model->sharedLock()
+                ->where('item_id',$item_id)
+                ->where($where)
+                ->count();
             $itemtopics=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -57,7 +59,11 @@ class ItemtopicController extends BaseitemController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $itemtopics=new LengthAwarePaginator($itemtopics,$total,$per_page,$page);
+            $itemtopics->withPath(route('g_itemtopic',['item'=>$item_id]));
             if(blank($itemtopics)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -86,7 +92,7 @@ class ItemtopicController extends BaseitemController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id=$request->input('item_id');
+        $item_id=$this->item_id;
         if(!$item_id){
             $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -112,7 +118,6 @@ class ItemtopicController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
                 'topic_id' =>  ['required',Rule::unique('item_topic')->where(function ($query) use($item_id){
                     $query->where('item_id', $item_id);
                 })],
@@ -162,16 +167,7 @@ class ItemtopicController extends BaseitemController
 
     /* ========== 详情 ========== */
     public function info(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
@@ -220,16 +216,7 @@ class ItemtopicController extends BaseitemController
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
-        $item_id=$request->input('item_id');
-        if(!$item_id){
-            $result=['code'=>'error','message'=>'请先选择项目','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
-
+        $item_id=$this->item_id;
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
@@ -272,8 +259,8 @@ class ItemtopicController extends BaseitemController
             $model=new Itemtopic();
             /* ********** 表单验证 ********** */
             $rules=[
-                'topic_id'=> ['required',Rule::unique('item_topic')->where(function ($query) use($item_id){
-                    $query->where('item_id', $item_id);
+                'topic_id'=> ['required',Rule::unique('item_topic')->where(function ($query) use($item_id,$id){
+                    $query->where('item_id', $item_id)->where('id','<>',$id);
                 })],
             ];
             $messages=[
