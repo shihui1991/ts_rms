@@ -267,6 +267,13 @@ class HouseholddetailController extends BaseitemController
                 },
                 'nation'=>function($query){
                     $query->select(['id','name']);
+                },
+                'householdmembercrowds'=>function($query){
+                    $query->with([
+                        'crowd'=>function($querys){
+                            $querys->select(['id','name']);
+                        }])
+                        ->select(['id','member_id','crowd_id','picture']);
                 }])
                 ->where('item_id',$item_id)
                 ->where('household_id',$id)
