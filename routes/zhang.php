@@ -125,6 +125,9 @@ Route::any('/itempublic','ItempublicController@index')->name('g_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');
+
+
+
 /*---------- 项目-自选社会风险评估调查话题 ----------*/
 Route::any('/itemtopic','ItemtopicController@index')->name('g_itemtopic');
 Route::any('/itemtopic_add','ItemtopicController@add')->name('g_itemtopic_add');
@@ -140,22 +143,19 @@ Route::any('/itemsubject','ItemsubjectController@index')->name('g_itemsubject');
 Route::any('/itemsubject_add','ItemsubjectController@add')->name('g_itemsubject_add');
 Route::get('/itemsubject_info','ItemsubjectController@info')->name('g_itemsubject_info');
 Route::any('/itemsubject_edit','ItemsubjectController@edit')->name('g_itemsubject_edit');
+
+
 /*---------- 项目-内部通知 ----------*/
 Route::any('/itemnotice','ItemnoticeController@index')->name('g_itemnotice');
 Route::any('/itemnotice_add','ItemnoticeController@add')->name('g_itemnotice_add');
 Route::get('/itemnotice_info','ItemnoticeController@info')->name('g_itemnotice_info');
 Route::any('/itemnotice_edit','ItemnoticeController@edit')->name('g_itemnotice_edit');
-/*---------- 项目-征收方案 ----------*/
-Route::any('/itemprogram_add','ItemprogramController@add')->name('g_itemprogram_add');
-Route::get('/itemprogram_info','ItemprogramController@info')->name('g_itemprogram_info');
-Route::any('/itemprogram_edit','ItemprogramController@edit')->name('g_itemprogram_edit');
 
 /*---------- 项目-被征收户账号 ----------*/
 Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
 Route::get('/household_info','HouseholdController@info')->name('g_household_info');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
-
 /*---------- 项目-被征收户详细信息 ----------*/
 Route::any('/householddetail','HouseholddetailController@index')->name('g_householddetail');
 Route::any('/householddetail_add','HouseholddetailController@add')->name('g_householddetail_add');
