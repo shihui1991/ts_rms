@@ -37,7 +37,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="unit"> 单元号： </label>
             <div class="col-sm-9">
-                <input type="text" id="unit" name="unit" value="{{$sdata->unit}}" class="col-xs-10 col-sm-5"  placeholder="请输入单元号" required>
+                <input type="number" id="unit" name="unit" value="{{$sdata->unit}}" class="col-xs-10 col-sm-5"  placeholder="请输入单元号" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -45,7 +45,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="floor"> 楼层： </label>
             <div class="col-sm-9">
-                <input type="text" id="floor" name="floor" value="{{$sdata->floor}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼层" required>
+                <input type="number" id="floor" name="floor" value="{{$sdata->floor}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼层" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -53,7 +53,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="number"> 房号： </label>
             <div class="col-sm-9">
-                <input type="text" id="number" name="number" value="{{$sdata->number}}" class="col-xs-10 col-sm-5"  placeholder="请输入房号" required>
+                <input type="number" id="number" name="number" value="{{$sdata->number}}" class="col-xs-10 col-sm-5"  placeholder="请输入房号" required>
             </div>
         </div>
         <div class="space-4"></div>

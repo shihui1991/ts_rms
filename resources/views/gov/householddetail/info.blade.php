@@ -15,7 +15,7 @@
                 <a class="btn" href="{{route('g_householddetail_add',['household_id'=>$sdata->id,'item'=>$sdata->item_id])}}">
                     添加详细信息
                 </a>
-                @else
+            @else
                 <a class="btn" href="{{route('g_householddetail_edit',['id'=>$edata['household_detail']->id,'item'=>$sdata->item_id])}}">
                     <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
                     修改详细信息
@@ -32,7 +32,7 @@
                     <li class="active">
                         <a data-toggle="tab" href="#itembuilding" aria-expanded="true">
                             <i class="green ace-icon fa fa-building bigger-120"></i>
-                           基本信息
+                            基本信息
                         </a>
                     </li>
 
@@ -143,164 +143,164 @@
 
                     <div id="itempublic" class="tab-pane fade">
                         @if(isset($edata['household_detail']))
-                        <div class="profile-user-info profile-user-info-striped">
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 产权争议： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->dispute}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 状态： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->state}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房屋产权证号： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->register}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 登记套内面积： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->reg_inner}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 登记建筑面积： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->reg_outer}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 阳台面积： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->balcony}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 批准用途： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->defbuildinguse->name}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 实际用途： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->realbuildinguse->name}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 资产评估： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->has_assets}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 征收意见： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->agree}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 补偿方式： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->repay_way}}</span>
-                                </div>
-                            </div>
-
-                            @if($edata['household_detail']->getOriginal('repay_way')==1)
+                            <div class="profile-user-info profile-user-info-striped">
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 产权调换意向<br/>-房源单价： </div>
+                                    <div class="profile-info-name"> 产权争议： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->house_price}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->dispute}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 产权调换意向<br/>-房源面积： </div>
+                                    <div class="profile-info-name"> 状态： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->house_area}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->state}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 产权调换意向<br/>-房源数量： </div>
+                                    <div class="profile-info-name"> 房屋产权证号： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->house_num}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->register}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 产权调换意向<br/>-房源地址： </div>
+                                    <div class="profile-info-name"> 登记套内面积： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->house_addr}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->reg_inner}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 产权调换意向<br/>-增加面积单价： </div>
+                                    <div class="profile-info-name"> 登记建筑面积： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->more_price}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->reg_outer}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 产权调换意向<br/>-房源户型： </div>
+                                    <div class="profile-info-name"> 阳台面积： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->layout->name}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->balcony}}</span>
                                     </div>
                                 </div>
-                            @endif
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 其他意见： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->opinion}}</span>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 批准用途： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->defbuildinguse->name}}</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 收件人： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->receive_man}}</span>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 实际用途： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->realbuildinguse->name}}</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 收件电话： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->receive_tel}}</span>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 资产评估： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->has_assets}}</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 收件地址： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->receive_addr}}</span>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 征收意见： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->agree}}</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房源户型图： </div>
-                                <div class="profile-info-value">
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 补偿方式： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->repay_way}}</span>
+                                    </div>
+                                </div>
+
+                                @if($edata['household_detail']->getOriginal('repay_way')==1)
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 产权调换意向<br/>-房源单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$edata['household_detail']->house_price}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 产权调换意向<br/>-房源面积： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$edata['household_detail']->house_area}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 产权调换意向<br/>-房源数量： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$edata['household_detail']->house_num}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 产权调换意向<br/>-房源地址： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$edata['household_detail']->house_addr}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 产权调换意向<br/>-增加面积单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$edata['household_detail']->more_price}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 产权调换意向<br/>-房源户型： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$edata['household_detail']->layout->name}}</span>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 其他意见： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->opinion}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 收件人： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->receive_man}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 收件电话： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->receive_tel}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 收件地址： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->receive_addr}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房源户型图： </div>
+                                    <div class="profile-info-value">
                                     <span class="editable editable-click">
                                          <ul class="ace-thumbnails clearfix img-content viewer">
                                              @if(isset($edata['household_detail']->layout_img))
                                                  @foreach($edata['household_detail']->layout_img as $layoutpic)
-                                                 <li>
+                                                     <li>
                                                     <div>
                                                         <img width="120" height="120" src="{!! $layoutpic !!}" alt="加载失败">
                                                         <div class="text">
@@ -314,17 +314,17 @@
                                              @endif
                                         </ul>
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房屋证件： </div>
-                                <div class="profile-info-value">
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房屋证件： </div>
+                                    <div class="profile-info-value">
                                     <span class="editable editable-click">
                                          <ul class="ace-thumbnails clearfix img-content viewer">
                                               @if(isset($edata['household_detail']->picture))
-                                              @foreach($edata['household_detail']->picture as $picturepic)
-                                             <li>
+                                                 @foreach($edata['household_detail']->picture as $picturepic)
+                                                     <li>
                                                 <div>
                                                     <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
                                                     <div class="text">
@@ -334,21 +334,21 @@
                                                     </div>
                                                 </div>
                                             </li>
-                                             @endforeach
+                                                 @endforeach
                                              @endif
                                         </ul>
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房屋图片： </div>
-                                <div class="profile-info-value">
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房屋图片： </div>
+                                    <div class="profile-info-value">
                                     <span class="editable editable-click">
                                          <ul class="ace-thumbnails clearfix img-content viewer">
                                               @if(isset($edata['household_detail']->house_img))
-                                              @foreach($edata['household_detail']->house_img as $housepic)
-                                                 <li>
+                                                 @foreach($edata['household_detail']->house_img as $housepic)
+                                                     <li>
                                                 <div>
                                                     <img width="120" height="120" src="{!! $housepic !!}" alt="加载失败">
                                                     <div class="text">
@@ -358,16 +358,16 @@
                                                     </div>
                                                 </div>
                                             </li>
-                                             @endforeach
+                                                 @endforeach
                                              @endif
                                         </ul>
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 被征收人签名： </div>
-                                <div class="profile-info-value">
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 被征收人签名： </div>
+                                    <div class="profile-info-value">
                                     <span class="editable editable-click">
                                          <ul class="ace-thumbnails clearfix img-content viewer">
                                                  <li>
@@ -382,23 +382,27 @@
                                             </li>
                                         </ul>
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 创建时间： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->created_at}}</span>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 创建时间： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->created_at}}</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 更新时间： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$edata['household_detail']->updated_at}}</span>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 更新时间： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->updated_at}}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="profile-user-info profile-user-info-striped">
+                                <span>暂无详细信息</span>
+                            </div>
                         @endif
                     </div>
 
@@ -446,46 +450,152 @@
                     </div>
 
                     <div id="item" class="tab-pane fade">
-                        <table class="table table-hover table-bordered">
-                            <thead>
-                            <tr>
-                                <th>序号</th>
-                                <th>姓名</th>
-                                <th>与户主关系</th>
-                                <th>身份证</th>
-                                <th>电话</th>
-                                <th>民族</th>
-                                <th>性别</th>
-                                <th>年龄</th>
-                                <th>是否享受特殊人群优惠</th>
-                                <th>权属类型</th>
-                                <th>权属分配比例</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if($code=='success')
-                                @foreach($edata['householdmember'] as $infos)
-                                    <tr>
-                                        <td>{{$loop->iteration}}</td>
-                                        <td>{{$infos->name}}</td>
-                                        <td>{{$infos->relation}}</td>
-                                        <td>{{$infos->card_num}}</td>
-                                        <td>{{$infos->phone}}</td>
-                                        <td>{{$infos->nation->name}}</td>
-                                        <td>{{$infos->sex}}</td>
-                                        <td>{{$infos->age}}</td>
-                                        <td>{{$infos->crowd}}</td>
-                                        <td>{{$infos->holder}}</td>
-                                        <td>{{$infos->portion}}</td>
-                                        <td>
-                                            <a href="{{route('g_householdmember_info',['id'=>$infos->id,'item'=>$edata['item_id']])}}" class="btn btn-sm">查看详情</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                            </tbody>
-                        </table>
+                        <div class="col-xs-12">
+                            @foreach($edata['householdmember'] as $householdmember)
+                                <div class="col-xs-6 col-sm-3 pricing-box">
+                                    <div class="widget-box widget-color-dark">
+                                        <div class="widget-header">
+                                            <h5 class="widget-title bigger lighter">{{$householdmember->holder}}</h5>
+                                            <div class="widget-toolbar">
+                                                <a href="{{route('g_householdmember_edit',['item'=>$householdmember->item_id,'id'=>$householdmember->id,'household_id'=>$householdmember->household_id])}}" class="orange2">
+                                                    <i class="ace-icon fa fa-edit"></i>
+                                                    编辑
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="widget-body">
+                                            <div class="widget-main">
+
+                                                <div class="profile-user-info profile-user-info-striped">
+
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 姓名： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->name}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 与户主关系： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->relation}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 身份证： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->card_num}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 电话： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->phone}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 民族： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->nation->name}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 性别： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->sex}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 年龄： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->age}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 权属分配比例： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->portion}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 是否享受特殊人群优惠： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$householdmember->crowd}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 身份证,户口本页： </div>
+                                                        <div class="profile-info-value">
+                                                                <span class="editable editable-click">
+                                                                    <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                          @if($householdmember->picture)
+                                                                            @foreach($householdmember->picture as $pic)
+                                                                                <li>
+                                                                                    <div>
+                                                                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                                                                        <div class="text">
+                                                                                            <div class="inner">
+                                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            @endforeach
+                                                                        @endif
+                                                                    </ul>
+                                                                </span>
+                                                        </div>
+                                                    </div>
+                                                    @if($householdmember->getOriginal('crowd')==1)
+                                                        <br/>
+                                                        @if(filled($householdmember->householdmembercrowds))
+                                                            @foreach($householdmember->householdmembercrowds as $v)
+                                                                <div class="profile-info-row">
+                                                                    <div class="profile-info-name"> 特殊人群信息： </div>
+                                                                    <div class="profile-info-value">
+                                                                        <span class="editable editable-click">{{$v->crowd->name}}</span><br/>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="profile-info-row">
+                                                                    <div class="profile-info-name"> 证件： </div>
+                                                                    <div class="profile-info-value">
+                                                                        <span class="editable editable-click">
+                                                                             <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                                 @foreach($v->picture as $val)
+                                                                                     <li>
+                                                                                    <div>
+                                                                                        <img width="120" height="120" src="{!! $val !!}" alt="加载失败">
+                                                                                        <div class="text">
+                                                                                            <div class="inner">
+                                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                  </li>
+                                                                                 @endforeach
+                                                                            </ul>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
+                                                    @endif
+                                                </div>
+
+                                            </div>
+
+                                            <div>
+                                                <a href="{{route('g_householdmember_info',['item'=>$householdmember->item_id,'household_id'=>$householdmember->household_id,'id'=>$householdmember->id])}}" class="btn btn-block btn-inverse">
+                                                    <span>查看详情</span>
+                                                    <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
 
                     <div id="items" class="tab-pane fade">
