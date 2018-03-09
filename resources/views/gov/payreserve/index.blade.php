@@ -49,6 +49,7 @@
                         <td>{{$reserve->state}}</td>
                         <td>
                             <div class="btn-group">
+                                <a href="{{route('g_pay_info',['id'=>$reserve->pay_id,'item'=>$sdata['item']->id])}}" class="btn btn-xs">查看补偿</a>
                                 <a href="{{route('g_payreserve_house',['item'=>$sdata['item']->id,'reserve_id'=>$reserve->id])}}" class="btn btn-xs">开始选房</a>
                             </div>
 
