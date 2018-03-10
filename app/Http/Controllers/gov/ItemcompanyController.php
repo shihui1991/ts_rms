@@ -38,17 +38,10 @@ class ItemcompanyController extends BaseitemController
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $per_page=15;
-        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemcompany();
         DB::beginTransaction();
         try{
-            $total=$model->sharedLock()
-                ->where('item_id',$item_id)
-                ->where($where)
-                ->count();
             $itemcompanys=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -60,11 +53,7 @@ class ItemcompanyController extends BaseitemController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->offset($per_page*($page-1))
-                ->limit($per_page)
                 ->get();
-            $itemcompanys=new LengthAwarePaginator($itemcompanys,$total,$per_page,$page);
-            $itemcompanys->withPath(route('g_itemcompany',['item'=>$item_id]));
             $infos['typecount'] = $model
                 ->where($where)
                 ->where('type',0)
