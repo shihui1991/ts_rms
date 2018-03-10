@@ -167,7 +167,7 @@ class ItemlandController extends BaseitemController
                 $itemland = $model;
                 $itemland->fill($request->all());
                 $itemland->addOther($request);
-                $itemland->item_id=$this->item_id;
+                $itemland->item_id=$item_id;
                 $itemland->save();
                 if (blank($itemland)) {
                     throw new \Exception('添加失败', 404404);
