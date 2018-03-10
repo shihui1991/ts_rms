@@ -1,0 +1,233 @@
+{{-- 继承主体 --}}
+@extends('com.main')
+
+{{-- 页面内容 --}}
+@section('content')
+
+    <div class="row">
+        <div class="well well-sm">
+            <a class="btn" href="{{route('c_itemland',['item'=>$sdata['item']->id])}}">
+                <i class="ace-icon fa fa-arrow-left bigger-110"></i>
+                返回
+            </a>
+            <a href="{{route('c_itemland_edit',['id'=>$sdata['itemland']->id,'item'=>$sdata['item']->id])}}" class="btn">修改地块信息</a>
+            <a href="{{route('c_itembuilding_add',['item'=>$sdata['item']->id,'land_id'=>$sdata['itemland']->id])}}" class="btn">添加楼栋信息</a>
+            <a href="{{route('c_itempublic_add',['item'=>$sdata['item']->id,'land_id'=>$sdata['itemland']->id])}}" class="btn">添加公共附属物信息</a>
+        </div>
+
+        <div class="well-sm">
+            <div class="tabbable">
+                <ul class="nav nav-tabs" id="myTab">
+                    <li class="active">
+                        <a data-toggle="tab" href="#itemland" aria-expanded="true">
+                            <i class="green ace-icon fa fa-building bigger-120"></i>
+                            地块信息
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a data-toggle="tab" href="#itembuilding" aria-expanded="false">
+                            <i class="green ace-icon fa fa-building bigger-120"></i>
+                            楼栋信息
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a data-toggle="tab" href="#itempublic" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            公共附属物信息
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="itemland" class="tab-pane fade active in">
+                        <div class="profile-user-info profile-user-info-striped">
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 地址： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->address}}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 土地性质： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->landprop->name}}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 土地来源： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->landsource->name}}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 土地权益状况： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->landstate->name}}</span>
+                                </div>
+                            </div>
+                            @if($sdata['itemland']->admin_unit_id != 0)
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 公房单位： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['itemland']->adminunit->name}}</span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 类型： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">私产</span>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 面积： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->area}}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 描述： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->infos}}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 图片： </div>
+                                <div class="profile-info-value">
+                                    <ul class="ace-thumbnails clearfix img-content viewer">
+                                        @if(filled($sdata['itemland']->com_pic))
+                                            @foreach($sdata['itemland']->com_pic as $pic)
+                                                <li>
+                                                    <div>
+                                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                                        <div class="text">
+                                                            <div class="inner">
+                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 创建时间： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->created_at}}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 更新时间： </div>
+                                <div class="profile-info-value">
+                                    <span class="editable editable-click">{{$sdata['itemland']->updated_at}}</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="itembuilding" class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>楼栋号</th>
+                                <th>总楼层</th>
+                                <th>占地面积</th>
+                                <th>建造年份</th>
+                                <th>结构类型</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if(filled($sdata['itembuildings']))
+                                @foreach($sdata['itembuildings'] as $itembuilding)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$itembuilding->building}}</td>
+                                        <td>{{$itembuilding->total_floor}}</td>
+                                        <td>{{$itembuilding->area}}</td>
+                                        <td>{{$itembuilding->build_year}}</td>
+                                        <td>{{$itembuilding->buildingstruct->name}}</td>
+                                        <td>
+                                            <a href="{{route('c_itembuilding_info',['id'=>$itembuilding->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata['itembuildings']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="itempublic" class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>计量单位</th>
+                                <th>数量</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if(filled($sdata['itempublics']))
+                                @foreach($sdata['itempublics'] as $public)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$public->name}}</td>
+                                        <td>{{$public->num_unit}}</td>
+                                        <td>{{$public->com_num}}</td>
+                                        <td>
+                                            <a href="{{route('c_itempublic_info',['id'=>$public->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata['itempublics']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+@endsection
+
+{{-- 样式 --}}
+@section('css')
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+@endsection
+
+{{-- 插件 --}}
+@section('js')
+    @parent
+    <script src="{{asset('js/func.js')}}"></script>
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
+    <script>
+        $('.img-content').viewer('update');
+    </script>
+@endsection
+
+
