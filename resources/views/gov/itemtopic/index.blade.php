@@ -6,14 +6,13 @@
 
 
     <div class="well well-sm">
-        <a href="{{route('g_itemtopic_add',['item_id'=>$edata['item_id']])}}" class="btn">添加项目话题</a>
+        <a href="{{route('g_itemtopic_add',['item'=>$edata['item_id']])}}" class="btn">添加项目话题</a>
     </div>
 
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
             <th>序号</th>
-            <th>项目</th>
             <th>话题</th>
             <th>操作</th>
         </tr>
@@ -23,10 +22,9 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$loop->iteration}}</td>
-                        <td>{{$infos->item->name}}</td>
                         <td>{{$infos->topic->name}}</td>
                         <td>
-                            <a href="{{route('g_itemtopic_info',['id'=>$infos->id,'item_id'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
+                            <a href="{{route('g_itemtopic_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
                         </td>
                     </tr>
                 @endforeach

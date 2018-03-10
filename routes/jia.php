@@ -10,12 +10,6 @@ Route::any('/itemdraftreport_add','ItemdraftreportController@add')->name('g_item
 Route::any('/itemdraftreport_edit','ItemdraftreportController@edit')->name('g_itemdraftreport_edit');
 Route::any('/itemdraftreport_info','ItemdraftreportController@info')->name('g_itemdraftreport_info');
 
-/*---------- 社会风险评估调查话题 ----------*/
-Route::any('/itemtopic','ItemtopicController@index')->name('g_itemtopic');
-Route::any('/itemtopic_add','ItemtopicController@add')->name('g_itemtopic_add');
-Route::any('/itemtopic_info','ItemtopicController@info')->name('g_itemtopic_info');
-Route::any('/itemtopic_edit','ItemtopicController@edit')->name('g_itemtopic_edit');
-
 /*---------- 社会风险评估报告 ----------*/
 Route::any('/itemriskreport','ItemriskreportController@index')->name('g_itemriskreport');
 Route::any('/itemriskreport_add','ItemriskreportController@add')->name('g_itemriskreport_add');

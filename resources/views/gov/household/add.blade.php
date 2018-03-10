@@ -136,7 +136,8 @@
             var _this = $(this).val();
             var data = {
                 'land_id':_this,
-                'item':'{{$sdata['item_id']}}'
+                'item':'{{$sdata['item_id']}}',
+                'app':'app'
             };
             ajaxAct('{{route('g_itembuilding')}}',data,'post');
             if(ajaxResp.code == 'error'){

@@ -46,13 +46,14 @@ class ItemlandController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $per_page=15;
+        $per_page=20;
         $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemland();
         DB::beginTransaction();
         try{
             $total=$model->sharedLock()
+                ->where($where)
                 ->where('item_id',$item_id)
                 ->count();
             $itemlands=$model
