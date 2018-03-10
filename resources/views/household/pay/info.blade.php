@@ -168,7 +168,7 @@
                                 <td>{{$subject->subject->name}}</td>
                                 <td>{{$subject->calculate}}</td>
                                 <td>{{number_format($subject->amount,2)}}</td>
-                                <td>{{$subject->state}}</td>
+                                <td>{{$subject->state->name}}</td>
 
                             </tr>
                         @endforeach

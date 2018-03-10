@@ -139,7 +139,7 @@
                                 <div class="profile-info-name"> 状态：</div>
                                 <div class="profile-info-value">
                                     <span class="editable editable-click">
-                                            {{$sdata['estate']->state}}
+                                            {{$sdata['estate']->state->name}}
                                     </span>
                                 </div>
                             </div>
@@ -175,7 +175,7 @@
                                     <div class="profile-info-name"> 状态：</div>
                                     <div class="profile-info-value">
                                 <span class="editable editable-click">
-                                    {{$sdata['assets']->state}}
+                                    {{$sdata['assets']->state->name}}
                                 </span>
                                     </div>
                                 </div>

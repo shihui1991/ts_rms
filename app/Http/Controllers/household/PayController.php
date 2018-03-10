@@ -48,10 +48,14 @@ class PayController extends BaseController{
         if (filled($model)){
             /* ++++++++++ 被征收户 ++++++++++ */
             $household=Household::sharedLock()
-                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+                ->select(['id','item_id','land_id','building_id','unit','floor','number','type'])
                 ->find($household_id);
             /* ++++++++++ 补偿科目 ++++++++++ */
-            $subjects=Paysubject::with('subject')
+            $subjects=Paysubject::with(['subject' => function ($query) {
+                $query->select(['id', 'name']);
+            }, 'state'=>function($query){
+                $query->select(['code', 'name']);
+            }])
                 ->sharedLock()
                 ->where([
                     ['item_id',$this->item_id],
@@ -90,8 +94,8 @@ class PayController extends BaseController{
                     ['household_id',$household->id],
                     ['pay_id',$model->id],
                 ])
-                ->orderBy('register','desc')
-                ->orderBy('state','asc')
+
+                ->orderBy('code','asc')
                 ->orderBy('real_use','asc')
                 ->get();
             /* ++++++++++ 公共附属物 ++++++++++ */

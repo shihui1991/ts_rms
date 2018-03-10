@@ -12,10 +12,7 @@
             <a href="{{route('g_itemprogram_edit',['id'=>$sdata->id,'item'=>$edata['item_id']])}}" class="btn">修改征收方案</a>
         @endif
 
-            <a href="{{route('g_itemsubject',['item'=>$edata['item_id']])}}" class="btn">补偿科目说明</a>
-            <a href="{{route('g_itemhouserate',['item'=>$edata['item_id']])}}" class="btn">产权调换优惠</a>
-            <a href="{{route('g_itemcrowd',['item'=>$edata['item_id']])}}" class="btn">特殊人群优惠</a>
-            <a href="{{route('g_itemobject',['item'=>$edata['item_id']])}}" class="btn">其他补偿事项</a>
+
     </div>
 
     @if (filled($sdata))
@@ -35,11 +32,111 @@
                             <div class="col-xs-12 col-sm-9">
                                 <div class="profile-user-info profile-user-info-striped">
                                     <div class="profile-info-row">
-                                        <div class="profile-info-name"> 名称： </div>
+                                        <div class="profile-info-name"> 方案名称： </div>
                                         <div class="profile-info-value">
                                             <span class="editable editable-click">{{$sdata->name}}</span>
                                         </div>
                                     </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 被征收人比例（%）： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->portion_holder}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 承租人比例（%）： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->portion_renter}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 搬迁补助基本费用： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->move_base}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 住宅搬迁补助单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->move_house}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 办公搬迁补助单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->move_office}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 商服搬迁补助单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->move_business}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 临时安置基本费用： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->transit_base}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 生产加工搬迁补助单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->move_factory}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 临时安置基本费用： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->transit_base}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 临时安置单价-住宅： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->transit_house}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 临时安置单价-非住宅： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->transit_other}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name">现房临时安置时长（月）： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->transit_real}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name">期房临时安置时长（月）： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->transit_future}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name">住宅签约奖励单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->reward_house}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name">非住宅签约奖励比例（%）： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->reward_other}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name">房屋奖励单价： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->reward_move}}</span>
+                                        </div>
+                                    </div>
+
+
                                     <div class="profile-info-row">
                                         <div class="profile-info-name"> 内容： </div>
                                         <div class="profile-info-value">

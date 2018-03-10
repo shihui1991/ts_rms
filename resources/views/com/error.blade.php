@@ -67,7 +67,7 @@
                     返回
                 </a>
 
-                <a href="{{route('g_home')}}" class="btn btn-primary">
+                <a href="{{route('c_home')}}" class="btn btn-primary">
                     <i class="ace-icon fa fa-home"></i>
                     回到首页
                 </a>

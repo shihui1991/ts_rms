@@ -168,7 +168,7 @@
                 'land_id':land_id,
                 'app':app
             };
-            ajaxAct('{{route('g_itempublic')}}',data,'post');
+            ajaxAct('{{route('c_itempublic')}}',data,'post');
             if(ajaxResp.code=='error'){
                 $('.search_public').html('&nbsp; 暂无对应公共附属物');
                 toastr.error(ajaxResp.message);

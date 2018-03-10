@@ -4,79 +4,85 @@
 
 {{-- 页面内容 --}}
 @section('content')
-    @if(filled($sdata['companyvote']))
-    <div class="well well-sm">
-        <a href="{{route('h_itemcompanyvote_info',['id'=>$sdata['companyvote']->id])}}" class="btn">我的投票</a>
-    </div>
-    @endif
 
-    <table class="table table-hover table-bordered">
-        <thead>
-        <tr>
-            <th>排名</th>
-            <th>名称</th>
-            <th>基本信息</th>
-            <th>票数</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        @if(filled($edata))
-            @if(filled($sdata['companyvote']))
+    <div class="row">
+        <div class="col-xs-12">
+            @if($code=='success')
                 @foreach($edata as $company)
-                    <tr>
-                        <td>{{$loop->iteration}}</td>
-                        <td>{{$company->name}}</td>
-                        <td>{{$company->infos}}</td>
-                        <td>{{$company->companyvotes_count}}</td>
-                        <td>  <div class="btn-group">
-                            @if($company->companyvotes_count)
-                                <a href="javascript:;" class="btn btn-xs">已投</a>
-                            @endif
-                                <a href="{{route('h_company_info',['id'=>$company->id])}}" class="btn btn-xs">查看详情</a>  </div>
-                        </td>
-                    </tr>
-                @endforeach
-                @else
-                @foreach($edata as $company)
-                    <tr>
-                        <td>{{$loop->iteration}}</td>
-                        <td>{{$company->name}}</td>
-                        <td>{{$company->infos}}</td>
-                        <td>{{$company->companyvotes_count}}</td>
-                        <td>
-                            <div class="btn-group">
-                                <a class="btn btn-xs" onclick="vote({{$company->id}})" >投票</a>
-                                <a href="{{route('h_company_info',['id'=>$company->id])}}" class="btn btn-xs">查看详情</a>
+                    <div class="col-xs-6 col-sm-3 pricing-box">
+                        <div class="widget-box widget-color-dark">
+                            <div class="widget-header">
+                                <h5 class="widget-title bigger lighter">{{$company->name}}</h5>
                             </div>
-                        </td>
-                    </tr>
+
+                            <div class="widget-body">
+                                <div class="widget-main">
+
+                                    <div class="profile-user-info profile-user-info-striped">
+
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> 基本信息： </div>
+                                            <div class="profile-info-value">
+                                                <span class="editable editable-click">{{$company->infos}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> 目前得票： </div>
+                                            <div class="profile-info-value">
+                                                <span class="editable editable-click">{{$company->companyvotes_count}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> LOGO： </div>
+
+                                            <div class="profile-info-value img-content">
+                                                @if($company->logo)
+                                                    <img width="120" height="120" src="{{$company->logo}}" alt="{{$company->logo}}">
+                                                    @else
+                                                    暂无
+                                                    @endif
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="price">
+                                        <a href="{{route('h_company_info',['id'=>$company->id])}}" style="font-size: 15px">查看详情<i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                        </a>
+                                    </div>
+
+                                </div>
+                                <div >
+                                    @if($company->companyvotes_count)
+                                        <a href="javascript:;"  class="btn btn-block btn-inverse" >已投</a>
+                                    @else
+                                        <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
+                                            <span>投票</span>
+                                            <i class="ace-icon fa fa-check bigger-110"></i>
+                                        </a>
+                                    @endif
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @endforeach
             @endif
-        @endif
-        </tbody>
-    </table>
-    <div class="row">
-        <div class="col-xs-6">
-            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata->total() }} @else 0 @endif 条数据</div>
-        </div>
-        <div class="col-xs-6">
-            <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
-                @if($code=='success') {{ $edata->links() }} @endif
-            </div>
         </div>
     </div>
+
 @endsection
 
 {{-- 样式 --}}
 @section('css')
-
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
 @endsection
 
 {{-- 插件 --}}
 @section('js')
     @parent
     <script src="{{asset('js/func.js')}}"></script>
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
        function vote(company_id) {
           var data={company_id:company_id};
@@ -92,5 +98,6 @@
            }
            return false;
        }
+       $('.img-content').viewer();
     </script>
 @endsection

@@ -33,3 +33,9 @@ Route::any('/itemhouserate','ItemhouserateController@index')->name('g_itemhouser
 Route::any('/itemhouserate_info','ItemhouserateController@info')->name('g_itemhouserate_info');
 Route::any('/itemhouserate_add','ItemhouserateController@add')->name('g_itemhouserate_add');
 Route::any('/itemhouserate_edit','ItemhouserateController@edit')->name('g_itemhouserate_edit');
+
+/*---------- 征收方案 ----------*/
+Route::any('/itemprogram','ItemprogramController@index')->name('g_itemprogram');
+Route::any('/itemprogram_info','ItemprogramController@info')->name('g_itemprogram_info');
+Route::any('/itemprogram_add','ItemprogramController@add')->name('g_itemprogram_add');
+Route::any('/itemprogram_edit','ItemprogramController@edit')->name('g_itemprogram_edit');

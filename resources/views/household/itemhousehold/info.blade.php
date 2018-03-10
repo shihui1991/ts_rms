@@ -69,6 +69,13 @@
                 </div>
 
                 <div class="profile-info-row">
+                    <div class="profile-info-name"> 状态： </div>
+                    <div class="profile-info-value">
+                        <span class="editable editable-click">{{$sdata->state->name}}</span>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
                     <div class="profile-info-name"> 描述： </div>
                     <div class="profile-info-value">
                         <span class="editable editable-click">{{$sdata->infos}}</span>
