@@ -100,15 +100,10 @@ Route::get('/company_info','CompanyController@info')->name('g_company_info');
 Route::any('/company_edit','CompanyController@edit')->name('g_company_edit');
 /*---------- 评估机构(操作员) ----------*/
 Route::get('/companyuser','CompanyuserController@index')->name('g_companyuser');
-Route::any('/companyuser_add','CompanyuserController@add')->name('g_companyuser_add');
 Route::get('/companyuser_info','CompanyuserController@info')->name('g_companyuser_info');
-Route::any('/companyuser_edit','CompanyuserController@edit')->name('g_companyuser_edit');
 /*---------- 评估机构(评估师) ----------*/
 Route::get('/companyvaluer','CompanyvaluerController@index')->name('g_companyvaluer');
-Route::any('/companyvaluer_add','CompanyvaluerController@add')->name('g_companyvaluer_add');
 Route::get('/companyvaluer_info','CompanyvaluerController@info')->name('g_companyvaluer_info');
-Route::any('/companyvaluer_edit','CompanyvaluerController@edit')->name('g_companyvaluer_edit');
-
 /*============================================ 【项目】 ================================================*/
 /*+++++++++++++++ 【调查建档】 ++++++++++++++++*/
 /*---------- 项目-地块 ----------*/

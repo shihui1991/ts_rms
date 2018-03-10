@@ -22,7 +22,7 @@ class CompanyController extends BaseauthController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','type','name','address','phone','fax','contact_man','contact_tel','logo','infos','user_id','state','deleted_at'];
+        $select=['id','type','name','address','phone','fax','contact_man','contact_tel','logo','infos','user_id','code','deleted_at'];
         /* ++++++++++ 是否调取接口(分页)  ++++++++++ */
         $app = $request->input('app');
         /* ********** 查询条件 ********** */
@@ -157,7 +157,7 @@ class CompanyController extends BaseauthController
                 $company = $model;
                 $company->fill($request->input());
                 $company->user_id = 0;
-                $company->state = 0;
+                $company->code = 40;
                 $company->save();
                 if (blank($company)) {
                     throw  new \Exception('添加失败', 404404);
