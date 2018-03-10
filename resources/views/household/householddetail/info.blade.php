@@ -392,7 +392,7 @@
                                 <th>楼层</th>
                                 <th>朝向</th>
                                 <th>结构</th>
-                                <th>是否登记</th>
+
                                 <th>状态</th>
                                 <th>操作</th>
                             </tr>
@@ -407,8 +407,8 @@
                                         <td>{{$infos->floor}}</td>
                                         <td>{{$infos->direct}}</td>
                                         <td>{{$infos->buildingstruct->name}}</td>
-                                        <td>{{$infos->register}}</td>
-                                        <td>{{$infos->state}}</td>
+
+                                        <td>{{$infos->state->name}}</td>
                                         <td>
                                             <a href="{{route('h_householdbuilding_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
                                         </td>

@@ -45,16 +45,8 @@ class Household extends Model
         }
     }
 
-    /* ++++++++++ 获取房产状态 ++++++++++ */
-    public function getStateAttribute($key=null)
-    {
-        $array=[0=>'调查中',1=>'已调查',2=>'评估中',3=>'已评估',4=>'未签约', 5=>'已签约',
-                6=>'已搬迁',7=>'强制搬迁',8=>'临时周转',9=>'安置中',10=>'已安置'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
 

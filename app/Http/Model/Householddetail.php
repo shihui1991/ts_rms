@@ -68,7 +68,7 @@ class Householddetail extends Model
     }
 
     /* ++++++++++ 获取状态 ++++++++++ */
-    public function getStateAttribute($key=null)
+    public function getStatusAttribute($key=null)
     {
         $array=[0=>'正常',1=>'存在新建',2=>'存在改建',3=>'存在扩建'];
         if(is_numeric($key)){

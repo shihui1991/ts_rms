@@ -23,10 +23,13 @@ class Assess extends Model
         'land_id'=>'地块',
         'building_id'=>'楼栋',
         'assets'=>'资产评估总价',
-        'estate'=>'房产评估总价',
-        'state'=>'状态'
+        'estate'=>'房产评估总价'
     ];
 
+
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){

@@ -32,14 +32,6 @@ class Paysubject extends Model
         'state'=>'状态',
     ];
 
-    public function getStateAttribute($key=null){
-        $array=[0=>'未兑付',1=>'签约',2=>'兑付中',3=>'已兑付'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
@@ -48,6 +40,11 @@ class Paysubject extends Model
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
 
+    }
+
+    /* ++++++++++ 关联状态 ++++++++++ */
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
     /* ++++++++++ 关联项目 ++++++++++ */

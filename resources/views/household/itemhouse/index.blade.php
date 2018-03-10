@@ -38,9 +38,9 @@
                         <td>{{$infos->house->area}}</td>
                         <td>{{$infos->house->total_floor}}</td>
                         <td>{{$infos->house->lift}}</td>
-                        <td>{{$infos->house->is_real}}|{{$infos->house->is_buy}}|{{$infos->house->is_transit}}|{{$infos->house->is_public}}</td>
+                        <td>{{$infos->house->is_real}}|{{$infos->house->is_transit}}</td>
                         <td>{{$infos->house->delive_at}}</td>
-                        <td>{{$infos->house->state}}</td>
+                        <td>{{$infos->house->state->name}}</td>
                         <td>{{$infos->type}}</td>
                     </tr>
                 @endforeach

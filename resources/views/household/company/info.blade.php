@@ -72,6 +72,24 @@
                 <span class="editable editable-click">{{$sdata->infos}}</span>
             </div>
         </div>
+        <div class="profile-info-row">
+            <div class="profile-info-name">logo： </div>
+            <div class="profile-info-value">
+                <img width="120" height="120" src="{{$sdata->logo}}" alt="{{$sdata->logo}}">
+                <div class="text">
+                    <div class="inner">
+                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="profile-info-row">
+            <div class="profile-info-name">简介： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->content}}</span>
+            </div>
+        </div>
+
 
         <div class="profile-info-row">
             <div class="profile-info-name">操作人员： </div>
@@ -91,11 +109,15 @@
 
 {{-- 样式 --}}
 @section('css')
-
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
 @endsection
 
 {{-- 插件 --}}
 @section('js')
-
-
+    @parent
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
+    <script src="{{asset('js/func.js')}}"></script>
+    <script>
+        $('.img-content').viewer();
+    </script>
 @endsection

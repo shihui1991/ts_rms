@@ -78,26 +78,10 @@ class Householdbuilding extends Model
         }
     }
 
-    /* ++++++++++ 获取状态 ++++++++++ */
-    public function getStateAttribute($key=null)
-    {
-        $array=[0=>'合法登记',1=>'待认定',2=>'认定合法',3=>'认定非法',4=>'自行拆除',5=>'转为合法'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
 
-    /* ++++++++++ 获取面积争议状态 ++++++++++ */
-    public function getDisputeAttribute($key=null)
-    {
-        $array=[0=>'没有争议',1=>'存在争议',2=>'测量面积',3=>'明确面积',4=>'测量争议',5=>'测绘面积'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
+    /* ++++++++++ 关联项目 ++++++++++ */
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
     /* ++++++++++ 关联项目 ++++++++++ */
