@@ -9,6 +9,7 @@ namespace App\Http\Controllers\Household;
 use App\Http\Model\Itemcompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 class ItemcompanyController extends BaseController{
 
@@ -22,8 +23,16 @@ class ItemcompanyController extends BaseController{
 
     public function index(Request $request){
         $this->item_id=session('household_user.item_id');
+
+        $per_page=15;
+        $page=$request->input('page',1);
+
         DB::beginTransaction();
         try{
+            $total=Itemcompany::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->count();
+
             $item_companys=Itemcompany::with(['company'=>function($query){
                 $query->select();
             }])
@@ -32,8 +41,12 @@ class ItemcompanyController extends BaseController{
                 }])
                 ->where('item_id',$this->item_id)
                 ->orderBy('companyvotes_count','desc')
-                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
                 ->get();
+            $item_companys=new LengthAwarePaginator($item_companys,$total,$per_page,$page);
+            $item_companys->withPath(route('h_itemcompany'));
+
             if(blank($item_companys)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

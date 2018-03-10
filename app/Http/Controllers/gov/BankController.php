@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Bank;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,9 +40,8 @@ class BankController extends BaseauthController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
@@ -57,7 +57,19 @@ class BankController extends BaseauthController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $banks=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $total=$model->sharedLock()
+                ->where($where)
+                ->count();
+            $banks=$model
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $banks=new LengthAwarePaginator($banks,$total,$per_page,$page);
+            $banks->withPath(route('g_bank'));
             if(blank($banks)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

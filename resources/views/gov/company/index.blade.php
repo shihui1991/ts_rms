@@ -43,7 +43,7 @@
                                         <td>{{$infos->fax}}</td>
                                         <td>{{$infos->contact_man}}</td>
                                         <td>{{$infos->contact_tel}}</td>
-                                        <td>{{$infos->state}}</td>
+                                        <td>{{$infos->code}}</td>
                                         <td>{{$infos->infos}}</td>
                                         <td>
                                             <a href="{{route('g_company_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
@@ -104,7 +104,7 @@
                                         <td>{{$infos->fax}}</td>
                                         <td>{{$infos->contact_man}}</td>
                                         <td>{{$infos->contact_tel}}</td>
-                                        <td>{{$infos->state}}</td>
+                                        <td>{{$infos->code}}</td>
                                         <td>{{$infos->infos}}</td>
                                         <td>
                                             <a href="{{route('g_company_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>

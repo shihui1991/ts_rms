@@ -9,6 +9,7 @@ use App\Http\Model\Itemhouserate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\Rule;
 
 class ItemhouserateController extends BaseitemController
@@ -25,27 +26,33 @@ class ItemhouserateController extends BaseitemController
         $info['item_id']=$item_id=$this->item_id;
 
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
 
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $model=Itemhouserate::
+            $total=Itemhouserate::sharedLock()
+                ->where('item_id',$item_id)
+                ->count();
+
+            $Itemhouserate=Itemhouserate::
             with(['item'=>function($query){
                 $query->select(['id','name']);
             }])
                 ->where('item_id', $item_id)
                 ->sharedLock()
-                ->paginate($displaynum);
-
-            if(blank($model)){
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $Itemhouserate=new LengthAwarePaginator($Itemhouserate,$total,$per_page,$page);
+            $Itemhouserate->withPath(route('g_itemhouserate',['item'=>$item_id]));
+            if(blank($Itemhouserate)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$model;
+            $sdata=$Itemhouserate;
             $edata=$info;
             $url=null;
         }catch(\Exception $exception){

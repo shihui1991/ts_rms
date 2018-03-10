@@ -48,7 +48,7 @@ class HouseholdmemberController extends BaseitemController
         try{
             $householdmembers=$model
                 ->with(['item'=>function($query){
-                    $query->select(['id','name']);
+                        $query->select(['id','name']);
                     },
                     'itemland'=>function($query){
                         $query->select(['id','address']);

@@ -10,6 +10,7 @@ use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemcompany;
 use App\Http\Model\Itemland;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -37,10 +38,6 @@ class ItemcompanyController extends BaseitemController
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
         $model=new Itemcompany();
         DB::beginTransaction();
@@ -56,7 +53,7 @@ class ItemcompanyController extends BaseitemController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->get();
             $infos['typecount'] = $model
                 ->where($where)
                 ->where('type',0)

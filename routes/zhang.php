@@ -100,16 +100,12 @@ Route::get('/company_info','CompanyController@info')->name('g_company_info');
 Route::any('/company_edit','CompanyController@edit')->name('g_company_edit');
 /*---------- 评估机构(操作员) ----------*/
 Route::get('/companyuser','CompanyuserController@index')->name('g_companyuser');
-Route::any('/companyuser_add','CompanyuserController@add')->name('g_companyuser_add');
 Route::get('/companyuser_info','CompanyuserController@info')->name('g_companyuser_info');
-Route::any('/companyuser_edit','CompanyuserController@edit')->name('g_companyuser_edit');
 /*---------- 评估机构(评估师) ----------*/
 Route::get('/companyvaluer','CompanyvaluerController@index')->name('g_companyvaluer');
-Route::any('/companyvaluer_add','CompanyvaluerController@add')->name('g_companyvaluer_add');
 Route::get('/companyvaluer_info','CompanyvaluerController@info')->name('g_companyvaluer_info');
-Route::any('/companyvaluer_edit','CompanyvaluerController@edit')->name('g_companyvaluer_edit');
-
 /*============================================ 【项目】 ================================================*/
+/*+++++++++++++++ 【调查建档】 ++++++++++++++++*/
 /*---------- 项目-地块 ----------*/
 Route::any('/itemland','ItemlandController@index')->name('g_itemland');
 Route::any('/itemland_add','ItemlandController@add')->name('g_itemland_add');
@@ -125,31 +121,6 @@ Route::any('/itempublic','ItempublicController@index')->name('g_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');
-
-
-
-/*---------- 项目-自选社会风险评估调查话题 ----------*/
-Route::any('/itemtopic','ItemtopicController@index')->name('g_itemtopic');
-Route::any('/itemtopic_add','ItemtopicController@add')->name('g_itemtopic_add');
-Route::get('/itemtopic_info','ItemtopicController@info')->name('g_itemtopic_info');
-Route::any('/itemtopic_edit','ItemtopicController@edit')->name('g_itemtopic_edit');
-/*---------- 项目-其他补偿事项单价 ----------*/
-Route::any('/itemobject','ItemobjectController@index')->name('g_itemobject');
-Route::any('/itemobject_add','ItemobjectController@add')->name('g_itemobject_add');
-Route::get('/itemobject_info','ItemobjectController@info')->name('g_itemobject_info');
-Route::any('/itemobject_edit','ItemobjectController@edit')->name('g_itemobject_edit');
-/*---------- 项目-补偿科目说明 ----------*/
-Route::any('/itemsubject','ItemsubjectController@index')->name('g_itemsubject');
-Route::any('/itemsubject_add','ItemsubjectController@add')->name('g_itemsubject_add');
-Route::get('/itemsubject_info','ItemsubjectController@info')->name('g_itemsubject_info');
-Route::any('/itemsubject_edit','ItemsubjectController@edit')->name('g_itemsubject_edit');
-
-
-/*---------- 项目-内部通知 ----------*/
-Route::any('/itemnotice','ItemnoticeController@index')->name('g_itemnotice');
-Route::any('/itemnotice_add','ItemnoticeController@add')->name('g_itemnotice_add');
-Route::get('/itemnotice_info','ItemnoticeController@info')->name('g_itemnotice_info');
-Route::any('/itemnotice_edit','ItemnoticeController@edit')->name('g_itemnotice_edit');
 
 /*---------- 项目-被征收户账号 ----------*/
 Route::any('/household','HouseholdController@index')->name('g_household');
@@ -181,10 +152,36 @@ Route::any('/householdbuilding_add','HouseholdbuildingController@add')->name('g_
 Route::get('/householdbuilding_info','HouseholdbuildingController@info')->name('g_householdbuilding_info');
 Route::any('/householdbuilding_edit','HouseholdbuildingController@edit')->name('g_householdbuilding_edit');
 
+/*+++++++++++++++ 【征收决定】 ++++++++++++++++*/
+/*---------- 项目-自选社会风险评估调查话题 ----------*/
+Route::any('/itemtopic','ItemtopicController@index')->name('g_itemtopic');
+Route::any('/itemtopic_add','ItemtopicController@add')->name('g_itemtopic_add');
+Route::get('/itemtopic_info','ItemtopicController@info')->name('g_itemtopic_info');
+Route::any('/itemtopic_edit','ItemtopicController@edit')->name('g_itemtopic_edit');
+/*---------- 项目-其他补偿事项单价 ----------*/
+Route::any('/itemobject','ItemobjectController@index')->name('g_itemobject');
+Route::any('/itemobject_add','ItemobjectController@add')->name('g_itemobject_add');
+Route::get('/itemobject_info','ItemobjectController@info')->name('g_itemobject_info');
+Route::any('/itemobject_edit','ItemobjectController@edit')->name('g_itemobject_edit');
+/*---------- 项目-补偿科目说明 ----------*/
+Route::any('/itemsubject','ItemsubjectController@index')->name('g_itemsubject');
+Route::any('/itemsubject_add','ItemsubjectController@add')->name('g_itemsubject_add');
+Route::get('/itemsubject_info','ItemsubjectController@info')->name('g_itemsubject_info');
+Route::any('/itemsubject_edit','ItemsubjectController@edit')->name('g_itemsubject_edit');
+
+/*+++++++++++++++ 【通知公告】 ++++++++++++++++*/
+/*---------- 项目-内部通知 ----------*/
+Route::any('/itemnotice','ItemnoticeController@index')->name('g_itemnotice');
+Route::any('/itemnotice_add','ItemnoticeController@add')->name('g_itemnotice_add');
+Route::get('/itemnotice_info','ItemnoticeController@info')->name('g_itemnotice_info');
+Route::any('/itemnotice_edit','ItemnoticeController@edit')->name('g_itemnotice_edit');
+
+/*+++++++++++++++ 【房源控制】 ++++++++++++++++*/
 /*---------- 项目-冻结房源 ----------*/
 Route::any('/itemhouse','ItemhouseController@index')->name('g_itemhouse');
 Route::any('/itemhouse_add','ItemhouseController@add')->name('g_itemhouse_add');
 
+/*+++++++++++++++ 【入围机构】 ++++++++++++++++*/
 /*---------- 项目-选定评估机构 ----------*/
 Route::any('/itemcompany','ItemcompanyController@index')->name('g_itemcompany');
 Route::any('/itemcompany_add','ItemcompanyController@add')->name('g_itemcompany_add');
