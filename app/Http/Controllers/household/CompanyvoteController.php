@@ -12,6 +12,7 @@ use App\Http\Model\Company;
 use App\Http\Model\Household;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,18 +29,33 @@ class  CompanyvoteController extends BaseController
     public function index(Request $request){
         $this->item_id=session('household_user.item_id');
         $household_id=session('household_user.user_id');
+
+        $per_page=15;
+        $page=$request->input('page',1);
+
         DB::beginTransaction();
+
+        $total=Company::sharedLock()
+           /* ->where([
+                ['type',0],
+                ['state',1],
+            ])*/
+            ->count();
 
         $companys=Company::query()->withCount(['companyvotes'=>function($query){
             $query->where('item_id',$this->item_id);
         }])
-            ->where([
+            /*->where([
                 ['type',0],
                 ['state',1],
-            ])
+            ])*/
             ->orderBy('companyvotes_count','desc')
             ->sharedLock()
+            ->offset($per_page*($page-1))
+            ->limit($per_page)
             ->get();
+        $companys=new LengthAwarePaginator($companys,$total,$per_page,$page);
+        $companys->withPath(route('h_itemcompanyvote'));
         $companyvote=Companyvote::where([
             ['household_id',$household_id],
             ['item_id',$this->item_id],
@@ -54,10 +70,9 @@ class  CompanyvoteController extends BaseController
             'message'=>'请求成功',
             'sdata'=>[
                 'item'=>$this->item_id,
-                'companys'=>$companys,
                 'companyvote'=>$companyvote
             ],
-            'edata'=>null,
+            'edata'=>$companys,
             'url'=>null];
         if($request->ajax()){
             return response()->json($result);
