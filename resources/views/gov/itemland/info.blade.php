@@ -104,8 +104,8 @@
                                 <div class="profile-info-name"> 图片： </div>
                                 <div class="profile-info-value">
                                     <ul class="ace-thumbnails clearfix img-content viewer">
-                                        @if(isset($sdata['itemland']->picture))
-                                            @foreach($sdata['itemland']->picture as $pic)
+                                        @if(filled($sdata['itemland']->gov_pic))
+                                            @foreach($sdata['itemland']->gov_pic as $pic)
                                                 <li>
                                                     <div>
                                                         <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
@@ -170,6 +170,11 @@
                             @endif
                             </tbody>
                         </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata['itembuildings']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="itempublic" class="tab-pane fade">
@@ -184,13 +189,13 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @if($sdata['itempublics'])
+                            @if(filled($sdata['itempublics']))
                                 @foreach($sdata['itempublics'] as $public)
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$public->name}}</td>
                                         <td>{{$public->num_unit}}</td>
-                                        <td>{{$public->number}}</td>
+                                        <td>{{$public->gov_num}}</td>
                                         <td>
                                             <a href="{{route('g_itempublic_info',['id'=>$public->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
                                         </td>
@@ -199,6 +204,11 @@
                             @endif
                             </tbody>
                         </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata['itempublics']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -13,10 +13,11 @@ class Itembuilding extends Model
     use SoftDeletes;
     protected $table='item_building';
     protected $primaryKey='id';
-    protected $fillable=['building','total_floor','area','build_year','struct_id','infos','picture'];
+    protected $fillable=['building','total_floor','area','build_year','struct_id','infos','gov_pic','com_pic'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
-        'picture'=>'array'
+        'gov_pic'=>'array',
+        'com_pic'=>'array'
     ];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -29,7 +30,8 @@ class Itembuilding extends Model
         'build_year'=>'建造年份',
         'struct_id'=>'结构类型',
         'infos'=>'描述',
-        'picture'=>'图片'
+        'gov_pic'=>'图片',
+        'com_pic'=>'图片'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */

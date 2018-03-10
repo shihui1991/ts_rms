@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ItemlandController extends BaseitemController
 {
@@ -148,7 +149,8 @@ class ItemlandController extends BaseitemController
                 'land_source_id' => 'required',
                 'land_state_id' => 'required',
                 'admin_unit_id' => 'required',
-                'area' => 'required'
+                'area' => 'required',
+                'gov_pic' => 'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -160,24 +162,32 @@ class ItemlandController extends BaseitemController
                 return response()->json($result);
             }
 
-            /* ++++++++++ 新增 ++++++++++ */
+            /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 批量赋值 ++++++++++ */
-                $itemland = $model;
-                $itemland->fill($request->all());
-                $itemland->addOther($request);
-                $itemland->item_id=$item_id;
-                $itemland->save();
-                if (blank($itemland)) {
+                /* ++++++++++ 地块是否存在 ++++++++++ */
+                $address = $request->input('address');
+                $itemland = Itemland::where('item_id',$item_id)->where('address',$address)->lockForUpdate()->first();
+               if(blank($itemland)){
+                   /* ++++++++++ 新增数据 ++++++++++ */
+                   $itemland = $model;
+                   $itemland->fill($request->all());
+                   $itemland->addOther($request);
+                   $itemland->item_id=$item_id;
+                   $itemland->save();
+               }else{
+                   /* ++++++++++ 修改数据 ++++++++++ */
+                   $itemland->gov_pic=json_encode($request->input('gov_pic'));
+                   $itemland->save();
+               }
+                if(blank($itemland)) {
                     throw new \Exception('添加失败', 404404);
                 }
-
                 $code = 'success';
                 $msg = '添加成功';
                 $sdata = $itemland;
                 $edata = null;
-                $url = route('g_itemland',['item'=>$this->item_id]);
+                $url = route('g_itemland',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -197,7 +207,7 @@ class ItemlandController extends BaseitemController
     public function info(Request $request){
         $item_id=$this->item_id;
         $id=$request->input('id');
-        if(!$id){
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -257,7 +267,8 @@ class ItemlandController extends BaseitemController
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
-        if(!$id){
+        $item_id = $this->item_id;
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -307,12 +318,15 @@ class ItemlandController extends BaseitemController
             $model=new Itemland();
             /* ********** 表单验证 ********** */
             $rules=[
-                'address'=>'required|unique:item_land,address,'.$id.',id',
+                'address'=> ['required',Rule::unique('item_land')->where(function ($query) use($item_id,$id){
+                    $query->where('item_id', $item_id)->where('id','<>',$id);
+                })],
                 'land_prop_id' => 'required',
                 'land_source_id' => 'required',
                 'land_state_id' => 'required',
                 'admin_unit_id' => 'required',
-                'area' => 'required'
+                'area' => 'required',
+                'gov_pic' => 'required'
             ];
             $messages=[
                 'required'=>':attribute必须填写',

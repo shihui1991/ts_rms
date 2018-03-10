@@ -28,7 +28,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋号： </label>
             <div class="col-sm-9">
-                <input type="text" id="building" name="building" value="{{old('building')}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋号" required>
+                <input type="number" id="building" name="building" value="{{old('building')}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋号" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -52,7 +52,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="build_year"> 建造年份： </label>
             <div class="col-sm-9">
-                <input type="text" id="build_year" name="build_year" data-type="year" data-format="yyyy" value="{{old('build_year')}}" class="col-xs-10 col-sm-5 laydate"  placeholder="请输入建造年份" required>
+                <input type="number" id="build_year" name="build_year" data-type="year" data-format="yyyy" value="{{old('build_year')}}" class="col-xs-10 col-sm-5 laydate"  placeholder="请输入建造年份" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -87,7 +87,7 @@
                         相关图片：<br>
                         <span class="btn btn-xs">
                             <span>上传图片</span>
-                            <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
+                            <input type="file" accept="image/*" class="hidden" data-name="gov_pic[]" multiple  onchange="uplfile(this)">
                          </span>
                     </label>
                     <div class="col-sm-9">

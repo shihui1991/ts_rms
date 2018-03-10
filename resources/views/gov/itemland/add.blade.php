@@ -109,7 +109,7 @@
                         地块图片：<br>
                         <span class="btn btn-xs">
                             <span>上传图片</span>
-                            <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
+                            <input type="file" accept="image/*" class="hidden" data-name="gov_pic[]" multiple  onchange="uplfile(this)">
                         </span>
                     </label>
                     <div class="col-sm-9">
