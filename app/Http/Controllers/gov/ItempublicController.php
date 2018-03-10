@@ -26,7 +26,7 @@ class ItempublicController extends BaseitemController
         $item_id=$this->item_id;
 
         $land_id=$request->input('land_id');
-        if(!$land_id){
+        if(blank($land_id)){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -34,6 +34,7 @@ class ItempublicController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
+        $infos['item'] = $this->item;
         /* ********** 是否分页 ********** */
         $app = $request->input('app');
         /* ********** 查询条件 ********** */
@@ -66,9 +67,7 @@ class ItempublicController extends BaseitemController
                     ->where($where)
                     ->count();
                 $itempublics=$model
-                    ->with(['item'=>function($query){
-                        $query->select(['id','name']);
-                    },
+                    ->with([
                         'itemland'=>function($query){
                             $query->select(['id','address']);
                         },
@@ -86,9 +85,7 @@ class ItempublicController extends BaseitemController
                 $itempublics->withPath(route('g_itempublic',['item'=>$item_id]));
             }else{
                 $itempublics=$model
-                    ->with(['item'=>function($query){
-                        $query->select(['id','name']);
-                    },
+                    ->with([
                         'itemland'=>function($query){
                             $query->select(['id','address']);
                         },
@@ -184,7 +181,8 @@ class ItempublicController extends BaseitemController
                 'land_id' => 'required',
                 'name' => 'required',
                 'num_unit' => 'required',
-                'number' => 'required'
+                'gov_num' => 'required',
+                'gov_pic' => 'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -196,15 +194,25 @@ class ItempublicController extends BaseitemController
                 return response()->json($result);
             }
 
-            /* ++++++++++ 新增 ++++++++++ */
+            /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 批量赋值 ++++++++++ */
-                $itempublic = $model;
-                $itempublic->fill($request->input());
-                $itempublic->addOther($request);
-                $itempublic->item_id=$this->item_id;
-                $itempublic->save();
+                /* ++++++++++ 公共附属物是否存在 ++++++++++ */
+                $name = $request->input('name');
+                $itempublic = Itempublic::where('item_id',$item_id)->where('land_id',$request->input('land_id'))->where('building_id',$request->input('building_id'))->where('name',$name)->lockForUpdate()->first();
+                if(blank($itempublic)){
+                    /* ++++++++++ 新增数据 ++++++++++ */
+                    $itempublic = $model;
+                    $itempublic->fill($request->input());
+                    $itempublic->addOther($request);
+                    $itempublic->item_id=$item_id;
+                    $itempublic->save();
+                }else{
+                    /* ++++++++++ 修改数据 ++++++++++ */
+                    $itempublic->gov_num=$request->input('gov_num');
+                    $itempublic->gov_pic=json_encode($request->input('gov_pic'));
+                    $itempublic->save();
+                }
                 if (blank($itempublic)) {
                     throw new \Exception('添加失败', 404404);
                 }
@@ -213,10 +221,10 @@ class ItempublicController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $itempublic;
                 $edata = null;
-                if($building_id=$request->input('building_id')) {
-                    $url = route('g_itembuilding_info',['id'=>$building_id,'item'=>$this->item_id]);
+                if(0!=$request->input('building_id')) {
+                    $url = route('g_itembuilding_info',['id'=>$request->input('building_id'),'item'=>$item_id]);
                 }else{
-                    $url = route('g_itemland_info',['id'=>$request->input('land_id'),'item'=>$this->item_id]);
+                    $url = route('g_itemland_info',['id'=>$request->input('land_id'),'item'=>$item_id]);
                 }
                 DB::commit();
             } catch (\Exception $exception) {
@@ -236,7 +244,7 @@ class ItempublicController extends BaseitemController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
-        if(!$id){
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -246,11 +254,12 @@ class ItempublicController extends BaseitemController
         }
 
         DB::beginTransaction();
-        $itempublic=Itempublic::with(['itemland'=>function($query){
-            $query->select(['id','address']);
-        },'itembuilding'=>function($query){
-            $query->select(['id','building']);
-        }])
+        $itempublic=Itempublic::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+             },'itembuilding'=>function($query){
+                $query->select(['id','building']);
+             }])
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -283,7 +292,7 @@ class ItempublicController extends BaseitemController
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
-        if(!$id){
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -296,11 +305,12 @@ class ItempublicController extends BaseitemController
             /* ********** 当前数据 ********** */
 
             DB::beginTransaction();
-            $itempublic=Itempublic::with(['itemland'=>function($query){
-                $query->select(['id','address']);
-            },'itembuilding'=>function($query){
-                $query->select(['id','building']);
-            }])
+            $itempublic=Itempublic::with([
+                'itemland'=>function($query){
+                     $query->select(['id','address']);
+                },'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                }])
                 ->sharedLock()
                 ->find($id);
             DB::commit();
@@ -334,7 +344,8 @@ class ItempublicController extends BaseitemController
             $rules=[
                 'name' => 'required',
                 'num_unit' => 'required',
-                'number' => 'required'
+                'gov_num' => 'required',
+                'gov_pic' => 'required'
             ];
             $messages=[
                 'required'=>':attribute必须填写',

@@ -106,18 +106,18 @@
                     <label class="col-sm-3 control-label no-padding-right">
                         地块图片：<br>
                         <span class="btn btn-xs">
-                                        <span>上传图片</span>
-                                        <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
-                                    </span>
+                            <span>上传图片</span>
+                            <input type="file" accept="image/*" class="hidden" data-name="gov_pic[]" multiple  onchange="uplfile(this)">
+                        </span>
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if($sdata['itemland']->picture)
-                                @foreach($sdata['itemland']->picture as $pic)
+                            @if(filled($sdata['itemland']->gov_pic))
+                                @foreach($sdata['itemland']->gov_pic as $pic)
                                     <li>
                                         <div>
                                             <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                            <input type="hidden" name="picture[]" value="{!! $pic !!}">
+                                            <input type="hidden" name="gov_pic[]" value="{!! $pic !!}">
                                             <div class="text">
                                                 <div class="inner">
                                                     <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
@@ -168,6 +168,7 @@
     <script>
         $('.img-content').viewer('update');
         var landprops=@json($sdata['landprops']);
+
         $('#land_prop_id').on('change',function () {
             var landprop_index=$(this).find('option:selected').data('index');
             var landsources=landprops[landprop_index].landsources;

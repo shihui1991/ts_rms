@@ -13,10 +13,11 @@ class Itempublic extends Model
     use SoftDeletes;
     protected $table='item_public';
     protected $primaryKey='id';
-    protected $fillable=['name','num_unit','number','infos','picture'];
+    protected $fillable=['name','num_unit','gov_num','com_num','number','infos','gov_pic','com_pic'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
-        'picture'=>'array'
+        'gov_pic'=>'array',
+        'com_pic'=>'array'
     ];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -26,9 +27,12 @@ class Itempublic extends Model
         'building_id'=>'楼栋',
         'name'=>'名称',
         'num_unit'=>'计量单位',
+        'gov_num'=>'征收-数量',
+        'com_num'=>'评估-数量',
         'number'=>'数量',
         'infos'=>'描述',
-        'picture'=>'图片'
+        'gov_pic'=>'图片',
+        'com_pic'=>'图片'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
