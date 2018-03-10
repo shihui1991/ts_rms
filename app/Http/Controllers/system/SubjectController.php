@@ -23,7 +23,7 @@ class SubjectController extends BaseController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $subjects=Subject::sharedLock()->get();
+            $subjects=Subject::sharedLock()->orderBy('main','desc')->get();
             if(blank($subjects)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
