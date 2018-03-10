@@ -13,6 +13,7 @@ use App\Http\Model\Householdmember;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Layout;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -55,9 +56,8 @@ class HouseholddetailController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Household();
         DB::beginTransaction();
@@ -88,6 +88,10 @@ class HouseholddetailController extends BaseitemController
                     ->sharedLock()
                     ->get();
             }else{
+                $total=$model->sharedLock()
+                    ->where('item_id',$item_id)
+                    ->where($where)
+                    ->count();
                 $households=$model
                     ->with(['item'=>function($query){
                         $query->select(['id','name']);
@@ -102,7 +106,11 @@ class HouseholddetailController extends BaseitemController
                     ->select($select)
                     ->orderBy($ordername,$orderby)
                     ->sharedLock()
-                    ->paginate($displaynum);
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
+                $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+                $households->withPath(route('g_householddetail',['item'=>$item_id]));
             }
 
             if(blank($households)){

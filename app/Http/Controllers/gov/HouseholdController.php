@@ -9,6 +9,7 @@ use App\Http\Model\Household;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Itemland;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -51,9 +52,8 @@ class HouseholdController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Household();
         DB::beginTransaction();
@@ -75,6 +75,10 @@ class HouseholdController extends BaseitemController
                     ->sharedLock()
                     ->get();
             }else{
+                $total=$model->sharedLock()
+                    ->where('item_id',$item_id)
+                    ->where($where)
+                    ->count();
                 $households=$model
                     ->with(['item'=>function($query){
                         $query->select(['id','name']);
@@ -89,7 +93,11 @@ class HouseholdController extends BaseitemController
                     ->select($select)
                     ->orderBy($ordername,$orderby)
                     ->sharedLock()
-                    ->paginate($displaynum);
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
+                $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+                $households->withPath(route('g_household',['item'=>$item_id]));
             }
             if(blank($households)){
                 throw new \Exception('没有符合条件的数据',404404);
