@@ -25,13 +25,13 @@
                         <td>{{$household->itembuilding->building}}栋{{$household->unit}}单元{{$household->floor}}楼{{$household->number}}@if(is_numeric($household->number))号@endif</td>
                         <td>{{$household->type}}</td>
                         <td>{{number_format($household->pay->total,2)}}</td>
-                        <td>{{$household->state}}</td>
+                        <td>{{$household->state->name}}</td>
                         <td>
                             <div class="btn-group">
                                 @if($household->pay->id)
                                     <a href="{{route('g_pay_info',['id'=>$household->pay->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">补偿详情</a>
                                 @else
-                                    <a href="{{route('g_pay_add',['household_id'=>$household->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">计算补偿</a>
+                                    <a href="{{route('g_pay_add',['household_id'=>$household->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">补偿决定</a>
                                 @endif
 
                             </div>

@@ -79,7 +79,7 @@ class PayController extends BaseitemController
         }
     }
 
-    /* ========== 生成兑付 ========== */
+    /* ========== 补偿决定 ========== */
     public function add(Request $request){
         $household_id=$request->input('household_id');
         if(!$household_id){
@@ -95,10 +95,17 @@ class PayController extends BaseitemController
             try{
                 $pay_id=Pay::sharedLock()->where([['item_id',$this->item_id],['household_id',$household_id]])->value('id');
                 if($pay_id){
-                    throw new \Exception('该被征收户已存在兑付数据',404404);
+                    throw new \Exception('该被征收户已存在补偿数据',404404);
                 }
-                $household=Household::sharedLock()
-                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+                $household=Household::with(['itemland'=>function($query){
+                    $query->with('adminunit')->select(['id','address','admin_unit_id']);
+                },'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                }])
+                    ->sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
                     ->where([
                         ['item_id',$this->item_id],
                         ['id',$household_id],
@@ -142,6 +149,7 @@ class PayController extends BaseitemController
                 'repay_way'=>'required|boolean',
                 'transit_way'=>'required|boolean',
                 'move_way'=>'required|boolean',
+                'picture'=>'required',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
@@ -162,7 +170,7 @@ class PayController extends BaseitemController
                     throw new \Exception('该被征收户已存在兑付数据',404404);
                 }
                 $household=Household::lockForUpdate()
-                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
                     ->where([
                         ['item_id',$this->item_id],
                         ['id',$household_id],
@@ -175,14 +183,14 @@ class PayController extends BaseitemController
                         ['item_id',$this->item_id],
                         ['household_id',$household_id],
                     ])
-                    ->select(['item_id','household_id','has_assets','agree','repay_way'])
+                    ->select(['item_id','household_id','has_assets','area_dispute','repay_way'])
                     ->first();
                 /* ++++++++++ 评估汇总 ++++++++++ */
                 $assess=Assess::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
                         ['household_id',$household_id],
-                        ['state',6],
+                        ['code','136'],
                     ])
                     ->first();
                 if(blank($assess)){
@@ -194,23 +202,20 @@ class PayController extends BaseitemController
                         ['item_id',$this->item_id],
                         ['household_id',$household_id],
                         ['assess_id',$assess->id],
-                        ['state',6],
+                        ['code','136'],
                     ])
-                    ->select(['id','item_id','household_id','assess_id','state'])
+                    ->select(['id','item_id','household_id','assess_id','code'])
                     ->first();
                 if(blank($assess)){
                     throw new \Exception('暂无有效的房产评估数据',404404);
                 }
-                $estatebuildings=Estatebuilding::with(['householdbuilding'=>function($query){
-                    $query->select(['id','register','state','dispute']);
-                }])
+                $estatebuildings=Estatebuilding::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
                         ['household_id',$household_id],
                         ['assess_id',$assess->id],
                         ['estate_id',$estate->id],
                     ])
-                    ->sharedLock()
                     ->get();
 
                 if($household_detail->getOriginal('has_assets')){
@@ -219,9 +224,9 @@ class PayController extends BaseitemController
                             ['item_id',$this->item_id],
                             ['household_id',$household_id],
                             ['assess_id',$assess->id],
-                            ['state',6],
+                            ['code','136'],
                         ])
-                        ->select(['id','item_id','household_id','assess_id','state'])
+                        ->select(['id','item_id','household_id','assess_id','code'])
                         ->first();
                     if(blank($assets)){
                         throw new \Exception('暂无有效的资产评估数据',404404);
@@ -248,7 +253,7 @@ class PayController extends BaseitemController
                 $legal_total=0;
                 $destroy_total=0;
                 foreach($estatebuildings as $building){
-                    if(in_array($building->householdbuilding->getOriginal('state'),[1,3])){
+                    if(in_array($building->code,['91','93'])){
                         throw new \Exception('存在合法性争议的房屋',404404);
                     }
                     if(in_array($building->householdbuilding->getOriginal('dispute'),[1,2,4])){

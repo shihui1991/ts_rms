@@ -43,7 +43,7 @@
                             <div class="profile-info-value">
                                     <span class="editable editable-click">
                                         @if($sdata['household']->getOriginal('type'))
-                                            公产（{{$sdata['household']->itemland->adminunit->name}}）
+                                            公房（{{$sdata['household']->itemland->adminunit->name}}）
                                         @else
                                             私产
                                         @endif
