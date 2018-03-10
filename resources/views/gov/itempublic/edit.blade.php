@@ -55,9 +55,9 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="number"> 数量： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="gov_num"> 数量： </label>
             <div class="col-sm-9">
-                <input type="text" id="number" name="number" value="{{$sdata['itempublic']->number}}" class="col-xs-10 col-sm-5"  placeholder="请输入数量" required>
+                <input type="number" id="gov_num" name="gov_num" value="{{$sdata['itempublic']->gov_num}}" class="col-xs-10 col-sm-5"  placeholder="请输入数量" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -77,17 +77,17 @@
                         相关图片：<br>
                         <span class="btn btn-xs">
                             <span>上传图片</span>
-                            <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
+                            <input type="file" accept="image/*" class="hidden" data-name="gov_pic[]" multiple  onchange="uplfile(this)">
                          </span>
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if($sdata['itempublic']->picture)
-                                @foreach($sdata['itempublic']->picture as $pic)
+                            @if(filled($sdata['itempublic']->gov_pic))
+                                @foreach($sdata['itempublic']->gov_pic as $pic)
                                     <li>
                                         <div>
                                             <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                            <input type="hidden" name="picture[]" value="{!! $pic !!}">
+                                            <input type="hidden" name="gov_pic[]" value="{!! $pic !!}">
                                             <div class="text">
                                                 <div class="inner">
                                                     <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>

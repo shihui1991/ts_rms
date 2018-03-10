@@ -85,8 +85,8 @@
                                 <div class="profile-info-name"> 图片： </div>
                                 <div class="profile-info-value">
                                     <ul class="ace-thumbnails clearfix img-content viewer">
-                                        @if(isset($sdata['itembuilding']->picture))
-                                            @foreach($sdata['itembuilding']->picture as $pic)
+                                        @if(filled($sdata['itembuilding']->gov_pic))
+                                            @foreach($sdata['itembuilding']->gov_pic as $pic)
                                                 <li>
                                                     <div>
                                                         <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
@@ -138,7 +138,7 @@
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$public->name}}</td>
                                         <td>{{$public->num_unit}}</td>
-                                        <td>{{$public->number}}</td>
+                                        <td>{{$public->gov_num}}</td>
                                         <td>
                                             <a href="{{route('g_itempublic_info',['id'=>$public->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
                                         </td>

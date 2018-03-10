@@ -43,7 +43,7 @@
                                         <td>{{$infos->fax}}</td>
                                         <td>{{$infos->contact_man}}</td>
                                         <td>{{$infos->contact_tel}}</td>
-                                        <td>{{$infos->state}}</td>
+                                        <td>{{$infos->code}}</td>
                                         <td>{{$infos->infos}}</td>
                                         <td>
                                             <a href="{{route('g_company_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
@@ -58,12 +58,7 @@
                         </table>
                         <div class="row">
                             <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据</div>
-                            </div>
-                            <div class="col-xs-6">
-                                <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
-                                    @if($code=='success') {{ $sdata->links() }} @endif
-                                </div>
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecount'] }} @else 0 @endif 条数据</div>
                             </div>
                         </div>
                     </div>
@@ -104,7 +99,7 @@
                                         <td>{{$infos->fax}}</td>
                                         <td>{{$infos->contact_man}}</td>
                                         <td>{{$infos->contact_tel}}</td>
-                                        <td>{{$infos->state}}</td>
+                                        <td>{{$infos->code}}</td>
                                         <td>{{$infos->infos}}</td>
                                         <td>
                                             <a href="{{route('g_company_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
@@ -119,12 +114,7 @@
                         </table>
                         <div class="row">
                             <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据</div>
-                            </div>
-                            <div class="col-xs-6">
-                                <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
-                                    @if($code=='success') {{ $sdata->links() }} @endif
-                                </div>
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecounts'] }} @else 0 @endif 条数据</div>
                             </div>
                         </div>
 

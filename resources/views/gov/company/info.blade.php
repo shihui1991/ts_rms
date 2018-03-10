@@ -49,7 +49,7 @@
                         <div class="profile-info-row">
                             <div class="profile-info-name"> 机构状态： </div>
                             <div class="profile-info-value">
-                                <span class="editable editable-click">{{$sdata->state}}</span>
+                                <span class="editable editable-click">{{$sdata->code}}</span>
                             </div>
                         </div>
 
@@ -176,36 +176,55 @@
                 </div>
 
                 <div id="companyuser" class="tab-pane fade">
-                    <table class="table table-hover table-bordered">
-                        <thead>
-                        <tr>
-                            <th>序号</th>
-                            <th>是否为管理账号</th>
-                            <th>名称</th>
-                            <th>电话</th>
-                            <th>用户名</th>
-                            <th>最近操作时间</th>
-                            <th>操作</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @if($code=='success')
-                            @foreach($edata['companyusers'] as $infos)
-                                <tr>
-                                    <td>{{$loop->iteration}}</td>
-                                    <td>@if($infos->id == $infos->company->user_id) 是@else 否@endif</td>
-                                    <td>{{$infos->name}}</td>
-                                    <td>{{$infos->phone}}</td>
-                                    <td>{{$infos->username}}</td>
-                                    <td>{{$infos->action_at}}</td>
-                                    <td>
-                                        <a href="{{route('g_companyuser_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endif
-                        </tbody>
-                    </table>
+                    <div class="col-xs-12">
+                    @if($edata['companyusers'])
+                        @foreach($edata['companyusers'] as $infos)
+                            <div class="col-xs-6 col-sm-3 pricing-box">
+                                <div class="widget-box widget-color-dark">
+                                    <div class="widget-header">
+                                        <h5 class="widget-title bigger lighter">@if($infos->id == $sdata->user_id) 管理账号@else 普通账号@endif</h5>
+                                    </div>
+
+                                    <div class="widget-body">
+                                        <div class="widget-main">
+
+                                            <div class="profile-user-info profile-user-info-striped">
+
+                                                <div class="profile-info-row">
+                                                    <div class="profile-info-name"> 名称： </div>
+                                                    <div class="profile-info-value">
+                                                        <span class="editable editable-click">{{$infos->name}}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="profile-info-row">
+                                                    <div class="profile-info-name"> 电话： </div>
+                                                    <div class="profile-info-value">
+                                                        <span class="editable editable-click">{{$infos->phone}}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="profile-info-row">
+                                                    <div class="profile-info-name"> 用户名： </div>
+                                                    <div class="profile-info-value">
+                                                        <span class="editable editable-click">{{$infos->username}}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="profile-info-row">
+                                                    <div class="profile-info-name"> 最近操作时间： </div>
+                                                    <div class="profile-info-value">
+                                                        <span class="editable editable-click">{{$infos->action_at}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+                    </div>
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['companyusers']) }} @else 0 @endif 条数据</div>
@@ -214,34 +233,55 @@
                 </div>
 
                 <div id="companyvaluer" class="tab-pane fade">
-                    <table class="table table-hover table-bordered">
-                        <thead>
-                        <tr>
-                            <th>序号</th>
-                            <th>名称</th>
-                            <th>电话</th>
-                            <th>注册号</th>
-                            <th>有效期</th>
-                            <th>操作</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @if($code=='success')
-                            @foreach($edata['companyvaluers'] as $infos)
-                                <tr>
-                                    <td>{{$loop->iteration}}</td>
-                                    <td>{{$infos->name}}</td>
-                                    <td>{{$infos->phone}}</td>
-                                    <td>{{$infos->register}}</td>
-                                    <td>{{$infos->valid_at}}</td>
-                                    <td>
-                                        <a href="{{route('g_companyvaluer_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
-                                    </td>
-                                </tr>
+                    <div class="col-xs-12">
+                        @if($edata['companyvaluers'])
+                            @foreach($edata['companyvaluers'] as $info)
+                                <div class="col-xs-6 col-sm-3 pricing-box">
+                                    <div class="widget-box widget-color-dark">
+                                        <div class="widget-header">
+                                            <h5 class="widget-title bigger lighter">评估师【@if($info->valid_at>=date('Y-m-d'))有效@else过期@endif】</h5>
+                                        </div>
+
+                                        <div class="widget-body">
+                                            <div class="widget-main">
+
+                                                <div class="profile-user-info profile-user-info-striped">
+
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 名称： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$info->name}}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 电话： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$info->phone}}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 注册号： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$info->register}}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 有效期： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$info->valid_at}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
                         @endif
-                        </tbody>
-                    </table>
+                    </div>
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['companyvaluers']) }} @else 0 @endif 条数据</div>

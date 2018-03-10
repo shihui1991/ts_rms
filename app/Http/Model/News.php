@@ -29,21 +29,12 @@ class News extends Model
         'content'=>'内容',
         'picture'=>'附件',
         'is_top'=>'是否置顶',
+        'code'=>'状态',
     ];
 
     /* ++++++++++ 是否置顶 ++++++++++ */
     public function getIsTopAttribute($key=null){
         $array=[0=>'非置顶',1=>'置顶'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
-
-    /* ++++++++++ 状态 ++++++++++ */
-    public function getStateAttribute($key=null){
-        $array=[0=>'待审',1=>'通过',2=>'驳回'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
@@ -68,4 +59,7 @@ class News extends Model
         return $this->belongsTo('App\Http\Model\Newscate','cate_id','id')->withDefault();
     }
 
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    }
 }

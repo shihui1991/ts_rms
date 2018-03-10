@@ -10,6 +10,7 @@ use App\Http\Model\Householdobject;
 use App\Http\Model\Itemobject;
 use App\Http\Model\Object;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,14 +41,14 @@ class HouseholdobjectController extends BaseitemController
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
         /* ********** 查询 ********** */
         $model=new Householdobject();
         DB::beginTransaction();
         try{
+            $total=$model->sharedLock()
+                ->where('item_id',$item_id)
+                ->where($where)
+                ->count();
             $householdobjects=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -65,7 +66,7 @@ class HouseholdobjectController extends BaseitemController
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->get();
             if(blank($householdobjects)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

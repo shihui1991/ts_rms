@@ -28,7 +28,7 @@ class ItembuildingController extends BaseitemController
         $item_id=$this->item_id;
 
         $land_id=$request->input('land_id');
-        if(!$land_id){
+        if(blank($land_id)){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -36,6 +36,7 @@ class ItembuildingController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
+        $infos['item'] = $this->item;
         /* ********** 是否分页 ********** */
         $app = $request->input('app');
         /* ********** 查询条件 ********** */
@@ -67,9 +68,7 @@ class ItembuildingController extends BaseitemController
                     ->where($where)
                     ->count();
                 $itembuildings=$model
-                    ->with(['item'=>function($query){
-                        $query->select(['id','name']);
-                    },
+                    ->with([
                         'itemland'=>function($query){
                             $query->select(['id','address']);
                         },
@@ -86,9 +85,7 @@ class ItembuildingController extends BaseitemController
                 $itembuildings->withPath(route('g_itembuilding',['item'=>$item_id]));
             }else{
                 $itembuildings=$model
-                    ->with(['item'=>function($query){
-                        $query->select(['id','name']);
-                    },
+                    ->with([
                         'itemland'=>function($query){
                             $query->select(['id','address']);
                         },
@@ -127,7 +124,7 @@ class ItembuildingController extends BaseitemController
     public function add(Request $request){
         $item_id=$this->item_id;
         $land_id=$request->input('land_id');
-        if(!$land_id){
+        if(blank($land_id)){
             $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -174,13 +171,12 @@ class ItembuildingController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'land_id' => 'required',
-                'building' => ['required',Rule::unique('item_building')->where(function ($query) use($land_id){
-                    $query->where('land_id', $land_id);
-                 })],
+                'building' => 'required',
                 'total_floor' => 'required',
                 'area' => 'required',
                 'build_year' => 'required',
                 'struct_id' => 'required',
+                'gov_pic' => 'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -192,15 +188,25 @@ class ItembuildingController extends BaseitemController
                 return response()->json($result);
             }
 
-            /* ++++++++++ 新增 ++++++++++ */
+            /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 批量赋值 ++++++++++ */
-                $itembuilding = $model;
-                $itembuilding->fill($request->input());
-                $itembuilding->addOther($request);
-                $itembuilding->item_id=$this->item_id;
-                $itembuilding->save();
+                /* ++++++++++ 楼栋是否存在 ++++++++++ */
+                $building = $request->input('building');
+                $itembuilding = Itembuilding::where('item_id',$item_id)->where('land_id',$land_id)->where('building',$building)->lockForUpdate()->first();
+                if(blank($itembuilding)){
+                    /* ++++++++++ 新增数据 ++++++++++ */
+                    $itembuilding = $model;
+                    $itembuilding->fill($request->input());
+                    $itembuilding->addOther($request);
+                    $itembuilding->item_id=$item_id;
+                    $itembuilding->save();
+                }else{
+                    /* ++++++++++ 修改数据 ++++++++++ */
+                    $itembuilding->gov_pic=json_encode($request->input('gov_pic'));
+                    $itembuilding->save();
+                }
+
                 if (blank($itembuilding)) {
                     throw new \Exception('添加失败', 404404);
                 }
@@ -228,7 +234,7 @@ class ItembuildingController extends BaseitemController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
-        if(!$id){
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -245,7 +251,7 @@ class ItembuildingController extends BaseitemController
             ->sharedLock()
             ->find($id);
 
-        if(!$itembuilding){
+        if(blank($itembuilding)){
             $result=['code'=>'error','message'=>'数据不存在','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -281,7 +287,8 @@ class ItembuildingController extends BaseitemController
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
-        if(!$id){
+        $item_id = $this->item_id;
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -338,13 +345,14 @@ class ItembuildingController extends BaseitemController
                 $land_id=$itembuilding->land_id;
                 /* ********** 表单验证 ********** */
                 $rules=[
-                    'building' =>['required',Rule::unique('item_building')->where(function ($query) use($land_id,$id){
-                        $query->where('land_id', $land_id)->where('id','<>',$id);
+                    'building' =>['required',Rule::unique('item_building')->where(function ($query) use($item_id,$land_id,$id){
+                        $query->where('land_id', $land_id)->where('item_id', $item_id)->where('id','<>',$id);
                     })],
                     'total_floor' => 'required',
                     'area' => 'required',
                     'build_year' => 'required',
                     'struct_id' => 'required',
+                    'gov_pic' => 'required'
                 ];
                 $messages=[
                     'required'=>':attribute必须填写',
@@ -365,7 +373,7 @@ class ItembuildingController extends BaseitemController
                 $msg='修改成功';
                 $sdata=$itembuilding;
                 $edata=null;
-                $url = route('g_itembuilding_info',['id'=>$id,'item'=>$this->item_id]);
+                $url = route('g_itembuilding_info',['id'=>$id,'item'=>$item_id]);
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';

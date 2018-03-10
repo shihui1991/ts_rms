@@ -22,9 +22,7 @@ class CompanyController extends BaseauthController
 
     /* ========== 首页 ========== */
     public function index(Request $request){
-        $select=['id','type','name','address','phone','fax','contact_man','contact_tel','logo','infos','user_id','state','deleted_at'];
-        /* ++++++++++ 是否调取接口(分页)  ++++++++++ */
-        $app = $request->input('app');
+        $select=['id','type','name','address','phone','fax','contact_man','contact_tel','logo','infos','user_id','code','deleted_at'];
         /* ********** 查询条件 ********** */
         $where=[];
         /* ++++++++++ 名称 ++++++++++ */
@@ -47,10 +45,6 @@ class CompanyController extends BaseauthController
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
@@ -66,29 +60,29 @@ class CompanyController extends BaseauthController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            if($app){
-                $companys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->get();
-            }else{
-                $companys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
-            }
-
+            $companys=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->get();
+            $infos['typecount'] = Company::where($where)
+                ->where('type',0)
+                ->count();
+            $infos['typecounts'] = Company::where($where)
+                ->where('type',1)
+                ->count();
             if(blank($companys)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
             $sdata = $companys;
-            $edata=null;
+            $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata = null;
-            $edata = null;
+            $edata = $infos;
             $url = null;
         }
         DB::commit();
-
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -157,7 +151,7 @@ class CompanyController extends BaseauthController
                 $company = $model;
                 $company->fill($request->input());
                 $company->user_id = 0;
-                $company->state = 0;
+                $company->code = 40;
                 $company->save();
                 if (blank($company)) {
                     throw  new \Exception('添加失败', 404404);

@@ -155,7 +155,6 @@
                 return false;
             }
             var data = {
-                'app':'app',
                 'type':type
             };
             ajaxAct('{{route('g_company')}}',data,'post');

@@ -65,7 +65,7 @@
         <div class="profile-info-row">
             <div class="profile-info-name"> 数量： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata['itempublic']->number}}</span>
+                <span class="editable editable-click">{{$sdata['itempublic']->gov_num}}</span>
             </div>
         </div>
 
@@ -80,8 +80,8 @@
             <div class="profile-info-name"> 图片： </div>
             <div class="profile-info-value">
                 <ul class="ace-thumbnails clearfix img-content viewer">
-                    @if(isset($sdata['itempublic']->picture))
-                        @foreach($sdata['itempublic']->picture as $pic)
+                    @if(filled($sdata['itempublic']->gov_pic))
+                        @foreach($sdata['itempublic']->gov_pic as $pic)
                             <li>
                                 <div>
                                     <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">

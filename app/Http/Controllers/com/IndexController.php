@@ -44,7 +44,7 @@ class IndexController extends Controller
         DB::beginTransaction();
         $user=Companyuser::select(['id','name','username','password','secret','company_id'])
             ->with(['company'=>function($query){
-                $query->select(['id','state','type']);
+                $query->select(['id','code','type']);
             }])
             ->where('username',$request->input('username'))
             ->sharedLock()
@@ -53,9 +53,7 @@ class IndexController extends Controller
         if(blank($user)){
             return response()->json(['code'=>'error','message'=>'用户不存在','sdata'=>null,'edata'=>null,'url'=>null]);
         }
-        if($user->company->getOriginal('state')==0){
-            return response()->json(['code'=>'error','message'=>'用户不合法','sdata'=>null,'edata'=>null,'url'=>null]);
-        }
+
 
         /* ********** 验证密码 ********** */
         if($request->input('password') != decrypt($user->password)){

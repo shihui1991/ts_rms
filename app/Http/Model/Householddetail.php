@@ -13,15 +13,10 @@ class Householddetail extends Model
     use SoftDeletes;
     protected $table='item_household_detail';
     protected $primaryKey='id';
-    protected $fillable=['state','register','reg_inner','reg_outer','balcony','dispute',
-        'layout_img','picture','house_img','def_use','real_use','has_assets','agree','repay_way',
-        'house_price','house_area','house_num','house_addr','more_price','layout_id','opinion',
-        'receive_man','receive_tel','receive_addr','sign'];
+    protected $fillable=['status','register','reg_inner','reg_outer','balcony','dispute', 'area_dispute','picture','def_use','real_use','has_assets','agree','repay_way', 'house_price','house_area','house_num','house_addr','more_price','layout_id','opinion', 'receive_man','receive_tel','receive_addr','sign'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array',
-        'house_img'=>'array',
-        'layout_img'=>'array'
     ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
@@ -29,18 +24,17 @@ class Householddetail extends Model
         'household_id'=>'被征收户',
         'land_id'=>'地块',
         'building_id'=>'楼栋',
-        'state'=>'状态',
+        'status'=>'房屋状况',
         'register'=>'房屋产权证号',
-        'reg_inner'=>'登记套内面积',
-        'reg_outer'=>'登记建筑面积',
+        'reg_inner'=>'套内面积',
+        'reg_outer'=>'建筑面积',
         'balcony'=>'阳台面积',
         'dispute'=>'产权争议',
-        'layout_img'=>'房屋户型图',
+        'area_dispute'=>'面积争议',
         'picture'=>'房屋证件',
-        'house_img'=>'房屋图片',
         'def_use'=>'批准用途',
         'real_use'=>'实际用途',
-        'has_assets'=>'是否需要资产评估',
+        'has_assets'=>'是否有固定资产',
         'agree'=>'征收意见',
         'repay_way'=>'补偿方式',
         'house_price'=>'房源单价',
@@ -67,7 +61,7 @@ class Householddetail extends Model
 
     }
 
-    /* ++++++++++ 获取状态 ++++++++++ */
+    /* ++++++++++ 获取房屋状况 ++++++++++ */
     public function getStatusAttribute($key=null)
     {
         $array=[0=>'正常',1=>'存在新建',2=>'存在改建',3=>'存在扩建'];
@@ -81,7 +75,18 @@ class Householddetail extends Model
     /* ++++++++++ 获取产权争议状态 ++++++++++ */
     public function getDisputeAttribute($key=null)
     {
-        $array=[0=>'无争议',1=>'存在争议'];
+        $array=[0=>'无争议',1=>'存在争议',2=>'产权明确'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+
+    /* ++++++++++ 面积争议 ++++++++++ */
+    public function getAreaDisputeAttribute($key=null)
+    {
+        $array=[0=>'无争议',1=>'待测绘',2=>'面积明确'];
         if(is_numeric($key)){
             return $array[$key];
         }else{

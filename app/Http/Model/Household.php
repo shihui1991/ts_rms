@@ -31,22 +31,18 @@ class Household extends Model
         'password'=>'密码',
         'secret'=>'密钥',
         'infos'=>'描述',
-        'state'=>'状态'
+        'code'=>'状态'
     ];
 
     /* ++++++++++ 获取房产类型 ++++++++++ */
     public function getTypeAttribute($key=null)
     {
-        $array=[0=>'私产',1=>'公产'];
+        $array=[0=>'私产',1=>'公房'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
             return $array;
         }
-    }
-
-    public function state(){
-        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
 
@@ -55,7 +51,7 @@ class Household extends Model
         $this->attributes['land_id'] = $request->input('land_id');
         $this->attributes['building_id'] = $request->input('building_id');
         $this->attributes['secret']=$this->get_secret();
-        $this->attributes['state'] = 0;
+        $this->attributes['code'] = '60';
         $this->attributes['password'] = encrypt($request->input('password'));
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
@@ -86,6 +82,10 @@ class Household extends Model
     /* ++++++++++ 兑付 ++++++++++ */
     public function pay(){
         return $this->hasOne('App\Http\Model\Pay','household_id','id')->withDefault();
+    }
+    /* ++++++++++ 状态 ++++++++++ */
+    public function state(){
+        return $this->hasOne('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
 

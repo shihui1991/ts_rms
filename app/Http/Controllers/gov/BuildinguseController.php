@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Buildinguse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,9 +40,8 @@ class BuildinguseController extends BaseauthController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
@@ -57,7 +57,19 @@ class BuildinguseController extends BaseauthController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $building_uses=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $total=$model->sharedLock()
+                ->where($where)
+                ->count();
+            $building_uses=$model
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $building_uses=new LengthAwarePaginator($building_uses,$total,$per_page,$page);
+            $building_uses->withPath(route('g_buildinguse'));
             if(blank($building_uses)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

@@ -40,7 +40,7 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="end_at"> 开始时间： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="end_at"> 结束时间： </label>
             <div class="col-sm-9">
                 <input type="text" id="end_at" name="end_at" value="{{$sdata['itemctrl']->end_at}}" class="col-xs-10 col-sm-5 laydate" data-type="datetime" data-format="yyyy-MM-dd HH:mm:ss"  required>
             </div>

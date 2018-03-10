@@ -44,9 +44,9 @@ class Company extends Model
         }
     }
     /* ++++++++++ 获取状态 ++++++++++ */
-    public function getStateAttribute($key=null)
+    public function getCodeAttribute($key=null)
     {
-        $array=[0=>'未通过审查',1=>'通过审查'];
+        $array=[40=>'待审查',41=>'审查通过',42=>'审查驳回',43=>'暂停业务'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
