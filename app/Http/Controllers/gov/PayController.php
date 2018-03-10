@@ -47,9 +47,11 @@ class PayController extends BaseitemController
             $query->select(['id','address']);
         },'itembuilding'=>function($query){
             $query->select(['id','building']);
+        },'state'=>function($query){
+            $query->select(['code','name']);
         },'pay'])
             ->where('item_id',$this->item_id)
-            ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+            ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
             ->sharedLock()
             ->offset($per_page*($page-1))
             ->limit($per_page)

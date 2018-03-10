@@ -22,7 +22,7 @@
         </tr>
         </thead>
         <tbody>
-            @if($code=='success')
+            @if(filled($sdata['newses']))
                 @foreach($sdata['newses'] as $news)
                     <tr>
                         <td>{{$loop->iteration}}</td>
@@ -30,7 +30,7 @@
                         <td>{{$news->name}}</td>
                         <td>{{$news->release_at}}</td>
                         <td>{{$news->keys}}</td>
-                        <td>{{$news->is_top}} | {{$news->state}}</td>
+                        <td>{{$news->is_top}} | {{$news->state->name}}</td>
                         <td>
                             <a href="{{route('g_news_info',['id'=>$news->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
                         </td>

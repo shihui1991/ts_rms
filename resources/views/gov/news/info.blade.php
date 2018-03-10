@@ -100,7 +100,7 @@
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 状态： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$sdata['news']->state}}</span>
+                                        <span class="editable editable-click">{{$sdata['news']->state->name}}</span>
                                     </div>
                                 </div>
 

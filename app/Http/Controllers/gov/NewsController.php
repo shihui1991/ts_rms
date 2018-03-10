@@ -25,6 +25,8 @@ class NewsController extends BaseitemController
 
         $newses=News::with(['newscate'=>function($query){
             $query->select(['id','name']);
+        },'state'=>function($query){
+            $query->select(['code','name']);
         }])
             ->sharedLock()
             ->orderBy('is_top','desc')
@@ -95,7 +97,7 @@ class NewsController extends BaseitemController
                 $news->addOther($request);
                 $news->item_id=$this->item_id;
                 $news->cate_id=1;
-                $news->state=0;
+                $news->code='20';
                 $news->save();
                 if(blank($news)){
                     throw new \Exception('保存失败',404404);
@@ -138,6 +140,8 @@ class NewsController extends BaseitemController
         DB::beginTransaction();
         $news=News::with(['newscate'=>function($query){
             $query->select(['id','name']);
+        },'state'=>function($query){
+            $query->select(['code','name']);
         }])
             ->sharedLock()
             ->find($id);
