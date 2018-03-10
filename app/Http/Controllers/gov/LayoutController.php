@@ -57,7 +57,10 @@ class LayoutController extends BaseauthController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $layouts=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $layouts=$model
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
             if(blank($layouts)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

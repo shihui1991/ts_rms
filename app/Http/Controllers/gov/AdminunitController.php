@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Adminunit;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -45,9 +46,8 @@ class AdminunitController extends BaseauthController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
@@ -63,7 +63,19 @@ class AdminunitController extends BaseauthController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $adminunits=$model->where($where)->select($select)->orderBy($ordername,$orderby)->sharedLock()->paginate($displaynum);
+            $total=$model->sharedLock()
+                ->where($where)
+                ->count();
+            $adminunits=$model
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $adminunits=new LengthAwarePaginator($adminunits,$total,$per_page,$page);
+            $adminunits->withPath(route('g_adminunit'));
             if(blank($adminunits)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
