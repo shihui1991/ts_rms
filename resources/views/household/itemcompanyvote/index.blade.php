@@ -21,9 +21,9 @@
         </tr>
         </thead>
         <tbody>
-        @if(filled($sdata['companys']))
+        @if(filled($edata))
             @if(filled($sdata['companyvote']))
-                @foreach($sdata['companys'] as $company)
+                @foreach($edata as $company)
                     <tr>
                         <td>{{$loop->iteration}}</td>
                         <td>{{$company->name}}</td>
@@ -38,7 +38,7 @@
                     </tr>
                 @endforeach
                 @else
-                @foreach($sdata['companys'] as $company)
+                @foreach($edata as $company)
                     <tr>
                         <td>{{$loop->iteration}}</td>
                         <td>{{$company->name}}</td>
@@ -56,7 +56,16 @@
         @endif
         </tbody>
     </table>
-
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata->total() }} @else 0 @endif 条数据</div>
+        </div>
+        <div class="col-xs-6">
+            <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
+                @if($code=='success') {{ $edata->links() }} @endif
+            </div>
+        </div>
+    </div>
 @endsection
 
 {{-- 样式 --}}

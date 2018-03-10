@@ -8,6 +8,7 @@ namespace  App\Http\Controllers\gov;
 use App\Http\Model\Itemrisk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 
 class  ItemriskController extends BaseitemController{
@@ -32,16 +33,17 @@ class  ItemriskController extends BaseitemController{
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
-        /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
-        /* ********** 查询 ********** */
 
+        /* ********** 查询 ********** */
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemrisk();
         DB::beginTransaction();
         try{
+            $total=$model->sharedLock()
+                ->where('item_id',$item_id)
+                ->count();
             $itemrisk=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -51,7 +53,11 @@ class  ItemriskController extends BaseitemController{
                 ->where($where)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $itemrisk=new LengthAwarePaginator($itemrisk,$total,$per_page,$page);
+            $itemrisk->withPath(route('g_itemrisk',['item'=>$item_id]));
             if(blank($itemrisk)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

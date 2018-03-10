@@ -12,6 +12,7 @@ use App\Http\Model\Itemhouse;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 class ItemhouseController extends BaseController{
 
@@ -39,13 +40,16 @@ class ItemhouseController extends BaseController{
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         $model=new Itemhouse();
         DB::beginTransaction();
         try{
+            $total=$model->sharedLock()
+                ->where('item_id',$this->item_id)
+                ->count();
+
             $itemhouses=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -66,7 +70,12 @@ class ItemhouseController extends BaseController{
                 ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
-                ->paginate($displaynum);
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+
+            $itemhouses=new LengthAwarePaginator($itemhouses,$total,$per_page,$page);
+            $itemhouses->withPath(route('h_itemhouse'));
             if(blank($itemhouses)){
                 throw new \Exception('没有符合条件的数据',404404);
             }

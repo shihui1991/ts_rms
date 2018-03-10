@@ -41,7 +41,7 @@ class ItemdraftreportController extends BaseitemController
         DB::beginTransaction();
         try{
             $total=$model->sharedLock()
-                ->where('item_id',$item_id)
+                ->where($where)
                 ->count();
             $itemdraftreports=$model
                 ->with(['item'=>function($query){

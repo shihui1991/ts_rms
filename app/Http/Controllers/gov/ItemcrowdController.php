@@ -10,6 +10,7 @@ use App\Http\Model\Itemcrowd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\Rule;
 
 class ItemcrowdController extends BaseitemController
@@ -26,15 +27,17 @@ class ItemcrowdController extends BaseitemController
         $info['item_id']=$item_id=$this->item_id;
 
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
+        $per_page=15;
+        $page=$request->input('page',1);
 
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $model=Itemcrowd::
-                with(['item'=>function($query){
+            $total=Itemcrowd::sharedLock()
+                ->where('item_id',$item_id)
+                ->count();
+
+            $itemrisk=Itemcrowd::with(['item'=>function($query){
                     $query->select(['id','name']);
                 },'cate'=>function($query){
                     $query->select(['id','name']);
@@ -43,14 +46,17 @@ class ItemcrowdController extends BaseitemController
                 }])
                 ->where('item_id', $item_id)
                 ->sharedLock()
-                ->paginate($displaynum);
-
-            if(blank($model)){
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $itemrisk=new LengthAwarePaginator($itemrisk,$total,$per_page,$page);
+            $itemrisk->withPath(route('g_itemcrowd',['item'=>$item_id]));
+            if(blank($itemrisk)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$model;
+            $sdata=$itemrisk;
             $edata=$info;
             $url=null;
         }catch(\Exception $exception){
