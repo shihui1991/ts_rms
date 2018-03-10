@@ -51,7 +51,7 @@ class Household extends Model
         $this->attributes['land_id'] = $request->input('land_id');
         $this->attributes['building_id'] = $request->input('building_id');
         $this->attributes['secret']=$this->get_secret();
-        $this->attributes['state'] = 0;
+        $this->attributes['code'] = 60;
         $this->attributes['password'] = encrypt($request->input('password'));
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
