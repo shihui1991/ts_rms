@@ -60,6 +60,6 @@ class News extends Model
     }
 
     public function state(){
-        return $this->belongsTo('App\Http\Model\Statecode','code','code');
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 }

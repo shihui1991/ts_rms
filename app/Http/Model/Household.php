@@ -31,25 +31,13 @@ class Household extends Model
         'password'=>'密码',
         'secret'=>'密钥',
         'infos'=>'描述',
-        'state'=>'状态'
+        'code'=>'状态'
     ];
 
     /* ++++++++++ 获取房产类型 ++++++++++ */
     public function getTypeAttribute($key=null)
     {
-        $array=[0=>'私产',1=>'公产'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
-
-    /* ++++++++++ 获取房产状态 ++++++++++ */
-    public function getStateAttribute($key=null)
-    {
-        $array=[0=>'调查中',1=>'已调查',2=>'评估中',3=>'已评估',4=>'未签约', 5=>'已签约',
-                6=>'已搬迁',7=>'强制搬迁',8=>'临时周转',9=>'安置中',10=>'已安置'];
+        $array=[0=>'私产',1=>'公房'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
@@ -94,6 +82,10 @@ class Household extends Model
     /* ++++++++++ 兑付 ++++++++++ */
     public function pay(){
         return $this->hasOne('App\Http\Model\Pay','household_id','id')->withDefault();
+    }
+    /* ++++++++++ 状态 ++++++++++ */
+    public function state(){
+        return $this->hasOne('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
 
