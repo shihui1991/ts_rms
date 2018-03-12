@@ -19,6 +19,12 @@
 
 
     <div class="profile-user-info profile-user-info-striped">
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 状态： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->code}}</span>
+            </div>
+        </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 地块地址： </div>
@@ -56,27 +62,6 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 是否登记： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->register}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 状态： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->state}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 登记套内面积： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->reg_inner}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
             <div class="profile-info-name"> 登记建筑面积： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->reg_outer}}</span>
@@ -87,20 +72,6 @@
             <div class="profile-info-name"> 阳台面积： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->balcony}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 面积争议： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->dispute}}</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 实际套内面积： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->real_inner}}</span>
             </div>
         </div>
 
@@ -126,15 +97,15 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 平面图形： </div>
+            <div class="profile-info-name"> 图片： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">
                     <ul class="ace-thumbnails clearfix img-content viewer">
-                          @if(isset($sdata->layout_img))
-                            @foreach($sdata->layout_img as $pics)
+                          @if(isset($sdata->picture))
+                            @foreach($sdata->picture as $pic)
                                 <li>
                                     <div>
-                                        <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
                                         <div class="text">
                                             <div class="inner">
                                                 <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
@@ -150,15 +121,36 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 图片及证件： </div>
+            <div class="profile-info-name"> 【户型信息】 </div>
+            <div class="profile-info-value">
+
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 户型名称： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->landlayout->name}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 户型信息： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->landlayout->area}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 户型图： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">
                     <ul class="ace-thumbnails clearfix img-content viewer">
-                          @if(isset($sdata->picture))
-                            @foreach($sdata->picture as $pic)
+                          @if(filled($sdata->landlayout->gov_img))
+                            @foreach($sdata->landlayout->gov_img as $pics)
                                 <li>
                                     <div>
-                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                        <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
                                         <div class="text">
                                             <div class="inner">
                                                 <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>

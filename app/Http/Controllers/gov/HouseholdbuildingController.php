@@ -9,6 +9,7 @@ use App\Http\Model\Buildingstruct;
 use App\Http\Model\Buildinguse;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
+use App\Http\Model\Landlayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -123,19 +124,15 @@ class HouseholdbuildingController extends BaseitemController
                 'household_id' => 'required',
                 'land_id' => 'required',
                 'building_id' => 'required',
-                'register' => 'required',
-                'reg_inner' => 'required',
+                'code' => 'required',
                 'reg_outer' => 'required',
                 'balcony' => 'required',
-                'dispute' => 'required',
-                'real_inner' => 'required',
                 'real_outer' => 'required',
                 'def_use' => 'required',
                 'real_use' => 'required',
                 'struct_id' => 'required',
                 'direct' => 'required',
                 'floor' => 'required',
-                'layout_img' => 'required',
                 'picture' => 'required'
             ];
             $messages = [
@@ -146,17 +143,48 @@ class HouseholdbuildingController extends BaseitemController
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $model1 = new Landlayout();
+            $rules1 = [
+                'name' => 'required',
+                'gov_img' => 'required'
+            ];
+            $messages1 = [
+                'required' => ':attribute必须填写'
+            ];
+            $validator1 = Validator::make($request->input('landlayout'), $rules1, $messages1, $model1->columns);
+            if ($validator1->fails()) {
+                $result=['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
 
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 批量赋值 ++++++++++ */
+                /* ++++++++++ 被征户房屋建筑-批量赋值 ++++++++++ */
                 $householdbuilding = $model;
                 $householdbuilding->fill($request->all());
                 $householdbuilding->addOther($request);
-                $householdbuilding->item_id=$this->item_id;
+                $householdbuilding->item_id=$item_id;
                 $householdbuilding->save();
                 if (blank($householdbuilding)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                /* ++++++++++ 地块户型-批量赋值 ++++++++++ */
+                $landlayout = $model1;
+                $landlayout->fill($request->input('landlayout'));
+                $landlayout->addOther($request);
+                $landlayout->item_id=$item_id;
+                $landlayout->save();
+                if (blank($landlayout)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                /* ++++++++++ 被征户房屋建筑-修改地块户型 ++++++++++ */
+                $householdbuildings = Householdbuilding::lockForUpdate()->find($householdbuilding->id);
+                $householdbuildings->layout_id = $landlayout->id;
+                $householdbuildings->save();
+                if (blank($householdbuildings)) {
                     throw new \Exception('添加失败', 404404);
                 }
 
@@ -167,6 +195,7 @@ class HouseholdbuildingController extends BaseitemController
                 $url = route('g_householddetail_info',['id'=>$household_id,'item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
+                dd($exception);
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
@@ -192,15 +221,14 @@ class HouseholdbuildingController extends BaseitemController
             }
         }
         $item_id=$this->item_id;
+        $item=$this->item;
 
         /* ********** 当前数据 ********** */
         $data['item_id'] = $item_id;
+        $data['item'] = $item;
 
         DB::beginTransaction();
         $householdbuilding=Householdbuilding::with([
-            'item'=>function($query){
-                 $query->select(['id','name']);
-             },
             'itemland'=>function($query){
                 $query->select(['id','address']);
             },
@@ -215,6 +243,9 @@ class HouseholdbuildingController extends BaseitemController
             },
             'buildinguses'=>function($query){
                 $query->select(['id','name']);
+            },
+            'landlayout'=>function($query){
+                $query->select(['id','name','area','gov_img']);
             }])
             ->sharedLock()
             ->find($id);
@@ -270,6 +301,9 @@ class HouseholdbuildingController extends BaseitemController
                 },
                 'itembuilding'=>function($query){
                     $query->select(['id','building']);
+                },
+                'landlayout'=>function($query){
+                    $query->select(['id','name','area','gov_img']);
                 }])
                 ->sharedLock()
                 ->find($id);
@@ -299,22 +333,17 @@ class HouseholdbuildingController extends BaseitemController
             }
         }else{
             $model=new Household();
-            /* ********** 表单验证 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'household_id' => 'required',
-                'register' => 'required',
-                'reg_inner' => 'required',
+                'code' => 'required',
                 'reg_outer' => 'required',
                 'balcony' => 'required',
-                'dispute' => 'required',
-                'real_inner' => 'required',
                 'real_outer' => 'required',
                 'def_use' => 'required',
                 'real_use' => 'required',
                 'struct_id' => 'required',
                 'direct' => 'required',
                 'floor' => 'required',
-                'layout_img' => 'required',
                 'picture' => 'required'
             ];
             $messages = [
@@ -325,21 +354,45 @@ class HouseholdbuildingController extends BaseitemController
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $model1 = new Landlayout();
+            $rules1 = [
+                'name' => 'required',
+                'gov_img' => 'required'
+            ];
+            $messages1 = [
+                'required' => ':attribute必须填写'
+            ];
+            $validator1 = Validator::make($request->input('landlayout'), $rules1, $messages1, $model1->columns);
+            if ($validator1->fails()) {
+                $result=['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
-                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                /* ++++++++++ 被征户房屋建筑-锁定数据模型 ++++++++++ */
                 $householdbuilding=Householdbuilding::lockForUpdate()->find($id);
                 if(blank($householdbuilding)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
-                /* ++++++++++ 处理其他数据 ++++++++++ */
+                /* ++++++++++ 被征户房屋建筑-处理其他数据 ++++++++++ */
                 $householdbuilding->fill($request->all());
                 $householdbuilding->editOther($request);
                 $householdbuilding->save();
                 if(blank($householdbuilding)){
                     throw new \Exception('修改失败',404404);
                 }
+                /* ++++++++++ 地块户型-处理其他数据 ++++++++++ */
+                $landlayout=Landlayout::lockForUpdate()->find($householdbuilding->layout_id);
+                $landlayout->fill($request->input('landlayout'));
+                $landlayout->editOther($request);
+                $landlayout->save();
+                if(blank($landlayout)){
+                    throw new \Exception('修改失败',404404);
+                }
+
                 $code='success';
                 $msg='修改成功';
                 $sdata=$householdbuilding;

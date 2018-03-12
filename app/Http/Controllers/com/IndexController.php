@@ -53,8 +53,9 @@ class IndexController extends Controller
         if(blank($user)){
             return response()->json(['code'=>'error','message'=>'用户不存在','sdata'=>null,'edata'=>null,'url'=>null]);
         }
-
-
+        if($user->company->getoriginal('code')!='41'){
+            return response()->json(['code'=>'error','message'=>'用户不合法','sdata'=>null,'edata'=>null,'url'=>null]);
+        }
         /* ********** 验证密码 ********** */
         if($request->input('password') != decrypt($user->password)){
             return response()->json(['code'=>'error','message'=>'密码错误','sdata'=>null,'edata'=>null,'url'=>null]);

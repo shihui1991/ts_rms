@@ -13,11 +13,10 @@ class Householdbuilding extends Model
     use SoftDeletes;
     protected $table='item_household_building';
     protected $primaryKey='id';
-    protected $fillable=['register','reg_inner','reg_outer','balcony','dispute',
-        'real_inner','real_outer','def_use','real_use','struct_id','direct','floor','layout_img','picture'];
+    protected $fillable=['code','reg_inner','reg_outer','balcony', 'real_inner','real_outer','def_use','real_use',
+        'struct_id','direct','floor','layout_id','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
-        'layout_img'=>'array',
         'picture'=>'array'
     ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -26,12 +25,10 @@ class Householdbuilding extends Model
         'household_id'=>'被征收户',
         'land_id'=>'地块',
         'building_id'=>'楼栋',
-        'register'=>'是否登记',
-        'state'=>'状态',
+        'code'=>'状态',
         'reg_inner'=>'登记套内面积',
         'reg_outer'=>'登记建筑面积',
         'balcony'=>'其中阳台面积',
-        'dispute'=>'面积争议',
         'real_inner'=>'实际套内面积',
         'real_outer'=>'实际建筑面积',
         'def_use'=>'批准用途',
@@ -39,32 +36,18 @@ class Householdbuilding extends Model
         'struct_id'=>'结构类型',
         'direct'=>'朝向',
         'floor'=>'楼层',
-        'layout_img'=>'平面图形',
-        'picture'=>'图片及证件'
+        'layout_id'=>'地块户型',
+        'picture'=>'图片'
     ];
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
         $this->attributes['land_id'] = $request->input('land_id');
         $this->attributes['building_id'] = $request->input('building_id');
         $this->attributes['household_id'] = $request->input('household_id');
-        if($request->input('register')==1){
-            $this->attributes['state'] = 0;
-        }
-
-        if($request->input('register')==0){
-            $this->attributes['state'] = 1;
-        }
-
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
-        if($request->input('register')==1){
-            $this->attributes['state'] = 0;
-        }
 
-        if($request->input('register')==0){
-            $this->attributes['state'] = 1;
-        }
     }
 
     /* ++++++++++ 获取登记状态 ++++++++++ */
@@ -79,9 +62,9 @@ class Householdbuilding extends Model
     }
 
     /* ++++++++++ 获取状态 ++++++++++ */
-    public function getStateAttribute($key=null)
+    public function getCodeAttribute($key=null)
     {
-        $array=[0=>'合法登记',1=>'待认定',2=>'认定合法',3=>'认定非法',4=>'自行拆除',5=>'转为合法'];
+        $array=[90=>'合法登记',91=>'待认定',92=>'认定合法',93=>'认定非法',94=>'自行拆除',95=>'转为合法'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
@@ -133,5 +116,13 @@ class Householdbuilding extends Model
     /* ++++++++++ 违建处理 ++++++++++ */
     public function buildingdeal(){
         return $this->hasOne('App\Http\Model\Buildinguse','real_use','id')->withDefault();
+    }
+    /* ++++++++++ 状态 ++++++++++ */
+    public function state(){
+        return $this->hasOne('App\Http\Model\Statecode','code','code')->withDefault();
+    }
+    /* ++++++++++ 关联地块户型 ++++++++++ */
+    public function landlayout(){
+        return $this->belongsTo('App\Http\Model\Landlayout','layout_id','id')->withDefault();
     }
 }

@@ -41,7 +41,20 @@
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->dispute as $key => $value)
                     <label>
-                        <input name="dispute" type="radio"  onclick="clickdisputes(this)" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('dispute')) checked @endif >
+                        <input name="dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('dispute')) checked @endif >
+                        <span class="lbl">{{$value}}</span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="area_dispute"> 面积争议： </label>
+            <div class="col-sm-9 radio">
+                @foreach($sdata['detailmodel']->area_dispute as $key => $value)
+                    <label>
+                        <input name="area_dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('area_dispute')) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
@@ -52,9 +65,9 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="state"> 状态： </label>
             <div class="col-sm-9 radio">
-                @foreach($sdata['detailmodel']->state as $key => $value)
+                @foreach($sdata['detailmodel']->status as $key => $value)
                     <label>
-                        <input name="state" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('state')) checked @endif >
+                        <input name="status" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('state')) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
@@ -71,15 +84,7 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="reg_inner"> 登记套内面积： </label>
-            <div class="col-sm-9">
-                <input type="text" id="reg_inner" name="reg_inner" value="{{$sdata['household']->reg_inner}}" class="col-xs-10 col-sm-5"  placeholder="请输入登记套内面积" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="reg_outer"> 登记建筑面积： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="reg_outer"> 建筑面积： </label>
             <div class="col-sm-9">
                 <input type="text" id="reg_outer" name="reg_outer" value="{{$sdata['household']->reg_outer}}" class="col-xs-10 col-sm-5"  placeholder="请输入登记建筑面积" required>
             </div>
@@ -248,41 +253,6 @@
             <div class="widget-main padding-8">
                 <div class="form-group img-box">
                     <label class="col-sm-3 control-label no-padding-right">
-                        房屋户型图：<br>
-                        <span class="btn btn-xs">
-                            <span>上传图片</span>
-                            <input type="file" accept="image/*" class="hidden" data-name="layout_img[]" multiple  onchange="uplfile(this)">
-                        </span>
-                    </label>
-                    <div class="col-sm-9">
-                        <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if(isset($sdata['household']->layout_img))
-                                @foreach($sdata['household']->layout_img as $layoutpic)
-                                    <li>
-                                        <div>
-                                            <img width="120" height="120" src="{!! $layoutpic !!}" alt="加载失败">
-                                            <input type="hidden" name="layout_img[]" value="{!! $layoutpic !!}">
-                                            <div class="text">
-                                                <div class="inner">
-                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                    <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            @endif
-                        </ul>
-                    </div>
-                </div>
-                <div class="space-4 header green"></div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="widget-main padding-8">
-                <div class="form-group img-box">
-                    <label class="col-sm-3 control-label no-padding-right">
                         房屋证件：<br>
                         <span class="btn btn-xs">
                             <span>上传图片</span>
@@ -297,43 +267,6 @@
                                         <div>
                                             <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
                                             <input type="hidden" name="picture[]" value="{!! $picturepic !!}">
-                                            <div class="text">
-                                                <div class="inner">
-                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                    <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            @endif
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="space-4 header green"></div>
-
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="widget-main padding-8">
-                <div class="form-group img-box">
-                    <label class="col-sm-3 control-label no-padding-right">
-                        房屋图片：<br>
-                        <span class="btn btn-xs">
-                            <span>上传图片</span>
-                            <input type="file" accept="image/*" class="hidden" data-name="house_img[]" multiple  onchange="uplfile(this)">
-                        </span>
-                    </label>
-                    <div class="col-sm-9">
-                        <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if(isset($sdata['household']->house_img))
-                                @foreach($sdata['household']->house_img as $housepic)
-                                    <li>
-                                        <div>
-                                            <img width="120" height="120" src="{!! $housepic !!}" alt="加载失败">
-                                            <input type="hidden" name="house_img[]" value="{!! $housepic !!}">
                                             <div class="text">
                                                 <div class="inner">
                                                     <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>

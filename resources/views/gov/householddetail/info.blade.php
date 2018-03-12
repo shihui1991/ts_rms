@@ -152,9 +152,16 @@
                                 </div>
 
                                 <div class="profile-info-row">
+                                    <div class="profile-info-name"> 面积争议： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->area_dispute}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
                                     <div class="profile-info-name"> 状态： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->state}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->status}}</span>
                                     </div>
                                 </div>
 
@@ -165,15 +172,9 @@
                                     </div>
                                 </div>
 
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 登记套内面积： </div>
-                                    <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->reg_inner}}</span>
-                                    </div>
-                                </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 登记建筑面积： </div>
+                                    <div class="profile-info-name"> 建筑面积： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$edata['household_detail']->reg_outer}}</span>
                                     </div>
@@ -293,29 +294,6 @@
                                     </div>
                                 </div>
 
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 房源户型图： </div>
-                                    <div class="profile-info-value">
-                                    <span class="editable editable-click">
-                                         <ul class="ace-thumbnails clearfix img-content viewer">
-                                             @if(isset($edata['household_detail']->layout_img))
-                                                 @foreach($edata['household_detail']->layout_img as $layoutpic)
-                                                     <li>
-                                                    <div>
-                                                        <img width="120" height="120" src="{!! $layoutpic !!}" alt="加载失败">
-                                                        <div class="text">
-                                                            <div class="inner">
-                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                 @endforeach
-                                             @endif
-                                        </ul>
-                                    </span>
-                                    </div>
-                                </div>
 
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 房屋证件： </div>
@@ -327,30 +305,6 @@
                                                      <li>
                                                 <div>
                                                     <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
-                                                    <div class="text">
-                                                        <div class="inner">
-                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                                 @endforeach
-                                             @endif
-                                        </ul>
-                                    </span>
-                                    </div>
-                                </div>
-
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 房屋图片： </div>
-                                    <div class="profile-info-value">
-                                    <span class="editable editable-click">
-                                         <ul class="ace-thumbnails clearfix img-content viewer">
-                                              @if(isset($edata['household_detail']->house_img))
-                                                 @foreach($edata['household_detail']->house_img as $housepic)
-                                                     <li>
-                                                <div>
-                                                    <img width="120" height="120" src="{!! $housepic !!}" alt="加载失败">
                                                     <div class="text">
                                                         <div class="inner">
                                                             <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
@@ -416,7 +370,6 @@
                                 <th>楼层</th>
                                 <th>朝向</th>
                                 <th>结构</th>
-                                <th>是否登记</th>
                                 <th>状态</th>
                                 <th>操作</th>
                             </tr>
@@ -431,8 +384,7 @@
                                         <td>{{$infos->floor}}</td>
                                         <td>{{$infos->direct}}</td>
                                         <td>{{$infos->buildingstruct->name}}</td>
-                                        <td>{{$infos->register}}</td>
-                                        <td>{{$infos->state}}</td>
+                                        <td>{{$infos->code}}</td>
                                         <td>
                                             <a href="{{route('g_householdbuilding_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
                                         </td>

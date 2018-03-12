@@ -28,6 +28,8 @@ class HouseholddetailController extends BaseitemController
     /* ========== 首页 ========== */
     public function index(Request $request){
         $item_id=$this->item_id;
+        $item=$this->item;
+        $infos['item'] = $item;
         /* ++++++++++ 是否调取接口(分页) ++++++++++ */
         $app = $request->input('app');
         /* ********** 查询条件 ********** */
@@ -47,6 +49,12 @@ class HouseholddetailController extends BaseitemController
             $where[] = ['building_id',$building_id];
             $infos['building_id'] = $building_id;
         }
+        /* ********** 资产评估 ********** */
+        $has_assets=$request->input('has_assets');
+        if(is_numeric($has_assets)){
+            $where[] = ['has_assets',$has_assets];
+            $infos['has_assets'] = $has_assets;
+        }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -63,16 +71,7 @@ class HouseholddetailController extends BaseitemController
         DB::beginTransaction();
         try{
             if($app){
-                /* ********** 资产评估 ********** */
-                $has_assets=$request->input('has_assets');
-                if(is_numeric($has_assets)){
-                    $where[] = ['has_assets',$has_assets];
-                    $infos['has_assets'] = $has_assets;
-                }
                 $households=Householddetail::with([
-                        'item'=>function($query){
-                            $query->select(['id','name']);
-                         },
                         'household'=>function($query){
                             $query->select(['id','unit','floor','number','type']);
                         },
@@ -81,8 +80,12 @@ class HouseholddetailController extends BaseitemController
                         },
                         'itembuilding'=>function($query){
                             $query->select(['id','building']);
-                        }])
-                    ->select(['id','item_id','household_id','land_id','building_id','has_assets'])
+                        },
+                        'state'=>function($query){
+                            $query->select(['id','code','name']);
+                        }
+                    ])
+                    ->select(['id','item_id','household_id','land_id','building_id','has_assets','code'])
                     ->where($where)
                     ->orderBy($ordername,$orderby)
                     ->sharedLock()
@@ -93,15 +96,16 @@ class HouseholddetailController extends BaseitemController
                     ->where($where)
                     ->count();
                 $households=$model
-                    ->with(['item'=>function($query){
-                        $query->select(['id','name']);
-                    },
+                    ->with([
                         'itemland'=>function($query){
                             $query->select(['id','address']);
                         },
                         'itembuilding'=>function($query){
                             $query->select(['id','building']);
-                        }])
+                        },
+                        'state'=>function($query){
+                            $query->select(['id','code','name']);
+                    }])
                     ->where($where)
                     ->select($select)
                     ->orderBy($ordername,$orderby)
@@ -142,6 +146,7 @@ class HouseholddetailController extends BaseitemController
     /* ========== 添加 ========== */
     public function add(Request $request){
         $item_id=$this->item_id;
+        $item=$this->item;
         $model=new Householddetail();
         $household_id =$request->input('household_id');
         if($request->isMethod('get')){
@@ -158,6 +163,7 @@ class HouseholddetailController extends BaseitemController
             $sdata['defuse'] = Buildinguse::select(['id','name'])->get()?:[];
             $sdata['layout'] = Layout::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
+            $sdata['item'] = $item;
             $sdata['detailmodel'] = $model;
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
@@ -174,9 +180,9 @@ class HouseholddetailController extends BaseitemController
                 'household_id'=>'required',
                 'land_id'=>'required',
                 'building_id'=>'required',
-                'state'=>'required',
+                'status'=>'required',
                 'dispute'=>'required',
-                'layout_img'=>'required',
+                'area_dispute'=>'required',
                 'real_use'=>'required',
                 'has_assets'=>'required',
                 'agree'=>'required',
@@ -237,9 +243,11 @@ class HouseholddetailController extends BaseitemController
             }
         }
         $item_id=$this->item_id;
+        $item=$this->item;
 
         /* ********** 当前数据 ********** */
         $data['item_id'] = $item_id;
+        $data['item'] = $item;
         $data['household'] = new Household();
         $data['household_detail'] = Householddetail::with([
             'defbuildinguse'=>function($query){
@@ -264,9 +272,6 @@ class HouseholddetailController extends BaseitemController
             ->sharedLock()
             ->find($id);
             $data['householdmember']=Householdmember::with([
-                'item'=>function($query){
-                    $query->select(['id','name']);
-                },
                 'itemland'=>function($query){
                     $query->select(['id','address']);
                 },
@@ -288,9 +293,6 @@ class HouseholddetailController extends BaseitemController
                 ->sharedLock()
                 ->get();
             $data['householdobject']=Householdobject::with([
-                    'item'=>function($query){
-                      $query->select(['id','name']);
-                    },
                     'itemland'=>function($query){
                         $query->select(['id','address']);
                     },
@@ -305,9 +307,6 @@ class HouseholddetailController extends BaseitemController
                 ->sharedLock()
                 ->get();
             $data['householdbuilding']=Householdbuilding::with([
-                'item'=>function($query){
-                    $query->select(['id','name']);
-                 },
                 'itemland'=>function($query){
                     $query->select(['id','address']);
                 },
@@ -349,6 +348,7 @@ class HouseholddetailController extends BaseitemController
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $item_id=$this->item_id;
+        $item=$this->item;
         $model=new Householddetail();
         $id =$request->input('id');
         if($request->isMethod('get')){
@@ -373,6 +373,7 @@ class HouseholddetailController extends BaseitemController
             $sdata['defuse'] = Buildinguse::select(['id','name'])->get()?:[];
             $sdata['layout'] = Layout::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
+            $sdata['item'] = $item;
             $sdata['detailmodel'] = $model;
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
@@ -386,9 +387,9 @@ class HouseholddetailController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'state'=>'required',
+                'status'=>'required',
                 'dispute'=>'required',
-                'layout_img'=>'required',
+                'area_dispute'=>'required',
                 'real_use'=>'required',
                 'has_assets'=>'required',
                 'agree'=>'required',
@@ -424,7 +425,7 @@ class HouseholddetailController extends BaseitemController
                 $msg = '修改成功';
                 $sdata = $householddetail;
                 $edata = null;
-                $url = route('g_household_info',['id'=>$request->input('household_id'),'item'=>$this->item_id]);
+                $url = route('g_householddetail_info',['id'=>$request->input('household_id'),'item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
