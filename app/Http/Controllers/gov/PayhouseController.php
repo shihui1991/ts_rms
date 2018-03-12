@@ -8,11 +8,16 @@ namespace App\Http\Controllers\gov;
 
 use App\Http\Model\House;
 use App\Http\Model\Household;
+use App\Http\Model\Householdmember;
 use App\Http\Model\Itemctrl;
 use App\Http\Model\Itemhouse;
 use App\Http\Model\Itemhouserate;
+use App\Http\Model\Itemprogram;
 use App\Http\Model\Pay;
+use App\Http\Model\Payhouse;
 use App\Http\Model\Payreserve;
+use App\Http\Model\Paysubject;
+use App\Http\Model\Payunit;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -28,8 +33,8 @@ class PayhouseController extends BaseitemController
 
     /* ========== 开始选房 ========== */
     public function add(Request $request){
-        $reserve_id=$request->input('reserve_id');
-        if(!$reserve_id){
+        $pay_id=$request->input('pay_id');
+        if(!$pay_id){
             $result=['code'=>'error','message'=>'错误操作','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -41,28 +46,120 @@ class PayhouseController extends BaseitemController
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
-                $reserve=Payreserve::sharedLock()
+                /* ++++++++++ 兑付 ++++++++++ */
+                $pay=Pay::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
-                        ['id',$reserve_id],
+                        ['id',$pay_id],
                     ])
                     ->first();
-                if(blank($reserve)){
+                if(blank($pay)){
                     throw new \Exception('错误操作',404404);
                 }
-                if($reserve->getOriginal('state')==1){
-                    throw new \Exception('当前被征收户已经选房了，请进入修改页面操作',404404);
+                if($pay->getOriginal('repay_way')==0){
+                    throw new \Exception('选择货币补偿的不能选择安置房',404404);
                 }
-                if($reserve->getOriginal('state')==2){
-                    throw new \Exception('当前被征收户未在限定时间内来选房，预约失效',404404);
+                /* ++++++++++ 选房时间 ++++++++++ */
+                $itemctrl=Itemctrl::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['cate_id',3],
+                        ['start_at','<=',date('Y-m-d H:i:s')],
+                        ['end_at','>=',date('Y-m-d H:i:s')],
+                    ])
+                    ->first();
+                if(blank($itemctrl)){
+                    throw new \Exception('还未到选房时间',404404);
                 }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::with(['itemland'=>function($query){
+                    $query->with('adminunit')->select(['id','address','admin_unit_id']);
+                },'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                }])
+                    ->sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                if(!in_array($household->code,['68','76'])){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
+                }
+                $count=Payhouse::query()->sharedLock()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                    ])
+                    ->count();
+                if($count){
+                    throw new \Exception('已有选房数据，请进入修改页面',404404);
+                }
+                /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
+                $pay_unit=null;
+                if($household->getOriginal('type')){
+                    $pay_unit=Payunit::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$household->id],
+                            ['pay_id',$pay_id],
+                        ])
+                        ->first();
+
+                    $holder_type=2;
+                }else{
+                    $holder_type=1;
+                }
+                $holder=Householdmember::sharedLock()
+                    ->select(['id','item_id','household_id','name','holder','portion'])
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['holder',$holder_type],
+                    ])
+                    ->orderBy('portion','desc')
+                    ->first();
+                /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
+                $pay_house_total=Paysubject::query()->sharedLock()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->whereIn('subject_id',[1,2,4])
+                    ->sum('amount');
+                $pay_sign_reward=Paysubject::query()->sharedLock()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->whereIn('subject_id',[11,12])
+                    ->sum('amount');
+                if($household->getOriginal('type')==0){ // 私产
+                    $resettle_total=$pay_house_total+$pay_sign_reward;
+                }else{
+                    /* ++++++++++ 正式方案 ++++++++++ */
+                    $program=Itemprogram::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['code','22'],
+                        ])
+                        ->select(['id','item_id','code','portion_holder','portion_renter'])
+                        ->first();
+                    if(blank($program)){
+                        throw new \Exception('暂无通过审查的正式征收方案数据',404404);
+                    }
+                    $resettle_total=$pay_house_total*$program->portion_renter/100+$pay_sign_reward;
+                }
+
+                /* ++++++++++ 项目房源 ++++++++++ */
                 $item_house_ids=Itemhouse::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->pluck('house_id');
 
                 $total=House::sharedLock()
                     ->whereIn('id',$item_house_ids)
-                    ->where('state',1)
+                    ->where('code','151')
                     ->count();
 
                 $per_page=15;
@@ -75,18 +172,22 @@ class PayhouseController extends BaseitemController
                 }])
                     ->sharedLock()
                     ->whereIn('id',$item_house_ids)
-                    ->where('state',1)
+                    ->where('code','151')
                     ->offset($per_page*($page-1))
                     ->limit($per_page)
                     ->get();
                 $houses=new LengthAwarePaginator($houses,$total,$per_page,$page);
-                $houses->withPath(route('g_payreserve_house',['item'=>$this->item_id,'reserve_id'=>$reserve_id]));
+                $houses->withPath(route('g_payreserve_house',['item'=>$this->item_id,'pay_id'=>$pay_id]));
 
                 $code='success';
                 $msg='请求成功';
                 $sdata=[
                     'item'=>$this->item,
-                    'reserve'=>$reserve,
+                    'household'=>$household,
+                    'pay_unit'=>$pay_unit,
+                    'holder'=>$holder,
+                    'pay'=>$pay,
+                    'resettle_total'=>$resettle_total,
                     'houses'=>$houses,
                 ];
                 $edata=null;
@@ -114,21 +215,20 @@ class PayhouseController extends BaseitemController
         else{
             DB::beginTransaction();
             try{
-                $reserve=Payreserve::sharedLock()
+                /* ++++++++++ 兑付 ++++++++++ */
+                $pay=Pay::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
-                        ['id',$reserve_id],
+                        ['id',$pay_id],
                     ])
                     ->first();
-                if(blank($reserve)){
+                if(blank($pay)){
                     throw new \Exception('错误操作',404404);
                 }
-                if($reserve->getOriginal('state')==1){
-                    throw new \Exception('当前被征收户已经选房了，请进入修改页面操作',404404);
+                if($pay->getOriginal('repay_way')==0){
+                    throw new \Exception('选择货币补偿的不能选择安置房',404404);
                 }
-                if($reserve->getOriginal('state')==2){
-                    throw new \Exception('当前被征收户未在限定时间内来选房，预约失效',404404);
-                }
+
                 $house_ids=$request->input('house_ids');
                 $transits=$request->input('transits');
                 if(blank($house_ids)){
@@ -137,7 +237,7 @@ class PayhouseController extends BaseitemController
                 if($house_ids==$transits){
                     throw new \Exception('请选择产权调换房源',404404);
                 }
-                $pay=Pay::sharedLock()->find($reserve->pay_id);
+
                 /* ++++++++++ 临时周转房过渡 ++++++++++ */
                 if($pay->getOriginal('transit_way')){
                     if(blank($transits)){
@@ -152,8 +252,37 @@ class PayhouseController extends BaseitemController
                     }
                 }
 
+                /* ++++++++++ 选房时间 ++++++++++ */
+                $itemctrl=Itemctrl::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['cate_id',3],
+                        ['start_at','<=',date('Y-m-d H:i:s')],
+                        ['end_at','>=',date('Y-m-d H:i:s')],
+                    ])
+                    ->first();
+                if(blank($itemctrl)){
+                    throw new \Exception('还未到选房时间',404404);
+                }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                if(!in_array($household->code,['68','76'])){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
+                }
+
+                $count=Payhouse::query()->sharedLock()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                    ])
+                    ->count();
+                if($count){
+                    throw new \Exception('已有选房数据，请进入修改页面',404404);
+                }
+
                 /* ++++++++++ 产权调换房 ++++++++++ */
-                $household=Household::sharedLock()->select(['id','type','state'])->find($pay->household_id);
                 $houses=House::with(['itemhouseprice'=>function($query){
                     $query->where([
                         ['start_at','<=',$this->item->created_at],
@@ -162,7 +291,7 @@ class PayhouseController extends BaseitemController
                 }])
                     ->sharedLock()
                     ->whereIn('id',$house_ids)
-                    ->where('state',1)
+                    ->where('code','151')
                     ->orderBy('area','desc')
                     ->get();
                 if(blank($houses)){
@@ -173,11 +302,41 @@ class PayhouseController extends BaseitemController
                 });
                 $house_rates=Itemhouserate::sharedLock()->where('item_id',$this->item_id)->orderBy('start_area','asc')->get();
 
-                $pay_total=$pay->total;
-                if($household->getOriginal('type')){
-                    $pay_total *= 0.8;
+                /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
+                $pay_house_total=Paysubject::query()->sharedLock()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->whereIn('subject_id',[1,2,4])
+                    ->sum('amount');
+                $pay_sign_reward=Paysubject::query()->sharedLock()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->whereIn('subject_id',[11,12])
+                    ->sum('amount');
+                if($household->getOriginal('type')==0){ // 私产
+                    $resettle_total=$pay_house_total+$pay_sign_reward;
+                }else{
+                    /* ++++++++++ 正式方案 ++++++++++ */
+                    $program=Itemprogram::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['code','22'],
+                        ])
+                        ->select(['id','item_id','code','portion_holder','portion_renter'])
+                        ->first();
+                    if(blank($program)){
+                        throw new \Exception('暂无通过审查的正式征收方案数据',404404);
+                    }
+                    $resettle_total=$pay_house_total*$program->portion_renter/100+$pay_sign_reward;
                 }
-                $last_total=$pay_total; // 产权调换后结余补偿款
+
+                $last_total=$resettle_total; // 产权调换后结余补偿款
                 $plus_area=0; // 上浮累计面积
                 $house_data=[];
                 $plus_data=[];
@@ -291,28 +450,27 @@ class PayhouseController extends BaseitemController
                             }
                         }
 
-                        $resettles[]=$house->id;
-                        $house_data[]=[
-                            'item_id'=>$pay->item_id,
-                            'household_id'=>$pay->household_id,
-                            'land_id'=>$pay->land_id,
-                            'building_id'=>$pay->building_id,
-                            'house_id'=>$house->id,
-                            'area'=>$house->area,
-                            'market'=>$house->itemhouseprice->market,
-                            'price'=>$house->itemhouseprice->price,
-                            'amount'=>$house_amount,
-                            'amount_plus'=>$plus_toal,
-                            'total'=>$house_amount + $plus_toal,
-                            'created_at'=>date('Y-m-d H:i:s'),
-                            'updated_at'=>date('Y-m-d H:i:s'),
-                        ];
-
                         // 上浮累计面积 超过限制
                         if($plus_area>=30){
                             break;
                         }
                     }
+                    $resettles[]=$house->id;
+                    $house_data[]=[
+                        'item_id'=>$pay->item_id,
+                        'household_id'=>$pay->household_id,
+                        'land_id'=>$pay->land_id,
+                        'building_id'=>$pay->building_id,
+                        'house_id'=>$house->id,
+                        'area'=>$house->area,
+                        'market'=>$house->itemhouseprice->market,
+                        'price'=>$house->itemhouseprice->price,
+                        'amount'=>$house_amount,
+                        'amount_plus'=>$plus_toal,
+                        'total'=>$house_amount + $plus_toal,
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
                 }
 
                 $field=['item_id','household_id','land_id','building_id','house_id','area','market','price','amount','amount_plus','total','created_at','updated_at'];
@@ -362,18 +520,6 @@ class PayhouseController extends BaseitemController
                 }
                 $fails=array_diff($house_ids,$resettles);
 
-                $reserve->state=1;
-                $reserve->save();
-                /* ++++++++++ 未选房则过号 ++++++++++ */
-                Payreserve::lockForUpdate()
-                    ->where([
-                        ['item',$reserve->item_id],
-                        ['serial',$reserve->serial],
-                        ['number','<',$reserve->number],
-                        ['state',0],
-                    ])
-                    ->update(['state'=>2]);
-
                 $code='success';
                 $msg='保存成功';
                 $sdata=[
@@ -402,24 +548,22 @@ class PayhouseController extends BaseitemController
     public function calculate(Request $request){
         DB::beginTransaction();
         try{
-            $reserve_id=$request->input('reserve_id');
-            if(!$reserve_id){
+            $pay_id=$request->input('pay_id');
+            if(!$pay_id){
                 throw new \Exception('错误操作',404404);
             }
-            $reserve=Payreserve::sharedLock()
+            /* ++++++++++ 兑付 ++++++++++ */
+            $pay=Pay::sharedLock()
                 ->where([
                     ['item_id',$this->item_id],
-                    ['id',$reserve_id],
+                    ['id',$pay_id],
                 ])
                 ->first();
-            if(blank($reserve)){
+            if(blank($pay)){
                 throw new \Exception('错误操作',404404);
             }
-            if($reserve->getOriginal('state')==1){
-                throw new \Exception('当前被征收户已经选房了，请进入修改页面操作',404404);
-            }
-            if($reserve->getOriginal('state')==2){
-                throw new \Exception('当前被征收户未在限定时间内来选房，预约失效',404404);
+            if($pay->getOriginal('repay_way')==0){
+                throw new \Exception('选择货币补偿的不能选择安置房',404404);
             }
             $house_ids=$request->input('house_ids');
             $transits=$request->input('transits');
@@ -429,7 +573,7 @@ class PayhouseController extends BaseitemController
             if($house_ids==$transits){
                 throw new \Exception('请选择产权调换房源',404404);
             }
-            $pay=Pay::sharedLock()->find($reserve->pay_id);
+
             /* ++++++++++ 临时周转房过渡 ++++++++++ */
             if($pay->getOriginal('transit_way')){
                 if(blank($transits)){
@@ -444,8 +588,37 @@ class PayhouseController extends BaseitemController
                 }
             }
 
+            /* ++++++++++ 选房时间 ++++++++++ */
+            $itemctrl=Itemctrl::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['cate_id',3],
+                    ['start_at','<=',date('Y-m-d H:i:s')],
+                    ['end_at','>=',date('Y-m-d H:i:s')],
+                ])
+                ->first();
+            if(blank($itemctrl)){
+                throw new \Exception('还未到选房时间',404404);
+            }
+            /* ++++++++++ 被征收户 ++++++++++ */
+            $household=Household::sharedLock()
+                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                ->find($pay->household_id);
+            if(!in_array($household->code,['68','76'])){
+                throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
+            }
+
+            $count=Payhouse::query()->sharedLock()
+                ->where([
+                    ['item_id',$pay->item_id],
+                    ['household_id',$pay->household_id],
+                ])
+                ->count();
+            if($count){
+                throw new \Exception('已有选房数据，请进入修改页面',404404);
+            }
+
             /* ++++++++++ 产权调换房 ++++++++++ */
-            $household=Household::sharedLock()->select(['id','type','state'])->find($pay->household_id);
             $houses=House::with(['housecommunity','layout','itemhouseprice'=>function($query){
                 $query->where([
                     ['start_at','<=',$this->item->created_at],
@@ -454,7 +627,7 @@ class PayhouseController extends BaseitemController
             }])
                 ->sharedLock()
                 ->whereIn('id',$house_ids)
-                ->where('state',1)
+                ->where('code','151')
                 ->orderBy('area','desc')
                 ->get();
             if(blank($houses)){
@@ -465,11 +638,51 @@ class PayhouseController extends BaseitemController
             });
             $house_rates=Itemhouserate::sharedLock()->where('item_id',$this->item_id)->orderBy('start_area','asc')->get();
 
-            $pay_total=$pay->total;
-            if($household->getOriginal('type')){
-                $pay_total *= 0.8;
+            /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
+            $pay_house_total=Paysubject::query()->sharedLock()
+                ->where([
+                    ['item_id',$pay->item_id],
+                    ['household_id',$pay->household_id],
+                    ['pay_id',$pay->id],
+                ])
+                ->whereIn('subject_id',[1,2,4])
+                ->sum('amount');
+            $pay_sign_reward=Paysubject::query()->sharedLock()
+                ->where([
+                    ['item_id',$pay->item_id],
+                    ['household_id',$pay->household_id],
+                    ['pay_id',$pay->id],
+                ])
+                ->whereIn('subject_id',[11,12])
+                ->sum('amount');
+
+            $total=$pay->total;
+            if($household->getOriginal('type')==0){ // 私产
+                $resettle_total=$pay_house_total+$pay_sign_reward;
+            }else{
+                /* ++++++++++ 正式方案 ++++++++++ */
+                $program=Itemprogram::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['code','22'],
+                    ])
+                    ->select(['id','item_id','code','portion_holder','portion_renter'])
+                    ->first();
+                if(blank($program)){
+                    throw new \Exception('暂无通过审查的正式征收方案数据',404404);
+                }
+                $pay_unit=Payunit::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['pay_id',$pay_id],
+                    ])
+                    ->first();
+                $total -= $pay_unit->amount;
+                $resettle_total=$pay_house_total*$program->portion_renter/100+$pay_sign_reward;
             }
-            $last_total=$pay_total; // 产权调换后结余补偿款
+            $end_total=$total;
+            $last_total=$resettle_total; // 产权调换后结余补偿款
             $plus_area=0; // 上浮累计面积
             $resettles=[];
             $resettle_ids=[];
@@ -562,18 +775,19 @@ class PayhouseController extends BaseitemController
                         }
                     }
 
-                    $house->amount=$house_amount;
-                    $house->amount_plus=$plus_toal;
-                    $house->total=$house_amount + $plus_toal;
-                    $house->housepluses=$plus_data;
-                    $resettles[]=$house;
-                    $resettle_ids[]=$house->id;
-
                     // 上浮累计面积 超过限制
                     if($plus_area>=30){
                         break;
                     }
                 }
+                $house->amount=$house_amount;
+                $house->amount_plus=$plus_toal;
+                $house->total=$house_amount + $plus_toal;
+                $house->housepluses=$plus_data;
+                $resettles[]=$house;
+                $resettle_ids[]=$house->id;
+
+                $end_total -= $house->total;
             }
 
             $fails=array_diff($house_ids,$resettle_ids);
@@ -582,8 +796,8 @@ class PayhouseController extends BaseitemController
             $msg='计算成功';
             $sdata=[
                 'resettles'=>$resettles,
-                'total'=>$pay->total,
-                'last_total'=>$last_total,
+                'resettle_total'=>$resettle_total,
+                'last_total'=>$end_total,
                 'plus_area'=>$plus_area,
             ];
             $edata=$fails;
