@@ -193,7 +193,9 @@ class  HouseholddetailController extends BaseController
             },
             'buildingstruct'=>function($query){
                 $query->select(['id','name']);
-            }])
+            },'state'=>function($query){
+                $query->select(['code','name']);
+            },])
             ->where('item_id',$item_id)
             ->where('household_id',$household_id)
             ->sharedLock()

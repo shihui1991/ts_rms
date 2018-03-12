@@ -4,46 +4,77 @@
 
 {{-- 页面内容 --}}
 @section('content')
-
-
-    <table class="table table-hover table-bordered">
-        <thead>
-        <tr>
-            <th>排名</th>
-            <th>名称</th>
-            <th>类型</th>
-            <th>基本信息</th>
-            <th>得票数</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($sdata as $value)
-            <tr>
-                <td>{{$loop->iteration}}</td>
-                <td>{{$value->company->name}}</td>
-                <td>{{$value->company->type}}</td>
-                <td>{{$value->company->infos}}</td>
-                <td>{{$value->companyvotes_count}}</td>
-                <td>
-                    <div class="btn-group">
-                        <a href="{{route('h_company_info',['id'=>$value->company_id])}}" class="btn btn-xs">查看详情</a>
-                    </div>
-                </td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
     <div class="row">
-        <div class="col-xs-6">
-            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据</div>
-        </div>
-        <div class="col-xs-6">
-            <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
-                @if($code=='success') {{ $sdata->links() }} @endif
-            </div>
+        <div class="col-xs-12">
+            @if($code=='success')
+                @foreach($sdata as $value)
+                    <div class="col-xs-6 col-sm-3 pricing-box">
+                        <div class="widget-box widget-color-dark">
+                            <div class="widget-header">
+                                <h5 class="widget-title bigger lighter">{{$value->company->name}}</h5>
+                            </div>
+
+                            <div class="widget-body">
+                                <div class="widget-main">
+
+                                    <div class="profile-user-info profile-user-info-striped">
+
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> 排名： </div>
+                                            <div class="profile-info-value">
+                                                <span class="editable editable-click">{{$loop->iteration}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> 基本信息： </div>
+                                            <div class="profile-info-value">
+                                                <span class="editable editable-click">{{$value->company->infos}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> LOGO： </div>
+
+                                            <div class="profile-info-value img-content">
+                                                @if($value->company->logo)
+                                                    <img width="120" height="120" src="{{$value->company->logo}}" alt="{{$value->company->logo}}">
+                                                    <div class="text">
+                                                        <div class="inner">
+                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    暂无
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> 得票数： </div>
+                                            <div class="profile-info-value">
+                                                <span class="editable editable-click">{{$value->companyvotes_count}}</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <hr>
+                                    <div class="price">
+                                        <a href="{{route('h_company_info',['id'=>$value->company_id])}}" style="font-size: 15px">查看详情<i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                        </a>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
         </div>
     </div>
+
+
+
+
 @endsection
 
 {{-- 样式 --}}

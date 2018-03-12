@@ -34,14 +34,7 @@ class Estate extends Model
     ];
 
 
-    public function getStateAttribute($key=null){
-        $array=[0=>'待评估',1=>'评估中',2=>'完成',3=>'通过',4=>'驳回',5=>'反对',6=>'同意'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
+
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
@@ -55,6 +48,9 @@ class Estate extends Model
         return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();
     }
 
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    }
 
     public function household(){
         return $this->belongsTo('App\Http\Model\Household','household_id','id')->withDefault();

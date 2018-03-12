@@ -72,15 +72,9 @@ class Householdbuilding extends Model
         }
     }
 
-    /* ++++++++++ 获取面积争议状态 ++++++++++ */
-    public function getDisputeAttribute($key=null)
-    {
-        $array=[0=>'没有争议',1=>'存在争议',2=>'测量面积',3=>'明确面积',4=>'测量争议',5=>'测绘面积'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
+    /* ++++++++++ 关联项目 ++++++++++ */
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
     /* ++++++++++ 关联项目 ++++++++++ */
@@ -116,10 +110,6 @@ class Householdbuilding extends Model
     /* ++++++++++ 违建处理 ++++++++++ */
     public function buildingdeal(){
         return $this->hasOne('App\Http\Model\Buildinguse','real_use','id')->withDefault();
-    }
-    /* ++++++++++ 状态 ++++++++++ */
-    public function state(){
-        return $this->hasOne('App\Http\Model\Statecode','code','code')->withDefault();
     }
     /* ++++++++++ 关联地块户型 ++++++++++ */
     public function landlayout(){

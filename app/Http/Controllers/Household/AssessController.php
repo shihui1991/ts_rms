@@ -47,7 +47,7 @@ class AssessController extends BaseController{
 
             /* ++++++++++ 被征收户 ++++++++++ */
             $household=Household::sharedLock()
-                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+                ->select(['id','item_id','land_id','building_id','unit','floor','number','type'])
                 ->find($household_id);
             if(blank($item)){
                 throw new \Exception('被征户不存在',404404);
@@ -57,7 +57,7 @@ class AssessController extends BaseController{
                     ->where([
                         ['item_id', $this->item_id],
                         ['household_id', $household_id],
-                        ['state', 6],
+                        ['code', 136],
                     ])
                     ->first();
 
@@ -67,6 +67,8 @@ class AssessController extends BaseController{
 
             $estate=Estate::with(['company'=>function($query){
                 $query->select(['id','name']);
+            },'state'=>function($query){
+                $query->select(['code','name']);
             }])
                 ->sharedLock()
                 ->where([['assess_id',$assess->id]])
@@ -74,6 +76,8 @@ class AssessController extends BaseController{
 
             $assets=Assets::with(['company'=>function($query){
                 $query->select(['id','name']);
+            },'state'=>function($query){
+                $query->select(['code','name']);
             }])
                 ->sharedLock()
                 ->where([['assess_id',$assess->id]])

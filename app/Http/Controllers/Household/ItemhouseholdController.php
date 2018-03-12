@@ -23,7 +23,7 @@ class   ItemhouseholdController extends BaseController
     /* ========== 个人信息 ========== */
     public function info(Request $request){
         /* ********** 获取数据 ********** */
-        $select=['id','unit','floor','number','type','username','infos','state','created_at','updated_at','deleted_at','land_id','building_id'];
+        $select=['id','unit','floor','number','type','username','infos','created_at','updated_at','deleted_at','code','land_id','building_id'];
         DB::beginTransaction();
         $user=Household::with(['item'=>function($query){
                 $query->select(['id','name']);
@@ -33,7 +33,11 @@ class   ItemhouseholdController extends BaseController
                 },
                 'itembuilding'=>function($query){
                     $query->select(['id','building']);
-                }])
+                },
+                'state'=>function($query){
+                    $query->select(['code','name']);
+                }
+                ])
             ->where('id',session('household_user.user_id'))
             ->select($select)
             ->sharedLock()
@@ -69,7 +73,7 @@ class   ItemhouseholdController extends BaseController
     public function edit(Request $request){
         if($request->isMethod('get')){
             /* ********** 获取数据 ********** */
-            $select=['id','unit','floor','number','type','username','infos','state','created_at','updated_at','deleted_at','land_id','building_id'];
+            $select=['id','unit','floor','number','type','username','infos','created_at','updated_at','deleted_at','land_id','building_id'];
             DB::beginTransaction();
             $user=Household::with(['item'=>function($query){
                 $query->select(['id','name']);
@@ -171,7 +175,7 @@ class   ItemhouseholdController extends BaseController
     public function password(Request $request){
         if($request->isMethod('get')){
             /* ********** 获取数据 ********** */
-            $select=['id','unit','floor','number','type','username','infos','state','created_at','updated_at','deleted_at','land_id','building_id'];
+            $select=['id','unit','floor','number','type','username','infos','created_at','updated_at','deleted_at','land_id','building_id'];
             DB::beginTransaction();
             $user=Household::with(['item'=>function($query){
                 $query->select(['id','name']);

@@ -28,7 +28,7 @@ class Paybuilding extends Model
         'household_building_id'=>'房屋建筑',
         'pay_id'=>'兑付汇总',
         'register'=>'是否登记',
-        'state'=>'状态',
+        'code'=>'状态',
         'real_outer'=>'实际面积',
         'real_use'=>'实际用途',
         'struct_id'=>'建筑结构',
@@ -79,5 +79,9 @@ class Paybuilding extends Model
     }
     public function buildingstruct(){
         return $this->belongsTo('App\Http\Model\Buildingstruct','struct_id','id')->withDefault();
+    }
+    /* ++++++++++ 关联状态 ++++++++++ */
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 }

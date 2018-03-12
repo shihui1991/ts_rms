@@ -45,7 +45,7 @@
                                     <div class="profile-info-value">
                                     <span class="editable editable-click">
                                         @if($sdata['household']->getOriginal('type'))
-                                            公产（{{$sdata['household']->itemland->adminunit->name}}）
+                                            公房（{{$sdata['household']->itemland->adminunit->name}}）
                                         @else
                                             私产
                                         @endif
@@ -53,6 +53,19 @@
                                     </div>
                                 </div>
 
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房屋状况： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['household_detail']->status}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 批准用途： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['household_detail']->defbuildinguse->name}}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -76,6 +89,20 @@
                     <div class="widget-body">
                         <div class="widget-main">
                             <div class="profile-user-info profile-user-info-striped">
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name">  @if($sdata['household']->getOriginal('type')) 承租人 @else 产权人 @endif： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['holder']->name}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 状态： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['household']->state->name}}</span>
+                                    </div>
+                                </div>
 
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 补偿方式： </div>
@@ -171,7 +198,7 @@
                                 <td>{{$subject->subject->name}}</td>
                                 <td>{{$subject->calculate}}</td>
                                 <td>{{number_format($subject->amount,2)}}</td>
-                                <td>{{$subject->state}}</td>
+                                <td>{{$subject->state->name}}</td>
                                 <td>
                                     <div class="btn-group">
                                         @if($subject->total_id)
@@ -219,7 +246,7 @@
                                     <tbody>
                                     @if(filled($sdata['buildings']))
                                         @foreach($sdata['buildings'] as $building)
-                                            @if($building->getOriginal('state') == 0)
+                                            @if($building->code == '90')
                                             <tr>
                                                 <td>{{$building->realuse->name}}</td>
                                                 <td>{{$building->buildingstruct->name}}</td>
@@ -263,7 +290,7 @@
                                     <tbody>
                                     @if(filled($sdata['buildings']))
                                         @foreach($sdata['buildings'] as $building)
-                                            @if(in_array($building->getOriginal('state'),[2,5]))
+                                            @if(in_array($building->code,['92','95']))
                                                 <tr>
                                                     <td>{{$building->realuse->name}}</td>
                                                     <td>{{$building->buildingstruct->name}}</td>
@@ -307,7 +334,7 @@
                                     <tbody>
                                     @if(filled($sdata['buildings']))
                                         @foreach($sdata['buildings'] as $building)
-                                            @if($building->getOriginal('state') == 4)
+                                            @if($building->code == '94')
                                                 <tr>
                                                     <td>{{$building->realuse->name}}</td>
                                                     <td>{{$building->buildingstruct->name}}</td>

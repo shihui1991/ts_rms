@@ -27,16 +27,133 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="code"> 状态： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="portion_holder"> 被征收人比例（%）： </label>
             <div class="col-sm-9">
-                <select name="code" id="code" class="col-xs-10 col-sm-5">
-                    @foreach($sdata['codeStage'] as $key=>$value)
-                        <option value="{{$key}}">{{$value}}</option>
-                    @endforeach
-                </select>
+                <input type="number" id="portion_holder" name="portion_holder" value="{{$sdata->portion_holder}}" class="col-xs-10 col-sm-5"  placeholder="请输入被征收人比例（%）" required>
             </div>
         </div>
         <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="portion_renter"> 承租人比例（%）： </label>
+            <div class="col-sm-9">
+                <input type="number" id="portion_renter" name="portion_renter" value="{{$sdata->portion_renter}}" class="col-xs-10 col-sm-5"  placeholder="请输入承租人比例（%）" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="move_base"> 搬迁补助-基本： </label>
+            <div class="col-sm-9">
+                <input type="number" id="move_base" name="move_base" value="{{$sdata->move_base}}" class="col-xs-10 col-sm-5"  placeholder="请输入搬迁补助-基本" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="move_house"> 搬迁补助单价-住宅： </label>
+            <div class="col-sm-9">
+                <input type="number" id="move_house" name="move_house" value="{{$sdata->move_house}}"  class="col-xs-10 col-sm-5"  placeholder="请搬迁补助单价-住宅" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="move_office"> 搬迁补助单价-办公： </label>
+            <div class="col-sm-9">
+                <input type="number" id="move_office" name="move_office" value="{{$sdata->move_office}}" class="col-xs-10 col-sm-5"  placeholder="请搬迁补助单价-办公" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="move_business"> 搬迁补助单价-商服： </label>
+            <div class="col-sm-9">
+                <input type="number" id="move_business" name="move_business" value="{{$sdata->move_office}}" class="col-xs-10 col-sm-5"  placeholder="请输入搬迁补助单价-商服" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="move_factory"> 搬迁补助单价-生产加工： </label>
+            <div class="col-sm-9">
+                <input type="number" id="move_factory" name="move_factory" value="{{$sdata->move_factory}}" class="col-xs-10 col-sm-5"  placeholder="请输入搬迁补助单价-生产加工" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="transit_base"> 临时安置-基本： </label>
+            <div class="col-sm-9">
+                <input type="number" id="transit_base" name="transit_base" value="{{$sdata->transit_base}}" class="col-xs-10 col-sm-5"  placeholder="请输入请临时安置-基本" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="transit_house"> 临时安置单价-住宅： </label>
+            <div class="col-sm-9">
+                <input type="number" id="transit_house" name="transit_house" value="{{$sdata->transit_house}}" class="col-xs-10 col-sm-5"  placeholder="请输入请临时安置单价-住宅" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="transit_other"> 临时安置单价-非住宅： </label>
+            <div class="col-sm-9">
+                <input type="number" id="transit_other" name="transit_other" value="{{$sdata->transit_other}}" class="col-xs-10 col-sm-5"  placeholder="请输入临时安置单价-非住宅" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="transit_real"> 临时安置时长（月）-现房： </label>
+            <div class="col-sm-9">
+                <input type="number" id="transit_real" name="transit_real" value="{{$sdata->transit_real}}" class="col-xs-10 col-sm-5"  placeholder="请输入临时安置时长（月）-现房" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="transit_future"> 临时安置时长（月）-期房： </label>
+            <div class="col-sm-9">
+                <input type="number" id="transit_future" name="transit_future" value="{{$sdata->transit_future}}" class="col-xs-10 col-sm-5"  placeholder="请输入临时安置时长（月）-期房" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="reward_house"> 签约奖励单价-住宅-货币补偿： </label>
+            <div class="col-sm-9">
+                <input type="number" id="reward_house" name="reward_house" value="{{$sdata->reward_house}}" class="col-xs-10 col-sm-5"  placeholder="请输入签约奖励单价-住宅-货币补偿" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="reward_other"> 签约奖励比例（%）-非住宅-货币补偿： </label>
+            <div class="col-sm-9">
+                <input type="number" id="reward_other" name="reward_other" value="{{$sdata->reward_other}}" class="col-xs-10 col-sm-5"  placeholder="请输入签约奖励比例（%）-非住宅-货币补偿" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="reward_real"> 房屋奖励单价： </label>
+            <div class="col-sm-9">
+                <input type="number" id="reward_real" name="reward_real" value="{{$sdata->reward_real}}" class="col-xs-10 col-sm-5"  placeholder="请输入房屋奖励单价" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="reward_move"> 搬迁奖励： </label>
+            <div class="col-sm-9">
+                <input type="number" id="reward_move" name="reward_move" value="{{$sdata->reward_move}}" class="col-xs-10 col-sm-5"  placeholder="请输入搬迁奖励" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="content"> 内容：</label>

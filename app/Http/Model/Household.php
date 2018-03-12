@@ -85,7 +85,7 @@ class Household extends Model
     }
     /* ++++++++++ 状态 ++++++++++ */
     public function state(){
-        return $this->hasOne('App\Http\Model\Statecode','code','code')->withDefault();
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
 
