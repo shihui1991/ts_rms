@@ -843,6 +843,14 @@ class PayController extends BaseitemController
                 if(blank($pay)){
                     throw new \Exception('兑付数据不存在',404404);
                 }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                if(!in_array($household->code,['68','75'])){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能修改',404404);
+                }
+
                 $pay->fill($request->input());
                 $pay->save();
                 if(blank($pay)){

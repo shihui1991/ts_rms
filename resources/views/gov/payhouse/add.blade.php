@@ -4,6 +4,136 @@
 {{-- 页面内容 --}}
 @section('content')
 
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <div class="widget-container-col ui-sortable">
+                <div class="widget-box ui-sortable-handle">
+                    <div class="widget-header">
+                        <h5 class="widget-title">被征收户</h5>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="profile-user-info profile-user-info-striped">
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 项目： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['item']->name}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 地址： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['household']->itemland->address}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房号： </div>
+                                    <div class="profile-info-value">
+                                <span class="editable editable-click">
+                                    {{$sdata['household']->itembuilding->building}}栋{{$sdata['household']->unit}}单元{{$sdata['household']->floor}}楼{{$sdata['household']->number}}@if(is_numeric($sdata['household']->floor))号@endif
+                                </span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 类型： </div>
+                                    <div class="profile-info-value">
+                                    <span class="editable editable-click">
+                                        @if($sdata['household']->getOriginal('type'))
+                                            公房（{{$sdata['household']->itemland->adminunit->name}}）
+                                        @else
+                                            私产
+                                        @endif
+                                    </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xs-12">
+            <div class="widget-container-col ui-sortable">
+                <div class="widget-box ui-sortable-handle">
+                    <div class="widget-header">
+                        <h5 class="widget-title">兑付汇总</h5>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="profile-user-info profile-user-info-striped">
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name">  @if($sdata['household']->getOriginal('type')) 承租人 @else 产权人 @endif： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['holder']->name}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 状态： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['household']->state->name}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 补偿方式： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['pay']->repay_way}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 过渡方式： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['pay']->transit_way}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 搬迁方式： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['pay']->move_way}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 补偿总额： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">
+                                            <strong>{{number_format($sdata['pay']->total,2)}}</strong>
+                                            人民币（大写）{{bigRMB($sdata['pay']->total)}}
+                                            @if($sdata['household']->getOriginal('type'))
+                                                <br>
+                                                其中：
+                                                <br>
+                                                【{{$sdata['household']->itemland->adminunit->name}}（公房单位）】所得补偿款：
+                                                <strong>{{number_format($sdata['pay_unit']->amount,2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['pay_unit']->amount)}}
+                                                <br>
+                                                【{{$sdata['holder']->name}}（承租人）】所得补偿款：
+                                                <strong>{{number_format($sdata['pay']->total-$sdata['pay_unit']->amount,2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['pay']->total-$sdata['pay_unit']->amount)}}
+                                            @endif
+
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="widget-box widget-color-blue2">
         <div class="widget-header">
@@ -88,9 +218,18 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <th colspan="2">补偿总额：{{number_format($sdata['reserve']->pay->total,2)}} 元</th>
+                                        <th colspan="2">可调换安置房的补偿总额：{{number_format($sdata['resettle_total'],2)}} 元</th>
                                         <th class="2">上浮面积：<span id="plus_area">0</span> ㎡</th>
-                                        <th colspan="7">产权调换后结余：<span id="last_total">{{number_format($sdata['reserve']->pay->total,2)}}</span> 元（负数则表示被征收户需补交上浮房款）</th>
+                                        <th colspan="7">
+                                            产权调换后结余补偿款：
+                                            <span id="last_total">
+                                                @if($sdata['household']->getOriginal('type'))
+                                                    {{number_format($sdata['pay']->total-$sdata['pay_unit']->amount,2)}}
+                                                @else
+                                                    {{number_format($sdata['pay']->total,2)}}
+                                                @endif
+                                            </span> 元（负数则表示被征收户需补交上浮房款）
+                                        </th>
                                     </tr>
                                     </tfoot>
                                 </table>
@@ -140,7 +279,7 @@
                     choose_houses.push(house_temp);
                     choose_house_ids.push(house_id);
                     var transit='';
-                    if(house_temp.is_transit=='可作临时周转'){
+                    if(house_temp.is_transit=='可作临时周转' && {{$sdata['pay']->getOriginal('transit_way')}} == 1){
                         transit='<label class="btn btn-white btn-bold"><input type="checkbox" name="transits[]" value="'+house_temp.id+'">&nbsp;选择作为临时周转房</label>';
                     }
 
