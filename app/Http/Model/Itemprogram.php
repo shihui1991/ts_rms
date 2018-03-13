@@ -13,7 +13,7 @@ class Itemprogram extends Model
     use SoftDeletes;
     protected $table='item_program';
     protected $primaryKey='id';
-    protected $fillable=['name','content','portion_holder','portion_renter','move_base','move_house','move_office','move_business','move_factory','transit_base','transit_house','transit_other','transit_real','transit_future','reward_house','reward_other','reward_real','reward_move'];
+    protected $fillable=['name','content','portion_holder','portion_renter','move_base','move_house','move_office','move_business','move_factory','transit_base','transit_house','transit_other','transit_real','transit_future','reward_house','reward_other','reward_real','reward_move','item_end'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -21,6 +21,7 @@ class Itemprogram extends Model
         'item_id'=>'项目',
         'name'=>'名称',
         'content'=>'内容',
+        'item_end'=>'项目期限',
         'portion_holder'=>'被征收人比例',
         'portion_renter'=>'承租人比例',
         'move_base'=>'基本搬迁补助',

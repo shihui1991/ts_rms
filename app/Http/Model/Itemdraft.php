@@ -13,7 +13,7 @@ class Itemdraft extends Model
     use SoftDeletes;
     protected $table='item_draft';
     protected $primaryKey='id';
-    protected $fillable=['name','content','code'];
+    protected $fillable=['name','content'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */

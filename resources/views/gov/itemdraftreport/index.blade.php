@@ -26,7 +26,7 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$infos->name}}</td>
-                        <td>{{$infos->code}}</td>
+                        <td>{{$infos->state->name}}</td>
                         <td>
                             <a href="{{route('g_itemdraftreport_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
                         </td>

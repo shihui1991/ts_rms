@@ -6,6 +6,7 @@
 */
 namespace  App\Http\Controllers\gov;
 use App\Http\Model\Itemriskreport;
+use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -21,19 +22,15 @@ class ItemriskreportController extends BaseitemController
 
     /* ========== 详情页 ========== */
     public function index(Request $request){
-        $item_id=$this->item_id;
         /* ********** 查询条件 ********** */
-        $where=[];
-        $where[] = ['item_id',$item_id];
-        $infos['item_id'] = $item_id;
-
+        $where[] = ['item_id',$this->item_id];
         /* ********** 查询 ********** */
         $model=new Itemriskreport();
         DB::beginTransaction();
         try{
             $itemriskreport=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
+                ->with(['state'=>function($query){
+                    $query->select(['code','name']);
                 }])
                 ->where($where)
                 ->sharedLock()
@@ -44,13 +41,13 @@ class ItemriskreportController extends BaseitemController
             $code='success';
             $msg='查询成功';
             $sdata=$itemriskreport;
-            $edata=$infos;
+            $edata=['item_id'=>$this->item_id];
             $url=null;
         }catch(\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=$infos;
+            $edata=['item_id'=>$this->item_id];
             $url=null;
         }
         /* ********** 结果 ********** */
@@ -83,7 +80,6 @@ class ItemriskreportController extends BaseitemController
             $rules = [
                 'content'=>'required',
                 'name'=>'required',
-                'code' => 'required',
                 'agree' => 'required',
             ];
             $messages = [
@@ -102,6 +98,7 @@ class ItemriskreportController extends BaseitemController
                 $itemriskreport->fill($request->all());
                 $itemriskreport->addOther($request);
                 $itemriskreport->item_id=$this->item_id;
+                $itemriskreport->code=20;
                 $itemriskreport->save();
                 if (blank($itemriskreport)) {
                     throw new \Exception('添加失败', 404404);
@@ -128,9 +125,7 @@ class ItemriskreportController extends BaseitemController
 
     /* ========== 修改页 ========== */
     public function edit(Request $request){
-        $item_id=$this->item_id;
         $id=$request->input('id');
-
         if(!$id){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -213,7 +208,7 @@ class ItemriskreportController extends BaseitemController
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$exception->getMessage();
+                $edata=null;
                 $url=null;
                 DB::rollBack();
             }
