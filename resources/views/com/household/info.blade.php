@@ -10,17 +10,11 @@
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
-        @if($edata['dispute_count'] == 0)
-        <a class="btn" href="{{route('c_household_edit',['id'=>$sdata->id,'item'=>$sdata->item_id])}}">
+        <a class="btn" href="{{route('c_household_add',['household_id'=>$sdata->id,'item'=>$sdata->item_id])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
-            进行评估
+            添加@if($edata['type']==0)房产@else资产@endif信息
         </a>
-        @endif
     </p>
-
-    <div class="well well-sm">
-        入户摸底信息
-    </div>
 
     <div class="well-sm">
         <div class="tabbable">
@@ -32,12 +26,19 @@
                     </a>
                 </li>
                 @if($edata['type']==0)
-                <li class="">
-                    <a data-toggle="tab" href="#householdbuilding" aria-expanded="false">
-                        <i class="green ace-icon fa fa-home bigger-120"></i>
-                        房屋建筑信息
-                    </a>
-                </li>
+                    <li class="">
+                        <a data-toggle="tab" href="#householdbuilding" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            房产信息
+                        </a>
+                    </li>
+                    @else
+                    <li class="">
+                        <a data-toggle="tab" href="#householdassets" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            资产信息
+                        </a>
+                    </li>
                  @endif
             </ul>
             <div class="tab-content">
@@ -86,45 +87,17 @@
                         </div>
                     </div>
                 </div>
-                <div id="householdbuilding" class="tab-pane fade">
-                    <table class="table table-hover table-bordered">
-                        <thead>
-                        <tr>
-                            <th>序号</th>
-                            <th>面积争议</th>
-                            <th>地块</th>
-                            <th>楼栋</th>
-                            <th>楼层</th>
-                            <th>朝向</th>
-                            <th>结构</th>
-                            <th>是否登记</th>
-                            <th>状态</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @if($code=='success')
-                            @foreach($edata['householdbuilding'] as $infos)
-                                <tr>
-                                    <td>{{$loop->iteration}}</td>
-                                    <td>{{$infos->dispute}}</td>
-                                    <td>{{$infos->itemland->address}}</td>
-                                    <td>{{$infos->itembuilding->building}}</td>
-                                    <td>{{$infos->floor}}</td>
-                                    <td>{{$infos->direct}}</td>
-                                    <td>{{$infos->buildingstruct->name}}</td>
-                                    <td>{{$infos->register}}</td>
-                                    <td>{{$infos->state}}</td>
-                                </tr>
-                            @endforeach
-                        @endif
-                        </tbody>
-                    </table>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdbuilding']) }} @else 0 @endif 条数据</div>
-                        </div>
+
+                @if($edata['type']==0)
+                    <div id="householdbuilding" class="tab-pane fade">
+
                     </div>
-                </div>
+                @else
+                    <div id="householdassets" class="tab-pane fade">
+
+                    </div>
+                @endif
+
             </div>
         </div>
     </div>
