@@ -22,12 +22,10 @@ class ItemprogramController extends BaseitemController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $item_id=$this->item_id;
 
         $model=new Itemprogram();
         if($request->isMethod('get')){
-            $sdata['item_id'] = $item_id;
-            $sdata['codeStage']=Statecode::pluck('name','code');
+            $sdata['item_id'] = $this->item_id;
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -38,7 +36,7 @@ class ItemprogramController extends BaseitemController
         /* ++++++++++ 保存 ++++++++++ */
         else {
             $check=$model
-                ->where('item_id',$item_id)
+                ->where('item_id',$this->item_id)
                 ->first();
             if (filled($check)){
                 $result=['code'=>'error','message'=>'征收方案不能重复添加','sdata'=>null,'edata'=>null,'url'=>null];
@@ -49,17 +47,36 @@ class ItemprogramController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'name' => 'required',
-                'content' => 'required'
+                'content' => 'required',
+                'portion_holder' => 'required|numeric|between:0,100',
+                'portion_renter' => 'required|numeric|between:0,100',
+                'move_base' => 'required | numeric',
+                'move_house' => 'required | numeric',
+                'move_office' => 'required | numeric',
+                'move_business' => 'required | numeric',
+                'move_factory' => 'required | numeric',
+                'transit_base' => 'required | numeric',
+                'transit_house' => 'required | numeric',
+                'transit_other' => 'required | numeric',
+                'transit_real' => 'required | numeric',
+                'transit_future' => 'required | numeric',
+                'reward_house' => 'required | numeric',
+                'reward_other' => 'required|numeric|between:0,100',
+                'reward_real' => 'required | numeric',
+                'reward_move' => 'required | numeric',
+                'item_end' => 'required | date',
             ];
             $messages = [
-                'required' => ':attribute必须填写'
+                'required' => ':attribute必须填写',
+                'numeric'=>':attribute必须为数字',
+                'between'=>':attribute不能小于:min并且不能大于:max',
+                'date'=>':attribute必须为日期'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
-dump($request->input());
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
@@ -67,6 +84,7 @@ dump($request->input());
                 $model->fill($request->all());
                 $model->addOther($request);
                 $model->item_id=$this->item_id;
+                $model->code=20;
                 $model->save();
                 if (blank($model)) {
                     throw new \Exception('添加失败', 404404);
@@ -76,18 +94,18 @@ dump($request->input());
                 $msg = '添加成功';
                 $sdata = $model;
                 $edata = null;
-                $url = null;
+                $url=route('g_itemprogram_info',['item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $model;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
             /* ++++++++++ 结果 ++++++++++ */
-            $result=['code'=>$code,$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
     }
@@ -95,19 +113,15 @@ dump($request->input());
     /* ========== 详情 ========== */
     public function info(Request $request){
 
-        $item_id=$this->item_id;
-
         /* ********** 查询条件 ********** */
-        $where[] = ['item_id',$item_id];
-        $infos['item_id'] = $item_id;
+        $where[] = ['item_id',$this->item_id];
+
 
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
             $model=Itemprogram::
-                with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },'state'=>function($query){
+                with(['state'=>function($query){
                 $query->select(['code','name']);
             }])
                 ->where($where)
@@ -117,16 +131,17 @@ dump($request->input());
             if(blank($model)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
+            $model->item_id=$this->item_id;
             $code='success';
             $msg='查询成功';
             $sdata=$model;
-            $edata=$infos;
+            $edata=null;
             $url=null;
         }catch(\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=$infos;
+            $edata=['item_id'=>$this->item_id];
             $url=null;
         }
 
@@ -144,11 +159,9 @@ dump($request->input());
 
     /* ========== 修改 ========== */
     public function edit(Request $request){
-        $item_id=$this->item_id;
 
         $id=$request->input('id');
         if(!$id){
-            $edata['item_id']=$item_id;
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -171,6 +184,7 @@ dump($request->input());
                 $url=null;
 
             }else{
+                $itemprogram->item_id=$this->item_id;
                 $code='success';
                 $msg='获取成功';
                 $sdata=$itemprogram;
@@ -191,10 +205,30 @@ dump($request->input());
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'name' => 'required',
-                'content' => 'required'
+                'content' => 'required',
+                'portion_holder' => 'required|numeric|between:0,100',
+                'portion_renter' => 'required|numeric|between:0,100',
+                'move_base' => 'required | numeric',
+                'move_house' => 'required | numeric',
+                'move_office' => 'required | numeric',
+                'move_business' => 'required | numeric',
+                'move_factory' => 'required | numeric',
+                'transit_base' => 'required | numeric',
+                'transit_house' => 'required | numeric',
+                'transit_other' => 'required | numeric',
+                'transit_real' => 'required | numeric',
+                'transit_future' => 'required | numeric',
+                'reward_house' => 'required | numeric',
+                'reward_other' => 'required|numeric|between:0,100',
+                'reward_real' => 'required | numeric',
+                'reward_move' => 'required | numeric',
+                'item_end' => 'required | date'
             ];
             $messages = [
-                'required' => ':attribute必须填写'
+                'required' => ':attribute必须填写',
+                'numeric'=>':attribute必须为数字',
+                'between'=>':attribute不能小于:min并且不能大于:max',
+                'date'=>':attribute必须为日期'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -221,7 +255,7 @@ dump($request->input());
                 $msg='修改成功';
                 $sdata=$itemprogram;
                 $edata=null;
-                $url=route('g_itemprogram_info',['item'=>$this->item_id]);;
+                $url=route('g_itemprogram_info',['item'=>$this->item_id]);
 
                 DB::commit();
             }catch (\Exception $exception){

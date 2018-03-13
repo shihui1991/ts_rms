@@ -45,9 +45,7 @@ class  ItemriskController extends BaseitemController{
                 ->where('item_id',$item_id)
                 ->count();
             $itemrisk=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },'household'=>function($query){
+                ->with(['household'=>function($query){
                     $query->select(['id','username']);
                 }])
                 ->where($where)
@@ -64,14 +62,13 @@ class  ItemriskController extends BaseitemController{
             $code='success';
             $msg='查询成功';
             $sdata=$itemrisk;
-            $edata=$infos;
+            $edata=null;
             $url=null;
         }catch (\Exception $exception){
-            $itemdrisk=collect();
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$itemdrisk;
-            $edata=$infos;
+            $sdata=null;
+            $edata=null;
             $url=null;
         }
         /* ********** 结果 ********** */
@@ -98,9 +95,7 @@ class  ItemriskController extends BaseitemController{
         DB::beginTransaction();
 
         $itemrisk=Itemrisk::with(
-            ['item'=>function($query){
-                $query->select(['id','name']);
-            },'household'=>function($query){
+            ['household'=>function($query){
                 $query->select(['id','username']);
             },'layout'=>function($query){
                 $query->select(['id','name']);

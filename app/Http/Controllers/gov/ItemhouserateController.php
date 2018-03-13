@@ -36,11 +36,7 @@ class ItemhouserateController extends BaseitemController
                 ->where('item_id',$item_id)
                 ->count();
 
-            $Itemhouserate=Itemhouserate::
-            with(['item'=>function($query){
-                $query->select(['id','name']);
-            }])
-                ->where('item_id', $item_id)
+            $Itemhouserate=Itemhouserate::where('item_id', $item_id)
                 ->sharedLock()
                 ->offset($per_page*($page-1))
                 ->limit($per_page)

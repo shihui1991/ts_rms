@@ -44,6 +44,7 @@ class IndexController extends Controller
             return response()->json(['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null]);
         }
 
+
         /* ********** 查询用户 ********** */
         DB::beginTransaction();
         $user=Household::select(['id','username','password','land_id','building_id','item_id'])

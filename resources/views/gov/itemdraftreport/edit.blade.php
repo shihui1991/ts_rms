@@ -25,13 +25,7 @@
             </div>
         </div>
         <div class="space-4"></div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="code"> 状态码： </label>
-            <div class="col-sm-9">
-                <input type="text"  id="code" name="code" value="{{$sdata->code}}" class="col-xs-10 col-sm-5" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
+
 
         <div class="form-group">
             <code id="testcon" style="display:none;">
