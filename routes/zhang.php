@@ -121,11 +121,14 @@ Route::any('/itempublic','ItempublicController@index')->name('g_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');
+/*---------- 项目-地块户型 ----------*/
+Route::any('/landlayout','LandlayoutController@index')->name('g_landlayout');
+Route::any('/landlayout_add','LandlayoutController@add')->name('g_landlayout_add');
+Route::get('/landlayout_info','LandlayoutController@info')->name('g_landlayout_info');
+Route::any('/landlayout_edit','LandlayoutController@edit')->name('g_landlayout_edit');
 
 /*---------- 项目-被征收户账号 ----------*/
-Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
-Route::get('/household_info','HouseholdController@info')->name('g_household_info');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
 /*---------- 项目-被征收户详细信息 ----------*/
 Route::any('/householddetail','HouseholddetailController@index')->name('g_householddetail');

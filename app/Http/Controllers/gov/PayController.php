@@ -12,7 +12,9 @@ use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
 use App\Http\Model\Household;
 use App\Http\Model\Householddetail;
+use App\Http\Model\Householdmember;
 use App\Http\Model\Householdobject;
+use App\Http\Model\Itemprogram;
 use App\Http\Model\Pay;
 use App\Http\Model\Paybuilding;
 use App\Http\Model\Payobject;
@@ -178,13 +180,19 @@ class PayController extends BaseitemController
                 if(blank($household)){
                     throw new \Exception('被征收户不存在',404404);
                 }
+                if($household->code<'63'){
+                    throw new \Exception('被征收户还未完成确权确户',404404);
+                }
                 $household_detail=Householddetail::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
                         ['household_id',$household_id],
                     ])
-                    ->select(['item_id','household_id','has_assets','area_dispute','repay_way'])
+                    ->select(['item_id','household_id','has_assets','area_dispute','repay_way','def_use'])
                     ->first();
+                if($household_detail->getOriginal('area_dispute')==0){
+                    throw new \Exception('被征收户存在面积争议',404404);
+                }
                 /* ++++++++++ 评估汇总 ++++++++++ */
                 $assess=Assess::sharedLock()
                     ->where([
@@ -232,6 +240,20 @@ class PayController extends BaseitemController
                         throw new \Exception('暂无有效的资产评估数据',404404);
                     }
                 }
+                /* ++++++++++ 正式方案 ++++++++++ */
+                $program=Itemprogram::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['code','22'],
+                    ])
+                    ->select(['id','item_id','code','item_end','portion_holder'])
+                    ->first();
+                if(blank($program)){
+                    throw new \Exception('暂无通过审查的正式征收方案数据',404404);
+                }
+                if(strtotime($program->item_end) > strtotime(date('Y-m-d'))){
+                    throw new \Exception('项目征收期限未到，不能下达行政征收决定',404404);
+                }
                 
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $pay=$model;
@@ -249,37 +271,38 @@ class PayController extends BaseitemController
                 $subject_data=[];
                 /* ++++++++++ 合法房屋及附属物、合法临建、违建自行拆除补助 ++++++++++ */
                 $building_data=[];
-                $register_total=0;
-                $legal_total=0;
-                $destroy_total=0;
+                $register_total=0;  // 合法房屋及附属物 评估总额
+                $legal_total=0; // 合法临建 评估总额
+                $destroy_total=0; // 违建自行拆除补助 评估总额
+                $legal_area=0; // 合法面积
                 foreach($estatebuildings as $building){
                     if(in_array($building->code,['91','93'])){
                         throw new \Exception('存在合法性争议的房屋',404404);
                     }
-                    if(in_array($building->householdbuilding->getOriginal('dispute'),[1,2,4])){
-                        throw new \Exception('存在面积争议的房屋',404404);
-                    }
-                    switch ($building->householdbuilding->getOriginal('state')){
-                        case 2:
+
+                    switch ($building->code){
+                        case '92':
                             $price=$building->price;
                             $amount=$building->amount;
                             $legal_total +=$amount;
+                            $legal_area += $building->real_outer;
                             break;
-                        case 4:
+                        case '94':
                             $price=$building->householdbuilding->buildingdeal->price;
                             $amount=$building->householdbuilding->buildingdeal->amount;
                             $destroy_total +=$amount;
                             break;
-                        case 5:
+                        case '95':
                             $price=$building->price;
                             $amount=$building->amount;
                             $legal_total +=$amount;
+                            $legal_area += $building->real_outer;
                             break;
                         default:
                             $price=$building->price;
                             $amount=$building->amount;
                             $register_total +=$amount;
-
+                            $legal_area += $building->real_outer;
                     }
                     $building_data[]=[
                         'item_id'=>$this->item_id,
@@ -289,12 +312,13 @@ class PayController extends BaseitemController
                         'assess_id'=>$assess->id,
                         'estate_id'=>$estate->id,
                         'household_building_id'=>$building->household_building_id,
+                        'estate_building_id'=>$building->id,
                         'pay_id'=>$pay->id,
-                        'register'=>$building->householdbuilding->getOriginal('register'),
-                        'state'=>$building->householdbuilding->getOriginal('state'),
+                        'code'=>$building->code,
                         'real_outer'=>$building->real_outer,
                         'real_use'=>$building->real_use,
                         'struct_id'=>$building->struct_id,
+                        'layout_id'=>$building->layout_id,
                         'direct'=>$building->direct,
                         'floor'=>$building->floor,
                         'price'=>$price,
@@ -303,8 +327,8 @@ class PayController extends BaseitemController
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
                 }
-                $field=['item_id','household_id','land_id','building_id','assess_id','estate_id','household_building_id','pay_id','register','state','real_outer','real_use','struct_id','direct','floor','price','amount','created_at','updated_at'];
-                $sqls=batch_update_or_insert_sql('pay_building',$field,$building_data,$field);
+                $field=['item_id','household_id','land_id','building_id','assess_id','estate_id','household_building_id','estate_building_id','pay_id','code','real_outer','real_use','struct_id','layout_id','direct','floor','price','amount','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('pay_building',$field,$building_data,'updated_at');
                 if(!$sqls){
                     throw new \Exception('数据错误',404404);
                 }
@@ -324,7 +348,7 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$register_total,
-                        'state'=>0,
+                        'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
@@ -342,7 +366,7 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$legal_total,
-                        'state'=>0,
+                        'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
@@ -360,7 +384,7 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$destroy_total,
-                        'state'=>0,
+                        'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
@@ -374,11 +398,11 @@ class PayController extends BaseitemController
                         'building_id'=>$household->building_id,
                         'pay_id'=>$pay->id,
                         'pact_id'=>0,
-                        'subject_id'=>17,
+                        'subject_id'=>6,
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$assess->assets,
-                        'state'=>0,
+                        'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
@@ -393,7 +417,7 @@ class PayController extends BaseitemController
                         ['land_id',$household->land_id],
                     ])
                     ->first();
-                if($pay_public->public_count){
+                if(filled($pay_public) && $pay_public->public_count){
                     $public_total=$pay_public->public_total;
                 }else{
                     $public_details=Publicdetail::with(['itempublic'=>function($query){
@@ -446,7 +470,7 @@ class PayController extends BaseitemController
                             ];
                         }
                         $field=['item_id','land_id','building_id','item_public_id','com_public_id','com_pub_detail_id','name','num_unit','number','price','amount','household','avg','created_at','updated_at'];
-                        $sqls=batch_update_or_insert_sql('pay_public',$field,$public_data,$field);
+                        $sqls=batch_update_or_insert_sql('pay_public',$field,$public_data,'updated_at');
                         if(!$sqls){
                             throw new \Exception('数据错误',404404);
                         }
@@ -467,11 +491,27 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$public_total,
-                        'state'=>0,
+                        'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
                 }
+                /* ++++++++++ 公房单位补偿 ++++++++++ */
+                if($household->getOriginal('type')){
+                    $pay_unit=new Payunit();
+                    $pay_unit->item_id=$this->item_id;
+                    $pay_unit->household_id=$household_id;
+                    $pay_unit->land_id=$household->land_id;
+                    $pay_unit->unit_id=$household->itemland->admin_unit_id;
+                    $pay_unit->pay_id=$pay->id;
+                    $pay_unit->pact_id=0;
+                    $pay_unit->total_id=0;
+                    $pay_unit->calculate=number_format($register_total+$legal_total+$public_total,2).' × '.$program->portion_holder.'% = '.number_format(($register_total+$legal_total+$public_total)*($program->portion_holder/100),2);
+                    $pay_unit->amount=($register_total+$legal_total+$public_total)*($program->portion_holder/100);
+                    $pay_unit->code='110';
+                    $pay_unit->save();
+                }
+
                 /* ++++++++++ 其他补偿事项 ++++++++++ */
                 $household_objects=Householdobject::with(['itemobject'=>function($query){
                     $query->where('item_id',$this->item_id);
@@ -509,7 +549,7 @@ class PayController extends BaseitemController
                         ];
                     }
                     $field=['item_id','household_id','land_id','building_id','household_obj_id','item_object_id','object_id','pay_id','name','num_unit','number','price','amount','created_at','updated_at'];
-                    $sqls=batch_update_or_insert_sql('pay_object',$field,$object_data,$field);
+                    $sqls=batch_update_or_insert_sql('pay_object',$field,$object_data,'updated_at');
                     if(!$sqls){
                         throw new \Exception('数据错误',404404);
                     }
@@ -529,41 +569,25 @@ class PayController extends BaseitemController
                             'total_id'=>0,
                             'calculate'=>null,
                             'amount'=>$object_total,
-                            'state'=>0,
+                            'code'=>'110',
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),
                         ];
                     }
                 }
 
-                /* ++++++++++ 固定补偿科目 ++++++++++ */
-                $field=['item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','state','created_at','updated_at'];
-                $sqls=batch_update_or_insert_sql('pay_subject',$field,$subject_data,$field);
+                /* ++++++++++ 补偿科目 ++++++++++ */
+                $field=['item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','code','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('pay_subject',$field,$subject_data,'updated_at');
                 if(!$sqls){
                     throw new \Exception('数据错误',404404);
                 }
                 foreach($sqls as $sql){
                     DB::statement($sql);
                 }
-                /* ++++++++++ 公房单位补偿 ++++++++++ */
-                if($household->getOriginal('type')){
-                    $pay_unit=new Payunit();
-                    $pay_unit->item_id=$this->item_id;
-                    $pay_unit->household_id=$household_id;
-                    $pay_unit->land_id=$household->land_id;
-                    $pay_unit->unit_id=$household->itemland->admin_unit_id;
-                    $pay_unit->pay_id=$pay->id;
-                    $pay_unit->pact_id=0;
-                    $pay_unit->total_id=0;
-                    $pay_unit->calculate=number_format($register_total+$legal_total+$public_total,2).' × 20% = '.number_format(($register_total+$legal_total+$public_total)*0.2,2);
-                    $pay_unit->amount=($register_total+$legal_total+$public_total)*0.2;
-                    $pay_unit->state=0;
-                    $pay_unit->save();
-                }
 
                 $pay->total=$register_total+$legal_total+$destroy_total+$public_total+$object_total+$assess->assets;
                 $pay->save();
-
 
                 $code='success';
                 $msg='保存成功';
@@ -606,20 +630,37 @@ class PayController extends BaseitemController
                 throw new \Exception('兑付数据不存在',404404);
             }
             /* ++++++++++ 被征收户 ++++++++++ */
-            $household=Household::sharedLock()
-                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','state'])
+            $household=Household::with(['itemland'=>function($query){
+                $query->with('adminunit')->select(['id','address']);
+            },'itembuilding'=>function($query){
+                $query->select(['id','building']);
+            },'state'=>function($query){
+                $query->select(['code','name']);
+            }])
+                ->sharedLock()
+                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
                 ->find($pay->household_id);
+            $household_detail=Householddetail::with(['defbuildinguse'=>function($query){
+                $query->select(['id','name']);
+            },'realbuildinguse'=>function($query){
+                $query->select(['id','name']);
+            }])
+                ->sharedLock()
+                ->select(['id','household_id','status','register','reg_outer','def_use','real_use','has_assets'])
+                ->where('household_id',$pay->household_id)
+                ->first();
             /* ++++++++++ 补偿科目 ++++++++++ */
-            $subjects=Paysubject::with('subject')
+            $subjects=Paysubject::with(['subject','state'=>function($query){
+                $query->select(['code','name']);
+            }])
                 ->sharedLock()
                 ->where([
                     ['item_id',$this->item_id],
                     ['pay_id',$pay_id],
                 ])
                 ->get();
-            /* ++++++++++ 公房单位、承租人 ++++++++++ */
+            /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
             $pay_unit=null;
-            $holder=null;
             if($household->getOriginal('type')){
                 $pay_unit=Payunit::sharedLock()
                     ->where([
@@ -628,20 +669,27 @@ class PayController extends BaseitemController
                         ['pay_id',$pay_id],
                     ])
                     ->first();
-                $holder=Household::sharedLock()
-                    ->select(['id','item_id','household_id','name','holder'])
-                    ->where([
-                        ['item_id',$this->item_id],
-                        ['household_id',$household->id],
-                        ['holder',2],
-                    ])
-                    ->first();
+
+                $holder_type=2;
+            }else{
+                $holder_type=1;
             }
+            $holder=Householdmember::sharedLock()
+                ->select(['id','item_id','household_id','name','holder','portion'])
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['household_id',$household->id],
+                    ['holder',$holder_type],
+                ])
+                ->orderBy('portion','desc')
+                ->first();
             /* ++++++++++ 房屋建筑 ++++++++++ */
             $buildings=Paybuilding::with(['realuse'=>function($query){
                 $query->select(['id','name']);
             },'buildingstruct'=>function($query){
                 $query->select(['id','name']);
+            },'state'=>function($query){
+                $query->select(['code','name']);
             }])
                 ->sharedLock()
                 ->where([
@@ -650,7 +698,7 @@ class PayController extends BaseitemController
                     ['pay_id',$pay_id],
                 ])
                 ->orderBy('register','desc')
-                ->orderBy('state','asc')
+                ->orderBy('code','asc')
                 ->orderBy('real_use','asc')
                 ->get();
             /* ++++++++++ 公共附属物 ++++++++++ */
@@ -677,6 +725,7 @@ class PayController extends BaseitemController
                 'item'=>$this->item,
                 'pay'=>$pay,
                 'household'=>$household,
+                'household_detail'=>$household_detail,
                 'subjects'=>$subjects,
                 'pay_unit'=>$pay_unit,
                 'holder'=>$holder,
@@ -730,7 +779,13 @@ class PayController extends BaseitemController
                 if(blank($pay)){
                     throw new \Exception('兑付数据不存在',404404);
                 }
-
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                if(!in_array($household->code,['69','75'])){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能修改',404404);
+                }
                 $code='success';
                 $msg='请求成功';
                 $sdata=[
@@ -788,6 +843,14 @@ class PayController extends BaseitemController
                 if(blank($pay)){
                     throw new \Exception('兑付数据不存在',404404);
                 }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                if(!in_array($household->code,['68','75'])){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能修改',404404);
+                }
+
                 $pay->fill($request->input());
                 $pay->save();
                 if(blank($pay)){

@@ -30,7 +30,7 @@
                         <td>{{$infos->unit?$infos->unit.'单元':''}}{{$infos->floor?$infos->floor.'楼':''}}{{$infos->number?$infos->number.'号':''}}</td>
                         <td>{{$infos->type}}</td>
                         <td>{{$infos->username}}</td>
-                        <td>{{$infos->state}}</td>
+                        <td>{{$infos->state->name}}</td>
                         <td>
                             <a href="{{route('g_householddetail_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
                             <a href="{{route('g_householdbuilding',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">房屋建筑</a>

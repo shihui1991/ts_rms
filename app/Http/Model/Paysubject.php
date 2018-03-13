@@ -29,7 +29,7 @@ class Paysubject extends Model
         'total_id'=>'兑付总单',
         'calculate'=>'计算公式',
         'amount'=>'补偿小计',
-        'state'=>'状态',
+        'code'=>'状态',
     ];
 
 
@@ -40,11 +40,6 @@ class Paysubject extends Model
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
 
-    }
-
-    /* ++++++++++ 关联状态 ++++++++++ */
-    public function state(){
-        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 
     /* ++++++++++ 关联项目 ++++++++++ */
@@ -73,5 +68,9 @@ class Paysubject extends Model
     }
     public function fundstotal(){
         return $this->belongsTo('App\Http\Model\Fundstotal','total_id','id')->withDefault();
+    }
+    /* ++++++++++ 关联状态 ++++++++++ */
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 }

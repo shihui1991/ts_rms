@@ -1,23 +1,18 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-地块
+| 项目-地块户型
 |--------------------------------------------------------------------------
 */
-namespace App\Http\Controllers\gov;
-use App\Http\Model\Adminunit;
-use App\Http\Model\Itembuilding;
+namespace App\Http\Controllers\Gov;
 use App\Http\Model\Itemland;
-use App\Http\Model\Itempublic;
 use App\Http\Model\Landlayout;
-use App\Http\Model\Landprop;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
-class ItemlandController extends BaseitemController
+class LandlayoutController extends BaseitemController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -25,20 +20,31 @@ class ItemlandController extends BaseitemController
         parent::__construct();
     }
 
-    /* ========== 首页 ========== */
+    /* ========== 查询地块下所有户型 ========== */
     public function index(Request $request){
         $item_id=$this->item_id;
+
+        $land_id=$request->input('land_id');
+        if(blank($land_id)){
+            $result=['code'=>'error','message'=>'请先选择地块','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+
+        $infos['item'] = $this->item;
+        /* ********** 是否分页 ********** */
+        $app = $request->input('app');
         /* ********** 查询条件 ********** */
         $where=[];
-        $where[] = ['item_id',$item_id];
-        $infos['item_id'] = $item_id;
-        $select=['id','item_id','address','land_prop_id','land_source_id','land_state_id','admin_unit_id','area','infos'];
-        /* ++++++++++ 地址 ++++++++++ */
-        $address=trim($request->input('address'));
-        if($address){
-            $where[]=['address','like','%'.$address.'%'];
-            $infos['address']=$address;
-        }
+        $select=['id','item_id','land_id','name','area'];
+
+        $where[]=['item_id',$item_id];
+        $infos['item_id']=$item_id;
+        $where[]=['land_id',$land_id];
+        $infos['land_id']=$land_id;
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -48,45 +54,51 @@ class ItemlandController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $per_page=20;
+        $per_page=15;
         $page=$request->input('page',1);
         /* ********** 查询 ********** */
-        $model=new Itemland();
+        $model=new Landlayout();
         DB::beginTransaction();
         try{
-            $total=$model->sharedLock()
-                ->where($where)
-                ->where('item_id',$item_id)
-                ->count();
-            $itemlands=$model
-                ->with([
-                    'landprop'=>function($query){
-                        $query->select(['id','name']);
-                    },
-                    'landsource'=>function($query){
-                        $query->select(['id','name']);
-                    },
-                    'landstate'=>function($query){
-                        $query->select(['id','name']);
-                    },
-                    'adminunit'=>function($query){
-                        $query->select(['id','name']);
-                }])
-                ->where($where)
-                ->select($select)
-                ->orderBy($ordername,$orderby)
-                ->sharedLock()
-                ->offset($per_page*($page-1))
-                ->limit($per_page)
-                ->get();
-            $itemlands=new LengthAwarePaginator($itemlands,$total,$per_page,$page);
-            $itemlands->withPath(route('g_itemland',['item'=>$item_id]));
-            if(blank($itemlands)){
+            /* ********** 是否分页 ********** */
+            if($app){
+                $total=$model->sharedLock()
+                    ->where('item_id',$item_id)
+                    ->where($where)
+                    ->count();
+                $landlayouts=$model
+                    ->with([
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        }])
+                    ->where($where)
+                    ->select($select)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
+                $landlayouts=new LengthAwarePaginator($landlayouts,$total,$per_page,$page);
+                $landlayouts->withPath(route('g_landlayout',['item'=>$item_id]));
+            }else{
+                $landlayouts=$model
+                    ->with([
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        }])
+                    ->where($where)
+                    ->select($select)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->get();
+            }
+
+            if(blank($landlayouts)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
-            $sdata=$itemlands;
+            $sdata=$landlayouts;
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
@@ -103,41 +115,48 @@ class ItemlandController extends BaseitemController
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('gov.itemland.index')->with($result);
+            return view('gov.landlayout.index')->with($result);
         }
     }
 
     /* ========== 添加 ========== */
     public function add(Request $request){
         $item_id=$this->item_id;
-        $model=new Itemland();
+
+        $model=new landlayout();
         if($request->isMethod('get')){
             DB::beginTransaction();
-            $landprops=Landprop::with([
-                'landsources'=>function($query){
-                    $query->with(['landstates']);
-                }])
-                ->select(['id','name'])
-                ->sharedLock()
-                ->get();
-            $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
-            DB::commit();
-
-            $result=[
-                'code'=>'success',
-                'message'=>'请求成功',
-                'sdata'=>[
+            try{
+                $land_id=$request->input('land_id');
+                $itemland=Itemland::sharedLock()->find($land_id);
+                if(blank($itemland)){
+                    throw new \Exception('数据错误', 404404);
+                }
+                $code='success';
+                $msg='获取成功';
+                $sdata=[
                     'item'=>$this->item,
-                    'landprops'=>$landprops,
-                    'adminunits'=>$adminunits,
-                ],
-                'edata'=>null,
-                'url'=>null];
+                    'itemland'=>$itemland
+                ];
+                $edata=null;
+                $url=null;
 
+                $view='gov.landlayout.add';
+            }catch (\Exception $exception){
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemland.add')->with($result);
+                return view($view)->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -145,17 +164,12 @@ class ItemlandController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'address' => 'required|unique:item_land',
-                'land_prop_id' => 'required',
-                'land_source_id' => 'required',
-                'land_state_id' => 'required',
-                'admin_unit_id' => 'required',
-                'area' => 'required',
-                'gov_pic' => 'required'
+                'land_id' => 'required',
+                'name' => 'required',
+                'gov_img' => 'required'
             ];
             $messages = [
-                'required' => ':attribute必须填写',
-                'unique' => ':attribute已存在'
+                'required' => ':attribute必须填写'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -166,35 +180,27 @@ class ItemlandController extends BaseitemController
             /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 地块是否存在 ++++++++++ */
-                $address = $request->input('address');
-                $itemland = Itemland::where('item_id',$item_id)->where('address',$address)->lockForUpdate()->first();
-               if(blank($itemland)){
-                   /* ++++++++++ 新增数据 ++++++++++ */
-                   $itemland = $model;
-                   $itemland->fill($request->all());
-                   $itemland->addOther($request);
-                   $itemland->item_id=$item_id;
-                   $itemland->save();
-               }else{
-                   /* ++++++++++ 修改数据 ++++++++++ */
-                   $itemland->gov_pic=json_encode($request->input('gov_pic'));
-                   $itemland->save();
-               }
-                if(blank($itemland)) {
+                /* ++++++++++ 新增数据 ++++++++++ */
+                $landlayout = $model;
+                $landlayout->fill($request->input());
+                $landlayout->addOther($request);
+                $landlayout->item_id=$item_id;
+                $landlayout->save();
+                if (blank($landlayout)) {
                     throw new \Exception('添加失败', 404404);
                 }
+
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = $itemland;
+                $sdata = $landlayout;
                 $edata = null;
-                $url = route('g_itemland',['item'=>$item_id]);
+                $url = route('g_itemland_info',['id'=>$request->input('land_id'),'item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $itemland;
+                $edata = $landlayout;
                 $url = null;
                 DB::rollBack();
             }
@@ -206,7 +212,6 @@ class ItemlandController extends BaseitemController
 
     /* ========== 详情 ========== */
     public function info(Request $request){
-        $item_id=$this->item_id;
         $id=$request->input('id');
         if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
@@ -216,52 +221,32 @@ class ItemlandController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
-        /* ********** 当前数据 ********** */
+
         DB::beginTransaction();
-        /* ++++++++++ 地块信息 ++++++++++ */
-        $itemland=Itemland::sharedLock()->find($id);
-        /* ++++++++++ 楼栋信息 ++++++++++ */
-        $itembuildings=Itembuilding::with(
-                ['buildingstruct'=>function($query){
-                    $query->select(['id','name']);
-                }])
-            ->where('item_id',$item_id)
-            ->where('land_id',$id)
+        $landlayout=Landlayout::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            }])
             ->sharedLock()
-            ->get();
-        /* ++++++++++ 地块公共附属物 ++++++++++ */
-        $itempublics=Itempublic::sharedLock()
-            ->where('item_id',$item_id)
-            ->where('land_id',$id)
-            ->where('building_id',0)
-            ->get();
-        /* ++++++++++ 地块户型 ++++++++++ */
-        $landlayouts=Landlayout::sharedLock()
-            ->where('item_id',$item_id)
-            ->where('land_id',$id)
-            ->get();
+            ->find($id);
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($itemland)){
+        if(blank($landlayout)){
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
             $edata=null;
             $url=null;
+
+            $view='gov.error';
         }else{
             $code='success';
             $msg='获取成功';
-            $sdata=[
-                'item'=>$this->item,
-                'itemland'=>$itemland,
-                'itembuildings'=>$itembuildings,
-                'itempublics'=>$itempublics,
-                'landlayouts'=>$landlayouts,
-                ];
+            $sdata=['item'=>$this->item,'landlayout'=>$landlayout];
             $edata=null;
             $url=null;
 
-            $view='gov.itemland.info';
+            $view='gov.landlayout.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -274,7 +259,6 @@ class ItemlandController extends BaseitemController
     /* ========== 修改 ========== */
     public function edit(Request $request){
         $id=$request->input('id');
-        $item_id = $this->item_id;
         if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -283,22 +267,20 @@ class ItemlandController extends BaseitemController
                 return view('gov.error')->with($result);
             }
         }
+
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
-            DB::beginTransaction();
-            $itemland=Itemland::sharedLock()->find($id);
-            $landprops=Landprop::with([
-                'landsources'=>function($query){
-                    $query->with(['landstates']);
-                }])
-                ->select(['id','name'])
-                ->sharedLock()
-                ->get();
-            $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
 
+            DB::beginTransaction();
+            $landlayout=Landlayout::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                }])
+                ->sharedLock()
+                ->find($id);
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($itemland)){
+            if(blank($landlayout)){
                 $code='warning';
                 $msg='数据不存在';
                 $sdata=null;
@@ -309,11 +291,11 @@ class ItemlandController extends BaseitemController
             }else{
                 $code='success';
                 $msg='获取成功';
-                $sdata=['itemland'=>$itemland,'landprops'=>$landprops,'adminunits'=>$adminunits,'item'=>$this->item];
+                $sdata=['item'=>$this->item,'landlayout'=>$landlayout];
                 $edata=null;
                 $url=null;
 
-                $view='gov.itemland.edit';
+                $view='gov.landlayout.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
@@ -322,22 +304,14 @@ class ItemlandController extends BaseitemController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Itemland();
+            $model=new Landlayout();
             /* ********** 表单验证 ********** */
             $rules=[
-                'address'=> ['required',Rule::unique('item_land')->where(function ($query) use($item_id,$id){
-                    $query->where('item_id', $item_id)->where('id','<>',$id);
-                })],
-                'land_prop_id' => 'required',
-                'land_source_id' => 'required',
-                'land_state_id' => 'required',
-                'admin_unit_id' => 'required',
-                'area' => 'required',
-                'gov_pic' => 'required'
+                'name' => 'required',
+                'gov_img' => 'required'
             ];
             $messages=[
-                'required'=>':attribute必须填写',
-                'unique'=>':attribute已存在'
+                'required'=>':attribute必须填写'
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
@@ -348,29 +322,30 @@ class ItemlandController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $itemland=Itemland::lockForUpdate()->find($id);
-                if(blank($itemland)){
+                $landlayout=Landlayout::lockForUpdate()->find($id);
+                if(blank($landlayout)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 处理其他数据 ++++++++++ */
-                $itemland->fill($request->all());
-                $itemland->editOther($request);
-                $itemland->save();
-                if(blank($itemland)){
+                $landlayout->fill($request->all());
+                $landlayout->editOther($request);
+                $landlayout->save();
+                if(blank($landlayout)){
                     throw new \Exception('修改失败',404404);
                 }
                 $code='success';
                 $msg='修改成功';
-                $sdata=$itemland;
+                $sdata=$landlayout;
                 $edata=null;
-                $url=route('g_itemland_info',['id'=>$id,'item'=>$this->item_id]);
+                 $url = route('g_itemland_info',['id'=>$landlayout->land_id,'item'=>$this->item_id]);
+
 
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$itemland;
+                $edata=$landlayout;
                 $url=null;
                 DB::rollBack();
             }
