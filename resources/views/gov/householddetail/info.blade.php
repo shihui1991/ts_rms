@@ -211,6 +211,13 @@
                                 </div>
 
                                 <div class="profile-info-row">
+                                    <div class="profile-info-name"> 经营项目： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->business}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
                                     <div class="profile-info-name"> 资产评估： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$edata['household_detail']->has_assets}}</span>

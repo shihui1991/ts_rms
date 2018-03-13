@@ -194,7 +194,7 @@ class LandlayoutController extends BaseitemController
                 }else{
                     /* ++++++++++ 修改数据 ++++++++++ */
                     $landlayout->area=$request->input('area');
-                    $landlayout->gov_img=$request->input('gov_pic');
+                    $landlayout->gov_img=$request->input('gov_img');
                     $landlayout->save();
                 }
 

@@ -126,6 +126,14 @@
         <div class="space-4"></div>
 
         <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="business"> 经营项目： </label>
+            <div class="col-sm-9">
+                <input type="text" id="business" name="business" value="{{$sdata['household']->business}}" class="col-xs-10 col-sm-5"  placeholder="请输入经营项目" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="has_assets"> 资产评估： </label>
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->has_assets as $key => $value)
