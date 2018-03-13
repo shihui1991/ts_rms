@@ -22,6 +22,7 @@
                 </a>
             @endif
             <a href="{{route('g_householdbuilding_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加房屋建筑</a>
+            <a href="{{route('g_householdassets_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加资产信息</a>
             <a href="{{route('g_householdmember_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加家庭成员</a>
             <a href="{{route('g_householdobject_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加其他补偿事项</a>
         </div>
@@ -42,10 +43,18 @@
                             详细信息
                         </a>
                     </li>
+
                     <li class="">
                         <a data-toggle="tab" href="#householdbuilding" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             房屋建筑
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a data-toggle="tab" href="#householdassets" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            资产信息
                         </a>
                     </li>
 
@@ -398,10 +407,44 @@
                                 <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdbuilding']) }} @else 0 @endif 条数据</div>
                             </div>
                         </div>
+                    </div>
 
+                    <div id="householdassets" class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>计量单位</th>
+                                <th>数量</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if($code=='success')
+                                @foreach($edata['householdassets'] as $infos)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$infos->name}}</td>
+                                        <td>{{$infos->num_unit}}</td>
+                                        <td>{{$infos->gov_num}}</td>
+                                        <td>
+                                            <a href="{{route('g_householdassets_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdassets']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="item" class="tab-pane fade">
+                        @if(filled($edata['householdmember']))
                         <div class="col-xs-12">
                             @foreach($edata['householdmember'] as $householdmember)
                                 <div class="col-xs-6 col-sm-3 pricing-box">
@@ -548,6 +591,11 @@
                                 </div>
                             @endforeach
                         </div>
+                        @else
+                            <div class="profile-user-info profile-user-info-striped">
+                                <span>暂无数据</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div id="items" class="tab-pane fade">

@@ -109,6 +109,7 @@ class HouseholdbuildingController extends BaseitemController
             $sdata['buildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
             $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $sdata['landlayouts'] = Landlayout::select(['id','item_id','land_id','name','area'])->where('item_id',$item_id)->where('land_id',$sdata['household']->land_id)->get()?:[];
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -143,22 +144,6 @@ class HouseholdbuildingController extends BaseitemController
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
-            /* ++++++++++ 表单验证 ++++++++++ */
-            $model1 = new Landlayout();
-            $rules1 = [
-                'name' => 'required',
-                'gov_img' => 'required'
-            ];
-            $messages1 = [
-                'required' => ':attribute必须填写'
-            ];
-            $validator1 = Validator::make($request->input('landlayout'), $rules1, $messages1, $model1->columns);
-            if ($validator1->fails()) {
-                $result=['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
-
-
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
@@ -171,22 +156,6 @@ class HouseholdbuildingController extends BaseitemController
                 if (blank($householdbuilding)) {
                     throw new \Exception('添加失败', 404404);
                 }
-                /* ++++++++++ 地块户型-批量赋值 ++++++++++ */
-                $landlayout = $model1;
-                $landlayout->fill($request->input('landlayout'));
-                $landlayout->addOther($request);
-                $landlayout->item_id=$item_id;
-                $landlayout->save();
-                if (blank($landlayout)) {
-                    throw new \Exception('添加失败', 404404);
-                }
-                /* ++++++++++ 被征户房屋建筑-修改地块户型 ++++++++++ */
-                $householdbuildings = Householdbuilding::lockForUpdate()->find($householdbuilding->id);
-                $householdbuildings->layout_id = $landlayout->id;
-                $householdbuildings->save();
-                if (blank($householdbuildings)) {
-                    throw new \Exception('添加失败', 404404);
-                }
 
                 $code = 'success';
                 $msg = '添加成功';
@@ -195,7 +164,6 @@ class HouseholdbuildingController extends BaseitemController
                 $url = route('g_householddetail_info',['id'=>$household_id,'item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
-                dd($exception);
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
@@ -294,6 +262,7 @@ class HouseholdbuildingController extends BaseitemController
             $data['item_id'] = $item_id;
             $data['models'] = new Householdbuilding();
             $data['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $data['landlayouts'] = Landlayout::select(['id','item_id','land_id','name','area'])->where('item_id',$item_id)->where('land_id',$data['household']->land_id)->get()?:[];
             DB::beginTransaction();
             $householdbuilding=Householdbuilding::with([
                 'itemland'=>function($query){
@@ -354,20 +323,6 @@ class HouseholdbuildingController extends BaseitemController
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
-            /* ++++++++++ 表单验证 ++++++++++ */
-            $model1 = new Landlayout();
-            $rules1 = [
-                'name' => 'required',
-                'gov_img' => 'required'
-            ];
-            $messages1 = [
-                'required' => ':attribute必须填写'
-            ];
-            $validator1 = Validator::make($request->input('landlayout'), $rules1, $messages1, $model1->columns);
-            if ($validator1->fails()) {
-                $result=['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
 
             /* ********** 更新 ********** */
             DB::beginTransaction();
@@ -382,14 +337,6 @@ class HouseholdbuildingController extends BaseitemController
                 $householdbuilding->editOther($request);
                 $householdbuilding->save();
                 if(blank($householdbuilding)){
-                    throw new \Exception('修改失败',404404);
-                }
-                /* ++++++++++ 地块户型-处理其他数据 ++++++++++ */
-                $landlayout=Landlayout::lockForUpdate()->find($householdbuilding->layout_id);
-                $landlayout->fill($request->input('landlayout'));
-                $landlayout->editOther($request);
-                $landlayout->save();
-                if(blank($landlayout)){
                     throw new \Exception('修改失败',404404);
                 }
 

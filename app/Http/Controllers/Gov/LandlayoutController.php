@@ -4,7 +4,7 @@
 | 项目-地块户型
 |--------------------------------------------------------------------------
 */
-namespace App\Http\Controllers\Gov;
+namespace App\Http\Controllers\gov;
 use App\Http\Model\Itemland;
 use App\Http\Model\Landlayout;
 use Illuminate\Http\Request;
@@ -180,12 +180,24 @@ class LandlayoutController extends BaseitemController
             /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 新增数据 ++++++++++ */
-                $landlayout = $model;
-                $landlayout->fill($request->input());
-                $landlayout->addOther($request);
-                $landlayout->item_id=$item_id;
-                $landlayout->save();
+
+                /* ++++++++++ 地块户型是否存在 ++++++++++ */
+                $name = $request->input('name');
+                $landlayout = Landlayout::where('item_id',$item_id)->where('land_id',$request->input('land_id'))->where('name',$name)->lockForUpdate()->first();
+                if(blank($landlayout)){
+                    /* ++++++++++ 新增数据 ++++++++++ */
+                    $landlayout = $model;
+                    $landlayout->fill($request->input());
+                    $landlayout->addOther($request);
+                    $landlayout->item_id=$item_id;
+                    $landlayout->save();
+                }else{
+                    /* ++++++++++ 修改数据 ++++++++++ */
+                    $landlayout->area=$request->input('area');
+                    $landlayout->gov_img=$request->input('gov_pic');
+                    $landlayout->save();
+                }
+
                 if (blank($landlayout)) {
                     throw new \Exception('添加失败', 404404);
                 }

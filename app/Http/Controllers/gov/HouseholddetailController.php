@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Buildinguse;
 use App\Http\Model\Household;
+use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
@@ -234,7 +235,7 @@ class HouseholddetailController extends BaseitemController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
-        if(!$id){
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -320,6 +321,18 @@ class HouseholddetailController extends BaseitemController
                 ->where('household_id',$id)
                 ->sharedLock()
                 ->get();
+        $data['householdassets']=Householdassets::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            },
+            'itembuilding'=>function($query){
+                $query->select(['id','building']);
+            },
+            ])
+            ->where('item_id',$item_id)
+            ->where('household_id',$id)
+            ->sharedLock()
+            ->get();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($household)){
