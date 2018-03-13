@@ -154,6 +154,11 @@ Route::any('/householdbuilding','HouseholdbuildingController@index')->name('g_ho
 Route::any('/householdbuilding_add','HouseholdbuildingController@add')->name('g_householdbuilding_add');
 Route::get('/householdbuilding_info','HouseholdbuildingController@info')->name('g_householdbuilding_info');
 Route::any('/householdbuilding_edit','HouseholdbuildingController@edit')->name('g_householdbuilding_edit');
+/*---------- 项目-被征户-资产 ----------*/
+Route::any('/householdassets','HouseholdassetsController@index')->name('g_householdassets');
+Route::any('/householdassets_add','HouseholdassetsController@add')->name('g_householdassets_add');
+Route::get('/householdassets_info','HouseholdassetsController@info')->name('g_householdassets_info');
+Route::any('/householdassets_edit','HouseholdassetsController@edit')->name('g_householdassets_edit');
 
 /*+++++++++++++++ 【征收决定】 ++++++++++++++++*/
 /*---------- 项目-自选社会风险评估调查话题 ----------*/

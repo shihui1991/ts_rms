@@ -13,6 +13,7 @@ use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
 use App\Http\Model\Companyhousehold;
 use App\Http\Model\Household;
+use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -87,7 +88,7 @@ class HouseholdController extends BaseitemController
         $type = session('com_user.type');
         $company_id = session('com_user.company_id');
         $id=$request->input('id');
-        if(!$id){
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -106,8 +107,8 @@ class HouseholdController extends BaseitemController
                     $query->select(['id','building']);
                 },
                 'householddetail'=>function($query){
-                    $query->select(['id','household_id','state','register','reg_inner','reg_outer',
-                        'balcony','dispute','layout_img','picture','house_img','def_use','real_use',
+                    $query->select(['id','household_id','register','reg_inner','reg_outer',
+                        'balcony','dispute','picture','def_use','real_use',
                         'has_assets','agree','repay_way','layout_id']);
                 }])
                 ->sharedLock()
@@ -115,85 +116,86 @@ class HouseholdController extends BaseitemController
             if(blank($household)){
                 throw new \Exception('数据异常',404404);
             }
-            /*----------- 添加评估-汇总---------------*/
-            $comassess = Assess::where('item_id',$item_id)->where('household_id',$id)->count();
-            $comassesss = new Assess();
-            if($comassess==0){
-                $comassesss->item_id = $item_id;
-                $comassesss->household_id = $id;
-                $comassesss->land_id = $household->land_id;
-                $comassesss->building_id = $household->building_id;
-                $comassesss->assets = 0;
-                $comassesss->estate = 0;
-                $comassesss->state = 0;
-                $comassesss->save();
-                if(blank($comassesss)){
-                    throw new \Exception('数据异常',404404);
-                }
-            }else{
-                $comassesss = $comassesss->where('item_id',$item_id)->where('household_id',$id)->first();
-            }
-            /*----------- 添加评估-[房产]【资产】---------------*/
             if($type==0){
-                /*=== 房产 ===*/
-                $comassessestate = new Estate();
-                $state_count = Estate::where('item_id',$item_id)->where('household_id',$id)->count();
-                if($state_count==0){
-                    $comassessestate->item_id = $item_id;
-                    $comassessestate->household_id = $id;
-                    $comassessestate->land_id = $household->land_id;
-                    $comassessestate->building_id = $household->building_id;
-                    $comassessestate->assess_id = $comassesss->id;
-                    $comassessestate->company_id = $company_id;
-                    $comassessestate->main_total = 0;
-                    $comassessestate->tag_total = 0;
-                    $comassessestate->total = 0;
-                    $comassessestate->state = 0;
-                    $comassessestate->save();
-                    if(blank($comassessestate)){
-                        throw new \Exception('数据异常',404404);
-                    }
-                }
-
+                $data['estate']=Estate::with([
+                    'defbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    },
+                    'realbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    },
+                    'layout'=>function($query){
+                        $query->select(['id','name']);
+                    }])
+                    ->where('item_id',$item_id)
+                    ->where('household_id',$id)
+                    ->where('company_id',$company_id)
+                    ->sharedLock()
+                    ->first();
             }else{
-                /*=== 资产 ===*/
-                $comassessassets = new Assets();
-                $assets_count = Assets::where('item_id',$item_id)->where('household_id',$id)->count();
-                if($assets_count==0){
-                    $comassessassets->item_id = $item_id;
-                    $comassessassets->household_id = $id;
-                    $comassessassets->land_id = $household->land_id;
-                    $comassessassets->building_id = $household->building_id;
-                    $comassessassets->assess_id = $comassesss->id;
-                    $comassessassets->company_id = $company_id;
-                    $comassessassets->total = 0;
-                    $comassessassets->state = 0;
-                    $comassessassets->save();
-                    if(blank($comassessassets)){
-                        throw new \Exception('数据异常',404404);
-                    }
-                }
-
+                $data['householdassets'] = Householdassets::where('item_id',$item_id)->where('household_id',$id)->first();
             }
-            $data['householdbuilding']=Householdbuilding::with([
-                'itemland'=>function($query){
-                    $query->select(['id','address']);
-                },
-                'itembuilding'=>function($query){
-                    $query->select(['id','building']);
-                },
-                'buildingstruct'=>function($query){
-                    $query->select(['id','name']);
-                }])
-                ->where('item_id',$item_id)
-                ->where('household_id',$id)
-                ->sharedLock()
-                ->get();
-            $data['dispute_count']=Householdbuilding::where('item_id',$item_id)
-                ->where('household_id',$id)
-                ->whereIn('dispute',[1,2,4])
-                ->sharedLock()
-                ->count();
+
+//            /*----------- 添加评估-汇总---------------*/
+//            $comassess = Assess::where('item_id',$item_id)->where('household_id',$id)->count();
+//            $comassesss = new Assess();
+//            if($comassess==0){
+//                $comassesss->item_id = $item_id;
+//                $comassesss->household_id = $id;
+//                $comassesss->land_id = $household->land_id;
+//                $comassesss->building_id = $household->building_id;
+//                $comassesss->assets = 0;
+//                $comassesss->estate = 0;
+//                $comassesss->state = 0;
+//                $comassesss->save();
+//                if(blank($comassesss)){
+//                    throw new \Exception('数据异常',404404);
+//                }
+//            }
+//            /*----------- 添加评估-[房产]【资产】---------------*/
+//            if($type==0){
+//                /*=== 房产 ===*/
+//                $comassessestate = new Estate();
+//                $state_count = Estate::where('item_id',$item_id)->where('household_id',$id)->count();
+//                if($state_count==0){
+//                    $comassessestate->item_id = $item_id;
+//                    $comassessestate->household_id = $id;
+//                    $comassessestate->land_id = $household->land_id;
+//                    $comassessestate->building_id = $household->building_id;
+//                    $comassessestate->assess_id = $comassesss->id;
+//                    $comassessestate->company_id = $company_id;
+//                    $comassessestate->main_total = 0;
+//                    $comassessestate->tag_total = 0;
+//                    $comassessestate->total = 0;
+//                    $comassessestate->state = 0;
+//                    $comassessestate->save();
+//                    if(blank($comassessestate)){
+//                        throw new \Exception('数据异常',404404);
+//                    }
+//                }
+//
+//            }else{
+//                /*=== 资产 ===*/
+//                $comassessassets = new Assets();
+//                $assets_count = Assets::where('item_id',$item_id)->where('household_id',$id)->count();
+//                if($assets_count==0){
+//                    $comassessassets->item_id = $item_id;
+//                    $comassessassets->household_id = $id;
+//                    $comassessassets->land_id = $household->land_id;
+//                    $comassessassets->building_id = $household->building_id;
+//                    $comassessassets->assess_id = $comassesss->id;
+//                    $comassessassets->company_id = $company_id;
+//                    $comassessassets->total = 0;
+//                    $comassessassets->state = 0;
+//                    $comassessassets->save();
+//                    if(blank($comassessassets)){
+//                        throw new \Exception('数据异常',404404);
+//                    }
+//                }
+//
+//            }
+
+
             $data['type'] = $type;
             $code='success';
             $msg='获取成功';
@@ -203,6 +205,7 @@ class HouseholdController extends BaseitemController
 
             DB::commit();
         }catch (\Exception $exception){
+            dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
@@ -221,6 +224,11 @@ class HouseholdController extends BaseitemController
         }else{
             return view($view)->with($result);
         }
+    }
+
+    /* ++++++++++ 入户摸底-添加[房产][资产] ++++++++++ */
+    public function add(Request $request){
+        $type = session('com_user.type');
     }
 
     /* ++++++++++ 评估信息【添加评估信息】 ++++++++++ */

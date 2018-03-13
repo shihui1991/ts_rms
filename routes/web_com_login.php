@@ -1,7 +1,7 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 征收管理端 限制登录路由
+| 评估机构端 限制登录路由
 |--------------------------------------------------------------------------
 */
 /*============================================ 【首页】 ================================================*/
@@ -27,6 +27,11 @@ Route::any('/itempublic','ItempublicController@index')->name('c_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('c_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('c_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('c_itempublic_edit');
+/*---------- 项目-地块户型 ----------*/
+Route::any('/landlayout','LandlayoutController@index')->name('c_landlayout');
+Route::any('/landlayout_add','LandlayoutController@add')->name('c_landlayout_add');
+Route::get('/landlayout_info','LandlayoutController@info')->name('c_landlayout_info');
+Route::any('/landlayout_edit','LandlayoutController@edit')->name('c_landlayout_edit');
 /*---------- 入户摸底【评估】 ----------*/
 Route::get('/household','HouseholdController@index')->name('c_household');
 Route::get('/household_info','HouseholdController@info')->name('c_household_info');

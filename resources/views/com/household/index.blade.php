@@ -4,11 +4,6 @@
 {{-- 页面内容 --}}
 @section('content')
 
-
-    <div class="well well-sm">
-
-    </div>
-
     <table class="table table-hover table-bordered">
         <thead>
         <tr>

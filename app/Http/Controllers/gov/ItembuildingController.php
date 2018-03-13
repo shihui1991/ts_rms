@@ -203,7 +203,7 @@ class ItembuildingController extends BaseitemController
                     $itembuilding->save();
                 }else{
                     /* ++++++++++ 修改数据 ++++++++++ */
-                    $itembuilding->gov_pic=json_encode($request->input('gov_pic'));
+                    $itembuilding->gov_pic=$request->input('gov_pic');
                     $itembuilding->save();
                 }
 

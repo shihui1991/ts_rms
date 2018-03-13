@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Buildinguse;
 use App\Http\Model\Household;
+use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
@@ -36,7 +37,7 @@ class HouseholddetailController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','unit','floor','number','type','username','password','infos','code'];
+        $select=['id','item_id','land_id','building_id','unit','floor','number','type','username','password','infos','status'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
@@ -80,12 +81,8 @@ class HouseholddetailController extends BaseitemController
                         },
                         'itembuilding'=>function($query){
                             $query->select(['id','building']);
-                        },
-                        'state'=>function($query){
-                            $query->select(['id','code','name']);
-                        }
-                    ])
-                    ->select(['id','item_id','household_id','land_id','building_id','has_assets','code'])
+                        }])
+                    ->select(['id','item_id','household_id','land_id','building_id','has_assets','status'])
                     ->where($where)
                     ->orderBy($ordername,$orderby)
                     ->sharedLock()
@@ -126,6 +123,7 @@ class HouseholddetailController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
+            dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
@@ -234,7 +232,7 @@ class HouseholddetailController extends BaseitemController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
-        if(!$id){
+        if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -320,6 +318,18 @@ class HouseholddetailController extends BaseitemController
                 ->where('household_id',$id)
                 ->sharedLock()
                 ->get();
+        $data['householdassets']=Householdassets::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            },
+            'itembuilding'=>function($query){
+                $query->select(['id','building']);
+            },
+            ])
+            ->where('item_id',$item_id)
+            ->where('household_id',$id)
+            ->sharedLock()
+            ->get();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($household)){

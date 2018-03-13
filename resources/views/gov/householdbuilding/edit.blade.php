@@ -118,6 +118,22 @@
         <div class="space-4"></div>
 
         <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="layout_id"> 地块户型： </label>
+            <div class="col-sm-9">
+                <select class="col-xs-5 col-sm-5" name="layout_id" id="layout_id">
+                    <option value="">--请选择--</option>
+                    @if(filled($edata['landlayouts']))
+                        @foreach($edata['landlayouts'] as $landlayouts)
+                            <option value="{{$landlayouts->id}}" @if($sdata->layout_id==$landlayouts->id) selected @endif>{{$landlayouts->name}}{{$landlayouts->area?'【'.$landlayouts->area.'㎡】':''}}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+
+        <div class="form-group">
             <div class="widget-main padding-8">
                 <div class="form-group img-box">
                     <label class="col-sm-3 control-label no-padding-right">
@@ -150,56 +166,6 @@
             </div>
         </div>
 
-        <input type="hidden" name="landlayout[id]" value="{{$sdata->layout_id}}">
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="name"> 户型名称： </label>
-            <div class="col-sm-9">
-                <input type="text" id="name" name="landlayout[name]" value="{{$sdata->landlayout->name}}" class="col-xs-10 col-sm-5"  placeholder="请输入户型名称" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="area"> 户型面积： </label>
-            <div class="col-sm-9">
-                <input type="text" id="area" name="landlayout[area]" value="{{$sdata->landlayout->area}}" class="col-xs-10 col-sm-5"  placeholder="请输入户型面积" required>
-            </div>
-        </div>
-        <div class="space-4"></div>
-        <div class="form-group">
-            <div class="widget-main padding-8">
-                <div class="form-group img-box">
-                    <label class="col-sm-3 control-label no-padding-right">
-                        户型图：<br>
-                        <span class="btn btn-xs">
-                            <span>上传图片</span>
-                            <input type="file" accept="image/*" class="hidden" data-name="landlayout[gov_img][]" multiple  onchange="uplfile(this)">
-                        </span>
-                    </label>
-                    <div class="col-sm-9">
-                        <ul class="ace-thumbnails clearfix img-content viewer">
-                            @if($sdata->landlayout->gov_img)
-                                @foreach($sdata->landlayout->gov_img as $pics)
-                                    <li>
-                                        <div>
-                                            <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
-                                            <input type="hidden" name="landlayout[gov_img][]" value="{!! $pics !!}">
-                                            <div class="text">
-                                                <div class="inner">
-                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                    <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            @endif
-                        </ul>
-                    </div>
-                </div>
-                <div class="space-4 header green"></div>
-            </div>
-        </div>
         <div class="clearfix form-actions">
             <div class="col-md-offset-3 col-md-9">
                 <button class="btn btn-info" type="button" onclick="sub_ajax(this)">
