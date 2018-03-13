@@ -64,11 +64,7 @@ class ItemhouseController extends BaseController{
                             },
                             'housecompany'=> function ($query) {
                                 $query->select(['id','name']);
-                            },
-                            'state'=>function($query){
-                                $query->select(['code','name']);
-                            }
-                            ]);
+                            }]);
                     }])
                 ->where($where)
                 ->select($select)

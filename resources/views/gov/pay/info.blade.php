@@ -90,6 +90,7 @@
                         <div class="widget-main">
                             <div class="profile-user-info profile-user-info-striped">
 
+                                @if(filled($sdata['holder']))
                                 <div class="profile-info-row">
                                     <div class="profile-info-name">  @if($sdata['household']->getOriginal('type')) 承租人 @else 产权人 @endif： </div>
                                     <div class="profile-info-value">
@@ -147,7 +148,7 @@
                                         </span>
                                     </div>
                                 </div>
-
+                            @endif
                             </div>
                         </div>
                     </div>
