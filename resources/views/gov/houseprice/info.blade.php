@@ -35,7 +35,7 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 市场评估价： </div>
+            <div class="profile-info-name"> 评估市场价： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->market}}</span>
             </div>

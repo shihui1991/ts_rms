@@ -29,7 +29,7 @@ class CompanyvoteController extends BaseitemController
         }])
             ->where([
                 ['type',0],
-                ['state',1],
+                ['code',41],
             ])
             ->orderBy('companyvotes_count','desc')
             ->sharedLock()
@@ -72,7 +72,7 @@ class CompanyvoteController extends BaseitemController
             if(blank($company)){
                 throw new \Exception('评估机构不存在',404404);
             }
-            if($company->getOriginal('type') != 0 || $company->getOriginal('state') == 0){
+            if($company->getOriginal('type') != 0 || $company->getOriginal('code') == 0){
                 throw new \Exception('错误操作',404404);
             }
             $households=Companyvote::with(['household'=>function($query){

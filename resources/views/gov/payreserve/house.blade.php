@@ -250,7 +250,7 @@
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.area+ ' ㎡</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.layout.name+ '</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>'+ info.is_real+ '</li>'+
-                    '<li><i class="ace-icon fa fa-circle green"></i>市场评估价：'+ info.itemhouseprice.market+ '</li>'+
+                    '<li><i class="ace-icon fa fa-circle green"></i>评估市场价：'+ info.itemhouseprice.market+ '</li>'+
                     '<li><i class="ace-icon fa fa-circle green"></i>安置优惠价：'+ info.itemhouseprice.price+ '</li>'+
                     '</ul>'+
                     '<hr>'+

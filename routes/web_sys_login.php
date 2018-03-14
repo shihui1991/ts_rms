@@ -56,3 +56,8 @@ Route::any('/subject_edit','SubjectController@edit')->name('sys_subject_edit');
 Route::any('/statecode','StatecodeController@index')->name('sys_statecode');
 Route::any('/statecode_add','StatecodeController@add')->name('sys_statecode_add');
 Route::any('/statecode_edit','StatecodeController@edit')->name('sys_statecode_edit');
+
+/*----- 协议类型 -----*/
+Route::any('/pactcate','PactcateController@index')->name('sys_pactcate');
+Route::any('/pactcate_add','PactcateController@add')->name('sys_pactcate_add');
+Route::any('/pactcate_edit','PactcateController@edit')->name('sys_pactcate_edit');

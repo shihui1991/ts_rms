@@ -22,7 +22,7 @@ class Houseprice extends Model
         'house_id'=>'所属房源',
         'start_at'=>'起始时间',
         'end_at'=>'结束时间',
-        'market'=>'市场评估价',
+        'market'=>'评估市场价',
         'price'=>'安置优惠价'
     ];
 

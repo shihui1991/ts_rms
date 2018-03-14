@@ -6,6 +6,13 @@
 */
 
 
+/** 获取操作控制器和方法
+ * @return array
+ */
+function get_method(){
+    return explode('@',class_basename(request()->route()->getActionName()));
+}
+
 /** 生成导航菜单树
  * @param array $menus      菜单数据
  * @param int $current_id   当前菜单ID

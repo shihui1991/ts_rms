@@ -32,7 +32,6 @@ class ItemcompanyController extends BaseController{
             $total=Itemcompany::sharedLock()
                 ->where('item_id',$this->item_id)
                 ->count();
-
             $item_companys=Itemcompany::with(['company'=>function($query){
                 $query->select();
             }])
@@ -44,6 +43,7 @@ class ItemcompanyController extends BaseController{
                 ->offset($per_page*($page-1))
                 ->limit($per_page)
                 ->get();
+
             $item_companys=new LengthAwarePaginator($item_companys,$total,$per_page,$page);
             $item_companys->withPath(route('h_itemcompany'));
 

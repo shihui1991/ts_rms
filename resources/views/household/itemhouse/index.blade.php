@@ -3,7 +3,7 @@
 
 {{-- 页面内容 --}}
 @section('content')
-
+    @if($code=='success')
     <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
@@ -17,12 +17,10 @@
             <th>是否电梯房</th>
             <th>类型</th>
             <th>交付日期</th>
-            <th>房源状态</th>
-            <th>添加时期</th>
         </tr>
         </thead>
         <tbody>
-            @if($code=='success')
+
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$loop->iteration}}</td>
@@ -40,11 +38,9 @@
                         <td>{{$infos->house->lift}}</td>
                         <td>{{$infos->house->is_real}}|{{$infos->house->is_transit}}</td>
                         <td>{{$infos->house->delive_at}}</td>
-                        <td>{{$infos->house->state->name}}</td>
-                        <td>{{$infos->type}}</td>
                     </tr>
                 @endforeach
-            @endif
+
         </tbody>
     </table>
     <div class="row">
@@ -57,6 +53,20 @@
             </div>
         </div>
     </div>
+    @else
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">
+                <i class="ace-icon fa fa-times"></i>
+            </button>
+            <strong>
+                <i class="ace-icon fa fa-exclamation-circle"></i>
+            </strong>
+            <strong class="resp-error">{{$message}}</strong>
+
+            <br>
+        </div>
+
+    @endif
 
 @endsection
 

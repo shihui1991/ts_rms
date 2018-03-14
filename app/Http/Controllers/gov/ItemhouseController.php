@@ -49,10 +49,7 @@ class ItemhouseController extends BaseitemController
                 ->where('item_id',$item_id)
                 ->count();
             $itemhouses=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },
-                    'house'=>function($query){
+                ->with(['house'=>function($query){
                         $query->with([
                             'housecommunity'=> function ($query) {
                                 $query->withTrashed()->select(['id','name']);
@@ -62,7 +59,11 @@ class ItemhouseController extends BaseitemController
                             },
                             'housecompany'=> function ($query) {
                                 $query->withTrashed()->select(['id','name']);
-                            }]);
+                            },
+                            'state'=> function ($query) {
+                                $query->withTrashed()->select(['code','name']);
+                            }
+                        ]);
                     }])
                 ->where($where)
                 ->select($select)

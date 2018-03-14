@@ -45,17 +45,17 @@ Route::any('/pay_info','PayController@info')->name('g_pay_info'); //兑付详情
 Route::any('/pay_edit','PayController@edit')->name('g_pay_edit'); //修改兑付
 
 Route::any('/paysubject_add','PaysubjectController@add')->name('g_paysubject_add'); //添加补偿科目
+Route::any('/paysubject_info','PaysubjectController@info')->name('g_paysubject_info'); //补偿科目详情
 Route::any('/paysubject_edit','PaysubjectController@edit')->name('g_paysubject_edit'); //修改补偿科目
+Route::any('/paysubject_recal','PaysubjectController@recal')->name('g_paysubject_recal'); //重新计算补偿
 
 /*---------- 操作控制 ----------*/
 Route::any('/itemctrl','ItemctrlController@index')->name('g_itemctrl'); //操作控制
 Route::any('/itemctrl_add','ItemctrlController@add')->name('g_itemctrl_add'); //添加操作
 Route::any('/itemctrl_edit','ItemctrlController@edit')->name('g_itemctrl_edit'); //修改操作
 
-/*---------- 排队选房 ----------*/
-Route::any('/payreserve','PayreserveController@index')->name('g_payreserve'); //排队选房
-Route::any('/payreserve_house','PayreserveController@house')->name('g_payreserve_house'); //开始选房
-Route::any('/payreserve_cal','PayreserveController@calculate')->name('g_payreserve_cal'); //选房计算
-
+/*---------- 选房 ----------*/
 Route::any('/payhouse_add','PayhouseController@add')->name('g_payhouse_add'); //开始选房
 Route::any('/payhouse_cal','PayhouseController@calculate')->name('g_payhouse_cal'); //选房计算
+
+Route::any('/pact','PactController@index')->name('g_pact'); //协议

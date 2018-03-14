@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payhouse extends Model
 {
-
+    use SoftDeletes;
     protected $table='pay_house';
 
     protected $fillable=[];
-    protected $dates=['created_at','updated_at',];
+    protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -25,7 +25,7 @@ class Payhouse extends Model
         'building_id'=>'楼栋',
         'house_id'=>'房源',
         'area'=>'面积',
-        'market'=>'市场评估价',
+        'market'=>'评估市场价',
         'price'=>'安置优惠价',
         'amount'=>'安置优惠总价',
         'amount_plus'=>'安置优惠上浮金额',
@@ -58,5 +58,8 @@ class Payhouse extends Model
     }
     public function house(){
         return $this->belongsTo('App\Http\Model\House','house_id','id')->withDefault();
+    }
+    public function housepluses(){
+        return $this->hasMany('App\Http\Model\Payhouse','house_id','house_id');
     }
 }

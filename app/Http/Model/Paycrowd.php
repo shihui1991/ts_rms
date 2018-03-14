@@ -1,19 +1,19 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 兑付 - 补偿科目 模型
+| 兑付 - 特殊人群 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Paysubject extends Model
+class Paycrowd extends Model
 {
     use SoftDeletes;
-    protected $table='pay_subject';
-    protected $primaryKey='id';
-    protected $fillable=['subject_id','calculate','amount',];
+    protected $table='pay_crowd';
+
+    protected $fillable=[];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
@@ -24,14 +24,16 @@ class Paysubject extends Model
         'land_id'=>'地块',
         'building_id'=>'楼栋',
         'pay_id'=>'兑付汇总',
-        'pact_id'=>'兑付协议',
+        'item_subject_id'=>'项目补偿科目',
         'subject_id'=>'补偿科目',
-        'total_id'=>'兑付总单',
-        'calculate'=>'计算公式',
-        'amount'=>'补偿小计',
-        'code'=>'状态',
+        'item_crowd_id'=>'项目特殊人群',
+        'member_crowd_id'=>'被征收户特殊人群',
+        'crowd_cate_id'=>'特殊人群分类',
+        'crowd_id'=>'特殊人群',
+        'transit'=>'临时安置费',
+        'rate'=>'上浮比例',
+        'amount'=>'上浮总额',
     ];
-
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
@@ -60,20 +62,22 @@ class Paysubject extends Model
     public function pay(){
         return $this->belongsTo('App\Http\Model\Pay','pay_id','id')->withDefault();
     }
-    public function pact(){
-        return $this->belongsTo('App\Http\Model\Pact','pact_id','id')->withDefault();
+    public function itemsubject(){
+        return $this->belongsTo('App\Http\Model\Itemsubject','item_subject_id','id')->withDefault();
     }
     public function subject(){
         return $this->belongsTo('App\Http\Model\Subject','subject_id','id')->withDefault();
     }
-    public function fundstotal(){
-        return $this->belongsTo('App\Http\Model\Fundstotal','total_id','id')->withDefault();
+    public function itemcrowd(){
+        return $this->belongsTo('App\Http\Model\Itemcrowd','item_crowd_id','id')->withDefault();
     }
-    /* ++++++++++ 关联状态 ++++++++++ */
-    public function state(){
-        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    public function membercrowd(){
+        return $this->belongsTo('App\Http\Model\Householdmembercrowd','member_crowd_id','id')->withDefault();
     }
-    public function itemsubject(){
-        return $this->hasOne('App\Http\Model\Itemsubject','subject_id','subject_id')->withDefault();
+    public function crowdcate(){
+        return $this->belongsTo('App\Http\Model\Crowd','crowd_cate_id','id')->withDefault();
+    }
+    public function crowd(){
+        return $this->belongsTo('App\Http\Model\Crowd','crowd_id','id')->withDefault();
     }
 }

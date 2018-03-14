@@ -15,7 +15,7 @@ class House extends Model
     protected $primaryKey='id';
     protected $fillable=['company_id','community_id','layout_id','layout_img_id','building',
         'unit','floor','number','area','total_floor','lift','is_real','is_buy','is_transit',
-        'is_public','picture','delive_at','state'];
+        'is_public','picture','delive_at'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -40,7 +40,7 @@ class House extends Model
         'is_public'=>'可项目共享状况',
         'picture'=>'房源图片',
         'delive_at'=>'购置交付日期',
-        'state'=>'房源状况'
+        'code'=>'房源状况'
     ];
 
     /* ++++++++++ 获取是否有电梯 ++++++++++ */
@@ -93,16 +93,6 @@ class House extends Model
             return $array;
         }
     }
-    /* ++++++++++ 获取房源状况 ++++++++++ */
-    public function getStateAttribute($key=null)
-    {
-        $array=[0=>'空闲',1=>'冻结',2=>'临时周转',3=>'产权调换',4=>'失效',5=>'售出'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
@@ -135,5 +125,9 @@ class House extends Model
     /* ++++++++++ 项目房价 ++++++++++ */
     public function itemhouseprice(){
         return $this->hasOne('App\Http\Model\Houseprice','house_id','id')->withDefault();
+    }
+
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 }

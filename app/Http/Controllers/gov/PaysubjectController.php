@@ -16,6 +16,7 @@ use App\Http\Model\Itemreward;
 use App\Http\Model\Itemsubject;
 use App\Http\Model\Pay;
 use App\Http\Model\Paybuilding;
+use App\Http\Model\Paycrowd;
 use App\Http\Model\Payhouse;
 use App\Http\Model\Paypublic;
 use App\Http\Model\Paysubject;
@@ -172,21 +173,11 @@ class PaysubjectController extends BaseitemController
                     throw new \Exception('当前被征收户已添加该项补偿科目',404404);
                 }
                 /* ++++++++++ 被征收户 ++++++++++ */
-                $household=Household::with(['itemland'=>function($query){
-                    $query->with('adminunit')->select(['id','address','admin_unit_id']);
-                },'itembuilding'=>function($query){
-                    $query->select(['id','building']);
-                },'state'=>function($query){
-                    $query->select(['code','name']);
-                }])
-                    ->sharedLock()
+                $household=Household::sharedLock()
                     ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
                     ->find($pay->household_id);
                 /* ++++++++++ 被征收户-详情 ++++++++++ */
-                $household_detail=Householddetail::with(['defbuildinguse'=>function($query){
-                    $query->select(['id','name']);
-                }])
-                    ->sharedLock()
+                $household_detail=Householddetail::sharedLock()
                     ->where([
                         ['item_id',$pay->item_id],
                         ['household_id',$pay->household_id],
@@ -613,5 +604,402 @@ class PaysubjectController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 查看补偿科目详情 ========== */
+    public function info(Request $request){
+
+    }
+
+    /* ========== 修改补偿科目 ========== */
+    public function edit(Request $request){
+
+    }
+
+    /* ========== 重新计算补偿 ========== */
+    public function recal(Request $request){
+        DB::beginTransaction();
+        try{
+            $pay_id=$request->input('pay_id');
+            if(!$pay_id){
+                throw new \Exception('错误操作',404404);
+            }
+            /* ++++++++++ 兑付汇总 ++++++++++ */
+            $pay=Pay::lockForUpdate()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['id',$pay_id],
+                ])
+                ->first();
+            if(blank($pay)){
+                throw new \Exception('兑付数据不存在',404404);
+            }
+            /* ++++++++++ 被征收户 ++++++++++ */
+            $household=Household::sharedLock()
+                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                ->find($pay->household_id);
+
+            if(!in_array($household->code,['68','76'])){
+                throw new \Exception('被征收户【'.$household->state->name.'】，不能重新计算补偿',404404);
+            }
+
+            $pay_subjects=Paysubject::lockForUpdate()
+                ->where([
+                    ['item_id',$pay->item_id],
+                    ['household_id',$pay->household_id],
+                    ['pay_id',$pay->id],
+                ])
+                ->whereIn('subject_id',[11,12,13])
+                ->get();
+            if(blank($pay_subjects)){
+                throw new \Exception('没有补偿科目数据，请先添加',404404);
+            }
+            /* ++++++++++ 被征收户-详情 ++++++++++ */
+            $household_detail=Householddetail::sharedLock()
+                ->where([
+                    ['item_id',$pay->item_id],
+                    ['household_id',$pay->household_id],
+                ])
+                ->select(['item_id','household_id','has_assets','def_use','status'])
+                ->first();
+            /* ++++++++++ 正式方案 ++++++++++ */
+            $program=Itemprogram::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['code','22'],
+                ])
+                ->first();
+            if(blank($program)){
+                throw new \Exception('暂无通过审查的正式征收方案数据',404404);
+            }
+            /* ++++++++++ 合法面积、合法房屋补偿总额 ++++++++++ */
+            $legal=Paybuilding::sharedLock()
+                ->where([
+                    ['item_id',$pay->item_id],
+                    ['pay_id',$pay->id],
+                ])
+                ->select([DB::raw('SUM(`real_outer`) AS `legal_area`,SUM(`amount`) AS `legal_total`')])
+                ->whereIn('code',['90','92','95'])
+                ->first();
+
+            $del_ids=[];
+            $subject_data=[];
+            foreach ($pay_subjects as $subject){
+                switch ($subject->subject_id){
+                    /* ++++++++++ 签约奖励（住宅） ++++++++++ */
+                    case 11:
+                        if(strtotime($program->item_end) < strtotime(date('Y-m-d')) || $household_detail->def_use!=1){
+                            $del_ids[]=$subject->id;
+                        }else{
+                            /* ++++++++++ 签约奖励方案 ++++++++++ */
+                            $item_reward=Itemreward::sharedLock()
+                                ->where([
+                                    ['start_at','<=',date('Y-m-d')],
+                                    ['end_at','>=',date('Y-m-d')],
+                                ])
+                                ->first();
+                            // 货币补偿
+                            if($pay->getOriginal('repay_way')==0){
+                                $reward_total=$legal->legal_area * ($item_reward->price+$program->reward_house);
+                                $calculate=number_format($legal->legal_area,2).' × '.number_format(($item_reward->price+$program->reward_house),2).' = '.number_format($reward_total,2);
+                            }
+                            // 产权调换
+                            else{
+                                $reward_total=$legal->legal_area * $item_reward->price;
+                                $calculate=number_format($legal->legal_area,2).' × '.number_format(($item_reward->price),2).' = '.number_format($reward_total,2);
+                            }
+                            $subject_data[]=[
+                                'id'=>$subject->id,
+                                'item_id'=>$subject->item_id,
+                                'household_id'=>$subject->household_id,
+                                'land_id'=>$subject->land_id,
+                                'building_id'=>$subject->building_id,
+                                'pay_id'=>$subject->pay_id,
+                                'pact_id'=>0,
+                                'subject_id'=>$subject->subject_id,
+                                'total_id'=>0,
+                                'calculate'=>$calculate,
+                                'amount'=>$reward_total,
+                                'code'=>'110',
+                                'created_at'=>date('Y-m-d H:i:s'),
+                                'updated_at'=>date('Y-m-d H:i:s'),
+                            ];
+                        }
+                        break;
+
+                    /* ++++++++++ 签约奖励（非住宅） ++++++++++ */
+                    case 12:
+                        if(strtotime($program->item_end) < strtotime(date('Y-m-d')) || $household_detail->def_use==1){
+                            $del_ids[]=$subject->id;
+                        }else{
+                            /* ++++++++++ 签约奖励方案 ++++++++++ */
+                            $item_reward=Itemreward::sharedLock()
+                                ->where([
+                                    ['start_at','<=',date('Y-m-d')],
+                                    ['end_at','>=',date('Y-m-d')],
+                                ])
+                                ->first();
+                            /* ++++++++++ 公共附属物补偿总额 ++++++++++ */
+                            $public_total=Paypublic::sharedLock()
+                                ->where([
+                                    ['item_id',$pay->item_id],
+                                    ['land_id',$pay->land_id],
+                                ])
+                                ->sum('avg');
+
+                            // 货币补偿
+                            if($pay->getOriginal('repay_way')==0){
+                                $reward_total=($legal->legal_total+$public_total) * ($item_reward->portion+$program->reward_other)/100;
+                                $calculate=number_format(($legal->legal_total+$public_total),2).' × '.($item_reward->portion+$program->reward_other).'% = '.number_format($reward_total,2);
+                            }
+                            // 产权调换
+                            else{
+                                $reward_total=($legal->legal_total+$public_total) * ($item_reward->portion)/100;
+                                $calculate=number_format(($legal->legal_total+$public_total),2).' × '.($item_reward->portion).'% = '.number_format($reward_total,2);
+                            }
+                            $subject_data[]=[
+                                'id'=>$subject->id,
+                                'item_id'=>$subject->item_id,
+                                'household_id'=>$subject->household_id,
+                                'land_id'=>$subject->land_id,
+                                'building_id'=>$subject->building_id,
+                                'pay_id'=>$subject->pay_id,
+                                'pact_id'=>0,
+                                'subject_id'=>$subject->subject_id,
+                                'total_id'=>0,
+                                'calculate'=>$calculate,
+                                'amount'=>$reward_total,
+                                'code'=>'110',
+                                'created_at'=>date('Y-m-d H:i:s'),
+                                'updated_at'=>date('Y-m-d H:i:s'),
+                            ];
+                        }
+                        break;
+
+                    /* ++++++++++ 临时安置费 ++++++++++ */
+                    case 13:
+                        $delete=false;
+                        if($pay->getOriginal('repay_way')==0 || $pay->getOriginal('transit_way')==1){
+                            $del_ids[]=$subject->id;
+                            $delete=true;
+                        }else{
+                            /* ++++++++++ 选择安置房源 ++++++++++ */
+                            $resettle_house_ids=Payhouse::sharedLock()
+                                ->where([
+                                    ['item_id',$pay->item_id],
+                                    ['household_id',$pay->household_id],
+                                ])
+                                ->pluck('house_id');
+                            if(blank($resettle_house_ids)){
+                                $del_ids[]=$subject->id;
+                                $delete=true;
+                            }else{
+                                /* ++++++++++ 现房数量 ++++++++++ */
+                                $real_count=House::sharedLock()
+                                    ->whereIn('id',$resettle_house_ids)
+                                    ->where('is_real',1)
+                                    ->count();
+                                /* ++++++++++ 临时安置时长 ++++++++++ */
+                                $transit_times=$real_count?$program->transit_real:$program->transit_future;
+                                $transit_end=date('Y-m',strtotime($program->item_end.' +'.$transit_times.' month'));
+                                $now=date('Y-m');
+                                if($now>=$transit_end){
+                                    $del_ids[]=$subject->id;
+                                    $delete=true;
+                                }else{
+                                    $diff_time=date_diff(date_create($now),date_create($transit_end));
+                                    $transit_times = $diff_time->format('%m');
+                                    /* ++++++++++ 临时安置单价 ++++++++++ */
+                                    if($household_detail->def_use==1){
+                                        // 住宅
+                                        $transit_price=$program->transit_house;
+                                    } else{
+                                        // 非住宅
+                                        $transit_price=$program->transit_other;
+                                    }
+                                    $price=$legal->legal_area * $transit_price;
+                                    if($price>$program->transit_base){
+                                        $transit_total=$price * $transit_times;
+                                        $calculate=number_format($legal->legal_area,2).' × '.number_format($transit_price,2).' × '.$transit_times.' = '.number_format($transit_total,2);
+                                    }else{
+                                        $transit_total=$program->transit_base * $transit_times;
+                                        $calculate=number_format($program->transit_base,2).' × '.$transit_times.' = '.number_format($transit_total,2);
+                                    }
+                                    $subject_data[]=[
+                                        'id'=>$subject->id,
+                                        'item_id'=>$subject->item_id,
+                                        'household_id'=>$subject->household_id,
+                                        'land_id'=>$subject->land_id,
+                                        'building_id'=>$subject->building_id,
+                                        'pay_id'=>$subject->pay_id,
+                                        'pact_id'=>0,
+                                        'subject_id'=>$subject->subject_id,
+                                        'total_id'=>0,
+                                        'calculate'=>$calculate,
+                                        'amount'=>$transit_total,
+                                        'code'=>'110',
+                                        'created_at'=>date('Y-m-d H:i:s'),
+                                        'updated_at'=>date('Y-m-d H:i:s'),
+                                    ];
+                                    if($transit_total){
+                                        /* ++++++++++ 临时安置费特殊人群优惠补助 ++++++++++ */
+                                        $member_crowd_ids=Householdmembercrowd::sharedLock()
+                                            ->where([
+                                                ['item_id',$this->item_id],
+                                                ['household_id',$pay->household_id],
+                                            ])
+                                            ->pluck('crowd_id','id');
+
+                                        $item_subject=Itemsubject::sharedLock()
+                                            ->where([
+                                                ['item_id',$this->item_id],
+                                                ['subject_id',14],
+                                            ])
+                                            ->first();
+                                        if(filled($member_crowd_ids) && filled($item_subject)) {
+                                            $crowds = Crowd::with(['itemcrowds' => function ($query) {
+                                                $query->where('item_id', $this->item_id)->orderBy('rate', 'desc');
+                                            }])
+                                                ->where('parent_id', 0)
+                                                ->get();
+                                            $crowd_data = [];
+                                            $crowd_total = 0;
+                                            foreach ($crowds as $crowd) {
+                                                foreach ($crowd->itemcrowds as $itemcrowd) {
+                                                    if ($member_crowd_id = $member_crowd_ids->search($itemcrowd->crowd_id)) {
+                                                        $crowd_data[] = [
+                                                            'item_id' => $this->item_id,
+                                                            'household_id' => $pay->household_id,
+                                                            'land_id' => $pay->land_id,
+                                                            'building_id' => $pay->building_id,
+                                                            'pay_id' => $pay->id,
+                                                            'item_subject_id' => $item_subject->id,
+                                                            'subject_id' => $item_subject->subject_id,
+                                                            'item_crowd_id' => $itemcrowd->id,
+                                                            'member_crowd_id' => $member_crowd_id,
+                                                            'crowd_cate_id' => $itemcrowd->crowd_cate_id,
+                                                            'crowd_id' => $itemcrowd->crowd_id,
+                                                            'transit' =>$transit_total,
+                                                            'rate' => $itemcrowd->rate,
+                                                            'amount' => $itemcrowd->rate * $transit_total,
+                                                            'created_at' => date('Y-m-d H:i:s'),
+                                                            'updated_at' => date('Y-m-d H:i:s'),
+                                                        ];
+                                                        $crowd_total += $itemcrowd->rate * $transit_total;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            $field = ['item_id', 'household_id', 'land_id', 'building_id', 'pay_id', 'item_subject_id', 'subject_id', 'item_crowd_id', 'member_crowd_id', 'crowd_cate_id', 'crowd_id', 'transit', 'rate', 'amount', 'created_at', 'updated_at'];
+                                            $sqls = batch_update_or_insert_sql('pay_crowd', $field, $crowd_data, 'updated_at');
+                                            if (!$sqls) {
+                                                throw new \Exception('数据错误', 404404);
+                                            }
+                                            // 删除原有数据
+                                            Paycrowd::lockForUpdate()
+                                                ->where([
+                                                    ['item_id',$pay->item_id],
+                                                    ['household_id',$pay->household_id],
+                                                    ['pay_id',$pay->id],
+                                                ])
+                                                ->delete();
+
+                                            foreach ($sqls as $sql) {
+                                                DB::statement($sql);
+                                            }
+
+                                            $subject_data[]=[
+                                                'item_id'=>$pay->item_id,
+                                                'household_id'=>$pay->household_id,
+                                                'land_id'=>$pay->land_id,
+                                                'building_id'=>$pay->building_id,
+                                                'pay_id'=>$pay->id,
+                                                'pact_id'=>0,
+                                                'subject_id'=>$item_subject->subject_id,
+                                                'total_id'=>0,
+                                                'calculate'=>null,
+                                                'amount'=>$crowd_total,
+                                                'code'=>'110',
+                                                'created_at'=>date('Y-m-d H:i:s'),
+                                                'updated_at'=>date('Y-m-d H:i:s'),
+                                            ];
+                                        }else{
+                                            $delete=true;
+                                        }
+                                    }
+                                    else{
+                                        $delete=true;
+                                    }
+                                }
+                            }
+                        }
+                        if($delete){
+                            $pay_subject_id=Paysubject::lockForUpdate()
+                                ->where([
+                                    ['item_id',$pay->item_id],
+                                    ['household_id',$pay->household_id],
+                                    ['pay_id',$pay->id],
+                                    ['subject_id',14],
+                                ])
+                                ->value('id');
+                            if($pay_subject_id){
+                                $del_ids[]=$pay_subject_id;
+                                Paycrowd::lockForUpdate()
+                                    ->where([
+                                        ['item_id',$pay->item_id],
+                                        ['household_id',$pay->household_id],
+                                        ['pay_id',$pay->id],
+                                    ])
+                                    ->delete();
+                            }
+                        }
+                        break;
+                }
+            }
+
+            if(filled($subject_data)){
+                $field=['id','item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','code','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('pay_subject',$field,$subject_data,['calculate','amount','updated_at']);
+                if(!$sqls){
+                    throw new \Exception('数据错误',404404);
+                }
+                foreach($sqls as $sql){
+                    DB::statement($sql);
+                }
+            }
+            if(filled($del_ids)){
+                Paysubject::lockForUpdate()->whereIn('id',$del_ids)->delete();
+            }
+            /* ++++++++++ 补偿总额 ++++++++++ */
+            $subject_total=Paysubject::sharedLock()
+                ->where('pay_id',$pay->id)
+                ->sum('amount');
+            $pay->total=$subject_total;
+            $pay->save();
+
+
+            $code='success';
+            $msg='保存成功';
+            $sdata=[
+                'item'=>$this->item,
+                'pay'=>$pay,
+            ];
+            $edata=new Pay();
+            $url=route('g_pay_info',['item'=>$pay->item_id,'id'=>$pay_id]);
+
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            DB::rollBack();
+        }
+
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+
     }
 }

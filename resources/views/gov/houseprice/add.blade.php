@@ -33,9 +33,9 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="market"> 市场评估价： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="market"> 评估市场价： </label>
             <div class="col-sm-9">
-                <input type="text" id="market" name="market" value="{{old('market')}}" class="col-xs-10 col-sm-5"  placeholder="请输入市场评估价" required>
+                <input type="text" id="market" name="market" value="{{old('market')}}" class="col-xs-10 col-sm-5"  placeholder="请输入评估市场价" required>
             </div>
         </div>
         <div class="space-4"></div>
