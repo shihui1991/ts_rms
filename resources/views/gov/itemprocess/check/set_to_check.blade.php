@@ -6,7 +6,7 @@
 @section('content')
 
     <p>
-        <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_itemprocess_cs2c',['item'=>$sdata['item']->id])}}" data-method="post">
+        <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_check_set_to_check',['item'=>$sdata['item']->id])}}" data-method="post">
             <i class="ace-icon fa fa-check-circle bigger-110"></i>
             项目配置提交审查
         </a>
@@ -69,19 +69,13 @@
 
 {{-- 样式 --}}
 @section('css')
-    
-    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+
 
 @endsection
 
 {{-- 插件 --}}
 @section('js')
     @parent
-    <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script src="{{asset('js/func.js')}}"></script>
-    <script>
-        $('#name').focus();
-        $('.img-content').viewer();
-    </script>
+
 
 @endsection

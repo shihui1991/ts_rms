@@ -50,9 +50,9 @@ class ItemtimeController extends BaseitemController
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
-//                $result=$this->checkNotice();
-//                $process=$result['process'];
-//                $worknotice=$result['worknotice'];
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 $count=Itemtime::where('item_id',$this->item_id)->count();
                 if($count){
@@ -96,12 +96,12 @@ class ItemtimeController extends BaseitemController
         else{
             DB::beginTransaction();
             try{
-//                $result=$this->checkNotice();
-//                $process=$result['process'];
-//                $worknotice=$result['worknotice'];
-//
-//                $worknotice->code='1';
-//                $worknotice->save();
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
+
+                $worknotice->code='1';
+                $worknotice->save();
 
                 $count=Itemtime::where('item_id',$this->item_id)->count();
                 if($count){
@@ -171,7 +171,7 @@ class ItemtimeController extends BaseitemController
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
-//                $this->checkNotice();
+                $this->checkNotice();
 
                 $itemtimes=Itemtime::with(['schedule'=>function($query){
                     $query->select(['id','name']);
@@ -212,9 +212,9 @@ class ItemtimeController extends BaseitemController
         else {
             DB::beginTransaction();
             try {
-//                $result = $this->checkNotice();
-//                $process = $result['process'];
-//                $worknotice = $result['worknotice'];
+                $result = $this->checkNotice();
+                $process = $result['process'];
+                $worknotice = $result['worknotice'];
 
                 $values = [];
                 $schedules = Schedule::sharedLock()->select(['id', 'name', 'sort'])->orderBy('sort', 'asc')->get();
@@ -254,8 +254,8 @@ class ItemtimeController extends BaseitemController
                     DB::statement($sql);
                 }
 
-//                $worknotice->code='1';
-//                $worknotice->save();
+                $worknotice->code='1';
+                $worknotice->save();
 
                 $code = 'success';
                 $msg = '修改成功';

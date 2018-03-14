@@ -12,7 +12,7 @@
 
         <div class="widget-body">
             <div class="widget-main padding-8">
-                <form class="form-horizontal" role="form" action="{{route('g_itemprocess_crb',['item'=>$sdata['item']->id])}}" method="post">
+                <form class="form-horizontal" role="form" action="{{route('g_check_roll_back',['item'=>$sdata['item']->id])}}" method="post">
                     {{csrf_field()}}
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="way">处理方式：</label>
@@ -113,8 +113,6 @@
 {{-- 插件 --}}
 @section('js')
     @parent
-
-    <script src="{{asset('js/func.js')}}"></script>
 
 
 @endsection

@@ -5,7 +5,7 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemprocess_retry',['item'=>$sdata['item']->id])}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_check_iteminfo_retry',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
 
         <div class="row">
@@ -204,7 +204,6 @@
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('js/func.js')}}"></script>
     <script>
-        $('#name').focus();
         $('.img-content').viewer();
     </script>
 

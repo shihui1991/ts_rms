@@ -228,38 +228,38 @@ class ItemController extends BaseController
                     'updated_at'=>date('Y-m-d H:i:s'),
                 ];
 
-//                /* ++++++++++ 提交部门审查 可操作人员 ++++++++++ */
-//                $process=Process::with(['processusers'=>function($query){
-//                    $query->with('role');
-//                }])
-//                    ->select(['id','schedule_id','menu_id'])
-//                    ->find(2);
-//                /* ++++++++++ 提交部门审查 工作提醒推送 ++++++++++ */
-//                foreach ($process->processusers as $user){
-//                    $values[]=[
-//                        'item_id'=>$item->id,
-//                        'schedule_id'=>$process->schedule_id,
-//                        'process_id'=>$process->id,
-//                        'menu_id'=>$process->menu_id,
-//                        'dept_id'=>$user->dept_id,
-//                        'parent_id'=>$user->role->parent_id,
-//                        'role_id'=>$user->role_id,
-//                        'user_id'=>$user->id,
-//                        'url'=>route('g_iteminfo_info',['item'=>$item->id]),
-//                        'code'=>'0',
-//                        'created_at'=>date('Y-m-d H:i:s'),
-//                        'updated_at'=>date('Y-m-d H:i:s'),
-//                    ];
-//                }
-//
-//                $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
-//                $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
-//                if(!$sqls){
-//                    throw new \Exception('保存失败',404404);
-//                }
-//                foreach ($sqls as $sql){
-//                    DB::statement($sql);
-//                }
+                /* ++++++++++ 提交部门审查 可操作人员 ++++++++++ */
+                $process=Process::with(['processusers'=>function($query){
+                    $query->with('role');
+                }])
+                    ->select(['id','schedule_id','menu_id'])
+                    ->find(2);
+                /* ++++++++++ 提交部门审查 工作提醒推送 ++++++++++ */
+                foreach ($process->processusers as $user){
+                    $values[]=[
+                        'item_id'=>$item->id,
+                        'schedule_id'=>$process->schedule_id,
+                        'process_id'=>$process->id,
+                        'menu_id'=>$process->menu_id,
+                        'dept_id'=>$user->dept_id,
+                        'parent_id'=>$user->role->parent_id,
+                        'role_id'=>$user->role_id,
+                        'user_id'=>$user->id,
+                        'url'=>route('g_iteminfo_info',['item'=>$item->id]),
+                        'code'=>'0',
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
+                }
+
+                $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
+                if(!$sqls){
+                    throw new \Exception('保存失败',404404);
+                }
+                foreach ($sqls as $sql){
+                    DB::statement($sql);
+                }
 
                 $code='success';
                 $msg='保存成功';

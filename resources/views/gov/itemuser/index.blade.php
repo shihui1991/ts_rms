@@ -14,7 +14,7 @@
                     <div class="widget-toolbar">
 
                         @if(filled($sdata['itemadmins']) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
-                            <a onclick="btnAct(this)" data-url="{{route('g_itemprocess_csia',['item'=>$sdata['item']->id])}}" data-method="post" class="btn btn-danger">
+                            <a onclick="btnAct(this)" data-url="{{route('g_check_set_itemadmin',['item'=>$sdata['item']->id])}}" data-method="post" class="btn btn-danger">
                                 <i class="ace-icon fa fa-check-circle"></i>
                                 提交配置
                             </a>
@@ -78,7 +78,7 @@
                     <div class="widget-toolbar">
 
                         @if(filled($sdata['itemusers']) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
-                            <a onclick="btnAct(this)" data-url="{{route('g_itemprocess_csiu',['item'=>$sdata['item']->id])}}" data-method="post" class="btn btn-danger">
+                            <a onclick="btnAct(this)" data-url="{{route('g_check_set_itemuser',['item'=>$sdata['item']->id])}}" data-method="post" class="btn btn-danger">
                                 <i class="ace-icon fa fa-check-circle"></i>
                                 提交配置
                             </a>

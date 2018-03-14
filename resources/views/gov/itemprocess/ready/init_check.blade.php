@@ -7,12 +7,12 @@
 
     <div class="widget-box widget-color-red">
         <div class="widget-header">
-            <h4 class="widget-title lighter smaller">项目配置审查意见</h4>
+            <h4 class="widget-title lighter smaller">初步预算审查意见</h4>
         </div>
 
         <div class="widget-body">
             <div class="widget-main padding-8">
-                <form class="form-horizontal" role="form" action="{{route('g_check_set_check',['item'=>$sdata['item']->id])}}" method="post">
+                <form class="form-horizontal" role="form" action="{{route('g_ready_init_check',['item'=>$sdata['item']->id])}}" method="post">
                     {{csrf_field()}}
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="code">审查结果：</label>
@@ -129,7 +129,7 @@
 
     <div class="widget-box widget-color-blue2">
         <div class="widget-header">
-            <h4 class="widget-title lighter smaller">项目负责人：</h4>
+            <h4 class="widget-title lighter smaller">初步预算：</h4>
             <div class="widget-toolbar">
                 <a href="#" data-action="collapse">
                     <i class="ace-icon fa fa-chevron-up"></i>
@@ -140,65 +140,100 @@
         <div class="widget-body">
             <div class="widget-main padding-8">
 
-                <table class="table table-hover table-bordered">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>部门</th>
-                        <th>角色</th>
-                        <th>姓名</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div class="profile-user-info profile-user-info-striped">
 
-                    @foreach($sdata['itemadmins'] as $itemadmin)
-                        <tr>
-                            <td>{{$loop->iteration}}</td>
-                            <td>{{$itemadmin->dept->name}}</td>
-                            <td>{{$itemadmin->role->name}}</td>
-                            <td>{{$itemadmin->user->name}}</td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 项目： </div>
+                        <div class="profile-info-value">
+                            <span class="editable editable-click">{{$sdata['item']->name}}</span>
+                        </div>
+                    </div>
 
-            </div>
-        </div>
-    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 征收范围： </div>
+                        <div class="profile-info-value">
+                            <span class="editable editable-click">{{$sdata['item']->place}}</span>
+                        </div>
+                    </div>
 
-    <div class="widget-box widget-color-green2">
-        <div class="widget-header">
-            <h4 class="widget-title lighter smaller">项目工作人员及时间规划：</h4>
-            <div class="widget-toolbar">
-                <a href="#" data-action="collapse">
-                    <i class="ace-icon fa fa-chevron-up"></i>
-                    展开/关闭
-                </a>
-            </div>
-        </div>
-        <div class="widget-body">
-            <div class="widget-main padding-8">
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 预计户数： </div>
+                        <div class="profile-info-value">
+                            <span class="editable editable-click">{{number_format($sdata['init_budget']->holder)}}</span>
+                        </div>
+                    </div>
 
-                <table class="table table-hover table-bordered treetable" id="tree-itemuser">
-                    @foreach($sdata['itemtimes'] as $schedule)
-                        <tr data-tt-id="schedule-{{$schedule->id}}" data-tt-parent-id="0">
-                            <td>{{$schedule->name}} {{$schedule->itemtime->start_at}} - {{$schedule->itemtime->end_at}}</td>
-                        </tr>
-                        @foreach($schedule->processes as $process)
-                            <tr data-tt-id="schedule-{{$schedule->id}}-process-{{$process->id}}" data-tt-parent-id="schedule-{{$schedule->id}}">
-                                <td>{{$process->name}}</td>
-                            </tr>
-                            @foreach($sdata['itemusers'] as $user)
-                                @if($schedule->id==$user->schedule_id && $process->id==$user->process_id)
-                                    <tr data-tt-id="schedule-{{$schedule->id}}-process-{{$process->id}}-user-{{$user->user_id}}" data-tt-parent-id="schedule-{{$schedule->id}}-process-{{$process->id}}">
-                                        <td>{{$user->dept->name}} - {{$user->role->name}} - {{$user->user->name}}</td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                        @endforeach
-                    @endforeach
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 预算总金额： </div>
+                        <div class="profile-info-value">
+                    <span class="editable editable-click">
+                        <strong>{{number_format($sdata['init_budget']->money,2)}}</strong>
+                    </span>
+                        </div>
+                    </div>
 
-                </table>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 预备房源数： </div>
+                        <div class="profile-info-value">
+                            <span class="editable editable-click">{{number_format($sdata['init_budget']->house)}}</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 预算报告： </div>
+                        <div class="profile-info-value">
+
+                            <ul class="ace-thumbnails clearfix img-content">
+                                @foreach($sdata['init_budget']->picture as $pic)
+                                    <li>
+                                        <div>
+                                            <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                            <div class="text">
+                                                <div class="inner">
+                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                @endforeach
+
+                            </ul>
+
+                        </div>
+                    </div>
+
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 摘要： </div>
+                        <div class="profile-info-value">
+                            <span class="editable editable-click">{{$sdata['item_notice']->infos}}</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 预算通知： </div>
+                        <div class="profile-info-value">
+                            <ul class="ace-thumbnails clearfix img-content">
+                                @foreach($sdata['item_notice']->picture as $pic)
+                                    <li>
+                                        <div>
+                                            <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                            <div class="text">
+                                                <div class="inner">
+                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                @endforeach
+
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </div>
 
             </div>
         </div>
@@ -209,7 +244,6 @@
 {{-- 样式 --}}
 @section('css')
 
-    <link rel="stylesheet" href="{{asset('treetable/jquery.treetable.theme.default.css')}}">
     <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
 
 @endsection
@@ -218,16 +252,8 @@
 @section('js')
     @parent
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script src="{{asset('treetable/jquery.treetable.js')}}"></script>
-    <script src="{{asset('js/func.js')}}"></script>
 
     <script>
-        $("#tree-itemuser").treetable({
-            expandable: true // 展示
-            ,initialState :"collapsed"//默认打开所有节点
-            ,stringCollapse:'关闭'
-            ,stringExpand:'展开'
-        });
 
         $('.img-content').viewer();
     </script>

@@ -17,7 +17,7 @@
         </a>
 
         @if(filled($sdata['itemadmins']) && $sdata['item']->schedule_id==1 && $sdata['item']->process_id==8 && $sdata['item']->code=='1')
-            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_itemprocess_csia',['item'=>$sdata['item']->id])}}" data-method="post">
+            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_check_set_itemadmin',['item'=>$sdata['item']->id])}}" data-method="post">
                 <i class="ace-icon fa fa-check-circle bigger-110"></i>
                 提交配置
             </a>
