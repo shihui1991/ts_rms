@@ -42,6 +42,60 @@ class Estate extends Model
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
+
+    }
+
+    /* ++++++++++ 获取房屋状况 ++++++++++ */
+    public function getStatusAttribute($key=null)
+    {
+        $array=[0=>'正常',1=>'存在新建',2=>'存在改建',3=>'存在扩建'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+
+    /* ++++++++++ 获取产权争议状态 ++++++++++ */
+    public function getDisputeAttribute($key=null)
+    {
+        $array=[0=>'无争议',1=>'存在争议',2=>'产权明确'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+
+    /* ++++++++++ 面积争议 ++++++++++ */
+    public function getAreaDisputeAttribute($key=null)
+    {
+        $array=[0=>'无争议',1=>'待测绘',2=>'面积明确'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+
+    /* ++++++++++ 获取资产评估状态 ++++++++++ */
+    public function getHasAssetsAttribute($key=null)
+    {
+        $array=[0=>'否',1=>'是'];
+        if(is_numeric($key)){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+
+    /* ++++++++++ 批准用途关联建筑用途 ++++++++++ */
+    public function defbuildinguse(){
+        return $this->belongsTo('App\Http\Model\Buildinguse','def_use','id')->withDefault();
+    }
+    /* ++++++++++ 实际用途关联建筑用途 ++++++++++ */
+    public function realbuildinguse(){
+        return $this->belongsTo('App\Http\Model\Buildinguse','real_use','id')->withDefault();
     }
 
     public function item(){

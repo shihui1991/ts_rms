@@ -9,6 +9,7 @@ use App\Http\Model\Adminunit;
 use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemland;
 use App\Http\Model\Itempublic;
+use App\Http\Model\Landlayout;
 use App\Http\Model\Landprop;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -233,6 +234,11 @@ class ItemlandController extends BaseitemController
             ->where('land_id',$id)
             ->where('building_id',0)
             ->get();
+        /* ++++++++++ 地块户型 ++++++++++ */
+        $landlayouts=Landlayout::sharedLock()
+            ->where('item_id',$item_id)
+            ->where('land_id',$id)
+            ->get();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($itemland)){
@@ -249,6 +255,7 @@ class ItemlandController extends BaseitemController
                 'itemland'=>$itemland,
                 'itembuildings'=>$itembuildings,
                 'itempublics'=>$itempublics,
+                'landlayouts'=>$landlayouts,
                 ];
             $edata=null;
             $url=null;

@@ -47,7 +47,7 @@
             <div class="profile-info-name">楼栋： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click"></span>
-            </div
+            </div>
         </div>
         <div class="profile-info-row">
             <div class="profile-info-name">补偿方式： </div>

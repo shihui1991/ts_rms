@@ -121,11 +121,14 @@ Route::any('/itempublic','ItempublicController@index')->name('g_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');
+/*---------- 项目-地块户型 ----------*/
+Route::any('/landlayout','LandlayoutController@index')->name('g_landlayout');
+Route::any('/landlayout_add','LandlayoutController@add')->name('g_landlayout_add');
+Route::get('/landlayout_info','LandlayoutController@info')->name('g_landlayout_info');
+Route::any('/landlayout_edit','LandlayoutController@edit')->name('g_landlayout_edit');
 
 /*---------- 项目-被征收户账号 ----------*/
-Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
-Route::get('/household_info','HouseholdController@info')->name('g_household_info');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
 /*---------- 项目-被征收户详细信息 ----------*/
 Route::any('/householddetail','HouseholddetailController@index')->name('g_householddetail');
@@ -151,6 +154,11 @@ Route::any('/householdbuilding','HouseholdbuildingController@index')->name('g_ho
 Route::any('/householdbuilding_add','HouseholdbuildingController@add')->name('g_householdbuilding_add');
 Route::get('/householdbuilding_info','HouseholdbuildingController@info')->name('g_householdbuilding_info');
 Route::any('/householdbuilding_edit','HouseholdbuildingController@edit')->name('g_householdbuilding_edit');
+/*---------- 项目-被征户-资产 ----------*/
+Route::any('/householdassets','HouseholdassetsController@index')->name('g_householdassets');
+Route::any('/householdassets_add','HouseholdassetsController@add')->name('g_householdassets_add');
+Route::get('/householdassets_info','HouseholdassetsController@info')->name('g_householdassets_info');
+Route::any('/householdassets_edit','HouseholdassetsController@edit')->name('g_householdassets_edit');
 
 /*+++++++++++++++ 【征收决定】 ++++++++++++++++*/
 /*---------- 项目-自选社会风险评估调查话题 ----------*/

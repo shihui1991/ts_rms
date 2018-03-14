@@ -13,6 +13,7 @@
             <a href="{{route('g_itemland_edit',['id'=>$sdata['itemland']->id,'item'=>$sdata['item']->id])}}" class="btn">修改地块信息</a>
             <a href="{{route('g_itembuilding_add',['item'=>$sdata['item']->id,'land_id'=>$sdata['itemland']->id])}}" class="btn">添加楼栋信息</a>
             <a href="{{route('g_itempublic_add',['item'=>$sdata['item']->id,'land_id'=>$sdata['itemland']->id])}}" class="btn">添加公共附属物信息</a>
+            <a href="{{route('g_landlayout_add',['item'=>$sdata['item']->id,'land_id'=>$sdata['itemland']->id])}}" class="btn">添加地块户型信息</a>
         </div>
 
         <div class="well-sm">
@@ -36,6 +37,13 @@
                         <a data-toggle="tab" href="#itempublic" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             公共附属物信息
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a data-toggle="tab" href="#landlayout" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            地块户型信息
                         </a>
                     </li>
                 </ul>
@@ -207,6 +215,38 @@
                         <div class="row">
                             <div class="col-xs-6">
                                 <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata['itempublics']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="landlayout" class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>面积</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if(filled($sdata['landlayouts']))
+                                @foreach($sdata['landlayouts'] as $layout)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$layout->name}}</td>
+                                        <td>{{$layout->area}}</td>
+                                        <td>
+                                            <a href="{{route('g_landlayout_info',['id'=>$layout->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata['landlayouts']) }} @else 0 @endif 条数据</div>
                             </div>
                         </div>
                     </div>

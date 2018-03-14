@@ -33,8 +33,8 @@ class ItemdraftController extends BaseitemController
         DB::beginTransaction();
         try{
             $itemdraft=$model
-                ->with(['item'=>function($query){
-                    $query->select(['id','name']);
+                ->with(['state'=>function($query){
+                    $query->select(['code','name']);
                 }])
                 ->where($where)
                 ->select($select)
@@ -84,8 +84,7 @@ class ItemdraftController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'content'=>'required',
-                'name'=>'required',
-                'code' => 'required'
+                'name'=>'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写'
@@ -176,8 +175,7 @@ class ItemdraftController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'content'=>'required',
-                'name'=>'required',
-                'code' => 'required'
+                'name'=>'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写'

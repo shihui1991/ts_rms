@@ -37,9 +37,7 @@ class ItemcrowdController extends BaseitemController
                 ->where('item_id',$item_id)
                 ->count();
 
-            $itemrisk=Itemcrowd::with(['item'=>function($query){
-                    $query->select(['id','name']);
-                },'cate'=>function($query){
+            $itemrisk=Itemcrowd::with(['cate'=>function($query){
                     $query->select(['id','name']);
                 },'crowd'=>function($query){
                     $query->select(['id','name']);
@@ -254,9 +252,7 @@ class ItemcrowdController extends BaseitemController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
 
-        $model= Itemcrowd::with(['item'=>function($query){
-            $query->select(['id','name']);
-        },'cate'=>function($query){
+        $model= Itemcrowd::with(['cate'=>function($query){
             $query->select(['id','name']);
         },'crowd'=>function($query){
             $query->select(['id','name']);

@@ -13,7 +13,9 @@ class Householddetail extends Model
     use SoftDeletes;
     protected $table='item_household_detail';
     protected $primaryKey='id';
-    protected $fillable=['status','register','reg_inner','reg_outer','balcony','dispute', 'area_dispute','picture','def_use','real_use','has_assets','agree','repay_way', 'house_price','house_area','house_num','house_addr','more_price','layout_id','opinion', 'receive_man','receive_tel','receive_addr','sign'];
+    protected $fillable=['status','register','reg_inner','reg_outer','balcony','dispute', 'area_dispute','picture','def_use','real_use',
+        'has_assets','business','agree','repay_way', 'house_price','house_area','house_num','house_addr','more_price','layout_id','opinion',
+        'receive_man','receive_tel','receive_addr','sign'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array',
@@ -35,6 +37,7 @@ class Householddetail extends Model
         'def_use'=>'批准用途',
         'real_use'=>'实际用途',
         'has_assets'=>'是否有固定资产',
+        'business'=>'经营项目',
         'agree'=>'征收意见',
         'repay_way'=>'补偿方式',
         'house_price'=>'房源单价',

@@ -210,7 +210,7 @@ class ItempublicController extends BaseitemController
                 }else{
                     /* ++++++++++ 修改数据 ++++++++++ */
                     $itempublic->gov_num=$request->input('gov_num');
-                    $itempublic->gov_pic=json_encode($request->input('gov_pic'));
+                    $itempublic->gov_pic=$request->input('gov_pic');
                     $itempublic->save();
                 }
                 if (blank($itempublic)) {

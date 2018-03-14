@@ -22,6 +22,7 @@
                 </a>
             @endif
             <a href="{{route('g_householdbuilding_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加房屋建筑</a>
+            <a href="{{route('g_householdassets_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加资产信息</a>
             <a href="{{route('g_householdmember_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加家庭成员</a>
             <a href="{{route('g_householdobject_add',['item'=>$edata['item_id'],'household_id'=>$sdata->id])}}" class="btn">添加其他补偿事项</a>
         </div>
@@ -42,10 +43,18 @@
                             详细信息
                         </a>
                     </li>
+
                     <li class="">
                         <a data-toggle="tab" href="#householdbuilding" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             房屋建筑
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a data-toggle="tab" href="#householdassets" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            资产信息
                         </a>
                     </li>
 
@@ -152,9 +161,16 @@
                                 </div>
 
                                 <div class="profile-info-row">
+                                    <div class="profile-info-name"> 面积争议： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->area_dispute}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
                                     <div class="profile-info-name"> 状态： </div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->state}}</span>
+                                        <span class="editable editable-click">{{$edata['household_detail']->status}}</span>
                                     </div>
                                 </div>
 
@@ -165,15 +181,9 @@
                                     </div>
                                 </div>
 
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 登记套内面积： </div>
-                                    <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$edata['household_detail']->reg_inner}}</span>
-                                    </div>
-                                </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 登记建筑面积： </div>
+                                    <div class="profile-info-name"> 建筑面积： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$edata['household_detail']->reg_outer}}</span>
                                     </div>
@@ -197,6 +207,13 @@
                                     <div class="profile-info-name"> 实际用途： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$edata['household_detail']->realbuildinguse->name}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 经营项目： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$edata['household_detail']->business}}</span>
                                     </div>
                                 </div>
 
@@ -293,29 +310,6 @@
                                     </div>
                                 </div>
 
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 房源户型图： </div>
-                                    <div class="profile-info-value">
-                                    <span class="editable editable-click">
-                                         <ul class="ace-thumbnails clearfix img-content viewer">
-                                             @if(isset($edata['household_detail']->layout_img))
-                                                 @foreach($edata['household_detail']->layout_img as $layoutpic)
-                                                     <li>
-                                                    <div>
-                                                        <img width="120" height="120" src="{!! $layoutpic !!}" alt="加载失败">
-                                                        <div class="text">
-                                                            <div class="inner">
-                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                 @endforeach
-                                             @endif
-                                        </ul>
-                                    </span>
-                                    </div>
-                                </div>
 
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 房屋证件： </div>
@@ -327,30 +321,6 @@
                                                      <li>
                                                 <div>
                                                     <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
-                                                    <div class="text">
-                                                        <div class="inner">
-                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                                 @endforeach
-                                             @endif
-                                        </ul>
-                                    </span>
-                                    </div>
-                                </div>
-
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 房屋图片： </div>
-                                    <div class="profile-info-value">
-                                    <span class="editable editable-click">
-                                         <ul class="ace-thumbnails clearfix img-content viewer">
-                                              @if(isset($edata['household_detail']->house_img))
-                                                 @foreach($edata['household_detail']->house_img as $housepic)
-                                                     <li>
-                                                <div>
-                                                    <img width="120" height="120" src="{!! $housepic !!}" alt="加载失败">
                                                     <div class="text">
                                                         <div class="inner">
                                                             <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
@@ -416,7 +386,6 @@
                                 <th>楼层</th>
                                 <th>朝向</th>
                                 <th>结构</th>
-                                <th>是否登记</th>
                                 <th>状态</th>
                                 <th>操作</th>
                             </tr>
@@ -431,8 +400,7 @@
                                         <td>{{$infos->floor}}</td>
                                         <td>{{$infos->direct}}</td>
                                         <td>{{$infos->buildingstruct->name}}</td>
-                                        <td>{{$infos->register}}</td>
-                                        <td>{{$infos->state}}</td>
+                                        <td>{{$infos->code}}</td>
                                         <td>
                                             <a href="{{route('g_householdbuilding_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
                                         </td>
@@ -446,10 +414,44 @@
                                 <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdbuilding']) }} @else 0 @endif 条数据</div>
                             </div>
                         </div>
+                    </div>
 
+                    <div id="householdassets" class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>计量单位</th>
+                                <th>数量</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if($code=='success')
+                                @foreach($edata['householdassets'] as $infos)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$infos->name}}</td>
+                                        <td>{{$infos->num_unit}}</td>
+                                        <td>{{$infos->gov_num}}</td>
+                                        <td>
+                                            <a href="{{route('g_householdassets_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdassets']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="item" class="tab-pane fade">
+                        @if(filled($edata['householdmember']))
                         <div class="col-xs-12">
                             @foreach($edata['householdmember'] as $householdmember)
                                 <div class="col-xs-6 col-sm-3 pricing-box">
@@ -596,6 +598,11 @@
                                 </div>
                             @endforeach
                         </div>
+                        @else
+                            <div class="profile-user-info profile-user-info-striped">
+                                <span>暂无数据</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div id="items" class="tab-pane fade">

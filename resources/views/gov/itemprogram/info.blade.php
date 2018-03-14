@@ -9,9 +9,8 @@
         @if (blank($sdata))
             <a href="{{route('g_itemprogram_add',['item'=>$edata['item_id']])}}" class="btn">添加征收方案</a>
         @else
-            <a href="{{route('g_itemprogram_edit',['id'=>$sdata->id,'item'=>$edata['item_id']])}}" class="btn">修改征收方案</a>
+            <a href="{{route('g_itemprogram_edit',['id'=>$sdata->id,'item'=>$sdata['item_id']])}}" class="btn">修改征收方案</a>
         @endif
-
 
     </div>
 
@@ -35,6 +34,12 @@
                                         <div class="profile-info-name"> 方案名称： </div>
                                         <div class="profile-info-value">
                                             <span class="editable editable-click">{{$sdata->name}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 项目期限： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata->item_end}}</span>
                                         </div>
                                     </div>
                                     <div class="profile-info-row">

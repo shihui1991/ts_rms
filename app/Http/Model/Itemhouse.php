@@ -42,9 +42,7 @@ class Itemhouse extends Model
         }
     }
 
-    public function state(){
-        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
-    }
+
 
     /* ++++++++++ 关联项目 ++++++++++ */
     public function item(){
@@ -54,4 +52,5 @@ class Itemhouse extends Model
     public function house(){
         return $this->belongsTo('App\Http\Model\House','house_id','id')->withDefault();
     }
+
 }

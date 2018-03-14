@@ -49,6 +49,9 @@ class ItemdraftreportController extends BaseitemController
                 },
                     'draft'=>function($query){
                         $query->select(['id','name']);
+                    },
+                    'state'=>function($query){
+                        $query->select(['code','name']);
                     }])
                 ->where($where)
                 ->select($select)
@@ -103,8 +106,7 @@ class ItemdraftreportController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'content'=>'required',
-                'name'=>'required',
-                'code' => 'required'
+                'name'=>'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写'
@@ -167,6 +169,9 @@ class ItemdraftreportController extends BaseitemController
             },
                 'draft'=>function($query){
                     $query->select(['id','name']);
+                },
+                'state'=>function($query){
+                    $query->select(['code','name']);
                 }])
             ->sharedLock()
             ->find($id);
@@ -240,8 +245,7 @@ class ItemdraftreportController extends BaseitemController
             /* ********** 表单验证 ********** */
             $rules=[
                 'content'=>'required',
-                'name'=>'required',
-                'code' => 'required'
+                'name'=>'required'
             ];
             $messages=[
                 'required'=>':attribute必须填写',
