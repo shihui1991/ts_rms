@@ -1,0 +1,103 @@
+{{-- 继承布局 --}}
+@extends('gov.main')
+
+
+{{-- 页面内容 --}}
+@section('content')
+
+    <p>
+
+    </p>
+
+    <div class="well-sm">
+        <div class="tabbable">
+            <ul class="nav nav-tabs" id="myTab">
+                <li class="active">
+                    <a data-toggle="tab" href="#householdright" aria-expanded="true">
+                        <i class="green ace-icon fa fa-building bigger-120"></i>
+                        产权争议
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_itemland')}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        违建处理
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="#">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        面积争议
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="householdright" class="tab-pane fade active in">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>产权争议</th>
+                            <th>地块</th>
+                            <th>楼栋</th>
+                            <th>房屋产权证号</th>
+                            <th>征收意见</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if($code=='success')
+                            @foreach($sdata as $infos)
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{$infos->dispute}}</td>
+                                    <td>{{$infos->itemland->address}}</td>
+                                    <td>{{$infos->itembuilding->building}}</td>
+                                    <td>{{$infos->register}}</td>
+                                    <td>{{$infos->agree}}</td>
+                                    <td>
+                                        @if($infos->getOriginal('dispute')==1)
+                                            <a href="{{route('g_householdright_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>
+                                        @else
+                                            <a href="{{route('g_householdright_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据</div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
+                                @if($code=='success') {{ $sdata->links() }} @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@endsection
+
+{{-- 样式 --}}
+@section('css')
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+@endsection
+
+{{-- 插件 --}}
+@section('js')
+    @parent
+    <script src="{{asset('js/func.js')}}"></script>
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
+    <script>
+        $('.img-content').viewer('update');
+    </script>
+@endsection

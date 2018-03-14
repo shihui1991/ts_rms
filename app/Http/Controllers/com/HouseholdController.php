@@ -18,6 +18,7 @@ use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Layout;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -33,16 +34,24 @@ class HouseholdController extends BaseitemController
     /* ++++++++++ 获取入户摸底资料 ++++++++++ */
     public function index(Request $request)
     {
-       $item_id = $this->item_id;
         $infos = [];
+        $where = [];
+       $item_id = $this->item_id;
+        $infos['item_id'] = $item_id;
+        $where[] = ['item_id',$item_id];
+        $infos['type'] = session('com_user.type');
+        $company_id = session('com_user.company_id');
+        $infos['company_id'] = $company_id;
+        $where[] = ['company_id',$company_id];
         /* ********** 每页条数 ********** */
-        $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
-        $infos['displaynum']=$displaynum;
-
+        $per_page=15;
+        $page=$request->input('page',1);
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
+            $total=Companyhousehold::sharedLock()
+                ->where($where)
+                ->count();
             $households = Companyhousehold::with([
                 'household'=>function($querys){
                     $querys->with([
@@ -56,9 +65,12 @@ class HouseholdController extends BaseitemController
                             $query->select(['id','household_id','dispute']);
                         }]);
                 }])
-                ->where('company_id',session('com_user.company_id'))
-                ->where('item_id',$item_id)
-                ->paginate($displaynum);
+                ->where($where)
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+            $households->withPath(route('c_household'));
             if(blank($households)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -179,6 +191,8 @@ class HouseholdController extends BaseitemController
 
         if($request->isMethod('get')){
             $sdata['type'] = $type;
+            $sdata['item_id'] = $item_id;
+            $sdata['item'] = $item;
             if($type==0){
                 $model=new Estate();
                 $sdata['household'] = Household::select(['id','land_id','building_id'])
@@ -192,13 +206,9 @@ class HouseholdController extends BaseitemController
                     ->where('id',$household_id)
                     ->first();
                 $sdata['defuse'] = Buildinguse::select(['id','name'])->get()?:[];
-                $sdata['item_id'] = $item_id;
-                $sdata['item'] = $item;
                 $sdata['models'] = $model;
             }else{
                 $model=new Householdassets();
-                $sdata['item_id'] = $item_id;
-                $sdata['item'] = $item;
                 $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
             }
 

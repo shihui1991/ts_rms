@@ -6,7 +6,7 @@
 @section('content')
 
     <p>
-        <a class="btn" href="javascript:history.back()">
+        <a class="btn" href="{{route('c_household',['item'=>$sdata['item_id']])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
