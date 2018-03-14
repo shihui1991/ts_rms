@@ -160,6 +160,11 @@ Route::any('/householdassets_add','HouseholdassetsController@add')->name('g_hous
 Route::get('/householdassets_info','HouseholdassetsController@info')->name('g_householdassets_info');
 Route::any('/householdassets_edit','HouseholdassetsController@edit')->name('g_householdassets_edit');
 
+/*---------- 项目-被征户-产权争议解决 ----------*/
+Route::any('/householdright','HouseholdrightController@index')->name('g_householdright');
+Route::any('/householdright_add','HouseholdrightController@add')->name('g_householdright_add');
+Route::get('/householdright_info','HouseholdrightController@info')->name('g_householdright_info');
+
 /*+++++++++++++++ 【征收决定】 ++++++++++++++++*/
 /*---------- 项目-自选社会风险评估调查话题 ----------*/
 Route::any('/itemtopic','ItemtopicController@index')->name('g_itemtopic');

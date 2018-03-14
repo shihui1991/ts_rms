@@ -35,6 +35,7 @@ Route::any('/landlayout_edit','LandlayoutController@edit')->name('c_landlayout_e
 /*---------- 入户摸底【评估】 ----------*/
 Route::get('/household','HouseholdController@index')->name('c_household');
 Route::get('/household_info','HouseholdController@info')->name('c_household_info');
+Route::any('/household_add','HouseholdController@add')->name('c_household_add');
 Route::any('/household_edit','HouseholdController@edit')->name('c_household_edit');
 /*---------- 评估【公共附属物】 ----------*/
 Route::get('/compublic','CompublicController@index')->name('c_compublic');

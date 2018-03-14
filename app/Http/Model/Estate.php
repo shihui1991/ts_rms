@@ -13,10 +13,12 @@ class Estate extends Model
     use SoftDeletes;
     protected $table='com_assess_estate';
     protected $primaryKey='id';
-    protected $fillable=['picture'];
+    protected $fillable=['picture','status','register','reg_inner','reg_outer','balcony','dispute','area_dispute',
+    'def_use','real_use','has_assets','business','house_pic','sign'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array',
+        'house_pic'=>'array'
     ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
@@ -30,7 +32,20 @@ class Estate extends Model
         'tag_total'=>'附属物评估总价',
         'total'=>'评估总价',
         'picture'=>'评估报告',
-        'state'=>'状态'
+        'code'=>'状态代码',
+        'status'=>'房屋状态',
+        'register'=>'房屋产权证号',
+        'reg_inner'=>'套内面积',
+        'reg_outer'=>'建筑面积',
+        'balcony'=>'阳台面积',
+        'dispute'=>'产权争议',
+        'area_dispute'=>'面积争议',
+        'def_use'=>'批准用途',
+        'real_use'=>'实际用途',
+        'has_assets'=>'是否有固定资产',
+        'business'=>'经营项目',
+        'house_pic'=>'户型图，房屋证件，房屋图片',
+        'sign'=>'被征收人签名'
     ];
 
 
@@ -38,6 +53,9 @@ class Estate extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
+        $this->attributes['household_id'] = $request->input('household_id');
+        $this->attributes['land_id'] = $request->input('land_id');
+        $this->attributes['building_id'] = $request->input('building_id');
 
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */

@@ -37,7 +37,7 @@ class HouseholddetailController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','unit','floor','number','type','username','password','infos','status'];
+        $select=['id','item_id','land_id','building_id','unit','floor','number','type','username','password','infos','code'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
@@ -123,7 +123,6 @@ class HouseholddetailController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
