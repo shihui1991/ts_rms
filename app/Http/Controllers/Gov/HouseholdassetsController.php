@@ -170,7 +170,6 @@ class HouseholdassetsController extends BaseitemController
                 $url = route('g_householddetail_info',['id'=>$household_id,'item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
-                dd($exception);
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
