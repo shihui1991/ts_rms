@@ -35,7 +35,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="manage_price"> 月管理费(元/月)： </label>
             <div class="col-sm-9">
-                <input type="text" id="manage_price" name="manage_price" value="{{old('manage_price')}}" class="col-xs-10 col-sm-5"  placeholder="请输入市场评估价" required>
+                <input type="text" id="manage_price" name="manage_price" value="{{old('manage_price')}}" class="col-xs-10 col-sm-5"  placeholder="请输入评估市场价" required>
             </div>
         </div>
         <div class="space-4"></div>

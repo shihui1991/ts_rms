@@ -111,7 +111,7 @@ function batch_update_or_insert_sql($table='', $insert_columns=[], $values=[], $
         $p=ceil(($k+1)/$num);
         $temp_values=[];
         foreach ($insert_columns as $insert_column){
-            $temp=(string)$value[$insert_column] or '';
+            $temp=$value[$insert_column]?(string)$value[$insert_column]:null;
             $temp_values[]="'".$temp."'";
         }
         $temp_values=implode(',',$temp_values);
@@ -197,7 +197,7 @@ function batch_update_sql($table='', $insert_columns=[], $values=[], $update_col
         $p=ceil(($k+1)/$num);
         $temp_values=[];
         foreach ($insert_columns as $insert_column){
-            $temp=(string)$value[$insert_column] or '';
+            $temp=$value[$insert_column]?(string)$value[$insert_column]:null;
             $temp_values[]="'".$temp."'";
         }
         $temp_values=implode(',',$temp_values);
@@ -236,20 +236,6 @@ function batch_update_sql($table='', $insert_columns=[], $values=[], $update_col
     $sqls[]='update `'.$table.'`,'.$temp_table.' set '.$sql_update_columns.' where '.$sql_where_columns;
 
     return $sqls;
-}
-
-
-/** 获取操作控制器和方法
- * @return array
- */
-function get_method(){
-    $actionNameStr=request()->route()->getActionName();
-    $array=explode('\\',$actionNameStr);
-    $count=count($array);
-    $actionNameStr=$array[$count-1];
-    $array=explode('@',$actionNameStr);
-
-    return $array;
 }
 
 /** 生成GUID

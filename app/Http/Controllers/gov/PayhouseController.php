@@ -119,37 +119,16 @@ class PayhouseController extends BaseitemController
                     ->orderBy('portion','desc')
                     ->first();
                 /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
-                $pay_house_total=Paysubject::query()->sharedLock()
+                $resettle_total=Paysubject::query()->sharedLock()
                     ->where([
                         ['item_id',$pay->item_id],
                         ['household_id',$pay->household_id],
                         ['pay_id',$pay->id],
                     ])
-                    ->whereIn('subject_id',[1,2,4])
+                    ->whereIn('subject_id',[1,2,4,11,12])
                     ->sum('amount');
-                $pay_sign_reward=Paysubject::query()->sharedLock()
-                    ->where([
-                        ['item_id',$pay->item_id],
-                        ['household_id',$pay->household_id],
-                        ['pay_id',$pay->id],
-                    ])
-                    ->whereIn('subject_id',[11,12])
-                    ->sum('amount');
-                if($household->getOriginal('type')==0){ // 私产
-                    $resettle_total=$pay_house_total+$pay_sign_reward;
-                }else{
-                    /* ++++++++++ 正式方案 ++++++++++ */
-                    $program=Itemprogram::sharedLock()
-                        ->where([
-                            ['item_id',$this->item_id],
-                            ['code','22'],
-                        ])
-                        ->select(['id','item_id','code','portion_holder','portion_renter'])
-                        ->first();
-                    if(blank($program)){
-                        throw new \Exception('暂无通过审查的正式征收方案数据',404404);
-                    }
-                    $resettle_total=$pay_house_total*$program->portion_renter/100+$pay_sign_reward;
+                if($household->getOriginal('type')==1){ // 公房
+                    $resettle_total -= $pay_unit->amount;
                 }
 
                 /* ++++++++++ 项目房源 ++++++++++ */
@@ -303,37 +282,23 @@ class PayhouseController extends BaseitemController
                 $house_rates=Itemhouserate::sharedLock()->where('item_id',$this->item_id)->orderBy('start_area','asc')->get();
 
                 /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
-                $pay_house_total=Paysubject::query()->sharedLock()
+                $resettle_total=Paysubject::query()->sharedLock()
                     ->where([
                         ['item_id',$pay->item_id],
                         ['household_id',$pay->household_id],
                         ['pay_id',$pay->id],
                     ])
-                    ->whereIn('subject_id',[1,2,4])
+                    ->whereIn('subject_id',[1,2,4,11,12])
                     ->sum('amount');
-                $pay_sign_reward=Paysubject::query()->sharedLock()
-                    ->where([
-                        ['item_id',$pay->item_id],
-                        ['household_id',$pay->household_id],
-                        ['pay_id',$pay->id],
-                    ])
-                    ->whereIn('subject_id',[11,12])
-                    ->sum('amount');
-                if($household->getOriginal('type')==0){ // 私产
-                    $resettle_total=$pay_house_total+$pay_sign_reward;
-                }else{
-                    /* ++++++++++ 正式方案 ++++++++++ */
-                    $program=Itemprogram::sharedLock()
+                if($household->getOriginal('type')==1){ // 公房
+                    $pay_unit=Payunit::sharedLock()
                         ->where([
                             ['item_id',$this->item_id],
-                            ['code','22'],
+                            ['household_id',$household->id],
+                            ['pay_id',$pay_id],
                         ])
-                        ->select(['id','item_id','code','portion_holder','portion_renter'])
                         ->first();
-                    if(blank($program)){
-                        throw new \Exception('暂无通过审查的正式征收方案数据',404404);
-                    }
-                    $resettle_total=$pay_house_total*$program->portion_renter/100+$pay_sign_reward;
+                    $resettle_total -= $pay_unit->amount;
                 }
 
                 $last_total=$resettle_total; // 产权调换后结余补偿款
@@ -638,39 +603,17 @@ class PayhouseController extends BaseitemController
             });
             $house_rates=Itemhouserate::sharedLock()->where('item_id',$this->item_id)->orderBy('start_area','asc')->get();
 
-            /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
-            $pay_house_total=Paysubject::query()->sharedLock()
-                ->where([
-                    ['item_id',$pay->item_id],
-                    ['household_id',$pay->household_id],
-                    ['pay_id',$pay->id],
-                ])
-                ->whereIn('subject_id',[1,2,4])
-                ->sum('amount');
-            $pay_sign_reward=Paysubject::query()->sharedLock()
-                ->where([
-                    ['item_id',$pay->item_id],
-                    ['household_id',$pay->household_id],
-                    ['pay_id',$pay->id],
-                ])
-                ->whereIn('subject_id',[11,12])
-                ->sum('amount');
-
             $total=$pay->total;
-            if($household->getOriginal('type')==0){ // 私产
-                $resettle_total=$pay_house_total+$pay_sign_reward;
-            }else{
-                /* ++++++++++ 正式方案 ++++++++++ */
-                $program=Itemprogram::sharedLock()
-                    ->where([
-                        ['item_id',$this->item_id],
-                        ['code','22'],
-                    ])
-                    ->select(['id','item_id','code','portion_holder','portion_renter'])
-                    ->first();
-                if(blank($program)){
-                    throw new \Exception('暂无通过审查的正式征收方案数据',404404);
-                }
+            /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
+            $resettle_total=Paysubject::query()->sharedLock()
+                ->where([
+                    ['item_id',$pay->item_id],
+                    ['household_id',$pay->household_id],
+                    ['pay_id',$pay->id],
+                ])
+                ->whereIn('subject_id',[1,2,4,11,12])
+                ->sum('amount');
+            if($household->getOriginal('type')==1){ // 公房
                 $pay_unit=Payunit::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
@@ -679,8 +622,9 @@ class PayhouseController extends BaseitemController
                     ])
                     ->first();
                 $total -= $pay_unit->amount;
-                $resettle_total=$pay_house_total*$program->portion_renter/100+$pay_sign_reward;
+                $resettle_total -= $pay_unit->amount;
             }
+
             $end_total=$total;
             $last_total=$resettle_total; // 产权调换后结余补偿款
             $plus_area=0; // 上浮累计面积

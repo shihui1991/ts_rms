@@ -54,6 +54,20 @@
                                 </div>
 
                                 <div class="profile-info-row">
+                                    <div class="profile-info-name">  @if($sdata['household']->getOriginal('type')) 承租人 @else 产权人 @endif： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['holder']->name}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 状态： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata['household']->state->name}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
                                     <div class="profile-info-name"> 房屋状况： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['household_detail']->status}}</span>
@@ -89,20 +103,6 @@
                     <div class="widget-body">
                         <div class="widget-main">
                             <div class="profile-user-info profile-user-info-striped">
-
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name">  @if($sdata['household']->getOriginal('type')) 承租人 @else 产权人 @endif： </div>
-                                    <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$sdata['holder']->name}}</span>
-                                    </div>
-                                </div>
-
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 状态： </div>
-                                    <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$sdata['household']->state->name}}</span>
-                                    </div>
-                                </div>
 
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 补偿方式： </div>
@@ -148,6 +148,29 @@
                                     </div>
                                 </div>
 
+                                @if(filled($sdata['pay']->picture))
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 行政征收决定： </div>
+                                        <div class="profile-info-value">
+                                            <ul class="ace-thumbnails clearfix img-content">
+                                                @foreach($sdata['pay']->picture as $pic)
+                                                    <li>
+                                                        <div>
+                                                            <img width="120" height="120" src="{{$pic}}" alt="加载失败">
+                                                            <div class="text">
+                                                                <div class="inner">
+                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                @endforeach
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @endif
+
                             </div>
                         </div>
                     </div>
@@ -160,6 +183,10 @@
         <a href="{{route('g_paysubject_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
             添加补偿科目
         </a>
+
+        <a href="{{route('g_pact',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
+            补偿安置协议
+        </a>
     </div>
 
     <div class="tabbable">
@@ -168,12 +195,25 @@
                 <a data-toggle="tab" href="#pay_subject" aria-expanded="true">补偿科目</a>
             </li>
 
-            <li class="">
-                <a data-toggle="tab" href="#pay_building" aria-expanded="false">房屋建筑</a>
-            </li>
+            @if($sdata['pay']->getOriginal('repay_way')==1)
+
+                <li class="">
+                    <a data-toggle="tab" href="#pay_house" aria-expanded="false">产权调换房</a>
+                </li>
+
+            @endif
+
+            @if($sdata['pay']->getOriginal('transit_way')==1)
+
+                <li class="">
+                    <a data-toggle="tab" href="#pay_transit" aria-expanded="false">临时周转房</a>
+                </li>
+
+            @endif
+
 
             <li class="">
-                <a data-toggle="tab" href="#pay_object" aria-expanded="false">其他补偿事项</a>
+                <a data-toggle="tab" href="#pact" aria-expanded="false">协议</a>
             </li>
         </ul>
 
@@ -201,11 +241,7 @@
                                 <td>{{$subject->state->name}}</td>
                                 <td>
                                     <div class="btn-group">
-                                        @if($subject->total_id)
-                                            已兑付
-                                        @else
-                                            <a href="{{route('g_paysubject_edit',['id'=>$subject->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">修改</a>
-                                        @endif
+                                        <a href="{{route('g_paysubject_info',['id'=>$subject->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
 
                                     </div>
 
@@ -217,210 +253,129 @@
                 </table>
             </div>
 
-            <div id="pay_building" class="tab-pane">
+            @if($sdata['pay']->getOriginal('repay_way')==1)
 
-                <div id="accordion" class="accordion-style1 panel-group">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#register">
-                                    <i class="ace-icon fa fa-angle-down bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-                                    &nbsp;合法房屋及附属物
-                                </a>
-                            </h4>
-                        </div>
+                <div id="pay_house" class="tab-pane">
 
-                        <div class="panel-collapse collapse in" id="register">
-                            <div class="panel-body">
-                                <table class="table table-hover table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>用途</th>
-                                        <th>结构</th>
-                                        <th>朝向</th>
-                                        <th>面积</th>
-                                        <th>补偿单价</th>
-                                        <th>补偿总价</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @if(filled($sdata['buildings']))
-                                        @foreach($sdata['buildings'] as $building)
-                                            @if($building->code == '90')
-                                            <tr>
-                                                <td>{{$building->realuse->name}}</td>
-                                                <td>{{$building->buildingstruct->name}}</td>
-                                                <td>{{$building->direct}}</td>
-                                                <td>{{number_format($building->real_outer,2)}}</td>
-                                                <td>{{number_format($building->price,2)}}</td>
-                                                <td>{{number_format($building->amount,2)}}</td>
-                                            </tr>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <table class="table table-hover table-bordered treetable">
+                        <thead>
+                        <tr>
+                            <th>房号</th>
+                            <th>户型</th>
+                            <th>面积</th>
+                            <th>类型</th>
+                            <th>市场价</th>
+                            <th>安置价</th>
+                            <th>安置房价</th>
+                            <th>上浮房款</th>
+                            <th>安置总价</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if(filled($sdata['payhouses']))
+                            @foreach($sdata['payhouses'] as $house)
+                                <tr data-tt-id="house-{{$house->house_id}}" data-tt-parent-id="house">
+                                    <td>{{$house->house->housecommunity->name}} {{$house->house->building}}栋{{$house->house->unit}}单元{{$house->house->floor}}楼{{$house->house->number}}@if(is_numeric($house->house->number))号@endif</td>
+                                    <td>{{$house->house->layout->name}}</td>
+                                    <td>{{$house->house->is_real}}</td>
+                                    <td>{{number_format($house->area,2)}}</td>
+                                    <td>{{number_format($house->market,2)}}</td>
+                                    <td>{{number_format($house->price,2)}}</td>
+                                    <td>{{number_format($house->amount,2)}}</td>
+                                    <td>{{number_format($house->amount_plus,2)}}</td>
+                                    <td>{{number_format($house->total,2)}}</td>
+                                </tr>
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#legal">
-                                    <i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-                                    &nbsp;合法临建
-                                </a>
-                            </h4>
-                        </div>
-
-                        <div class="panel-collapse collapse" id="legal">
-                            <div class="panel-body">
-                                <table class="table table-hover table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>用途</th>
-                                        <th>结构</th>
-                                        <th>朝向</th>
-                                        <th>面积</th>
-                                        <th>补偿单价</th>
-                                        <th>补偿总价</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @if(filled($sdata['buildings']))
-                                        @foreach($sdata['buildings'] as $building)
-                                            @if(in_array($building->code,['92','95']))
+                                @if(filled($house->housepluses))
+                                    <tr data-tt-id="house-plus-{{$loop->index}}" data-tt-parent-id="house-{{$house->house_id}}">
+                                        <td>上浮房款：</td>
+                                        <td colspan="8">
+                                            <table class="table table-hover table-bordered">
+                                                <thead>
                                                 <tr>
-                                                    <td>{{$building->realuse->name}}</td>
-                                                    <td>{{$building->buildingstruct->name}}</td>
-                                                    <td>{{$building->direct}}</td>
-                                                    <td>{{number_format($building->real_outer,2)}}</td>
-                                                    <td>{{number_format($building->price,2)}}</td>
-                                                    <td>{{number_format($building->amount,2)}}</td>
+                                                    <th>上浮面积起</th>
+                                                    <th>上浮面积止</th>
+                                                    <th>上浮面积</th>
+                                                    <th>上浮比例(%)</th>
+                                                    <th>市场价与安置价之差价</th>
+                                                    <th>上浮金额</th>
                                                 </tr>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#destroy">
-                                    <i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-                                    &nbsp;自行拆除补助
-                                </a>
-                            </h4>
-                        </div>
-
-                        <div class="panel-collapse collapse" id="destroy">
-                            <div class="panel-body">
-                                <table class="table table-hover table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>用途</th>
-                                        <th>结构</th>
-                                        <th>朝向</th>
-                                        <th>面积</th>
-                                        <th>补偿单价</th>
-                                        <th>补偿总价</th>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($house->housepluses as $houseplus)
+                                                    <tr>
+                                                        <td>{{number_format($houseplus->start,2)}}</td>
+                                                        <td>{{number_format($houseplus->end,2)}}</td>
+                                                        <td>{{number_format($houseplus->area,2)}}</td>
+                                                        <td>{{number_format($houseplus->rate,2)}}</td>
+                                                        <td>{{number_format($houseplus->agio,2)}}</td>
+                                                        <td>{{number_format($houseplus->amount,2)}}</td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </td>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-                                    @if(filled($sdata['buildings']))
-                                        @foreach($sdata['buildings'] as $building)
-                                            @if($building->code == '94')
-                                                <tr>
-                                                    <td>{{$building->realuse->name}}</td>
-                                                    <td>{{$building->buildingstruct->name}}</td>
-                                                    <td>{{$building->direct}}</td>
-                                                    <td>{{number_format($building->real_outer,2)}}</td>
-                                                    <td>{{number_format($building->price,2)}}</td>
-                                                    <td>{{number_format($building->amount,2)}}</td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                                @endif
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#public">
-                                    <i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
-                                    &nbsp;公共附属物
-                                </a>
-                            </h4>
-                        </div>
-
-                        <div class="panel-collapse collapse" id="public">
-                            <div class="panel-body">
-                                <table class="table table-hover table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>名称</th>
-                                        <th>计量单位</th>
-                                        <th>数量</th>
-                                        <th>补偿单价</th>
-                                        <th>补偿总价</th>
-                                        <th>平分户数</th>
-                                        <th>平均补偿</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @if(filled($sdata['publics']))
-                                        @foreach($sdata['publics'] as $public)
-                                            <tr>
-                                                <td>{{$public->name}}</td>
-                                                <td>{{$public->num_unit}}</td>
-                                                <td>{{number_format($public->number,2)}}</td>
-                                                <td>{{number_format($public->price,2)}}</td>
-                                                <td>{{number_format($public->amount,2)}}</td>
-                                                <td>{{number_format($public->household)}}</td>
-                                                <td>{{number_format($public->avg,2)}}</td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                
-            </div>
 
-            <div id="pay_object" class="tab-pane">
+            @endif
+
+            @if($sdata['pay']->getOriginal('transit_way')==1)
+
+                <div id="pay_transit" class="tab-pane">
+
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>地址</th>
+                            <th>房号</th>
+                            <th>户型</th>
+                            <th>面积</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if(filled($sdata['paytransits']))
+                            @foreach($sdata['paytransits'] as $transit)
+                                <tr>
+                                    <td>{{$transit->house->housecommunity->address}} {{$transit->house->housecommunity->name}}</td>
+                                    <td>{{$transit->house->building}}栋{{$transit->house->unit}}单元{{$transit->house->floor}}楼{{$transit->house->number}}@if(is_numeric($transit->house->number))号@endif</td>
+                                    <td>{{$transit->house->layout->name}}</td>
+                                    <td>{{number_format($transit->area,2)}}</td>
+                                </tr>
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
+
+                </div>
+
+            @endif
+
+
+            <div id="pact" class="tab-pane">
                 <table class="table table-hover table-bordered">
                     <thead>
                     <tr>
                         <th>序号</th>
-                        <th>名称</th>
-                        <th>计量单位</th>
-                        <th>数量</th>
-                        <th>补偿单价</th>
-                        <th>补偿总价</th>
+                        <th>类别</th>
+                        <th>签约时间</th>
+                        <th>状态</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @if(filled($sdata['objects']))
-                        @foreach($sdata['objects'] as $object)
+                    @if(filled($sdata['pacts']))
+                        @foreach($sdata['pacts'] as $pact)
                             <tr>
                                 <td>{{$loop->iteration}}</td>
-                                <td>{{$object->name}}</td>
-                                <td>{{$object->num_unit}}</td>
-                                <td>{{number_format($object->number)}}</td>
-                                <td>{{number_format($object->price,2)}}</td>
-                                <td>{{number_format($object->amount,2)}}</td>
+                                <td>{{$pact->pactcate->name}}</td>
+                                <td>{{$pact->sign_at}}</td>
+                                <td>{{$pact->state->name}} | {{$pact->status}}</td>
                             </tr>
                         @endforeach
                     @endif
@@ -436,6 +391,7 @@
 @section('css')
 
     <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('treetable/jquery.treetable.theme.default.css')}}">
 
 @endsection
 
@@ -443,6 +399,15 @@
 @section('js')
     @parent
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script src="{{asset('laydate/laydate.js')}}"></script>
+    <script src="{{asset('treetable/jquery.treetable.js')}}"></script>
+
+    <script>
+        $('.img-content').viewer();
+        $(".treetable").treetable({
+            expandable: true // 展示
+            ,initialState :"collapsed"//默认打开所有节点
+            ,stringCollapse:'关闭'
+            ,stringExpand:'展开'});
+    </script>
 
 @endsection

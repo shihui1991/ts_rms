@@ -34,7 +34,7 @@ class Pay extends Model
 
     /* ++++++++++ 补偿方式 ++++++++++ */
     public function getRepayWayAttribute($key=null){
-        $array=[0=>'货币补偿',1=>'产权调换'];
+        $array=[0=>'货币补偿',1=>'房屋产权调换'];
         if(is_numeric($key)){
             return $array[$key];
         }else{

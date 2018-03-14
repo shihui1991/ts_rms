@@ -15,11 +15,14 @@ use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Itemprogram;
+use App\Http\Model\Pact;
 use App\Http\Model\Pay;
 use App\Http\Model\Paybuilding;
+use App\Http\Model\Payhouse;
 use App\Http\Model\Payobject;
 use App\Http\Model\Paypublic;
 use App\Http\Model\Paysubject;
+use App\Http\Model\Paytransit;
 use App\Http\Model\Payunit;
 use App\Http\Model\Publicdetail;
 use Illuminate\Http\Request;
@@ -180,15 +183,16 @@ class PayController extends BaseitemController
                 if(blank($household)){
                     throw new \Exception('被征收户不存在',404404);
                 }
-                if($household->code<'63'){
-                    throw new \Exception('被征收户还未完成确权确户',404404);
+                if($household->code !='75'){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能下达行政征收决定',404404);
                 }
-                $household_detail=Householddetail::sharedLock()
+                $household_detail=Householddetail::with('defbuildinguse')
+                    ->sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
                         ['household_id',$household_id],
                     ])
-                    ->select(['item_id','household_id','has_assets','area_dispute','repay_way','def_use'])
+                    ->select(['item_id','household_id','register','has_assets','area_dispute','repay_way','def_use'])
                     ->first();
                 if($household_detail->getOriginal('area_dispute')==0){
                     throw new \Exception('被征收户存在面积争议',404404);
@@ -506,8 +510,8 @@ class PayController extends BaseitemController
                     $pay_unit->pay_id=$pay->id;
                     $pay_unit->pact_id=0;
                     $pay_unit->total_id=0;
-                    $pay_unit->calculate=number_format($register_total+$legal_total+$public_total,2).' × '.$program->portion_holder.'% = '.number_format(($register_total+$legal_total+$public_total)*($program->portion_holder/100),2);
-                    $pay_unit->amount=($register_total+$legal_total+$public_total)*($program->portion_holder/100);
+                    $pay_unit->calculate=number_format($register_total,2).' × '.$program->portion_holder.'% = '.number_format($register_total*($program->portion_holder/100),2);
+                    $pay_unit->amount=$register_total*($program->portion_holder/100);
                     $pay_unit->code='110';
                     $pay_unit->save();
                 }
@@ -683,39 +687,44 @@ class PayController extends BaseitemController
                 ])
                 ->orderBy('portion','desc')
                 ->first();
-            /* ++++++++++ 房屋建筑 ++++++++++ */
-            $buildings=Paybuilding::with(['realuse'=>function($query){
-                $query->select(['id','name']);
-            },'buildingstruct'=>function($query){
-                $query->select(['id','name']);
-            },'state'=>function($query){
-                $query->select(['code','name']);
-            }])
+            /* ++++++++++ 安置房 ++++++++++ */
+            $payhouses=null;
+            if($pay->getOriginal('repay_way')==1){
+                $payhouses=Payhouse::with(['house'=>function($query){
+                    $query->with(['housecommunity','layout','houselayoutimg']);
+                },'housepluses'=>function($query) use ($household){
+                    $query->where([
+                        ['item_id',$household->item_id],
+                        ['household_id',$household->id],
+                    ]);
+                }])
+                    ->where([
+                        ['item_id',$household->item_id],
+                        ['household_id',$household->id],
+                    ])
+                    ->sharedLock()
+                    ->get();
+            }
+            /* ++++++++++ 临时周转房 ++++++++++ */
+            $paytransits=null;
+            if($pay->getOriginal('transit_way')==1){
+                $paytransits=Paytransit::with(['house'=>function($query){
+                    $query->with(['housecommunity','layout','houselayoutimg']);
+                },'pact'])
+                    ->sharedLock()
+                    ->where([
+                        ['item_id',$household->item_id],
+                        ['household_id',$household->id],
+                    ])
+                    ->get();
+            }
+            /* ++++++++++ 协议 ++++++++++ */
+            $pacts=Pact::with(['pactcate','state'])
                 ->sharedLock()
                 ->where([
-                    ['item_id',$this->item_id],
+                    ['item_id',$household->item_id],
                     ['household_id',$household->id],
-                    ['pay_id',$pay_id],
-                ])
-                ->orderBy('register','desc')
-                ->orderBy('code','asc')
-                ->orderBy('real_use','asc')
-                ->get();
-            /* ++++++++++ 公共附属物 ++++++++++ */
-            $publics=Paypublic::sharedLock()
-                ->where([
-                    ['item_id',$this->item_id],
-                    ['land_id',$household->land_id],
-                ])
-                ->orderBy('land_id','asc')
-                ->orderBy('building_id','asc')
-                ->get();
-            /* ++++++++++ 其他补偿事项 ++++++++++ */
-            $objects=Payobject::sharedLock()
-                ->where([
-                    ['item_id',$this->item_id],
-                    ['household_id',$household->id],
-                    ['pay_id',$pay_id],
+                    ['pay_id',$pay->id],
                 ])
                 ->get();
 
@@ -729,9 +738,9 @@ class PayController extends BaseitemController
                 'subjects'=>$subjects,
                 'pay_unit'=>$pay_unit,
                 'holder'=>$holder,
-                'buildings'=>$buildings,
-                'publics'=>$publics,
-                'objects'=>$objects,
+                'payhouses'=>$payhouses,
+                'paytransits'=>$paytransits,
+                'pacts'=>$pacts,
             ];
             $edata=new Pay();
             $url=null;
