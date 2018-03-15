@@ -73,4 +73,7 @@ class Company extends Model
         return $this->hasMany('App\Http\Model\Companyvote','company_id','id');
     }
 
+    public function code(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code');
+    }
 }

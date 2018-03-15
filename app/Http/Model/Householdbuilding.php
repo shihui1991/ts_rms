@@ -50,27 +50,6 @@ class Householdbuilding extends Model
 
     }
 
-    /* ++++++++++ 获取登记状态 ++++++++++ */
-    public function getRegisterAttribute($key=null)
-    {
-        $array=[0=>'否',1=>'是'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
-
-    /* ++++++++++ 获取状态 ++++++++++ */
-    public function getCodeAttribute($key=null)
-    {
-        $array=[90=>'合法登记',91=>'待认定',92=>'认定合法',93=>'认定非法',94=>'自行拆除',95=>'转为合法'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
 
     /* ++++++++++ 关联项目 ++++++++++ */
     public function state(){

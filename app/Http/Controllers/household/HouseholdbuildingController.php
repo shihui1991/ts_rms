@@ -37,9 +37,6 @@ class  HouseholdbuildingController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         $householdbuilding=Householdbuilding::with([
-            'item'=>function($query){
-                $query->select(['id','name']);
-            },
             'itemland'=>function($query){
                 $query->select(['id','address']);
             },
@@ -54,7 +51,11 @@ class  HouseholdbuildingController extends BaseController
             },
             'buildinguses'=>function($query){
                 $query->select(['id','name']);
-            }])
+            },
+            'state'=>function($query){
+                $query->select(['id','name']);
+            }
+            ])
             ->sharedLock()
             ->find($id);
         DB::commit();
