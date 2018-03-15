@@ -25,10 +25,12 @@ class HouseholdbuildingController extends BaseitemController
     /* ========== 首页 ========== */
     public function index(Request $request){
         $item_id=$this->item_id;
+        $item=$this->item;
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
+        $infos['item'] = $item;
 
         $where[] = ['household_id',$request->input('household_id')];
         $infos['household_id'] = $request->input('household_id');
@@ -57,9 +59,7 @@ class HouseholdbuildingController extends BaseitemController
         DB::beginTransaction();
         try{
             $householdbuildings=$model
-                ->with(['item'=>function($query){
-                        $query->select(['id','name']);
-                    },
+                ->with([
                     'itemland'=>function($query){
                         $query->select(['id','address']);
                     },

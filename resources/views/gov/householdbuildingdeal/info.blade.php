@@ -24,7 +24,21 @@
         </div>
 
         <div class="profile-info-row">
-            <div class="profile-info-name"> 证明： </div>
+            <div class="profile-info-name"> @if($sdata->getOriginal('way')==0)拆迁补助单价@else罚款单价@endif： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->price}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> @if($sdata->getOriginal('way')==0)拆迁补助总价@else罚款总价@endif： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->amount}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
+            <div class="profile-info-name"> 解决结果： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">
                     <ul class="ace-thumbnails clearfix img-content viewer">

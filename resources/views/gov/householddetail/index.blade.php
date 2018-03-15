@@ -16,7 +16,7 @@
             <th>位置</th>
             <th>房产类型</th>
             <th>用户名</th>
-            <th>状态</th>
+            <th>摸底状态|产权争议|面积争议|房屋状态</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -30,13 +30,9 @@
                         <td>{{$infos->unit?$infos->unit.'单元':''}}{{$infos->floor?$infos->floor.'楼':''}}{{$infos->number?$infos->number.'号':''}}</td>
                         <td>{{$infos->type}}</td>
                         <td>{{$infos->username}}</td>
-                        <td>{{$infos->state->name}}</td>
+                        <td>{{$infos->state->name}}|{{$infos->householddetail->dispute}}|{{$infos->householddetail->area_dispute}}|{{$infos->householddetail->status}}</td>
                         <td>
                             <a href="{{route('g_householddetail_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
-                            <a href="{{route('g_householdbuilding',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">房屋建筑</a>
-                            <a href="{{route('g_householdassets',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">资产信息</a>
-                            <a href="{{route('g_householdmember',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">家庭成员</a>
-                            <a href="{{route('g_householdobject',['household_id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">其他补偿事项</a>
                         </td>
                     </tr>
                 @endforeach

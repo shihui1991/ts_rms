@@ -27,6 +27,13 @@
         </div>
 
         <div class="profile-info-row">
+            <div class="profile-info-name"> 名称： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->name}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
             <div class="profile-info-name"> 地块地址： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->itemland->address}}</span>

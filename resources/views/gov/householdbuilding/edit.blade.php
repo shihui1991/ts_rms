@@ -24,10 +24,18 @@
             <div class="col-sm-9 radio">
                 @foreach($edata['models']->code as $key => $value)
                     <label>
-                        <input name="code" type="radio" class="ace" value="{{$key}}" @if($key==$sdata->getOriginal('code')) checked @endif >
+                        <input name="code" type="radio" class="ace" value="{{$key}}" disabled @if($key==$sdata->getOriginal('code')) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
+            <div class="col-sm-9">
+                <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
             </div>
         </div>
         <div class="space-4"></div>
@@ -166,6 +174,7 @@
             </div>
         </div>
 
+        @if($sdata->getOriginal('code')==90 or $sdata->getOriginal('code')==91)
         <div class="clearfix form-actions">
             <div class="col-md-offset-3 col-md-9">
                 <button class="btn btn-info" type="button" onclick="sub_ajax(this)">
@@ -179,6 +188,7 @@
                 </button>
             </div>
         </div>
+        @endif
     </form>
 
 @endsection

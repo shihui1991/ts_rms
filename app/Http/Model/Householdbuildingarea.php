@@ -1,19 +1,19 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-产权争议解决 模型
+| 项目-面积争议解决 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Householdright extends Model
+class Householdbuildingarea extends Model
 {
     use SoftDeletes;
-    protected $table='item_household_right';
+    protected $table='item_household_building_area';
     protected $primaryKey='id';
-    protected $fillable=['way','picture'];
+    protected $fillable=['picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -24,8 +24,8 @@ class Householdright extends Model
         'household_id'=>'被征收户',
         'land_id'=>'地块',
         'building_id'=>'楼栋',
-        'way'=>'解决方式',
-        'picture'=>'证明'
+        'code'=>'状态代码',
+        'picture'=>'争议解决结果'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
@@ -51,5 +51,4 @@ class Householdright extends Model
     public function itembuilding(){
         return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
     }
-
 }
