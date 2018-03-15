@@ -12,7 +12,7 @@
     <table class="table table-hover table-bordered treetable" id="tree-dept">
         <thead>
         <tr>
-            <th>序号</th>
+            <th>房源ID</th>
             <th>管理机构</th>
             <th>房源社区</th>
             <th>户型</th>
@@ -30,14 +30,14 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td>{{$loop->iteration}}</td>
+                        <td>{{$infos->id}}</td>
                         <td>{{$infos->housecompany->name}}</td>
                         <td>{{$infos->housecommunity->name}}</td>
                         <td>{{$infos->layout->name}}</td>
                         <td>
+                            {{$infos->building?$infos->building.'栋':''}}
                             {{$infos->unit?$infos->unit.'单元':''}}
-                            {{$infos->building?$infos->building.'楼':''}}
-                            {{$infos->floor?$infos->floor.'层':''}}
+                            {{$infos->floor?$infos->floor.'楼':''}}
                             {{$infos->number?$infos->number.'号':''}}
                         </td>
                         <td>{{$infos->area}}</td>
@@ -45,7 +45,7 @@
                         <td>{{$infos->lift}}</td>
                         <td>{{$infos->is_real}}|{{$infos->is_buy}}|{{$infos->is_transit}}|{{$infos->is_public}}</td>
                         <td>{{$infos->delive_at}}</td>
-                        <td>{{$infos->state}}</td>
+                        <td>{{$infos->state->name}}</td>
                         <td>
                             <div class="btn-group">
                                 <a href="{{route('g_house_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>

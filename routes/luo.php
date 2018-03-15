@@ -18,7 +18,9 @@ Route::any('/check_item_start','ItemprocessController@check_item_start')->name('
 
 Route::any('/ready_init_check','ItemprocessController@ready_init_check')->name('g_ready_init_check'); //项目准备 -  初步预算审查
 Route::any('/ready_prepare','ItemprocessController@ready_prepare')->name('g_ready_prepare'); //项目准备 -  开启项目筹备
-
+Route::any('/ready_funds','ItemprocessController@ready_funds')->name('g_ready_funds'); //项目准备 -  项目资金
+Route::any('/ready_house','ItemprocessController@ready_house')->name('g_ready_house'); //项目准备 -  项目房源
+Route::any('/ready_prepare_check','ItemprocessController@ready_prepare_check')->name('g_ready_prepare_check'); //项目准备 -  项目筹备审查
 
 /*---------- 初步预算 ----------*/
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算
