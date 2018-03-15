@@ -53,8 +53,11 @@
 
                                 </div>
                                 <div >
-                                    @if($company->companyvotes_count)
-                                        <a href="javascript:;"  class="btn btn-block btn-inverse" >已投</a>
+                                    @if($company->id==$sdata['companyvote']->company->id)
+                                        <a href="javascript:;"  class="btn btn-block btn-inverse" >
+                                            <span>已投</span>
+                                            <i class="ace-icon fa fa-check bigger-110"></i>
+                                        </a>
                                     @else
                                         <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
                                             <span>投票</span>

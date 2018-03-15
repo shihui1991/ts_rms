@@ -23,12 +23,22 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="code"> 状态： </label>
             <div class="col-sm-9 radio">
-                @foreach($edata->code as $key => $value)
-                    <label>
-                        <input name="code" type="radio" class="ace" value="{{$key}}" @if($key==91) checked @endif >
-                        <span class="lbl">{{$value}}</span>
-                    </label>
-                @endforeach
+                <label>
+                    <input name="code" type="radio" class="ace" value="90">
+                    <span class="lbl">合法登记</span>
+                </label>
+                <label>
+                    <input name="code" type="radio" class="ace" value="91" checked >
+                    <span class="lbl">待认定</span>
+                </label>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
+            <div class="col-sm-9">
+                <input type="text" id="name" name="name" value="{{old('name')}}" class="col-xs-10 col-sm-5"  placeholder="请输入名称" required>
             </div>
         </div>
         <div class="space-4"></div>

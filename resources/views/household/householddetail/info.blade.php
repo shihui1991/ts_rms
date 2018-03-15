@@ -10,13 +10,6 @@
             <div class="tabbable">
                 <ul class="nav nav-tabs" id="myTab">
                     <li class="active">
-                        <a data-toggle="tab" href="#itembuilding" aria-expanded="true">
-                            <i class="green ace-icon fa fa-building bigger-120"></i>
-                           基本信息
-                        </a>
-                    </li>
-
-                    <li class="">
                         <a data-toggle="tab" href="#itempublic" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             详细信息
@@ -26,6 +19,12 @@
                         <a data-toggle="tab" href="#householdbuilding" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             房屋建筑
+                        </a>
+                    </li>
+                    <li class="">
+                        <a data-toggle="tab" href="#householdassets" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            资产明细
                         </a>
                     </li>
 
@@ -45,85 +44,52 @@
                 </ul>
 
                 <div class="tab-content">
-                    <div id="itembuilding" class="tab-pane fade active in">
-                        <div class="profile-user-info profile-user-info-striped">
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 地块： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->itemland->address}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 楼栋： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->itembuilding->building}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 单元号： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->unit}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 楼层： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->floor}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房号： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->number}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 房产类型： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->type}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 用户名： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->username}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 描述： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->infos}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 创建时间： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->created_at}}</span>
-                                </div>
-                            </div>
-
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 更新时间： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata->updated_at}}</span>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div id="itempublic" class="tab-pane fade">
+                    <div id="itempublic" class="tab-pane fade active in">
                         @if(isset($edata['household_detail']))
                         <div class="profile-user-info profile-user-info-striped">
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 地块： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->itemland->address}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 楼栋： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->itembuilding->building}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 单元号： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->unit}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 楼层： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->floor}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房号： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->number}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房产类型： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->type}}</span>
+                                    </div>
+                                </div>
+
                             <div class="profile-info-row">
                                 <div class="profile-info-name"> 产权争议： </div>
                                 <div class="profile-info-value">
@@ -419,12 +385,38 @@
                         </table>
                         <div class="row">
                             <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($sdata) }} @else 0 @endif 条数据</div>
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdbuilding']) }} @else 0 @endif 条数据</div>
                             </div>
                         </div>
 
                     </div>
-
+                    <div id="householdassets"  class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>资产名称</th>
+                                <th>资产数量</th>
+                                <th>计量单位</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if($code=='success')
+                                @foreach($edata['householdassets'] as $infos)
+                                    <tr>
+                                        <td>{{$infos->name}}</td>
+                                        <td>{{$infos->number}}</td>
+                                        <td>{{$infos->num_unit}}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ count($edata['householdassets']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="item" class="tab-pane fade">
                         <table class="table table-hover table-bordered">
                             <thead>

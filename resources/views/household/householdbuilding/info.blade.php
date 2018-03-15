@@ -51,17 +51,11 @@
             </div>
         </div>
 
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 是否登记： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->register}}</span>
-            </div>
-        </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 状态： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->state}}</span>
+                <span class="editable editable-click">{{$sdata->state->name}}</span>
             </div>
         </div>
 

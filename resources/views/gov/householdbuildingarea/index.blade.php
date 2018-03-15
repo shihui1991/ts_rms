@@ -12,8 +12,8 @@
     <div class="well-sm">
         <div class="tabbable">
             <ul class="nav nav-tabs" id="myTab">
-                <li class="active">
-                    <a data-toggle="tab" href="#householdright" aria-expanded="true">
+                <li class="">
+                    <a href="{{route('g_householdbuildingarea',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-building bigger-120"></i>
                         产权争议
                     </a>
@@ -26,20 +26,26 @@
                     </a>
                 </li>
 
-                <li class="">
-                    <a href="{{route('g_householdbuildingarea',['item'=>$edata['item_id']])}}">
+                <li class="active">
+                    <a data-toggle="tab" href="#householdbuildingarea" aria-expanded="true">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         面积争议
                     </a>
                 </li>
             </ul>
             <div class="tab-content">
-                <div id="householdright" class="tab-pane fade active in">
+                <div id="householdbuildingarea" class="tab-pane fade">
+                </div>
+
+                <div id="householdbuildingdeal" class="tab-pane fade">
+                </div>
+
+                <div id="householdbuildingarea" class="tab-pane fade active in">
                     <table class="table table-hover table-bordered">
                         <thead>
                         <tr>
                             <th>序号</th>
-                            <th>产权争议</th>
+                            <th>面积争议</th>
                             <th>地块</th>
                             <th>楼栋</th>
                             <th>房屋产权证号</th>
@@ -52,16 +58,16 @@
                             @foreach($sdata as $infos)
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
-                                    <td>{{$infos->dispute}}</td>
+                                    <td>{{$infos->area_dispute}}</td>
                                     <td>{{$infos->itemland->address}}</td>
                                     <td>{{$infos->itembuilding->building}}</td>
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
                                     <td>
-                                        @if($infos->getOriginal('dispute')==1)
-                                            <a href="{{route('g_householdright_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>
+                                        @if($infos->getOriginal('area_dispute')==2)
+                                            <a href="{{route('g_householdbuildingarea_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>
                                         @else
-                                            <a href="{{route('g_householdright_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">解决详情</a>
+                                            <a href="{{route('g_householdbuildingarea_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">解决详情</a>
                                         @endif
                                     </td>
                                 </tr>

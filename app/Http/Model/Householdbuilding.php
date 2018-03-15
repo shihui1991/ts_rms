@@ -13,7 +13,7 @@ class Householdbuilding extends Model
     use SoftDeletes;
     protected $table='item_household_building';
     protected $primaryKey='id';
-    protected $fillable=['code','reg_inner','reg_outer','balcony', 'real_inner','real_outer','def_use','real_use',
+    protected $fillable=['name','code','reg_inner','reg_outer','balcony', 'real_inner','real_outer','def_use','real_use',
         'struct_id','direct','floor','layout_id','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
@@ -26,6 +26,7 @@ class Householdbuilding extends Model
         'land_id'=>'地块',
         'building_id'=>'楼栋',
         'code'=>'状态',
+        'name'=>'名称',
         'reg_inner'=>'登记套内面积',
         'reg_outer'=>'登记建筑面积',
         'balcony'=>'其中阳台面积',
@@ -50,27 +51,6 @@ class Householdbuilding extends Model
 
     }
 
-    /* ++++++++++ 获取登记状态 ++++++++++ */
-    public function getRegisterAttribute($key=null)
-    {
-        $array=[0=>'否',1=>'是'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
-
-    /* ++++++++++ 获取状态 ++++++++++ */
-    public function getCodeAttribute($key=null)
-    {
-        $array=[90=>'合法登记',91=>'待认定',92=>'认定合法',93=>'认定非法',94=>'自行拆除',95=>'转为合法'];
-        if(is_numeric($key)){
-            return $array[$key];
-        }else{
-            return $array;
-        }
-    }
 
     /* ++++++++++ 关联项目 ++++++++++ */
     public function state(){

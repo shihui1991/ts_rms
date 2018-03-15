@@ -100,6 +100,9 @@ class HouseholddetailController extends BaseitemController
                         'itembuilding'=>function($query){
                             $query->select(['id','building']);
                         },
+                        'householddetail'=>function($query){
+                            $query->select(['id','household_id','dispute','area_dispute','status']);
+                        },
                         'state'=>function($query){
                             $query->select(['id','code','name']);
                     }])

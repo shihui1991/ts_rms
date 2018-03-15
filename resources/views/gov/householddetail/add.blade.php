@@ -39,10 +39,12 @@
             <label class="col-sm-3 control-label no-padding-right" for="dispute"> 产权争议： </label>
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->dispute as $key => $value)
+                    @if($key!=2)
                     <label>
                         <input name="dispute" type="radio" class="ace" value="{{$key}}" @if($key==0) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
+                    @endif
                 @endforeach
             </div>
         </div>
@@ -52,10 +54,12 @@
             <label class="col-sm-3 control-label no-padding-right" for="area_dispute"> 面积争议： </label>
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->area_dispute as $key => $value)
+                    @if($key!=3)
                     <label>
                         <input name="area_dispute" type="radio" class="ace" value="{{$key}}" @if($key==0) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
+                    @endif
                 @endforeach
             </div>
         </div>
