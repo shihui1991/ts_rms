@@ -118,6 +118,43 @@
                 </div>
             </div>
         </div>
+        <div class="widget-container-col ui-sortable">
+            <div class="widget-box ui-sortable-handle">
+                <div class="widget-header">
+                    <h5 class="widget-title">征收房屋相关手续停办通知</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="infos"> 通知摘要： </label>
+                            <div class="col-sm-9">
+                                <textarea name="notice[infos]" id="infos" class="col-xs-10 col-sm-10"></textarea>
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group img-box">
+                            <label class="col-sm-3 control-label no-padding-right">
+                                停办通知<br>
+                                <span class="btn btn-xs">
+                                    <span>上传图片</span>
+                                    <input type="file" accept="image/*" class="hidden" data-name="notice[picture][]" multiple onchange="uplfile(this)">
+                                </span>
+                            </label>
+                            <div class="col-sm-9">
+                                <ul class="ace-thumbnails clearfix img-content">
+
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <div class="clearfix form-actions">
             <div class="col-md-offset-3 col-md-9">

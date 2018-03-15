@@ -21,6 +21,7 @@ Route::any('/ready_prepare','ItemprocessController@ready_prepare')->name('g_read
 Route::any('/ready_funds','ItemprocessController@ready_funds')->name('g_ready_funds'); //项目准备 -  项目资金
 Route::any('/ready_house','ItemprocessController@ready_house')->name('g_ready_house'); //项目准备 -  项目房源
 Route::any('/ready_prepare_check','ItemprocessController@ready_prepare_check')->name('g_ready_prepare_check'); //项目准备 -  项目筹备审查
+Route::any('/ready_range_check','ItemprocessController@ready_range_check')->name('g_ready_range_check'); //项目准备 -  征收范围公告审查
 
 /*---------- 初步预算 ----------*/
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算
@@ -35,9 +36,9 @@ Route::any('/funds_info','FundsController@info')->name('g_funds_info'); //转账
 
 /*---------- 通知公告 ----------*/
 Route::any('/news','NewsController@index')->name('g_news'); //政务公告
-Route::any('/news_add','NewsController@add')->name('g_news_add'); //添加公告
+Route::any('/news_add','NewsController@add')->name('g_news_add'); //添加范围公告
+Route::any('/news_edit','NewsController@edit')->name('g_news_edit'); //修改范围公告
 Route::any('/news_info','NewsController@info')->name('g_news_info'); //公告详情
-Route::any('/news_edit','NewsController@edit')->name('g_news_edit'); //修改公告
 
 /*---------- 评估机构投票 ----------*/
 Route::any('/companyvote','CompanyvoteController@index')->name('g_companyvote'); //评估机构投票
