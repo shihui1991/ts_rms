@@ -47,7 +47,7 @@
 
                                     <tfoot>
                                     <tr>
-                                        <th colspan="4">资金结余：{{number_format($total,2)}} &nbsp; 人民币（大写）：{{bigRMB(abs($total))}}</th>
+                                        <th colspan="4">资金结余：{{number_format($total,2)}} &nbsp; 人民币（大写）：@if($total<0)负@endif{{bigRMB(abs($total))}}</th>
                                     </tr>
                                     </tfoot>
                                 @endif
@@ -56,7 +56,9 @@
 
                         </div>
                         <div class="col-xs-12 col-sm-3">
-
+                            <div class="btn-group">
+                                <a href="{{route('g_ready_funds',['item'=>$sdata['item']->id])}}" class="btn">项目资金准备</a>
+                            </div>
                         </div>
                     </div>
                 </div>

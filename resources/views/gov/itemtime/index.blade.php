@@ -12,7 +12,7 @@
                 修改
             </a>
 
-            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_itemprocess_csit',['item'=>$sdata['item']->id])}}" data-method="post">
+            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_check_set_itemtime',['item'=>$sdata['item']->id])}}" data-method="post">
                 <i class="ace-icon fa fa-check-circle bigger-110"></i>
                 提交配置
             </a>

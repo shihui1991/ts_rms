@@ -85,7 +85,7 @@ class PayhouseController extends BaseitemController
                 if(!in_array($household->code,['68','76'])){
                     throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
                 }
-                $count=Payhouse::query()->sharedLock()
+                $count=Payhouse::sharedLock()
                     ->where([
                         ['item_id',$pay->item_id],
                         ['household_id',$pay->household_id],
@@ -119,7 +119,7 @@ class PayhouseController extends BaseitemController
                     ->orderBy('portion','desc')
                     ->first();
                 /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
-                $resettle_total=Paysubject::query()->sharedLock()
+                $resettle_total=Paysubject::sharedLock()
                     ->where([
                         ['item_id',$pay->item_id],
                         ['household_id',$pay->household_id],
@@ -251,7 +251,7 @@ class PayhouseController extends BaseitemController
                     throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
                 }
 
-                $count=Payhouse::query()->sharedLock()
+                $count=Payhouse::sharedLock()
                     ->where([
                         ['item_id',$pay->item_id],
                         ['household_id',$pay->household_id],
@@ -282,7 +282,7 @@ class PayhouseController extends BaseitemController
                 $house_rates=Itemhouserate::sharedLock()->where('item_id',$this->item_id)->orderBy('start_area','asc')->get();
 
                 /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
-                $resettle_total=Paysubject::query()->sharedLock()
+                $resettle_total=Paysubject::sharedLock()
                     ->where([
                         ['item_id',$pay->item_id],
                         ['household_id',$pay->household_id],
@@ -573,7 +573,7 @@ class PayhouseController extends BaseitemController
                 throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
             }
 
-            $count=Payhouse::query()->sharedLock()
+            $count=Payhouse::sharedLock()
                 ->where([
                     ['item_id',$pay->item_id],
                     ['household_id',$pay->household_id],
@@ -605,7 +605,7 @@ class PayhouseController extends BaseitemController
 
             $total=$pay->total;
             /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
-            $resettle_total=Paysubject::query()->sharedLock()
+            $resettle_total=Paysubject::sharedLock()
                 ->where([
                     ['item_id',$pay->item_id],
                     ['household_id',$pay->household_id],

@@ -13,9 +13,7 @@ class House extends Model
     use SoftDeletes;
     protected $table='house';
     protected $primaryKey='id';
-    protected $fillable=['company_id','community_id','layout_id','layout_img_id','building',
-        'unit','floor','number','area','total_floor','lift','is_real','is_buy','is_transit',
-        'is_public','picture','delive_at'];
+    protected $fillable=['company_id','community_id','layout_id','layout_img_id','building', 'unit','floor','number','area','total_floor','lift','is_real','is_buy','is_transit', 'is_public','picture','delive_at'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'

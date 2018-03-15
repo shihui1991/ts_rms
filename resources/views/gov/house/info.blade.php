@@ -65,8 +65,8 @@
             <div class="profile-info-name"> 房源位置： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">
-                    {{$sdata->unit?$sdata->unit.' 单元':''}}
                     {{$sdata->building?$sdata->building.' 栋':''}}
+                    {{$sdata->unit?$sdata->unit.' 单元':''}}
                     {{$sdata->floor?$sdata->floor.' 楼':''}}
                     {{$sdata->number?$sdata->number.' 号':''}}</span>
             </div>

@@ -92,9 +92,9 @@ class ItemuserController extends BaseitemController
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
-//                $result=$this->checkNotice();
-//                $process=$result['process'];
-//                $worknotice=$result['worknotice'];
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 $count=Itemuser::where('item_id',$this->item_id)->count();
                 if($count){
@@ -152,9 +152,9 @@ class ItemuserController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try{
-//                $result=$this->checkNotice();
-//                $process=$result['process'];
-//                $worknotice=$result['worknotice'];
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 $count=Itemuser::where('item_id',$this->item_id)->count();
                 if($count){
@@ -216,8 +216,8 @@ class ItemuserController extends BaseitemController
                     DB::statement($sql);
                 }
 
-//                $worknotice->code='1';
-//                $worknotice->save();
+                $worknotice->code='1';
+                $worknotice->save();
 
                 $code='success';
                 $msg='保存成功';
@@ -256,9 +256,9 @@ class ItemuserController extends BaseitemController
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
-//                $result=$this->checkNotice();
-//                $process=$result['process'];
-//                $worknotice=$result['worknotice'];
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
 
                 /* ++++++++++ 流程数据 ++++++++++ */
                 $process=Process::with(['schedule'=>function($query){
@@ -320,12 +320,12 @@ class ItemuserController extends BaseitemController
             }
             DB::beginTransaction();
             try{
-//                $result=$this->checkNotice();
-//                $process=$result['process'];
-//                $worknotice=$result['worknotice'];
-//
-//                $worknotice->code='1';
-//                $worknotice->save();
+                $result=$this->checkNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
+
+                $worknotice->code='1';
+                $worknotice->save();
 
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $where[]=['item_id',$this->item_id];
@@ -385,12 +385,12 @@ class ItemuserController extends BaseitemController
         }
         DB::beginTransaction();
         try{
-//            $result=$this->checkNotice();
-//            $process=$result['process'];
-//            $worknotice=$result['worknotice'];
-//
-//            $worknotice->code='1';
-//            $worknotice->save();
+            $result=$this->checkNotice();
+            $process=$result['process'];
+            $worknotice=$result['worknotice'];
+
+            $worknotice->code='1';
+            $worknotice->save();
 
             /* ++++++++++ 锁定数据模型 ++++++++++ */
             $itemuser=Itemuser::lockForUpdate()->find($id);

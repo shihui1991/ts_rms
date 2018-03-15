@@ -118,7 +118,7 @@ class BaseitemController extends BaseController
             ->whereIn('code',['0','20'])
             ->first();
         if(blank($worknotice)){
-            throw new \Exception('您没有执行此操作的权限',404404);
+            throw new \Exception('您没有执行此操作的工作推送',404404);
         }
         /* ++++++++++ 下级未完成数 ++++++++++ */
         $worknotice_subs=Worknotice::sharedLock()

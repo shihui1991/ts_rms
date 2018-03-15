@@ -111,7 +111,7 @@ function batch_update_or_insert_sql($table='', $insert_columns=[], $values=[], $
         $p=ceil(($k+1)/$num);
         $temp_values=[];
         foreach ($insert_columns as $insert_column){
-            $temp=$value[$insert_column]?(string)$value[$insert_column]:null;
+            $temp=isset($value[$insert_column])?(string)$value[$insert_column]:null;
             $temp_values[]="'".$temp."'";
         }
         $temp_values=implode(',',$temp_values);
@@ -197,7 +197,7 @@ function batch_update_sql($table='', $insert_columns=[], $values=[], $update_col
         $p=ceil(($k+1)/$num);
         $temp_values=[];
         foreach ($insert_columns as $insert_column){
-            $temp=$value[$insert_column]?(string)$value[$insert_column]:null;
+            $temp=isset($value[$insert_column])?(string)$value[$insert_column]:null;
             $temp_values[]="'".$temp."'";
         }
         $temp_values=implode(',',$temp_values);

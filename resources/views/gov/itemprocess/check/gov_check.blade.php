@@ -14,7 +14,7 @@
 
                 <div class="widget-body">
                     <div class="widget-main padding-8">
-                        <form class="form-horizontal" role="form" action="{{route('g_itemprocess_cgc',['item'=>$sdata['item']->id])}}" method="post">
+                        <form class="form-horizontal" role="form" action="{{route('g_check_gov_check',['item'=>$sdata['item']->id])}}" method="post">
                             {{csrf_field()}}
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="code">审查结果：</label>

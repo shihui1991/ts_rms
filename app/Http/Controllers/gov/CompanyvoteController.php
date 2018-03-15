@@ -24,7 +24,7 @@ class CompanyvoteController extends BaseitemController
     public function index(Request $request){
         DB::beginTransaction();
 
-        $companys=Company::query()->withCount(['companyvotes'=>function($query){
+        $companys=Company::withCount(['companyvotes'=>function($query){
             $query->where('item_id',$this->item_id);
         }])
             ->where([

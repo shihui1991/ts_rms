@@ -9,6 +9,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Bank;
 use App\Http\Model\Funds;
 use App\Http\Model\Fundscate;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -59,14 +60,53 @@ class FundsController extends BaseitemController
     public function add(Request $request){
         if($request->isMethod('get')){
             DB::beginTransaction();
-            $banks=Bank::sharedLock()->select('id','name')->get();
+            try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->schedule_id!=2 || $item->process_id!=18 ||  $item->code!='1'){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',$item->schedule_id],
+                        ['process_id',$item->process_id],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+
+                $banks=Bank::sharedLock()->select('id','name')->get();
+
+                $code='success';
+                $msg='查询成功';
+                $sdata=['item'=>$item,'banks'=>$banks];
+                $edata=null;
+                $url=null;
+
+                $view='gov.funds.add';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
             DB::commit();
 
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>['item'=>$this->item,'banks'=>$banks],'edata'=>null,'url'=>null];
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.funds.add')->with($result);
+                return view($view)->with($result);
             }
         }
         /* ********** 保存 ********** */
@@ -97,6 +137,26 @@ class FundsController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->schedule_id!=2 || $item->process_id!=18 ||  $item->code!='1'){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',$item->schedule_id],
+                        ['process_id',$item->process_id],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $funds=$model;
                 $funds->fill($request->input());

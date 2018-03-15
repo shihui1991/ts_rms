@@ -12,6 +12,7 @@ use App\Http\Model\Household;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Householdbuilding;
+use App\Http\Model\Householdassets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -148,9 +149,6 @@ class  HouseholddetailController extends BaseController
             ->sharedLock()
             ->find($household_id);
         $data['householdmember']=Householdmember::with([
-            'item'=>function($query){
-                $query->select(['id','name']);
-            },
             'itemland'=>function($query){
                 $query->select(['id','address']);
             },
@@ -165,9 +163,6 @@ class  HouseholddetailController extends BaseController
             ->sharedLock()
             ->get();
         $data['householdobject']=Householdobject::with([
-            'item'=>function($query){
-                $query->select(['id','name']);
-            },
             'itemland'=>function($query){
                 $query->select(['id','address']);
             },
@@ -181,11 +176,7 @@ class  HouseholddetailController extends BaseController
             ->where('household_id',$household_id)
             ->sharedLock()
             ->get();
-        $data['householdbuilding']=Householdbuilding::with([
-            'item'=>function($query){
-                $query->select(['id','name']);
-            },
-            'itemland'=>function($query){
+        $data['householdbuilding']=Householdbuilding::with(['itemland'=>function($query){
                 $query->select(['id','address']);
             },
             'itembuilding'=>function($query){
@@ -200,6 +191,12 @@ class  HouseholddetailController extends BaseController
             ->where('household_id',$household_id)
             ->sharedLock()
             ->get();
+        $data['householdassets']=Householdassets::where('item_id',$item_id)
+            ->where('household_id',$household_id)
+            ->where('number','<>',null)
+            ->sharedLock()
+            ->get();
+
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($household)){

@@ -27,7 +27,7 @@ class HouseController extends BaseauthController
     public function index(Request $request){
         $select=['id','company_id','community_id','layout_id','layout_img_id',
             'building','unit','floor','number','area','total_floor','lift',
-            'is_real','is_buy','is_transit','is_public','state','delive_at','deleted_at'];
+            'is_real','is_buy','is_transit','is_public','code','delive_at','deleted_at'];
 
         /* ********** 查询条件 ********** */
         $where=[];
@@ -44,10 +44,22 @@ class HouseController extends BaseauthController
             $infos['layout_id']=$layout_id;
         }
         /* ********** 状态 ********** */
-        $state = $request->input('state');
-        if(is_numeric($state)){
-            $where[] = ['state',$state];
-            $infos['state']=$state;
+        $code=$request->input('code');
+        if($code){
+            $where[] = ['code',$code];
+            $infos['code']=$code;
+        }
+        /* ********** 面积起 ********** */
+        $area_start=$request->input('area_start');
+        if($area_start){
+            $where[] = ['area','>=',$area_start];
+            $infos['area_start']=$area_start;
+        }
+        /* ********** 面积上止 ********** */
+        $area_end=$request->input('area_end');
+        if($area_end){
+            $where[] = ['area','<=',$area_end];
+            $infos['area_end']=$area_end;
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
@@ -79,13 +91,13 @@ class HouseController extends BaseauthController
             $houses=$model->select($select)
                 ->with(['housecommunity'=> function ($query) {
                     $query->withTrashed()->select(['id','name']);
-                },
-                'layout'=> function ($query) {
+                }, 'layout'=> function ($query) {
                     $query->withTrashed()->select(['id','name']);
-                },
-                'housecompany'=> function ($query) {
+                }, 'housecompany'=> function ($query) {
                     $query->withTrashed()->select(['id','name']);
-                }])
+                },'state'=> function ($query) {
+                        $query->withTrashed()->select(['code','name']);
+                    }])
                 ->where($where)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
@@ -96,13 +108,13 @@ class HouseController extends BaseauthController
             $code='success';
             $msg='查询成功';
             $sdata=$houses;
-            $edata=null;
+            $edata=['conditions'=>$infos,'house_model'=>new House()];
             $url=null;
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=null;
+            $edata=$exception;
             $url=null;
         }
         DB::commit();
