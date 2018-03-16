@@ -60,4 +60,7 @@ class Itemcompany extends Model
         return $this->hasMany('App\Http\Model\Companyvote','company_id','company_id');
     }
 
+    public function households(){
+        return $this->hasMany('App\Http\Model\Companyhousehold','item_company_id','id');
+    }
 }

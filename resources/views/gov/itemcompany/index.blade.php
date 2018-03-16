@@ -21,18 +21,18 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>类型</th>
-                                <th>评估机构名称</th>
+                                <th>评估机构</th>
+                                <th>划定评估户数</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @if($code=='success')
+                            @if(filled($sdata))
                                 @foreach($sdata as $infos)
                                     @if($infos->getOriginal('type')==0)
                                     <tr>
-                                        <td>{{$infos->type}}</td>
                                         <td>{{$infos->company->name}}</td>
+                                        <td>{{$infos->households_count}}</td>
                                         <td>
                                             <a href="{{route('g_itemcompany_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
                                         </td>
@@ -42,11 +42,7 @@
                             @endif
                             </tbody>
                         </table>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecount'] }} @else 0 @endif 条数据</div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -63,18 +59,18 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr>
-                                <th>类型</th>
-                                <th>评估机构名称</th>
+                                <th>评估机构</th>
+                                <th>划定评估户数</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @if($code=='success')
+                            @if(filled($sdata))
                                 @foreach($sdata as $infos)
                                     @if($infos->getOriginal('type')==1)
                                         <tr>
-                                            <td>{{$infos->type}}</td>
                                             <td>{{$infos->company->name}}</td>
+                                            <td>{{$infos->households_count}}</td>
                                             <td>
                                                 <a href="{{route('g_itemcompany_info',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">查看详情</a>
                                             </td>
@@ -84,11 +80,6 @@
                             @endif
                             </tbody>
                         </table>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecounts'] }} @else 0 @endif 条数据</div>
-                            </div>
-                        </div>
 
                     </div>
                 </div>

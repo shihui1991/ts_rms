@@ -128,6 +128,7 @@ Route::get('/landlayout_info','LandlayoutController@info')->name('g_landlayout_i
 Route::any('/landlayout_edit','LandlayoutController@edit')->name('g_landlayout_edit');
 
 /*---------- 项目-被征收户账号 ----------*/
+Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
 /*---------- 项目-被征收户详细信息 ----------*/

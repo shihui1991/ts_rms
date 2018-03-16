@@ -11,7 +11,7 @@ class Companyhousehold extends Model
 {
     protected $table='item_company_household';
     protected $fillable=['company_id','item_company_id','household_id'];
-    protected $dates=['created_at'];
+    protected $dates=['created_at','updated_at'];
     protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
