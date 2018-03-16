@@ -1,12 +1,13 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 入户摸底------>评估
+| 入户摸底
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\com;
 use App\Http\Model\Assess;
 use App\Http\Model\Assets;
+use App\Http\Model\Buildingstruct;
 use App\Http\Model\Buildinguse;
 use App\Http\Model\Comassessvaluer;
 use App\Http\Model\Companyvaluer;
@@ -16,6 +17,7 @@ use App\Http\Model\Companyhousehold;
 use App\Http\Model\Household;
 use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
+use App\Http\Model\Landlayout;
 use App\Http\Model\Layout;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -146,6 +148,11 @@ class HouseholdController extends BaseitemController
                     ->where('company_id',$company_id)
                     ->sharedLock()
                     ->first();
+
+                $data['buildings'] = Estatebuilding::where('item_id',$item_id)
+                                        ->where('household_id',$id)
+                                        ->where('company_id',$company_id)
+                                        ->get();
             }else{
                 $data['householdassets'] = Householdassets::where('item_id',$item_id)
                     ->where('household_id',$id)
@@ -541,7 +548,279 @@ class HouseholdController extends BaseitemController
 
     }
 
+    /* =========================================== 【房产】房屋建筑 ===================================== */
+    /* ++++++++++ 添加房屋建筑 ++++++++++ */
+    public function buildingadd(Request $request){
+        $item_id=$this->item_id;
+        $company_id = session('com_user.company_id');
+        $household_id=$request->input('household_id');
+        $model=new Estatebuilding();
+        if($request->isMethod('get')){
+            $sdata['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
+            $sdata['buildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
+            $sdata['item_id'] = $item_id;
+            $sdata['item'] = $this->item;
+            $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $sdata['landlayouts'] = Landlayout::select(['id','item_id','land_id','name','area'])->where('item_id',$item_id)->where('land_id',$sdata['household']->land_id)->get()?:[];
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('com.householdbuilding.add')->with($result);
+            }
+        }
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ********** 保存 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'household_id' => 'required',
+                'land_id' => 'required',
+                'building_id' => 'required',
+                'code' => 'required',
+                'reg_outer' => 'required',
+                'balcony' => 'required',
+                'real_outer' => 'required',
+                'def_use' => 'required',
+                'real_use' => 'required',
+                'struct_id' => 'required',
+                'direct' => 'required',
+                'floor' => 'required',
+                'picture' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute必须填写'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 被征户房屋建筑-批量赋值 ++++++++++ */
+                $householdbuilding = $model;
+                $householdbuilding->fill($request->all());
+                $householdbuilding->addOther($request);
+                $householdbuilding->item_id=$item_id;
+                $householdbuilding->company_id=$company_id;
+                $householdbuilding->assess_id=0;
+                $householdbuilding->estate_id=0;
+                $householdbuilding->household_building_id=0;
+                $householdbuilding->save();
+                if (blank($householdbuilding)) {
+                    throw new \Exception('添加失败', 404404);
+                }
 
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $householdbuilding;
+                $edata = null;
+                $url = route('c_household_info',['id'=>$household_id,'item'=>$item_id]);
+                DB::commit();
+            } catch (\Exception $exception) {
+                dd($exception);
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $householdbuilding;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+
+    /* ========== 房屋建筑详情 ========== */
+    public function buildinginfo(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        $item_id=$this->item_id;
+        $item=$this->item;
+
+        /* ********** 当前数据 ********** */
+        $data['item_id'] = $item_id;
+        $data['item'] = $item;
+
+        DB::beginTransaction();
+        $householdbuilding=Estatebuilding::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            },
+            'itembuilding'=>function($query){
+                $query->select(['id','building']);
+            },
+            'buildingstruct'=>function($query){
+                $query->select(['id','name']);
+            },
+            'buildinguse'=>function($query){
+                $query->select(['id','name']);
+            },
+            'buildinguses'=>function($query){
+                $query->select(['id','name']);
+            },
+            'landlayout'=>function($query){
+                $query->select(['id','name','area','gov_img']);
+            },
+            'state'=>function($query){
+                $query->select(['id','code','name']);
+            }])
+            ->sharedLock()
+            ->find($id);
+        DB::commit();
+        /* ++++++++++ 数据不存在 ++++++++++ */
+        if(blank($householdbuilding)){
+            $code='warning';
+            $msg='数据不存在';
+            $sdata=null;
+            $edata=$data;
+            $url=null;
+            $view='com.error';
+        }else{
+            $code='success';
+            $msg='获取成功';
+            $sdata=$householdbuilding;
+            $edata=$data;
+            $url=null;
+
+            $view='com.householdbuilding.info';
+        }
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+    }
+
+
+    /* ========== 修改房屋建筑详情 ========== */
+    public function buildingedit(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        $item_id=$this->item_id;
+        $household_id = $request->input('household_id');
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+            $data['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
+            $data['buildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
+            $data['item_id'] = $item_id;
+            $data['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $data['landlayouts'] = Landlayout::select(['id','item_id','land_id','name','area'])->where('item_id',$item_id)->where('land_id',$data['household']->land_id)->get()?:[];
+            DB::beginTransaction();
+            $householdbuilding=Estatebuilding::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                },
+                'landlayout'=>function($query){
+                    $query->select(['id','name','area','gov_img']);
+                }])
+                ->sharedLock()
+                ->find($id);
+            DB::commit();
+
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($householdbuilding)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=$data;
+                $url=null;
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=$householdbuilding;
+                $edata=$data;
+                $url=null;
+
+                $view='com.householdbuilding.edit';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Household();
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'reg_outer' => 'required',
+                'balcony' => 'required',
+                'real_outer' => 'required',
+                'def_use' => 'required',
+                'real_use' => 'required',
+                'struct_id' => 'required',
+                'direct' => 'required',
+                'floor' => 'required',
+                'picture' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute必须填写'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 被征户房屋建筑-锁定数据模型 ++++++++++ */
+                $estatebuilding=Estatebuilding::lockForUpdate()->find($id);
+                if(blank($estatebuilding)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 被征户房屋建筑-处理其他数据 ++++++++++ */
+                $estatebuilding->fill($request->all());
+                $estatebuilding->editOther($request);
+                $estatebuilding->save();
+                if(blank($estatebuilding)){
+                    throw new \Exception('修改失败',404404);
+                }
+
+                $code='success';
+                $msg='修改成功';
+                $sdata=$estatebuilding;
+                $edata=null;
+                $url = route('c_household_info',['id'=>$household_id,'item'=>$item_id]);
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$estatebuilding;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
 //    public function test(){
 //            /*----------- 添加评估-汇总---------------*/
 //            $comassess = Assess::where('item_id',$item_id)->where('household_id',$id)->count();

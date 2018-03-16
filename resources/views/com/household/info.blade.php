@@ -22,6 +22,10 @@
                     添加房产信息
                 </a>
             @endif
+                <a class="btn" href="{{route('c_household_buildingadd',['household_id'=>$sdata->id,'item'=>$sdata->item_id])}}">
+                    <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
+                    添加房屋建筑
+                </a>
         @else
             <a class="btn" href="{{route('c_household_add',['household_id'=>$sdata->id,'item'=>$sdata->item_id])}}">
                 <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
@@ -44,6 +48,13 @@
                         <a data-toggle="tab" href="#householdbuilding" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             房产信息
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a data-toggle="tab" href="#estatebuilding" aria-expanded="false">
+                            <i class="green ace-icon fa fa-home bigger-120"></i>
+                            房屋建筑
                         </a>
                     </li>
                     @else
@@ -240,6 +251,48 @@
                                 <span>暂无房产信息</span>
                             </div>
                         @endif
+                    </div>
+
+                    <div id="estatebuilding" class="tab-pane fade">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>地块</th>
+                                <th>楼栋</th>
+                                <th>楼层</th>
+                                <th>朝向</th>
+                                <th>结构</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if(filled($edata['buildings']))
+                                @foreach($edata['buildings'] as $infos)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$infos->name}}</td>
+                                        <td>{{$infos->itemland->address}}</td>
+                                        <td>{{$infos->itembuilding->building}}</td>
+                                        <td>{{$infos->floor}}</td>
+                                        <td>{{$infos->direct}}</td>
+                                        <td>{{$infos->buildingstruct->name}}</td>
+                                        <td>{{$infos->code}}</td>
+                                        <td>
+                                            <a href="{{route('c_household_buildinginfo',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if(filled($edata['buildings'])) {{ count($edata['buildings']) }} @else 0 @endif 条数据</div>
+                            </div>
+                        </div>
                     </div>
                 @else
                     <div id="householdassets" class="tab-pane fade">

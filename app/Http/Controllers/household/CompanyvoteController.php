@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 class  CompanyvoteController extends BaseController
 {
     protected $item_id;
+    protected $user_id;
 
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -28,27 +29,18 @@ class  CompanyvoteController extends BaseController
 
     public function index(Request $request){
         $this->item_id=session('household_user.item_id');
-        $household_id=session('household_user.user_id');
+        $household_id=$this->user_id=session('household_user.user_id');
 
         $per_page=15;
         $page=$request->input('page',1);
 
         DB::beginTransaction();
-
         $total=Company::sharedLock()
-           /* ->where([
-                ['type',0],
-                ['state',1],
-            ])*/
-            ->count();
+                ->count();
 
         $companys=Company::query()->withCount(['companyvotes'=>function($query){
             $query->where('item_id',$this->item_id);
         }])
-            /*->where([
-                ['type',0],
-                ['state',1],
-            ])*/
             ->orderBy('companyvotes_count','desc')
             ->sharedLock()
             ->offset($per_page*($page-1))
@@ -56,12 +48,18 @@ class  CompanyvoteController extends BaseController
             ->get();
         $companys=new LengthAwarePaginator($companys,$total,$per_page,$page);
         $companys->withPath(route('h_itemcompanyvote'));
-        $companyvote=Companyvote::where([
+        $companyvote=Companyvote::with(['company'=>function($query){
+            $query->select(['id','name'])->withCount(['companyvotes'=>function($query){
+                $query->where('item_id',$this->item_id);
+            }]);
+        }])
+            ->where([
             ['household_id',$household_id],
             ['item_id',$this->item_id],
         ])
             ->sharedLock()
             ->first();
+
         DB::commit();
         /* ********** 结果 ********** */
 

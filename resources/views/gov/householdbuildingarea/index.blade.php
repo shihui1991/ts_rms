@@ -13,7 +13,7 @@
         <div class="tabbable">
             <ul class="nav nav-tabs" id="myTab">
                 <li class="">
-                    <a href="{{route('g_householdbuildingarea',['item'=>$edata['item_id']])}}">
+                    <a href="{{route('g_householdright',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-building bigger-120"></i>
                         产权争议
                     </a>
@@ -30,6 +30,20 @@
                     <a data-toggle="tab" href="#householdbuildingarea" aria-expanded="true">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         面积争议
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_landlayout_reportlist',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        测绘报告
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_householdassets_report',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        资产确认
                     </a>
                 </li>
             </ul>
@@ -64,7 +78,7 @@
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
                                     <td>
-                                        @if($infos->getOriginal('area_dispute')==2)
+                                        @if($infos->getOriginal('area_dispute')==4)
                                             <a href="{{route('g_householdbuildingarea_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>
                                         @else
                                             <a href="{{route('g_householdbuildingarea_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">解决详情</a>

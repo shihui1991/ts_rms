@@ -34,6 +34,7 @@ Route::any('/householdobject_info','HouseholdobjectController@info')->name('h_ho
 /*---------- 兑付--汇总 ----------*/
 Route::any('/pay','PayController@index')->name('h_pay');
 Route::any('/pay_info','PayController@info')->name('h_pay_info');
+Route::any('/pay_edit','PayController@edit')->name('h_pay_edit');
 
 /*---------- 评估报告 ----------*/
 Route::any('/assess_info','AssessController@info')->name('h_assess');
@@ -46,4 +47,8 @@ Route::any('/itemhousehold_password','ItemhouseholdController@password')->name('
 
 /*---------- 房源 ----------*/
 Route::any('/itemhouse','ItemhouseController@index')->name('h_itemhouse');
+Route::any('/itemhouse_info','ItemhouseController@info')->name('h_itemhouse_info');
+
+/*选择备选安置房*/
+Route::any('/payhousebak_add','PayhousebakController@add')->name('h_payhousebak_add');
 
