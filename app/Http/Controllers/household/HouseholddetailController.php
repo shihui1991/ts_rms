@@ -141,7 +141,10 @@ class  HouseholddetailController extends BaseController
 
         $household=Household::with([
             'itemland'=>function($query){
-                $query->select(['id','address']);
+                $query->select(['id','address'])
+                    ->with(['adminunit'=>function($querys){
+                    $querys->select(['name','address','phone','contact_man','contact_tel','infos']);
+                }]);
             },
             'itembuilding'=>function($query){
                 $query->select(['id','building']);

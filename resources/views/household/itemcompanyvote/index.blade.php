@@ -8,6 +8,61 @@
     <div class="row">
         <div class="col-xs-12">
             @if($code=='success')
+                <div class="col-xs-6 col-sm-3 pricing-box">
+                    <div class="widget-box widget-color-dark">
+                        <div class="widget-header">
+                            <h5 class="widget-title bigger lighter">{{$sdata['companyvote']->company->name}}</h5>
+                        </div>
+
+                        <div class="widget-body">
+                            <div class="widget-main">
+
+                                <div class="profile-user-info profile-user-info-striped">
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 基本信息： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata['companyvote']->company->infos}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 目前得票： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">{{$sdata['companyvote']->company->companyvotes_count}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> LOGO： </div>
+
+                                        <div class="profile-info-value img-content">
+                                            @if($sdata['companyvote']->company->logo)
+                                                <img width="120" height="120" src="{{$sdata['companyvote']->company->logo}}" alt="{{$sdata['companyvote']->company->logo}}">
+                                            @else
+                                                暂无
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="price">
+                                    <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" style="font-size: 15px">查看详情<i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                    </a>
+                                </div>
+
+                            </div>
+                            <div >
+
+                                     <a href="javascript:;"  class="btn btn-block btn-inverse" >
+                                         <span>已投</span>
+                                         <i class="ace-icon fa fa-check bigger-110"></i>
+                                     </a>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 @foreach($edata as $company)
                     <div class="col-xs-6 col-sm-3 pricing-box">
                         <div class="widget-box widget-color-dark">
@@ -53,7 +108,7 @@
 
                                 </div>
                                 <div >
-                                    @if($company->id==$sdata['companyvote']->company->id)
+                                   {{-- @if($company->id==$sdata['companyvote']->company->id)
                                         <a href="javascript:;"  class="btn btn-block btn-inverse" >
                                             <span>已投</span>
                                             <i class="ace-icon fa fa-check bigger-110"></i>
@@ -63,8 +118,11 @@
                                             <span>投票</span>
                                             <i class="ace-icon fa fa-check bigger-110"></i>
                                         </a>
-                                    @endif
-
+                                    @endif--}}
+                                    <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
+                                        <span>投票</span>
+                                        <i class="ace-icon fa fa-check bigger-110"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>

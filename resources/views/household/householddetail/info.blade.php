@@ -89,6 +89,38 @@
                                         <span class="editable editable-click">{{$sdata->type}}</span>
                                     </div>
                                 </div>
+                            @if($sdata->type>0)
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 公产单位名称： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->itemland->adminunit->name}}</span>
+                                    </div>
+                                </div>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 公产单位地址： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->itemland->adminunit->addre}}</span>
+                                    </div>
+                                </div>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 公产单位联系人： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->itemland->adminunit->contact_man}}</span>
+                                    </div>
+                                </div>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 公产单位联系电话： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->itemland->adminunit->phone}}</span>
+                                    </div>
+                                </div>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 公产单位详细信息： </div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">{{$sdata->itemland->adminunit->infos}}</span>
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="profile-info-row">
                                 <div class="profile-info-name"> 产权争议： </div>
@@ -358,9 +390,15 @@
                                 <th>楼层</th>
                                 <th>朝向</th>
                                 <th>结构</th>
-
+                                <th>登记套内面积</th>
+                                <th>登记建筑面积</th>
+                                <th>阳台面积</th>
+                                <th>面积争议</th>
+                                <th>实际套内面积</th>
+                                <th>实际建筑面积</th>
+                                <th>批准用途</th>
+                                <th>实际用途</th>
                                 <th>状态</th>
-                                <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -373,11 +411,15 @@
                                         <td>{{$infos->floor}}</td>
                                         <td>{{$infos->direct}}</td>
                                         <td>{{$infos->buildingstruct->name}}</td>
-
+                                        <td>{{$infos->reg_inner}}</td>
+                                        <td>{{$infos->reg_outer}}</td>
+                                        <td>{{$infos->balcony}}</td>
+                                        <td>{{$infos->dispute}}</td>
+                                        <td>{{$infos->real_inner}}</td>
+                                        <td>{{$infos->real_outer}}</td>
+                                        <td>{{$infos->buildinguse->name}}</td>
+                                        <td>{{$infos->buildinguses->name}}</td>
                                         <td>{{$infos->state->name}}</td>
-                                        <td>
-                                            <a href="{{route('h_householdbuilding_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
-                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -432,7 +474,7 @@
                                 <th>是否享受特殊人群优惠</th>
                                 <th>权属类型</th>
                                 <th>权属分配比例</th>
-                                <th>操作</th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -450,9 +492,6 @@
                                         <td>{{$infos->crowd}}</td>
                                         <td>{{$infos->holder}}</td>
                                         <td>{{$infos->portion}}</td>
-                                        <td>
-                                            <a href="{{route('h_householdmember_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
-                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
