@@ -35,8 +35,6 @@ class LandlayoutController extends BaseitemController
         }
 
         $infos['item'] = $this->item;
-        /* ********** 是否分页 ********** */
-        $app = $request->input('app');
         /* ********** 查询条件 ********** */
         $where=[];
         $select=['id','item_id','land_id','name','area'];
@@ -60,38 +58,24 @@ class LandlayoutController extends BaseitemController
         $model=new Landlayout();
         DB::beginTransaction();
         try{
-            /* ********** 是否分页 ********** */
-            if($app){
-                $total=$model->sharedLock()
-                    ->where('item_id',$item_id)
-                    ->where($where)
-                    ->count();
-                $landlayouts=$model
-                    ->with([
-                        'itemland'=>function($query){
-                            $query->select(['id','address']);
-                        }])
-                    ->where($where)
-                    ->select($select)
-                    ->orderBy($ordername,$orderby)
-                    ->sharedLock()
-                    ->offset($per_page*($page-1))
-                    ->limit($per_page)
-                    ->get();
-                $landlayouts=new LengthAwarePaginator($landlayouts,$total,$per_page,$page);
-                $landlayouts->withPath(route('g_landlayout',['item'=>$item_id]));
-            }else{
-                $landlayouts=$model
-                    ->with([
-                        'itemland'=>function($query){
-                            $query->select(['id','address']);
-                        }])
-                    ->where($where)
-                    ->select($select)
-                    ->orderBy($ordername,$orderby)
-                    ->sharedLock()
-                    ->get();
-            }
+            $total=$model->sharedLock()
+                ->where('item_id',$item_id)
+                ->where($where)
+                ->count();
+            $landlayouts=$model
+                ->with([
+                    'itemland'=>function($query){
+                        $query->select(['id','address']);
+                    }])
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $landlayouts=new LengthAwarePaginator($landlayouts,$total,$per_page,$page);
+            $landlayouts->withPath(route('g_landlayout',['item'=>$item_id]));
 
             if(blank($landlayouts)){
                 throw new \Exception('没有符合条件的数据',404404);
@@ -366,5 +350,211 @@ class LandlayoutController extends BaseitemController
             return response()->json($result);
         }
     }
+
+    /* ========== 测绘报告列表 ========== */
+    public function reportlist(Request $request){
+        $infos['item'] = $this->item;
+        /* ********** 查询条件 ********** */
+        $where=[];
+
+        $item_id=$this->item_id;
+        $where[]=['item_id',$item_id];
+        $infos['item_id']=$item_id;
+        /* ********** 每页条数 ********** */
+        $per_page=15;
+        $page=$request->input('page',1);
+        /* ********** 查询 ********** */
+        $model=new Landlayout();
+        DB::beginTransaction();
+        try{
+            $total=$model->sharedLock()
+                ->where('item_id',$item_id)
+                ->where($where)
+                ->count();
+            $landlayouts=$model
+                ->with([
+                    'itemland'=>function($query){
+                        $query->select(['id','address']);
+                    }])
+                ->where($where)
+                ->orderBy('land_id','desc')
+                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $landlayouts=new LengthAwarePaginator($landlayouts,$total,$per_page,$page);
+            $landlayouts->withPath(route('g_landlayout_reportlist',['item'=>$item_id]));
+
+            if(blank($landlayouts)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+            $code='success';
+            $msg='查询成功';
+            $sdata=$landlayouts;
+            $edata=$infos;
+            $url=null;
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=$infos;
+            $url=null;
+        }
+        DB::commit();
+
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.landlayout.reportlist')->with($result);
+        }
+    }
+
+    /* ========== 添加测绘报告 ========== */
+    public function reportadd(Request $request){
+        $id=$request->input('id');
+        if(blank($id)){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+
+        if ($request->isMethod('get')) {
+            /* ********** 当前数据 ********** */
+
+            DB::beginTransaction();
+            $landlayout=Landlayout::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                }])
+                ->sharedLock()
+                ->find($id);
+            DB::commit();
+            /* ++++++++++ 数据不存在 ++++++++++ */
+            if(blank($landlayout)){
+                $code='warning';
+                $msg='数据不存在';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }else{
+                $code='success';
+                $msg='获取成功';
+                $sdata=['item'=>$this->item,'landlayout'=>$landlayout];
+                $edata=null;
+                $url=null;
+
+                $view='gov.landlayout.reportadd';
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }else{
+            $model=new Landlayout();
+            /* ********** 表单验证 ********** */
+            $rules=[
+                'area' => 'required',
+                'picture' => 'required'
+            ];
+            $messages=[
+                'required'=>':attribute必须填写'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $landlayout=Landlayout::lockForUpdate()->find($id);
+                if(blank($landlayout)){
+                    throw new \Exception('指定数据项不存在',404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $landlayout->fill($request->all());
+                $landlayout->editOther($request);
+                $landlayout->save();
+                if(blank($landlayout)){
+                    throw new \Exception('提交失败',404404);
+                }
+                $code='success';
+                $msg='提交成功';
+                $sdata=$landlayout;
+                $edata=null;
+                $url = route('g_landlayout_reportlist',['item'=>$this->item_id]);
+
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$landlayout;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+    /* ========== 详情 ========== */
+    public function reportinfo(Request $request){
+        $id=$request->input('id');
+        if(blank($id)){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+
+        DB::beginTransaction();
+        $landlayout=Landlayout::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            }])
+            ->sharedLock()
+            ->find($id);
+        DB::commit();
+        /* ++++++++++ 数据不存在 ++++++++++ */
+        if(blank($landlayout)){
+            $code='warning';
+            $msg='数据不存在';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            $view='gov.error';
+        }else{
+            $code='success';
+            $msg='获取成功';
+            $sdata=['item'=>$this->item,'landlayout'=>$landlayout];
+            $edata=null;
+            $url=null;
+
+            $view='gov.landlayout.reportinfo';
+        }
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+    }
+
 
 }

@@ -164,6 +164,25 @@ Route::any('/householdassets_edit','HouseholdassetsController@edit')->name('g_ho
 Route::any('/householdright','HouseholdrightController@index')->name('g_householdright');
 Route::any('/householdright_add','HouseholdrightController@add')->name('g_householdright_add');
 Route::get('/householdright_info','HouseholdrightController@info')->name('g_householdright_info');
+/*---------- 项目-被征户-违建处理 ----------*/
+Route::any('/householdbuildingdeal','HouseholdbuildingdealController@index')->name('g_householdbuildingdeal');
+Route::any('/householdbuildingdeal_status','HouseholdbuildingdealController@status')->name('g_householdbuildingdeal_status');
+Route::any('/householdbuildingdeal_add','HouseholdbuildingdealController@add')->name('g_householdbuildingdeal_add');
+Route::get('/householdbuildingdeal_infos','HouseholdbuildingdealController@infos')->name('g_householdbuildingdeal_infos');
+Route::get('/householdbuildingdeal_info','HouseholdbuildingdealController@info')->name('g_householdbuildingdeal_info');
+/*---------- 项目-被征户-面积争议解决 ----------*/
+Route::any('/householdbuildingarea','HouseholdbuildingareaController@index')->name('g_householdbuildingarea');
+Route::any('/householdbuildingarea_add','HouseholdbuildingareaController@add')->name('g_householdbuildingarea_add');
+Route::get('/householdbuildingarea_info','HouseholdbuildingareaController@info')->name('g_householdbuildingarea_info');
+/*---------- 项目-测绘报告 ----------*/
+Route::any('/landlayout_reportlist','LandlayoutController@reportlist')->name('g_landlayout_reportlist');
+Route::any('/landlayout_reportadd','LandlayoutController@reportadd')->name('g_landlayout_reportadd');
+Route::any('/landlayout_reportinfo','LandlayoutController@reportinfo')->name('g_landlayout_reportinfo');
+/*---------- 项目-资产确认 ----------*/
+Route::any('/householdassets_report','HouseholdassetsController@report')->name('g_householdassets_report');
+Route::any('/householdassets_reportlist','HouseholdassetsController@reportlist')->name('g_householdassets_reportlist');
+Route::any('/householdassets_reportadd','HouseholdassetsController@reportadd')->name('g_householdassets_reportadd');
+Route::any('/householdassets_reportinfo','HouseholdassetsController@reportinfo')->name('g_householdassets_reportinfo');
 
 /*+++++++++++++++ 【征收决定】 ++++++++++++++++*/
 /*---------- 项目-自选社会风险评估调查话题 ----------*/

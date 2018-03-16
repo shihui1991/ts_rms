@@ -20,16 +20,30 @@
                 </li>
 
                 <li class="">
-                    <a href="{{route('g_itemland')}}">
+                    <a href="{{route('g_householdbuildingdeal',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         违建处理
                     </a>
                 </li>
 
                 <li class="">
-                    <a href="#">
+                    <a href="{{route('g_householdbuildingarea',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         面积争议
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_landlayout_reportlist',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        测绘报告
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_householdassets_report',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        资产确认
                     </a>
                 </li>
             </ul>
@@ -61,7 +75,7 @@
                                         @if($infos->getOriginal('dispute')==1)
                                             <a href="{{route('g_householdright_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>
                                         @else
-                                            <a href="{{route('g_householdright_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
+                                            <a href="{{route('g_householdright_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">解决详情</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -80,6 +94,12 @@
                         </div>
                     </div>
                 </div>
+
+                <div id="householdbuildingdeal" class="tab-pane fade">
+                </div>
+
+                <div id="householdarea" class="tab-pane fade">
+                </div>
             </div>
         </div>
     </div>
@@ -89,15 +109,10 @@
 
 {{-- 样式 --}}
 @section('css')
-    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+
 @endsection
 
 {{-- 插件 --}}
 @section('js')
     @parent
-    <script src="{{asset('js/func.js')}}"></script>
-    <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script>
-        $('.img-content').viewer('update');
-    </script>
 @endsection

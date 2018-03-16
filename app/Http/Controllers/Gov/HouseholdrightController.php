@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Household;
 use App\Http\Model\Householddetail;
+use App\Http\Model\Householdmember;
 use App\Http\Model\Householdright;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -119,6 +120,8 @@ class HouseholdrightController extends BaseitemController
             $sdata['id'] = $id;
             $sdata['item_id'] = $item_id;
             $sdata['item'] = $item;
+            $sdata['membermodel'] = new Householdmember();
+            $sdata['member'] = Householdmember::where('item_id',$item_id)->where('household_id',$household_id)->get();
             $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -143,10 +146,36 @@ class HouseholdrightController extends BaseitemController
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
+            $holder = $request->input('holder');
+            $portion = $request->input('portion');
+            $member_data = [];
+            $i=0;
+            $num = 0;
+            foreach ($holder as $k=>$v){
+                $member_data[$i]['id'] = $k;
+                $member_data[$i]['holder'] = $v;
+                $member_data[$i]['portion'] = $portion[$k];
+                $member_data[$i]['updated_at'] = date('Y-m-d H:i:s');
+                $num +=$portion[$k];
+                $i++;
+            }
+            if($num>100){
+                $result=['code'=>'error','message'=>'总份额超出限定范围(0-100)','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
 
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+                /* ++++++++++ 修改产权权属分配比例 ++++++++++ */
+                $fild_arr = ['id','holder','portion','updated_at'];
+                $sqls=batch_update_sql('item_household_member',$fild_arr,$member_data,$fild_arr);
+                if(!$sqls){
+                    throw new \Exception('数据异常', 404404);
+                }
+                foreach ($sqls as $sql){
+                    DB::statement($sql);
+                }
                 /* ++++++++++ 修改产权争议状态 ++++++++++ */
                 $householddetail = Householddetail::lockforupdate()->find($id);
                 if (blank($householddetail)) {
@@ -174,6 +203,7 @@ class HouseholdrightController extends BaseitemController
                 $url = route('g_householdright',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
+                dd($exception);
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;

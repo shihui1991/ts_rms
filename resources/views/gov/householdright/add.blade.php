@@ -20,6 +20,38 @@
         <input type="hidden" name="household_id" value="{{$sdata['household']->id}}">
         <input type="hidden" name="land_id" value="{{$sdata['household']->land_id}}">
         <input type="hidden" name="building_id" value="{{$sdata['household']->building_id}}">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>姓名</th>
+                <th>身份证</th>
+                <th>权属类型</th>
+                <th>权属分配比例</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if($code=='success')
+                @foreach($sdata['member'] as $infos)
+                    <tr>
+                        <td>{{$loop->iteration}}</td>
+                        <td>{{$infos->name}}</td>
+                        <td>{{$infos->card_num}}</td>
+                        <td>
+                            @foreach($sdata['membermodel']->holder as $key=>$val)
+                                <label>
+                                    <input name="holder[{{$infos->id}}]" type="radio" class="ace" value="{{$key}}"  @if($key==$infos->getOriginal('holder')) checked @endif>
+                                    <span class="lbl">{{$val}}</span>
+                                </label>
+                            @endforeach
+                        </td>
+                        <td><input type="number" name="portion[{{$infos->id}}]" value="{{$infos->portion}}" >%</td>
+                    </tr>
+                @endforeach
+            @endif
+            </tbody>
+        </table>
+
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="way">解决方式：</label>
             <div class="col-sm-9">

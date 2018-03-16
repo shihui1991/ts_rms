@@ -25,7 +25,7 @@ class Householdright extends Model
         'land_id'=>'地块',
         'building_id'=>'楼栋',
         'way'=>'解决方式',
-        'picture'=>'图片'
+        'picture'=>'证明'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */

@@ -1,0 +1,247 @@
+<?php
+/*
+|--------------------------------------------------------------------------
+| 项目-面积争议解决
+|--------------------------------------------------------------------------
+*/
+namespace App\Http\Controllers\gov;
+use App\Http\Model\Household;
+use App\Http\Model\Householdbuilding;
+use App\Http\Model\Householddetail;
+use App\Http\Model\Householdbuildingarea;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
+class HouseholdbuildingareaController extends BaseitemController
+{
+    /* ++++++++++ 初始化 ++++++++++ */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+
+    /* ++++++++++ 违建被征户首页 ++++++++++ */
+    public function index(Request $request){
+        $item_id=$this->item_id;
+        $item=$this->item;
+        $infos['item'] = $item;
+        /* ********** 查询条件 ********** */
+        $where=[];
+        $where[] = ['item_id',$item_id];
+        $infos['item_id'] = $item_id;
+        $select=['id','item_id','land_id','building_id','household_id','area_dispute','register','agree'];
+        /* ********** 地块 ********** */
+        $land_id=$request->input('land_id');
+        if(is_numeric($land_id)){
+            $where[] = ['land_id',$land_id];
+            $infos['land_id'] = $land_id;
+        }
+        /* ********** 楼栋 ********** */
+        $building_id=$request->input('building_id');
+        if(is_numeric($building_id)){
+            $where[] = ['building_id',$building_id];
+            $infos['building_id'] = $building_id;
+        }
+        /* ********** 排序 ********** */
+        $ordername=$request->input('ordername');
+        $ordername=$ordername?$ordername:'area_dispute';
+        $infos['ordername']=$ordername;
+
+        $orderby=$request->input('orderby');
+        $orderby=$orderby?$orderby:'asc';
+        $infos['orderby']=$orderby;
+        /* ********** 每页条数 ********** */
+        $per_page=15;
+        $page=$request->input('page',1);
+        /* ********** 查询 ********** */
+        DB::beginTransaction();
+        try{
+            $total=Householddetail::sharedLock()
+                ->where($where)
+                ->whereIn('area_dispute',[2,3])
+                ->count();
+            $households=Householddetail::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                }])
+                ->where($where)
+                ->whereIn('area_dispute',[2,3])
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+            $households->withPath(route('g_householdbuildingarea',['item'=>$item_id]));
+
+
+            if(blank($households)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+            $code='success';
+            $msg='查询成功';
+            $sdata=$households;
+            $edata=$infos;
+            $url=null;
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=$infos;
+            $url=null;
+        }
+        DB::commit();
+
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.householdbuildingarea.index')->with($result);
+        }
+    }
+
+    /* ========== 添加 ========== */
+    public function add(Request $request){
+        $id = $request->input('id');
+        if(blank($id)){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else {
+                return view('gov.error')->with($result);
+            }
+        }
+        $item_id = $this->item_id;
+        $item = $this->item;
+        $household_id = $request->input('household_id');
+        $model=new Householdbuildingarea();
+        if($request->isMethod('get')){
+            $sdata['id'] = $id;
+            $sdata['item_id'] = $item_id;
+            $sdata['item'] = $item;
+            $sdata['models'] = $model;
+            $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.householdbuildingarea.add')->with($result);
+            }
+        }
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ********** 保存 ********** */
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'household_id' => 'required',
+                'land_id' => 'required',
+                'building_id' => 'required',
+                'picture' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 修改产权争议状态 ++++++++++ */
+                $householddetail = Householddetail::lockforupdate()->find($id);
+                if (blank($householddetail)) {
+                    throw new \Exception('数据异常', 404404);
+                }
+                $householddetail->area_dispute = 3;
+                $householddetail->save();
+                if (blank($householddetail)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $householdbuildingarea = $model;
+                $householdbuildingarea->fill($request->input());
+                $householdbuildingarea->addOther($request);
+                $householdbuildingarea->item_id = $item_id;
+                $householdbuildingarea->code = 0;
+                $householdbuildingarea->save();
+                if (blank($householdbuildingarea)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $householdbuildingarea;
+                $edata = null;
+                $url = route('g_householdbuildingarea',['item'=>$item_id]);
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = $householdbuildingarea;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+    /* ========== 详情 ========== */
+    public function info(Request $request){
+        $household_id = $request->input('household_id');
+        $item_id = $this->item_id;
+        if(blank($household_id)){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+
+        /* ********** 当前数据 ********** */
+        DB::beginTransaction();
+        $householdbuildingarea=Householdbuildingarea::sharedLock()->where('household_id',$household_id)->where('item_id',$item_id)->first();
+        DB::commit();
+        /* ++++++++++ 数据不存在 ++++++++++ */
+        if(blank($householdbuildingarea)){
+            $code='error';
+            $msg='数据不存在';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+        }else{
+            $code='success';
+            $msg='获取成功';
+            $sdata=$householdbuildingarea;
+            $edata=null;
+            $url=null;
+        }
+        if($code=='error'){
+            $view='gov.error';
+        }else{
+            $view='gov.householdbuildingarea.info';
+        }
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+    }
+
+}

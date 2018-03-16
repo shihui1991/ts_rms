@@ -61,20 +61,6 @@
             </div>
         </div>
 
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 状态： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click"> @if($sdata->deleted_at) 已删除 @else 启用中 @endif</span>
-            </div>
-        </div>
-
-        <div class="profile-info-row">
-            <div class="profile-info-name"> 删除时间： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->deleted_at}}</span>
-            </div>
-        </div>
-
     </div>
 
 @endsection
