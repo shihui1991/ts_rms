@@ -13,7 +13,7 @@
         <div class="tabbable">
             <ul class="nav nav-tabs" id="myTab">
                 <li class="">
-                    <a href="{{route('g_householdbuildingarea',['item'=>$edata['item_id']])}}">
+                    <a href="{{route('g_householdright',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-building bigger-120"></i>
                         产权争议
                     </a>
@@ -30,6 +30,20 @@
                     <a data-toggle="tab" href="#householdbuildingarea" aria-expanded="true">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         面积争议
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_landlayout_reportlist',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        测绘报告
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_householdassets_report',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        资产确认
                     </a>
                 </li>
             </ul>

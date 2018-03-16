@@ -32,6 +32,20 @@
                         面积争议
                     </a>
                 </li>
+
+                <li class="">
+                    <a href="{{route('g_landlayout_reportlist',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        测绘报告
+                    </a>
+                </li>
+
+                <li class="">
+                    <a href="{{route('g_householdassets_report',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        资产确认
+                    </a>
+                </li>
             </ul>
             <div class="tab-content">
                 <div id="householdright" class="tab-pane fade active in">

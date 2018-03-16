@@ -19,8 +19,8 @@
                     </a>
                 </li>
 
-                <li class="active">
-                    <a data-toggle="tab" href="#householdbuildingdeal" aria-expanded="true">
+                <li class="">
+                    <a href="{{route('g_householdbuildingdeal',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         违建处理
                     </a>
@@ -40,18 +40,28 @@
                     </a>
                 </li>
 
-                <li class="">
-                    <a href="{{route('g_householdassets_report',['item'=>$edata['item_id']])}}">
+                <li class="active">
+                    <a data-toggle="tab" href="#householdassets" aria-expanded="true">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         资产确认
                     </a>
                 </li>
             </ul>
             <div class="tab-content">
-                <div id="householdright" class="tab-pane fade">
+                <div id="householdbuildingarea" class="tab-pane fade">
                 </div>
 
-                <div id="householdbuildingdeal" class="tab-pane fade active in">
+                <div id="householdbuildingdeal" class="tab-pane fade">
+                </div>
+
+                <div id="householdbuildingarea" class="tab-pane fade">
+
+                </div>
+
+                <div id="householdbuildingdeal" class="tab-pane fade">
+                </div>
+
+                <div id="householdassets" class="tab-pane fade active in">
                     <table class="table table-hover table-bordered">
                         <thead>
                         <tr>
@@ -73,7 +83,7 @@
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
                                     <td>
-                                        <a href="{{route('g_householdbuildingdeal_infos',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">建筑详情</a>
+                                        <a href="{{route('g_householdassets_reportlist',['household_id'=>$infos->household_id,'item'=>$infos->item_id,])}}" class="btn btn-sm">资产详情</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -91,9 +101,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div id="householdarea" class="tab-pane fade">
-                </div>
             </div>
         </div>
     </div>
@@ -110,3 +117,4 @@
 @section('js')
     @parent
 @endsection
+

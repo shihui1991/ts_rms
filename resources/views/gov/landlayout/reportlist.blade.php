@@ -19,8 +19,8 @@
                     </a>
                 </li>
 
-                <li class="active">
-                    <a data-toggle="tab" href="#householdbuildingdeal" aria-expanded="true">
+                <li class="">
+                    <a href="{{route('g_householdbuildingdeal',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         违建处理
                     </a>
@@ -33,8 +33,8 @@
                     </a>
                 </li>
 
-                <li class="">
-                    <a href="{{route('g_landlayout_reportlist',['item'=>$edata['item_id']])}}">
+                <li class="active">
+                    <a  data-toggle="tab" href="#landlayout" aria-expanded="true">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         测绘报告
                     </a>
@@ -48,18 +48,14 @@
                 </li>
             </ul>
             <div class="tab-content">
-                <div id="householdright" class="tab-pane fade">
-                </div>
-
-                <div id="householdbuildingdeal" class="tab-pane fade active in">
+                <div id="landlayout" class="tab-pane fade active in">
                     <table class="table table-hover table-bordered">
                         <thead>
                         <tr>
                             <th>序号</th>
                             <th>地块</th>
-                            <th>楼栋</th>
-                            <th>房屋产权证号</th>
-                            <th>征收意见</th>
+                            <th>名称</th>
+                            <th>面积</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -69,11 +65,14 @@
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$infos->itemland->address}}</td>
-                                    <td>{{$infos->itembuilding->building}}</td>
-                                    <td>{{$infos->register}}</td>
-                                    <td>{{$infos->agree}}</td>
+                                    <td>{{$infos->name}}</td>
+                                    <td>{{$infos->area}}</td>
                                     <td>
-                                        <a href="{{route('g_householdbuildingdeal_infos',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">建筑详情</a>
+                                        @if(blank($infos->getOriginal('picture')))
+                                            <a href="{{route('g_landlayout_reportadd',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">提交测绘报告</a>
+                                        @else
+                                            <a href="{{route('g_landlayout_reportinfo',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">测绘报告详情</a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -90,6 +89,9 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div id="householdbuildingdeal" class="tab-pane fade">
                 </div>
 
                 <div id="householdarea" class="tab-pane fade">
