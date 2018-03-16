@@ -13,10 +13,10 @@ class Estatebuilding extends Model
     use SoftDeletes;
     protected $table='com_estate_building';
     protected $primaryKey='id';
-    protected $fillable=['real_outer','real_use','struct_id','direct','floor','layout_img','picture','price'];
+    protected $fillable=['price','name','code','reg_inner','reg_outer','balcony', 'real_inner','real_outer','def_use','real_use',
+        'struct_id','direct','floor','layout_id','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
-        'layout_img'=>'array',
         'picture'=>'array'
     ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
@@ -26,23 +26,33 @@ class Estatebuilding extends Model
         'assess_id'=>'评估',
         'estate_id'=>'房产评估',
         'household_id'=>'被征收户',
-        'household_building_id'=>'被征收户-房屋建筑',
         'land_id'=>'地块',
         'building_id'=>'楼栋',
+        'household_building_id'=>'被征收户-房屋建筑',
+        'price'=>'评估单价',
+        'amount'=>'评估总价',
+        'name'=>'名称',
+        'code'=>'状态代码',
+        'reg_inner'=>'套内面积',
+        'reg_outer'=>'建筑面积',
+        'balcony'=>'阳台面积',
+        'real_inner'=>'实际套内面积',
         'real_outer'=>'实际建筑面积',
+        'def_use'=>'批准用途',
         'real_use'=>'实际用途',
         'struct_id'=>'结构类型',
         'direct'=>'朝向',
         'floor'=>'楼层',
-        'layout_img'=>'户型图',
-        'picture'=>'图片',
-        'price'=>'评估单价',
-        'amount'=>'评估总价'
+        'layout_id'=>'地块户型',
+        'picture'=>'图片'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-
+        $this->attributes['household_id'] = $request->input('household_id');
+        $this->attributes['land_id'] = $request->input('land_id');
+        $this->attributes['building_id'] = $request->input('building_id');
+        $this->attributes['code'] = $request->input('code');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
@@ -86,5 +96,26 @@ class Estatebuilding extends Model
 
     public function buildingstruct(){
         return $this->belongsTo('App\Http\Model\Buildingstruct','struct_id','id')->withDefault();
+    }
+
+    /* ++++++++++ 关联建筑批准用途 ++++++++++ */
+    public function buildinguse(){
+        return $this->belongsTo('App\Http\Model\Buildinguse','def_use','id')->withDefault();
+    }
+    /* ++++++++++ 关联建筑实际用途 ++++++++++ */
+    public function buildinguses(){
+        return $this->belongsTo('App\Http\Model\Buildinguse','real_use','id')->withDefault();
+    }
+    /* ++++++++++ 违建处理 ++++++++++ */
+    public function buildingdeal(){
+        return $this->hasOne('App\Http\Model\Buildinguse','real_use','id')->withDefault();
+    }
+    /* ++++++++++ 关联地块户型 ++++++++++ */
+    public function landlayout(){
+        return $this->belongsTo('App\Http\Model\Landlayout','layout_id','id')->withDefault();
+    }
+
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
 }

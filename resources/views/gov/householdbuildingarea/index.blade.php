@@ -78,7 +78,7 @@
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
                                     <td>
-                                        @if($infos->getOriginal('area_dispute')==2)
+                                        @if($infos->getOriginal('area_dispute')==4)
                                             <a href="{{route('g_householdbuildingarea_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>
                                         @else
                                             <a href="{{route('g_householdbuildingarea_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">解决详情</a>

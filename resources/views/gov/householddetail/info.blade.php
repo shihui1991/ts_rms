@@ -400,7 +400,7 @@
                                         <td>{{$infos->floor}}</td>
                                         <td>{{$infos->direct}}</td>
                                         <td>{{$infos->buildingstruct->name}}</td>
-                                        <td>{{$infos->code}}</td>
+                                        <td>{{$infos->state->name}}</td>
                                         <td>
                                             <a href="{{route('g_householdbuilding_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">查看详情</a>
                                         </td>

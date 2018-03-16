@@ -32,11 +32,16 @@ Route::any('/landlayout','LandlayoutController@index')->name('c_landlayout');
 Route::any('/landlayout_add','LandlayoutController@add')->name('c_landlayout_add');
 Route::get('/landlayout_info','LandlayoutController@info')->name('c_landlayout_info');
 Route::any('/landlayout_edit','LandlayoutController@edit')->name('c_landlayout_edit');
-/*---------- 入户摸底【评估】 ----------*/
+
+/*---------- 入户摸底 ----------*/
 Route::get('/household','HouseholdController@index')->name('c_household');
 Route::get('/household_info','HouseholdController@info')->name('c_household_info');
 Route::any('/household_add','HouseholdController@add')->name('c_household_add');
 Route::any('/household_edit','HouseholdController@edit')->name('c_household_edit');
+Route::any('/household_buildingadd','HouseholdController@buildingadd')->name('c_household_buildingadd');
+Route::any('/household_buildinginfo','HouseholdController@buildinginfo')->name('c_household_buildinginfo');
+Route::any('/household_buildingedit','HouseholdController@buildingedit')->name('c_household_buildingedit');
+
 /*---------- 评估【公共附属物】 ----------*/
 Route::get('/compublic','CompublicController@index')->name('c_compublic');
 Route::any('/compublic_add','CompublicController@add')->name('c_compublic_add');

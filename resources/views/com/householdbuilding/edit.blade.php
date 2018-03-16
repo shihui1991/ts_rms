@@ -1,5 +1,5 @@
 {{-- 继承布局 --}}
-@extends('gov.main')
+@extends('com.main')
 
 
 {{-- 页面内容 --}}
@@ -13,7 +13,7 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_householdbuilding_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('c_household_buildingedit')}}" method="post">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{$sdata->id}}">
         <input type="hidden" name="item" value="{{$edata['item_id']}}">
