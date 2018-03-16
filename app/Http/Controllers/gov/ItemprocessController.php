@@ -9,11 +9,17 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Filecate;
 use App\Http\Model\Filetable;
 use App\Http\Model\Funds;
+use App\Http\Model\Household;
+use App\Http\Model\Householdassets;
+use App\Http\Model\Householdbuilding;
+use App\Http\Model\Householddetail;
 use App\Http\Model\Initbudget;
 use App\Http\Model\Item;
 use App\Http\Model\Itemadmin;
 use App\Http\Model\Itemhouse;
+use App\Http\Model\Itemland;
 use App\Http\Model\Itemnotice;
+use App\Http\Model\Itempublic;
 use App\Http\Model\Itemtime;
 use App\Http\Model\Itemuser;
 use App\Http\Model\News;
@@ -4035,7 +4041,285 @@ class ItemprocessController extends BaseitemController
 
     /* ========== 调查建档 - 入户调查 ========== */
     public function survey(Request $request){
+        if($request->isMethod('get')){
+            /* ********** 查询 ********** */
+            DB::beginTransaction();
+            try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->schedule_id!=3 || $item->process_id!=25){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',$item->schedule_id],
+                        ['process_id',$item->process_id],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                /* ++++++++++ 地块 ++++++++++ */
+                // 地块性质
+                $land_props=Itemland::with('landprop')
+                    ->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->select([DB::raw('SUM(`area`) AS `prop_area`,COUNT(`id`) AS `prop_num`'),'land_prop_id'])
+                    ->groupBy('land_prop_id')
+                    ->get();
+                // 地块
+                $lands=Itemland::with('landprop')
+                    ->withCount(['households'=>function($query){
+                        $query->where('item_id',$this->item_id);
+                    },'households as privates_count'=>function($query){
+                        $query->where('item_id',$this->item_id)->where('type',0);
+                    },'households as publics_count'=>function($query){
+                        $query->where('item_id',$this->item_id)->where('type',1);
+                    }])
+                    ->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->get();
+                /* ++++++++++ 被征收户 ++++++++++ */
+                // 房屋状况
+                $status_households=Householddetail::sharedLock()
+                    ->select([DB::raw('COUNT(*) as `status_num`'),'status'])
+                    ->where('item_id',$this->item_id)
+                    ->groupBy('status')
+                    ->get();
+                // 征收意见
+                $agree_households=Householddetail::sharedLock()
+                    ->select([DB::raw('COUNT(*) as `agree_num`'),'agree'])
+                    ->where('item_id',$this->item_id)
+                    ->groupBy('agree')
+                    ->get();
+                // 补偿方式
+                $repay_households=Householddetail::sharedLock()
+                    ->select([DB::raw('COUNT(*) as `repay_num`'),'repay_way'])
+                    ->where('item_id',$this->item_id)
+                    ->groupBy('repay_way')
+                    ->get();
+                // 批准用途
+                $defuse_households=Householddetail::with('defbuildinguse')
+                    ->sharedLock()
+                    ->select([DB::raw('COUNT(*) as `defuse_num`'),'def_use'])
+                    ->where('item_id',$this->item_id)
+                    ->groupBy('def_use')
+                    ->get();
+                // 产权争议
+                $dispute_num=Householddetail::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where('dispute',1)
+                    ->count();
+                // 面积争议
+                $area_dispute_num=Householddetail::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->whereNotIn('area_dispute',[0,3])
+                    ->count();
+                // 合法性认定
+                $legal_num=Householdbuilding::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->whereIn('code',['91'])
+                    ->distinct()
+                    ->count('household_id');
+                // 资产确认
+                $assets_num=Householdassets::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where(function($query){
+                        $query->whereNull ('number')->orWhere('number',0);
+                    })
+                    ->distinct()
+                    ->count('household_id');
+                // 公共附属物确认
+                $public_num=Itempublic::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where(function($query){
+                        $query->whereNull ('number')->orWhere('number',0);
+                    })
+                    ->count();
 
+                $code='success';
+                $msg='查询成功';
+                $sdata=[
+                    'item'=>$item,
+                    'land_props'=>$land_props,
+                    'lands'=>$lands,
+                    'status_households'=>$status_households,
+                    'agree_households'=>$agree_households,
+                    'repay_households'=>$repay_households,
+                    'defuse_households'=>$defuse_households,
+                    'dispute_num'=>$dispute_num,
+                    'area_dispute_num'=>$area_dispute_num,
+                    'legal_num'=>$legal_num,
+                    'assets_num'=>$assets_num,
+                    'public_num'=>$public_num,
+                ];
+                $edata=null;
+                $url=null;
+
+                $view='gov.itemprocess.survey.index';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ********** 提交 ********** */
+        else{
+            DB::beginTransaction();
+            try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->schedule_id!=3 || $item->process_id!=25 ||  $item->code!='1'){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                // 产权争议
+                $dispute_num=Householddetail::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where('dispute',1)
+                    ->count();
+                if($dispute_num){
+                    throw new \Exception('存在产权争议未解决',404404);
+                }
+                // 面积争议
+                $area_dispute_num=Householddetail::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->whereNotIn('area_dispute',[0,3])
+                    ->count();
+                if($area_dispute_num){
+                    throw new \Exception('存在面积争议未解决',404404);
+                }
+                // 合法性认定
+                $legal_num=Householdbuilding::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->whereIn('code',['91'])
+                    ->count();
+                if($legal_num){
+                    throw new \Exception('存在合法性认定未解决',404404);
+                }
+                // 资产确认
+                $assets_num=Householdassets::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where(function($query){
+                        $query->whereNull ('number')->orWhere('number',0);
+                    })
+                    ->count();
+                if($assets_num){
+                    throw new \Exception('存在资产确认未解决',404404);
+                }
+                // 公共附属物确认
+                $public_num=Itempublic::query()->sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where(function($query){
+                        $query->whereNull ('number')->orWhere('number',0);
+                    })
+                    ->count();
+                if($public_num){
+                    throw new \Exception('存在公共附属物确认未解决',404404);
+                }
+
+                $result=$this->hasNotice();
+                $process=$result['process'];
+                $worknotice=$result['worknotice'];
+
+                $worknotice->code='2';
+                $worknotice->save();
+                if(blank($worknotice)){
+                    throw new \Exception('操作失败',404404);
+                }
+
+                /* ++++++++++ 删除相同工作推送 ++++++++++ */
+                Worknotice::lockForUpdate()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',$process->schedule_id],
+                        ['process_id',$process->id],
+                        ['menu_id',$process->menu_id],
+                        ['code','0'],
+                    ])
+                    ->delete();
+
+                /* ++++++++++ 入户调查数据审查 可操作人员 ++++++++++ */
+                $itemusers=Itemuser::with(['role'=>function($query){
+                    $query->select(['id','parent_id']);
+                }])
+                    ->where('process_id',30)
+                    ->get();
+                $values=[];
+                /* ++++++++++ 入户调查数据审查 工作提醒推送 ++++++++++ */
+                foreach ($itemusers as $user){
+                    $values[]=[
+                        'item_id'=>$user->item_id,
+                        'schedule_id'=>$user->schedule_id,
+                        'process_id'=>$user->process_id,
+                        'menu_id'=>$user->menu_id,
+                        'dept_id'=>$user->dept_id,
+                        'parent_id'=>$user->role->parent_id,
+                        'role_id'=>$user->role_id,
+                        'user_id'=>$user->user_id,
+                        'url'=>route('g_survey_check',['item'=>$this->item->id]),
+                        'code'=>'20',
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
+                }
+
+                $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
+                if(!$sqls){
+                    throw new \Exception('操作失败',404404);
+                }
+                foreach ($sqls as $sql){
+                    DB::statement($sql);
+                }
+
+                $item->schedule_id=$worknotice->schedule_id;
+                $item->process_id=$worknotice->process_id;
+                $item->code=$worknotice->code;
+                $item->save();
+
+                $code='success';
+                $msg='操作成功';
+                $sdata=null;
+                $edata=null;
+                $url=route('g_itemprocess',['item'=>$this->item->id]);
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                DB::rollBack();
+            }
+
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 
     /* ========== 调查建档 - 入户调查数据审查 ========== */

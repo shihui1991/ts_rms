@@ -89,7 +89,7 @@ class Householddetail extends Model
     /* ++++++++++ 面积争议 ++++++++++ */
     public function getAreaDisputeAttribute($key=null)
     {
-        $array=[0=>'无争议',1=>'待测绘',2=>'存在争议',3=>'面积明确'];
+        $array=[0=>'无争议',1=>'待测绘',2=>'已测绘',3=>'面积明确',4=>'存在争议',5=>'再测绘'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
