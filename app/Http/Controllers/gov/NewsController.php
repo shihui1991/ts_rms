@@ -505,6 +505,7 @@ class NewsController extends BaseitemController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $news->fill($request->input());
                 $news->editOther($request);
+                $news->code='20';
                 $news->save();
                 if(blank($news)){
                     throw new \Exception('保存失败',404404);

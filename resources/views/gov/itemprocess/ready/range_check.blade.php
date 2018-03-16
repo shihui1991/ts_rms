@@ -7,7 +7,7 @@
 
     <div class="widget-box widget-color-red">
         <div class="widget-header">
-            <h4 class="widget-title lighter smaller">初步预算审查意见</h4>
+            <h4 class="widget-title lighter smaller">征收范围公告审查意见</h4>
         </div>
 
         <div class="widget-body">
@@ -129,7 +129,7 @@
 
     <div class="widget-box widget-color-blue2">
         <div class="widget-header">
-            <h4 class="widget-title lighter smaller">项目准备情况与初步预算：</h4>
+            <h4 class="widget-title lighter smaller">征收范围公告：</h4>
             <div class="widget-toolbar">
                 <a href="#" data-action="collapse">
                     <i class="ace-icon fa fa-chevron-up"></i>
@@ -143,45 +143,96 @@
                 <div class="profile-user-info profile-user-info-striped">
 
                     <div class="profile-info-row">
-                        <div class="profile-info-name"> 预计户数： </div>
+                        <div class="profile-info-name"> 标题名称： </div>
                         <div class="profile-info-value">
-                            <span class="editable editable-click">{{number_format($sdata['init_budget']->holder)}}</span>
+                            <span class="editable editable-click">{{$sdata['news']->name}}</span>
                         </div>
                     </div>
 
                     <div class="profile-info-row">
-                        <div class="profile-info-name"> 预算总金额： </div>
+                        <div class="profile-info-name"> 发布时间： </div>
                         <div class="profile-info-value">
-                            <span class="editable editable-click">
-                                <strong>{{number_format($sdata['init_budget']->money,2)}}</strong>
-                            </span>
+                            <span class="editable editable-click">{{$sdata['news']->release_at}}</span>
                         </div>
                     </div>
 
                     <div class="profile-info-row">
-                        <div class="profile-info-name"> 当前项目资金： </div>
+                        <div class="profile-info-name"> 关键词： </div>
                         <div class="profile-info-value">
-                            <span class="editable editable-click">
-                                <strong>{{number_format($sdata['funds_amount'],2)}} （达到预算）</strong>
-                            </span>
+                            <span class="editable editable-click">{{$sdata['news']->keys}}</span>
                         </div>
                     </div>
 
                     <div class="profile-info-row">
-                        <div class="profile-info-name"> 预备房源数： </div>
+                        <div class="profile-info-name"> 摘要： </div>
                         <div class="profile-info-value">
-                            <span class="editable editable-click">{{number_format($sdata['init_budget']->house)}}</span>
+                            <span class="editable editable-click">{{$sdata['news']->infos}}</span>
                         </div>
                     </div>
 
                     <div class="profile-info-row">
-                        <div class="profile-info-name"> 当前冻结房源： </div>
+                        <div class="profile-info-name"> 是否置顶： </div>
                         <div class="profile-info-value">
-                            <span class="editable editable-click">
-                                <strong>{{number_format($sdata['house_count'])}} （达到预算）</strong>
-                            </span>
+                            <span class="editable editable-click">{{$sdata['news']->is_top}}</span>
                         </div>
                     </div>
+
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 附件： </div>
+                        <div class="profile-info-value">
+                            <ul class="ace-thumbnails clearfix img-content">
+                                @foreach($sdata['news']->picture as $pic)
+                                    <li>
+                                        <div>
+                                            <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                            <div class="text">
+                                                <div class="inner">
+                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 公告内容： </div>
+                        <div class="profile-info-value">
+                            <textarea id="content" name="content" style="width:100%;min-height: 360px;">{{$sdata['news']->content}}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 征收房屋相关手续停办通知： </div>
+                        <div class="profile-info-value">
+                            <span class="editable editable-click">{{$sdata['item_notice']->infos}}</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 停办通知： </div>
+                        <div class="profile-info-value">
+                            <ul class="ace-thumbnails clearfix img-content">
+                                @foreach($sdata['item_notice']->picture as $pic)
+                                    <li>
+                                        <div>
+                                            <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                            <div class="text">
+                                                <div class="inner">
+                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -193,12 +244,24 @@
 {{-- 样式 --}}
 @section('css')
 
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
 
 @endsection
 
 {{-- 插件 --}}
 @section('js')
     @parent
-
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
+    <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
+    <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>
+    <script>
+        var ue = UE.getEditor('content',
+            {
+                readonly:true
+                ,toolbars:null
+                ,wordCount:false
+            });
+        $('.img-content').viewer();
+    </script>
 
 @endsection

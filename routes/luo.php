@@ -23,6 +23,9 @@ Route::any('/ready_house','ItemprocessController@ready_house')->name('g_ready_ho
 Route::any('/ready_prepare_check','ItemprocessController@ready_prepare_check')->name('g_ready_prepare_check'); //项目准备 -  项目筹备审查
 Route::any('/ready_range_check','ItemprocessController@ready_range_check')->name('g_ready_range_check'); //项目准备 -  征收范围公告审查
 
+Route::any('/survey','ItemprocessController@survey')->name('g_survey'); //调查建档 -  入户调查
+Route::any('/survey_check','ItemprocessController@survey_check')->name('g_survey_check'); //调查建档 -  入户调查数据审查
+
 /*---------- 初步预算 ----------*/
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算
 Route::any('/initbudget_add','InitbudgetController@add')->name('g_initbudget_add'); //添加初步预算
