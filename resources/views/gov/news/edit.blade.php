@@ -14,6 +14,7 @@
         {{csrf_field()}}
 
         <input type="hidden" name="id" value="{{$sdata['news']->id}}">
+        <input type="hidden" name="notice_id" value="{{$sdata['item_notice']->id}}">
 
         <div class="row">
             <div class="col-sm-5 col-xs-12">
@@ -134,6 +135,57 @@
                                 <textarea id="content" name="content" style="min-height: 360px;">{{$sdata['news']->content}}</textarea>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="widget-container-col ui-sortable">
+            <div class="widget-box ui-sortable-handle">
+                <div class="widget-header">
+                    <h5 class="widget-title">征收房屋相关手续停办通知</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="infos"> 通知摘要： </label>
+                            <div class="col-sm-9">
+                                <textarea name="notice[infos]" id="infos" class="col-xs-10 col-sm-10">{{$sdata['item_notice']->infos}}</textarea>
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group img-box">
+                            <label class="col-sm-3 control-label no-padding-right">
+                                停办通知<br>
+                                <span class="btn btn-xs">
+                                    <span>上传图片</span>
+                                    <input type="file" accept="image/*" class="hidden" data-name="notice[picture][]" multiple onchange="uplfile(this)">
+                                </span>
+                            </label>
+                            <div class="col-sm-9">
+                                <ul class="ace-thumbnails clearfix img-content">
+                                    @foreach($sdata['item_notice']->picture as $pic)
+                                        <li>
+                                            <div>
+                                                <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                                <input type="hidden" name="notice[picture][]" value="{{$pic}}">
+                                                <div class="text">
+                                                    <div class="inner">
+                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                        <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                    @endforeach
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
                     </div>
                 </div>
             </div>

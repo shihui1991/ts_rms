@@ -63,4 +63,8 @@ class Itemland extends Model
     public function adminunit(){
         return $this->belongsTo('App\Http\Model\Adminunit','admin_unit_id','id')->withDefault();
     }
+
+    public function households(){
+        return $this->hasMany('App\Http\Model\Household','land_id','id');
+    }
 }
