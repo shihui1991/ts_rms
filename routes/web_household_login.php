@@ -51,4 +51,5 @@ Route::any('/itemhouse_info','ItemhouseController@info')->name('h_itemhouse_info
 
 /*选择备选安置房*/
 Route::any('/payhousebak_add','PayhousebakController@add')->name('h_payhousebak_add');
+Route::any('/payhousebak','PayhousebakController@index')->name('h_payhousebak');
 

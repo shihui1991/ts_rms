@@ -56,14 +56,14 @@
                                         </div>
 
                                     </div>
-                                    <hr>
-                                    <div class="price">
-                                        <a href="{{route('h_company_info',['id'=>$value->company_id])}}" style="font-size: 15px">查看详情<i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
-                                        </a>
-                                    </div>
+
+
 
                                 </div>
-
+                                <div>
+                                    <a href="{{route('h_company_info',['id'=>$value->company_id])}}" style="font-size: 15px" class="btn btn-block btn-inverse">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

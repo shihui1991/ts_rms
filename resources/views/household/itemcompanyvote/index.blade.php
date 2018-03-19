@@ -46,7 +46,7 @@
                                 </div>
                                 <hr>
                                 <div class="price">
-                                    <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" style="font-size: 15px">查看详情<i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                    <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
                                     </a>
                                 </div>
 
@@ -102,7 +102,7 @@
                                     </div>
                                     <hr>
                                     <div class="price">
-                                        <a href="{{route('h_company_info',['id'=>$company->id])}}" style="font-size: 15px">查看详情<i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                        <a href="{{route('h_company_info',['id'=>$company->id])}}" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
                                         </a>
                                     </div>
 
