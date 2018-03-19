@@ -317,15 +317,6 @@ class NewsController extends BaseitemController
 
     /* ========== 修改范围公告 ========== */
     public function edit(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $result=['code'=>'error', 'message'=>'错误操作', 'sdata'=>null, 'edata'=>null, 'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else {
-                return view('gov.error')->with($result);
-            }
-        }
 
         $model=new News();
         if($request->isMethod('get')){
@@ -352,7 +343,12 @@ class NewsController extends BaseitemController
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
 
-                $news=News::sharedLock()->find($id);
+                $news=News::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['cate_id',1],
+                    ])
+                    ->first();
                 $item_notice=Itemnotice::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
@@ -502,7 +498,12 @@ class NewsController extends BaseitemController
                 if(!$notice_id){
                     throw new \Exception('错误操作',404404);
                 }
-                $news=News::lockForUpdate()->find($id);
+                $news=News::lockForUpdate()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['cate_id',1],
+                    ])
+                    ->first();
                 if(blank($news)){
                     throw new \Exception('数据不存在',404404);
                 }
@@ -738,16 +739,6 @@ class NewsController extends BaseitemController
 
     /* ========== 修改征收意见稿公告 ========== */
     public function draft_notice_edit(Request $request){
-        $id=$request->input('id');
-        if(!$id){
-            $result=['code'=>'error', 'message'=>'错误操作', 'sdata'=>null, 'edata'=>null, 'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else {
-                return view('gov.error')->with($result);
-            }
-        }
-
         $model=new News();
         if($request->isMethod('get')){
             DB::beginTransaction();
@@ -773,7 +764,12 @@ class NewsController extends BaseitemController
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
 
-                $news=News::sharedLock()->find($id);
+                $news=News::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['cate_id',2],
+                    ])
+                    ->first();
                 if(blank($news)){
                     throw new \Exception('项目征收意见稿公告还未添加',404404);
                 }
@@ -849,7 +845,12 @@ class NewsController extends BaseitemController
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
 
-                $news=News::lockForUpdate()->find($id);
+                $news=News::lockForUpdate()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['cate_id',2],
+                    ])
+                    ->first();
                 if(blank($news)){
                     throw new \Exception('数据不存在',404404);
                 }
