@@ -33,13 +33,11 @@ class HouseholddetailController extends BaseitemController
         $item_id=$this->item_id;
         $item=$this->item;
         $infos['item'] = $item;
-        /* ++++++++++ 是否调取接口(分页) ++++++++++ */
-        $app = $request->input('app');
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','unit','floor','number','type','username','password','infos','code'];
+        $select=['id','item_id','land_id','building_id','household_id','has_assets','status','dispute','area_dispute'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
@@ -70,54 +68,32 @@ class HouseholddetailController extends BaseitemController
         $per_page=15;
         $page=$request->input('page',1);
         /* ********** 查询 ********** */
-        $model=new Household();
+
         DB::beginTransaction();
         try{
-            if($app){
-                $households=Householddetail::with([
-                        'household'=>function($query){
-                            $query->select(['id','unit','floor','number','type']);
-                        },
-                        'itemland'=>function($query){
-                            $query->select(['id','address']);
-                        },
-                        'itembuilding'=>function($query){
-                            $query->select(['id','building']);
-                        }])
-                    ->select(['id','item_id','household_id','land_id','building_id','has_assets','status'])
-                    ->where($where)
-                    ->orderBy($ordername,$orderby)
-                    ->sharedLock()
-                    ->get();
-            }else{
-                $total=$model->sharedLock()
-                    ->where('item_id',$item_id)
-                    ->where($where)
-                    ->count();
-                $households=$model
-                    ->with([
-                        'itemland'=>function($query){
-                            $query->select(['id','address']);
-                        },
-                        'itembuilding'=>function($query){
-                            $query->select(['id','building']);
-                        },
-                        'householddetail'=>function($query){
-                            $query->select(['id','household_id','dispute','area_dispute','status']);
-                        },
-                        'state'=>function($query){
-                            $query->select(['id','code','name']);
+            $total=Householddetail::sharedLock()
+                ->where('item_id',$item_id)
+                ->where($where)
+                ->count();
+            $households=Householddetail::with([
+                    'itemland'=>function($query){
+                        $query->select(['id','address']);
+                    },
+                    'itembuilding'=>function($query){
+                        $query->select(['id','building']);
+                    },
+                    'household'=>function($query){
+                        $query->select(['id','unit','floor','number','type','username']);
                     }])
-                    ->where($where)
-                    ->select($select)
-                    ->orderBy($ordername,$orderby)
-                    ->sharedLock()
-                    ->offset($per_page*($page-1))
-                    ->limit($per_page)
-                    ->get();
-                $households=new LengthAwarePaginator($households,$total,$per_page,$page);
-                $households->withPath(route('g_householddetail',['item'=>$item_id]));
-            }
+                ->where($where)
+                ->select($select)
+                ->orderBy($ordername,$orderby)
+                ->sharedLock()
+                ->offset($per_page*($page-1))
+                ->limit($per_page)
+                ->get();
+            $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+            $households->withPath(route('g_householddetail',['item'=>$item_id]));
 
             if(blank($households)){
                 throw new \Exception('没有符合条件的数据',404404);
@@ -130,7 +106,7 @@ class HouseholddetailController extends BaseitemController
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=null;
+            $sdata=$exception;
             $edata=$infos;
             $url=null;
         }

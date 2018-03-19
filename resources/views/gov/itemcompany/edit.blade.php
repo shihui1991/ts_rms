@@ -10,85 +10,75 @@
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
+        <span class="btn" data-toggle="modal"  data-target="#myModal">
+            <i class="ace-icon fa fa-search bigger-110"></i>
+            查询被征收户
+        </span>
+        <button class="btn btn-info" type="button" id="btn-choose-household">
+            <i class="ace-icon fa fa-check bigger-110"></i>
+            保存
+        </button>
     </p>
 
-
-    <form class="form-horizontal" role="form" action="{{route('g_itemcompany_edit')}}" method="post">
-        {{csrf_field()}}
-        <input type="hidden" name="id" id="id" value="{{$sdata->id}}">
-        <input type="hidden" name="type" id="type" value="{{$sdata->getOriginal('type')}}">
-        <input type="hidden" name="item" id="item" value="{{$edata['item_id']}}">
-
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="company_id"> @if($sdata->getOriginal('type')==0) 房产@else资产@endif评估机构： </label>
-            <div class="col-sm-9">
-                <select class="col-xs-5 col-sm-5" name="company_id" id="company_id">
-                    <option value="">--请先选择类型--</option>
-                </select>
+    <div class="widget-box widget-color-green2">
+        <div class="widget-header">
+            <h4 class="widget-title lighter smaller">当前选择：</h4>
+            <div class="widget-toolbar">
+                <a href="#" data-action="collapse">
+                    <i class="ace-icon fa fa-chevron-up"></i>
+                    展开/关闭
+                </a>
             </div>
         </div>
-        <div class="space-4"></div>
+        <div class="widget-body">
+            <div class="widget-main padding-8">
+                <form class="form-horizontal" role="form" action="{{route('g_itemcompany_edit',['item'=>$sdata['item_id']])}}" method="post" id="form-choose-household">
+                    {{csrf_field()}}
+                    <input type="hidden" name="id" id="id" value="{{$sdata['itemcompany']->id}}">
 
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right"> <span class="btn"  data-toggle="modal"  data-target="#myModal">【查询被征户】</span> </label>
-            <div class="col-sm-9">
-
-            </div>
-        </div>
-        <div class="space-4"></div>
-
-        <div class="form-group">
-            <table class="table table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox"></th>
-                        <th>序号</th>
-                        <th>地块</th>
-                        <th>楼栋</th>
-                        <th>位置</th>
-                        <th>房产类型</th>
-                        <th>是否需要资产评估</th>
-                    </tr>
-                </thead>
-                <tbody id="search_household">
-                    @foreach($edata['companyhousehold'] as $info)
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="company_id"> 评估机构： </label>
+                        <div class="col-sm-9">
+                            <input type="text"  class="col-xs-5 col-sm-5" id="company_id" value="{{$sdata['itemcompany']->company->name}}" readonly>
+                        </div>
+                    </div>
+                    <div class="space-4"></div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="company_id"> 当前选择的被征收户： </label>
+                        <div class="col-sm-9"></div>
+                    </div>
+                    <div class="space-4"></div>
+                    <table class="table table-hover table-bordered">
+                        <thead>
                         <tr>
-                            <td><input type="checkbox" name="household_id[]" value="{{$info->household->id}}" checked></td>
-                            <td>{{$loop->iteration}}</td>
-                            <td>{{$info->household->itemland->address}}</td>
-                            <td>{{$info->household->itembuilding->building}}</td>
-                            <td>{{$info->household->unit?$info->household->unit.'单元':''}}
-                                {{$info->household->floor?$info->household->floor.'楼':''}}
-                                {{$info->household->number?$info->household->number.'号':''}}</td>
-                            <td>{{$info->household->type}}</td>
-                            <td>{{$info->household->householddetail->has_assets}}</td>
+                            <th>地址</th>
+                            <th>房号</th>
+                            <th>资产</th>
+                            <th>操作</th>
                         </tr>
+                        </thead>
+                        <tbody id="choose-household">
+                        @php $household_ids=[]; @endphp
+                        @foreach($sdata['itemcompany']->households as $info)
+                            @php $household_ids[]=(string)$info->household_id; @endphp
+                            <tr id="household-{{$info->household_id}}">
+                                <td><input type="hidden" name="household_ids[]" value="{{$info->household_id}}">
+                                    {{$info->household->itemland->address}}</td>
+                                <td>{{$info->household->itembuilding->building}}栋{{$info->household->unit}}单元{{$info->household->floor}}楼{{$info->household->number}}号</td>
+                                <td>{{$info->household->householddetail->has_assets}}</td>
+                                <td><a class="btn btn-sm" onclick="removeHousehold({{$info->household_id}})">删除</a></td>
+                            </tr>
                         @endforeach
-                </tbody>
-            </table>
-            <p class="search_household">@if(blank($edata['companyhousehold']))&nbsp; 请先查询被征收户@endif</p>
-            <input type="hidden" id="household_ids" value="{{$edata['household_ids_str']}}">
-        </div>
-        <div class="space-4"></div>
-
-        <div class="clearfix form-actions">
-            <div class="col-md-offset-3 col-md-9">
-                <button class="btn btn-info" type="button" onclick="sub_ajax(this)">
-                    <i class="ace-icon fa fa-check bigger-110"></i>
-                    保存
-                </button>
-                &nbsp;&nbsp;&nbsp;
-                <button class="btn" type="reset">
-                    <i class="ace-icon fa fa-undo bigger-110"></i>
-                    重置
-                </button>
+                        </tbody>
+                    </table>
+                </form>
             </div>
         </div>
-    </form>
-    {{--查询被征户--}}
+    </div>
+
+    {{--查询被征收户--}}
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -97,37 +87,46 @@
                     <h4 class="modal-title" id="myModalLabel"><i class="ace-icon fa fa-search bigger-110"></i> 查询被征收户</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="land_id">  地块： </label>
-                        <div class="col-sm-9">
-                            <select class="col-xs-8 col-sm-8" name="land_id" id="land_id">
-                                <option value="">--请选择--</option>
-                                @foreach($edata['itemland'] as $itemland)
-                                    <option value="{{$itemland->id}}">{{$itemland->address}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="well">
+                        <form action="{{route('g_householddetail',['item'=>$sdata['item_id']])}}" role="form" method="get" class="form-inline" id="form-search-household">
+                            {{csrf_field()}}
+                            <input type="hidden" name="page" value="1" id="current-page">
+                            @if($sdata['itemcompany']->getOriginal('type'))
+                            <input type="hidden" name="has_assets" value="{{$sdata['itemcompany']->getOriginal('type')}}">
+                            @endif
+                            <div class="form-group">
+                                <label for="land_id">地址：</label>
+                                <select class="form-control" name="land_id" id="land_id">
+                                    <option value="">--全部--</option>
+                                    @if(filled($sdata['itemlands']))
+                                    @foreach($sdata['itemlands'] as $itemland)
+                                        <option value="{{$itemland->id}}">{{$itemland->address}}</option>
+                                    @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-info btn-sm" id="btn-search-household">查询</button>
+                        </form>
                     </div>
-                    <div class="space-4"></div>
-                    <br/>
+                    <table class="table table-hover table-bordered" id="table-search-household">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>地址</th>
+                            <th>房号</th>
+                            <th>资产</th>
+                        </tr>
+                        </thead>
+                        <tbody id="search-household">
 
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="building_id">  楼栋： </label>
-                        <div class="col-sm-9">
-                            <select class="col-xs-8 col-sm-8" name="building_id" id="building_id">
-                                <option value="">--请选择--</option>
-                                @foreach($edata['itembuilding'] as $itembuilding)
-                                    <option value="{{$itembuilding->id}}">{{$itembuilding->building}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        </tbody>
+                    </table>
+                    <div id="pagebar">
+
                     </div>
-                    <div class="space-4"></div>
-
                 </div>
-                <div class="space-4"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary search_household_checked">查询</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
                 </div>
             </div>
         </div>
@@ -136,135 +135,137 @@
 
 {{-- 样式 --}}
 @section('css')
-    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+
 @endsection
 
 {{-- 插件 --}}
 @section('js')
     @parent
-    <script src="{{asset('js/func.js')}}"></script>
-    <script src="{{asset('viewer/viewer.min.js')}}"></script>
+    <script src="{{asset('pagination/jquery.pagination.min.js')}}"></script>
     <script>
-        $('.img-content').viewer('update');
-        /*---------加载执行----------*/
-        window.onload=function() {
-            var type = $('#type').val();
-            if(!type){
-                toastr.error('请先选择类型');
-                $("#company_id").html('<option value="">--请先选择类型--</option>');
+        // 数据保存
+        $('#btn-choose-household').on('click',function () {
+            var btn=$(this);
+            var form=$('#form-choose-household');
+            if(btn.data('loading')||btn.hasClass('disabled')){
                 return false;
             }
-            var data = {
-                'type':type
-            };
-            ajaxAct('{{route('g_company')}}',data,'post');
-            if(ajaxResp.code=='error'){
-                $("#company_id").html('<option value="">--请先选择类型--</option>');
-                toastr.error(ajaxResp.message);
-            }else {
-                $("#company_id").html('');
-                var companyinfo = '<option value="">--请选择--</option>';
-                var _selected = '';
-                var company_id = '{{$sdata->company_id}}';
-                $.each(ajaxResp.sdata,function (index,info) {
-                    if(info.id==company_id){
-                        _selected = 'selected';
-                    }
-                    companyinfo+='<option value="'+info.id+'" '+_selected+'>--'+info.name+'--</option>';
-                });
-                $("#company_id").html(companyinfo);
-            }
-        };
-
-        /*---------查询被征收户----------*/
-        $(".search_household_checked").on('click',function(){
-            var land_id = $('#land_id').val();
-            var building_id = $('#building_id').val();
-            var item = $('#item').val();
-            if(!land_id){
-                toastr.error('请先选择地块');
-                return false;
-            }
-            var type = $('#type').val();
-            if(type==1){
-                var data = {
-                    'item':item,
-                    'land_id':land_id,
-                    'has_assets':1,
-                    'building_id':building_id,
-                    'app':'app'
-                };
+            btn.data('loading',true).addClass('disabled');
+            toastr.info('请稍等！处理中……');
+            ajaxAct(form.attr('action'),form.serialize(),'post');
+            if(ajaxResp.code=='success'){
+                toastr.success(ajaxResp.message);
+                setTimeout(function () {
+                    location.href=ajaxResp.url;
+                },1000);
             }else{
-                var data = {
-                    'item':item,
-                    'land_id':land_id,
-                    'building_id':building_id,
-                    'app':'app'
-                };
-            }
-
-            ajaxAct('{{route('g_householddetail')}}',data,'post');
-            if(ajaxResp.code=='error'){
                 toastr.error(ajaxResp.message);
-            }else{
-                var houseinfo = '';
-                if(ajaxResp.sdata.length>0){
-                    $('.search_household').html('');
-                }
-                var household_ids = $("#household_ids").val();
-                var household_ids_arr = [];
-                if(household_ids){
-                    household_ids_arr = household_ids.split(",");
-                }
-                $.each(ajaxResp.sdata,function (index,info) {
-                    if($.inArray(info.household_id.toString(),household_ids_arr) == -1){
-                        household_ids_arr.push(info.household_id.toString());
-                        var unit = info.household.unit?info.household.unit+'单元':'';
-                        var building = info.household.building?info.household.building+'楼':'';
-                        var floor = info.household.floor?info.household.floor+'层':'';
-                        var number = info.household.number?info.household.number+'号':'';
-                        houseinfo+=' <tr>\n' +
-                            '                        <td><input type="checkbox" name="household_id[]" value="'+info.household_id+'"></td>\n'+
-                            '                        <td>'+info.household_id+'</td>\n' +
-                            '                        <td>'+info.itemland.address+'</td>\n' +
-                            '                        <td>'+info.itembuilding.building+'</td>\n' +
-                            '                        <td>'+unit+building+floor+number+'</td>\n' +
-                            '                        <td>'+info.household.type+'</td>\n' +
-                            '                        <td>'+info.has_assets+'</td>\n' +
-                            '            </tr>';
-                    }
-                });
-                $("#search_household").append(houseinfo);
-
-                $("#household_ids").val(household_ids_arr.join(','));
+                btn.data('loading',false).removeClass('disabled');
             }
-            $('#myModal').modal('hide');
+            return false;
         });
+        // 查询被征收户
+        $('#btn-search-household').on('click',function () {
+            var btn=$(this);
+            var form=$('#form-search-household');
+            if(btn.data('loading')||btn.hasClass('disabled')){
+                return false;
+            }
+            btn.data('loading',true).addClass('disabled');
+            toastr.info('请稍等！查询中……');
+            $('#current-page').val(1);
+            getHousehold(form);
+            btn.data('loading',false).removeClass('disabled');
+        });
+        // 选择被征收户
+        var choose_household_ids=@json($household_ids);
+        var choose_households=[];
+        $('#table-search-household').on('change',function () {
+            var checkboxes=$(this).find('tbody').find('input[type="checkbox"]');
+            if(checkboxes && checkboxes.length){
+                var tr='';
+                $.each(checkboxes,function (index,obj) {
+                    var checkbox=$(obj);
+                    var household_id=checkbox.val();
+                    var pos=$.inArray(household_id,choose_household_ids);
+                    if(checkbox.prop('checked')){
+                        if(pos == -1){
+                            var info=ajaxResp.sdata.data[index];
+                            choose_household_ids.push(household_id);
+                            choose_households.push(info);
 
-        /*---------修改----------*/
-        function sub_ajax(obj) {
-            var type = $('#type').val();
-            if(!type){
-                toastr.error('请先选择类型');
-                return false;
+                            tr += ' <tr id="household-'+info.household_id+'">' +
+                                '<td><input type="hidden" name="household_ids[]" value="'+info.household_id+'">' + info.itemland.address + '</td>' +
+                                '<td>' + info.itembuilding.building +'栋'+info.household.unit+'单元'+info.household.floor+'楼'+info.household.number+ '号</td>' +
+                                '<td>' + info.has_assets + '</td>' +
+                                '<td><a class="btn btn-sm" onclick="removeHousehold('+household_id+')">删除</a></td>' +
+                                '</tr>';
+                        }
+                    }else{
+                        if(pos>-1){
+                            removeHousehold(household_id);
+                        }
+                    }
+
+                });
+                $('#choose-household').append(tr);
             }
-            var company_id = $('#company_id').val();
-            if(!company_id){
-                toastr.error('请先选择评估机构');
-                return false;
+        });
+        // 删除选择
+        function removeHousehold(household_id) {
+            var pos=$.inArray(household_id.toString(),choose_household_ids);
+            if(pos>-1){
+                choose_household_ids.splice(pos,1);
+                choose_households.splice(pos,1);
+                $('#household-'+household_id).remove();
             }
-            var household_id = $('input[name="household_id[]"]:checked');
-            var ids = '';
-            for (var i = 0; i < household_id.length; i++) {
-                ids += $(household_id[i]).val();
-                if (i < household_id.length - 1) ids += ",";
-            }
-            if(!ids){
-                toastr.error('请先勾选被征收户');
-                return false;
-            }
-            sub(obj);
         }
+        // 获取被征收户
+        function getHousehold(form) {
+            ajaxAct(form.attr('action'),form.serialize(),'get');
+            var tr='';
+            if(ajaxResp.code=='success'){
+                toastr.success('获取到 '+ajaxResp.sdata.data.length+' 条数据');
+                $.each(ajaxResp.sdata.data,function (index,info) {
+
+                    var checked='';
+                    if($.inArray(info.household_id.toString(),choose_household_ids)>-1){
+                        checked='checked';
+                    }
+                    tr += ' <tr>' +
+                        '<td><input type="checkbox" value="' + info.household_id + '" '+checked+'></td>' +
+                        '<td>' + info.itemland.address + '</td>' +
+                        '<td>' + info.itembuilding.building +'栋'+info.household.unit+'单元'+info.household.floor+'楼'+info.household.number+ '号</td>' +
+                        '<td>' + info.has_assets + '</td>' +
+                        '</tr>';
+                });
+                $('#pagebar').pagination({
+                    totalData:ajaxResp.sdata.total,
+                    showData:ajaxResp.sdata.per_page,
+                    current:ajaxResp.sdata.current_page,
+                    jump:false,
+                    coping:true,
+                    homePage:'首页',
+                    endPage:'末页',
+                    prevContent:'上一页',
+                    nextContent:'下一页',
+                    callback:function(api){
+                        var cur=api.getCurrent();
+                        $('#current-page').val(cur);
+                        getHousehold(form);
+                    }
+                },function(api){
+                    var cur=api.getCurrent();
+                    $('#current-page').val(cur);
+                });
+            }else{
+                toastr.error(ajaxResp.message);
+                $('#pagebar').html('');
+                $('#current-page').val(1);
+            }
+            $('#search-household').html(tr);
+        }
+
     </script>
 
 @endsection

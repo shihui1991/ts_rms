@@ -46,7 +46,14 @@ class  ItemriskController extends BaseitemController{
                 ->count();
             $itemrisk=$model
                 ->with(['household'=>function($query){
-                    $query->select(['id','username']);
+                    $query->with([
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        },
+                        'itembuilding'=>function($query){
+                            $query->select(['id','building']);
+                        }])
+                        ->select(['id','item_id','land_id','building_id','unit','floor','number','username']);
                 }])
                 ->where($where)
                 ->orderBy($ordername,$orderby)
@@ -96,7 +103,14 @@ class  ItemriskController extends BaseitemController{
 
         $itemrisk=Itemrisk::with(
             ['household'=>function($query){
-                $query->select(['id','username']);
+                $query->with([
+                    'itemland'=>function($query){
+                        $query->select(['id','address']);
+                    },
+                    'itembuilding'=>function($query){
+                        $query->select(['id','building']);
+                    }])
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','username']);
             },'layout'=>function($query){
                 $query->select(['id','name']);
             }])

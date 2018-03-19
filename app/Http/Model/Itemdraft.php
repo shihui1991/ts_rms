@@ -21,7 +21,7 @@ class Itemdraft extends Model
         'item_id'=>'项目',
         'name'=>'名称',
         'content'=>'内容',
-        'code'=>'状态代码'
+        'code'=>'状态'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */

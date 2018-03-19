@@ -13,9 +13,8 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemdraft_add')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemdraft_add',['item'=>$sdata['item_id']])}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name">标题：</label>
@@ -24,19 +23,15 @@
             </div>
         </div>
         <div class="space-4"></div>
+
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="code"> 状态码： </label>
-            <div class="col-sm-9">
-                <input type="text"  id="code" name="code" value="" class="col-xs-10 col-sm-5" required>
-            </div>
+            <label class="col-sm-3 control-label no-padding-right" for="content">内容：</label>
+            <div class="col-sm-9"></div>
         </div>
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="content">内容：</label>
-            <div class="col-sm-9">
-               {{-- <textarea id="content" name="content" class="col-xs-10 col-sm-5" ></textarea>--}}
-                <script id="content" name="content" type="text/plain" style="width:90%;height:500px;"></script></div>
+            <textarea id="content" name="content" class="col-xs-11 col-sm-11" style="min-height: 300px;"></textarea>
         </div>
         <div class="space-4"></div>
 

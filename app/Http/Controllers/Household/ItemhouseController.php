@@ -7,6 +7,7 @@
 
 namespace App\Http\Controllers\household;
 
+use App\Http\Model\House;
 use App\Http\Model\Itemhouse;
 
 
@@ -25,6 +26,8 @@ class ItemhouseController extends BaseController{
     }
 
     public function index(Request $request){
+
+
         $this->item_id=session('household_user.item_id');
         /* ********** 查询条件 ********** */
         $where=[];
@@ -102,4 +105,49 @@ class ItemhouseController extends BaseController{
         }
     }
 
+    public function info(Request $request){
+        $id=$request->input('id');
+        if(!$id){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('household.error')->with($result);
+            }
+        }
+        DB::beginTransaction();
+        $house=House::sharedLock()
+            ->find($id);
+        $house->market=DB::table('house_price')->where('house_id',$id)->pluck('market');
+        $house->market[]=DB::table('house_price')->where('house_id',$id)->orderBy('created_at','desc')->value('market');
+        $house->price=DB::table('house_price')->where('house_id',$id)->pluck('price');
+        $house->price[]=DB::table('house_price')->where('house_id',$id)->orderBy('created_at','desc')->value('price');
+        $date=DB::table('house_price')->where('house_id',$id)->pluck('start_at');
+        $date[]=DB::table('house_price')->where('house_id',$id)->orderBy('created_at','desc')->value('end_at');
+        $house->date=$date;
+        DB::commit();
+
+        /* ++++++++++ 数据不存在 ++++++++++ */
+        if(blank($house)){
+            $code='warning';
+            $msg='数据不存在';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+        }else{
+            $code='success';
+            $msg='获取成功';
+            $sdata=$house;
+            $edata=null;
+            $url=null;
+
+            $view='household.itemhouse.info';
+        }
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+    }
 }

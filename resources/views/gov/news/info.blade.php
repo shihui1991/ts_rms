@@ -15,6 +15,12 @@
             修改征收范围公告
         </a>
         @endif
+
+        @if($sdata['news']->cate_id==2)
+            <a href="{{route('g_draft_notice_edit',['item'=>$sdata['item']->id,'id'=>$sdata['news']->id])}}" class="btn">
+                修改征收意见稿公告
+            </a>
+        @endif
     </div>
     <div class="row">
         <div class="col-sm-5 col-xs-12">
@@ -135,7 +141,7 @@
 
                     <div class="widget-body">
                         <div class="widget-main">
-                            <textarea id="content" name="content" style="min-height: 360px;">{{$sdata['news']->content}}</textarea>
+                            <textarea id="content" name="content" style="width:100%;min-height: 360px;">{{$sdata['news']->content}}</textarea>
                         </div>
                     </div>
                 </div>

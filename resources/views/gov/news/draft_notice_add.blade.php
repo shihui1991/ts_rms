@@ -4,17 +4,9 @@
 
 {{-- 页面内容 --}}
 @section('content')
-    <div class="well well-sm">
-        <a href="{{route('g_news_info',['item'=>$sdata['item']->id,'id'=>$sdata['news']->id])}}" class="btn">
-            返回
-        </a>
-    </div>
 
-    <form class="form-horizontal" role="form" action="{{route('g_news_edit',['item'=>$sdata['item']->id])}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_draft_notice_add',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
-
-        <input type="hidden" name="id" value="{{$sdata['news']->id}}">
-        <input type="hidden" name="notice_id" value="{{$sdata['item_notice']->id}}">
 
         <div class="row">
             <div class="col-sm-5 col-xs-12">
@@ -38,7 +30,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-right" for="cate"> 分类： </label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="cate" value="{{$sdata['news']->newscate->name}}" class="col-xs-10 col-sm-10"  readonly>
+                                        <input type="text" id="cate" value="征收意见稿公告" class="col-xs-10 col-sm-10"  readonly>
                                     </div>
                                 </div>
                                 <div class="space-4"></div>
@@ -46,7 +38,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-right" for="name"> 名称： </label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="name" name="name" value="{{$sdata['news']->name}}" class="col-xs-10 col-sm-10"  required>
+                                        <input type="text" id="name" name="name" value="{{old('name')}}" class="col-xs-10 col-sm-10"  required>
                                     </div>
                                 </div>
                                 <div class="space-4"></div>
@@ -54,7 +46,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-right" for="release_at"> 发布时间： </label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="release_at" name="release_at" value="{{$sdata['news']->release_at}}" class="col-xs-10 col-sm-10 laydate"  required>
+                                        <input type="text" id="release_at" name="release_at" value="{{old('release_at')}}" class="col-xs-10 col-sm-10 laydate"  required>
                                     </div>
                                 </div>
                                 <div class="space-4"></div>
@@ -62,7 +54,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-right" for="keys"> 关键词： </label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="keys" name="keys" value="{{$sdata['news']->keys}}" class="col-xs-10 col-sm-10"  required>
+                                        <input type="text" id="keys" name="keys" value="{{old('keys')}}" class="col-xs-10 col-sm-10"  required>
                                     </div>
                                 </div>
                                 <div class="space-4"></div>
@@ -70,7 +62,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-right" for="infos">摘要：</label>
                                     <div class="col-sm-9">
-                                        <textarea id="infos" name="infos" class="col-xs-10 col-sm-10">{{$sdata['news']->infos}}</textarea>
+                                        <textarea id="infos" name="infos" class="col-xs-10 col-sm-10">{{old('infos')}}</textarea>
                                     </div>
                                 </div>
                                 <div class="space-4"></div>
@@ -80,7 +72,7 @@
                                     <div class="col-sm-9 radio">
                                         @foreach($edata->is_top as $key => $value)
                                             <label>
-                                                <input name="is_top" type="radio" class="ace" value="{{$key}}" @if($value==$sdata['news']->is_top) checked @endif >
+                                                <input name="is_top" type="radio" class="ace" value="{{$key}}" @if($key==0) checked @endif >
                                                 <span class="lbl">{{$value}}</span>
                                             </label>
                                         @endforeach
@@ -98,20 +90,7 @@
                                     </label>
                                     <div class="col-sm-9">
                                         <ul class="ace-thumbnails clearfix img-content">
-                                            @foreach($sdata['news']->picture as $pic)
-                                                <li>
-                                                    <div>
-                                                        <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
-                                                        <input type="hidden" name="picture[]" value="{{$pic}}">
-                                                        <div class="text">
-                                                            <div class="inner">
-                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            @endforeach
+
 
                                         </ul>
                                     </div>
@@ -132,60 +111,9 @@
 
                         <div class="widget-body">
                             <div class="widget-main">
-                                <textarea id="content" name="content" style="width:100%;min-height: 360px;">{{$sdata['news']->content}}</textarea>
+                                <textarea id="content" name="content" style="width:100%;min-height: 360px;">{{old('content')}}</textarea>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="widget-container-col ui-sortable">
-            <div class="widget-box ui-sortable-handle">
-                <div class="widget-header">
-                    <h5 class="widget-title">征收房屋相关手续停办通知</h5>
-                </div>
-
-                <div class="widget-body">
-                    <div class="widget-main">
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label no-padding-right" for="infos"> 通知摘要： </label>
-                            <div class="col-sm-9">
-                                <textarea name="notice[infos]" id="infos" class="col-xs-10 col-sm-10">{{$sdata['item_notice']->infos}}</textarea>
-                            </div>
-                        </div>
-                        <div class="space-4"></div>
-
-                        <div class="form-group img-box">
-                            <label class="col-sm-3 control-label no-padding-right">
-                                停办通知<br>
-                                <span class="btn btn-xs">
-                                    <span>上传图片</span>
-                                    <input type="file" accept="image/*" class="hidden" data-name="notice[picture][]" multiple onchange="uplfile(this)">
-                                </span>
-                            </label>
-                            <div class="col-sm-9">
-                                <ul class="ace-thumbnails clearfix img-content">
-                                    @foreach($sdata['item_notice']->picture as $pic)
-                                        <li>
-                                            <div>
-                                                <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
-                                                <input type="hidden" name="notice[picture][]" value="{{$pic}}">
-                                                <div class="text">
-                                                    <div class="inner">
-                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                        <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                    @endforeach
-
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="space-4"></div>
                     </div>
                 </div>
             </div>
@@ -226,7 +154,6 @@
     <script>
         var ue = UE.getEditor('content');
         $('#name').focus();
-        $('.img-content').viewer();
     </script>
 
 @endsection

@@ -78,45 +78,12 @@
                                                 <span class="editable editable-click"></span>
                                             </div>
                                         </div>
-
-
-                                        {{--<div class="profile-info-row">
-                                            <div class="profile-info-name"> LOGO： </div>
-
-                                            <div class="profile-info-value img-content">
-                                                @if($company->logo)
-                                                    <img width="120" height="120" src="{{$company->logo}}" alt="{{$company->logo}}">
-                                                @else
-                                                    暂无
-                                                @endif
-                                            </div>
-                                        </div>--}}
                                     </div>
-                                    <hr>
-                                    <div class="price">
-                                        <a href="{{route('h_itemhouse_info',['id'=>$infos->house_id])}}"
-                                           style="font-size: 15px">查看详情 <i
-                                                    class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
-                                        </a>
-                                    </div>
-
                                 </div>
                                 <div>
-                                    {{-- @if($company->id==$sdata['companyvote']->company->id)
-                                         <a href="javascript:;"  class="btn btn-block btn-inverse" >
-                                             <span>已投</span>
-                                             <i class="ace-icon fa fa-check bigger-110"></i>
-                                         </a>
-                                     @else
-                                         <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
-                                             <span>投票</span>
-                                             <i class="ace-icon fa fa-check bigger-110"></i>
-                                         </a>
-                                     @endif--}}
-                                    <a href="javascript:;" onclick="selectHouse({{$infos->house_id}})"
-                                       class="btn btn-block btn-inverse">
-                                        <span>选房</span>
-                                        <i class="ace-icon fa fa-check bigger-110"></i>
+                                    <a href="{{route('h_itemhouse_info',['id'=>$infos->house_id])}}"
+                                       style="font-size: 15px"  class="btn btn-block btn-inverse"> 查看详情 <i
+                                                class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
                                     </a>
                                 </div>
                             </div>
@@ -154,21 +121,6 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
-        function selectHouse(house_id) {
-            var data = {house_id: house_id};
-            ajaxAct('{{route('h_payhousebak_add')}}', data, 'post');
-            console.log(ajaxResp);
-            if (ajaxResp.code == 'success') {
-                toastr.success(ajaxResp.message);
-                setTimeout(function () {
-                    location.href = ajaxResp.url;
-                }, 1000);
-            } else {
-                toastr.error(ajaxResp.message);
-            }
-            return false;
-        }
-
         $('.img-content').viewer();
     </script>
 
