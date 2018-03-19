@@ -92,7 +92,7 @@
                     <div class="widget-header">
                         <h5 class="widget-title">兑付汇总</h5>
                         <div class="widget-toolbar">
-                            <a href="{{route('h_pay_edit',['item'=>$sdata['item']->id,'id'=>$sdata['pay']->id])}}" class="orange2">
+                            <a href="{{route('h_pay_edit',['id'=>$sdata['pay']->id])}}" class="orange2">
                                 <i class="ace-icon fa fa-edit"></i>
                                 修改兑付方式
                             </a>

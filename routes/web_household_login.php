@@ -53,3 +53,4 @@ Route::any('/itemhouse_info','ItemhouseController@info')->name('h_itemhouse_info
 Route::any('/payhousebak_add','PayhousebakController@add')->name('h_payhousebak_add');
 Route::any('/payhousebak','PayhousebakController@index')->name('h_payhousebak');
 
+

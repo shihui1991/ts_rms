@@ -20,6 +20,7 @@ use App\Http\Model\Paytransit;
 use App\Http\Model\Itemprogram;
 use App\Http\Model\Pact;
 use App\Http\Model\Pay;
+use App\Http\Model\Payhouse;
 use App\Http\Model\Paybuilding;
 use App\Http\Model\Payobject;
 use App\Http\Model\Paypublic;
@@ -649,6 +650,124 @@ class PayController extends BaseController{
             }else{
                 return view($view)->with($result);
             }
+        }
+    }
+
+    /* ========== 修改兑付方式 ========== */
+    public function edit(Request $request){
+        $pay_id=$request->input('id');
+        $this->item_id=session('household_user.item_id');
+        if(!$pay_id){
+            $result=['code'=>'error','message'=>'请选择兑付数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('household.error')->with($result);
+            }
+        }
+        if($request->isMethod('get')){
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 兑付汇总 ++++++++++ */
+                $pay=Pay::sharedLock()
+                    ->where('id',$pay_id)
+                    ->first();
+                if(blank($pay)){
+                    throw new \Exception('兑付数据不存在',404404);
+                }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                if(!in_array($household->code,['69','75'])){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能修改',404404);
+                }
+                $code='success';
+                $msg='请求成功';
+                $sdata=$pay;
+                $edata=new Pay();
+                $url=null;
+
+                $view='household.pay.edit';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='household.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ********** 保存 ********** */
+        else {
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'repay_way' => 'required|boolean',
+                'transit_way' => 'required|boolean',
+                'move_way' => 'required|boolean',
+            ];
+            $messages = [
+                'required' => ':attribute 为必须项',
+                'boolean' => '请选择 :attribute 的正确选项',
+            ];
+            $model = new Pay();
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
+                return response()->json($result);
+            }
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 兑付汇总 ++++++++++ */
+                $pay=Pay::lockForUpdate()
+                    ->find($pay_id);
+                if(blank($pay)){
+                    throw new \Exception('兑付数据不存在',404404);
+                }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                if(!in_array($household->code,['68','75'])){
+                    throw new \Exception('被征收户【'.$household->state->name.'】，不能修改',404404);
+                }
+
+                $pay->fill($request->input());
+                $pay->save();
+                if(blank($pay)){
+                    throw new \Exception('保存失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                ];
+                $edata=new Pay();
+                $url=route('h_pay_info');
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                DB::rollBack();
+            }
+
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
         }
     }
 }
