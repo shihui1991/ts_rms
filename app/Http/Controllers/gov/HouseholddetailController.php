@@ -6,6 +6,8 @@
 */
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Buildinguse;
+use App\Http\Model\Estate;
+use App\Http\Model\Estatebuilding;
 use App\Http\Model\Household;
 use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
@@ -428,4 +430,364 @@ class HouseholddetailController extends BaseitemController
             return response()->json($result);
         }
     }
+    /* ========================================== 【房产确认】============================================== */
+    /* ========== 被征收户详情列表 ========== */
+    public function buildingconfirm(Request $request){
+        $item_id=$this->item_id;
+        $item=$this->item;
+        $infos['item'] = $item;
+        /* ********** 查询条件 ********** */
+        $where=[];
+        $where[] = ['item_id',$item_id];
+        $infos['item_id'] = $item_id;
+        /* ********** 地块 ********** */
+        $land_id=$request->input('land_id');
+        if(is_numeric($land_id)){
+            $where[] = ['land_id',$land_id];
+            $infos['land_id'] = $land_id;
+        }
+        /* ********** 楼栋 ********** */
+        $building_id=$request->input('building_id');
+        if(is_numeric($building_id)){
+            $where[] = ['building_id',$building_id];
+            $infos['building_id'] = $building_id;
+        }
+        /* ********** 资产评估 ********** */
+        $has_assets=$request->input('has_assets');
+        if(is_numeric($has_assets)){
+            $where[] = ['has_assets',$has_assets];
+            $infos['has_assets'] = $has_assets;
+        }
+        /* ********** 排序 ********** */
+        $ordername=$request->input('ordername');
+        $ordername=$ordername?$ordername:'id';
+        $infos['ordername']=$ordername;
+
+        $orderby=$request->input('orderby');
+        $orderby=$orderby?$orderby:'asc';
+        $infos['orderby']=$orderby;
+        /* ********** 每页条数 ********** */
+        $per_page=15;
+        $page=$request->input('page',1);
+        /* ********** 查询 ********** */
+        $model=new Householddetail();
+        DB::beginTransaction();
+        try{
+                $total=$model->sharedLock()
+                    ->where('item_id',$item_id)
+                    ->where($where)
+                    ->count();
+                $households=Householddetail::with([
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        },
+                        'itembuilding'=>function($query){
+                            $query->select(['id','building']);
+                        },
+                        'household'=>function($query){
+                            $query->select(['id','unit','floor','number','type']);
+                        }])
+                    ->withCount([
+                        'householdbuildings','estatebuildings',
+                        'estatebuildings as estatebuildings_where'=>function($query){
+                            $query->where('household_building_id',0);
+                        }])
+                    ->where($where)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
+                $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+                $households->withPath(route('g_buildingconfirm',['item'=>$item_id]));
+
+            if(blank($households)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+
+            $code='success';
+            $msg='查询成功';
+            $sdata=$households;
+            $edata=$infos;
+            $url=null;
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=$infos;
+            $url=null;
+        }
+        DB::commit();
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.buildingconfirm.index')->with($result);
+        }
+    }
+
+    /* ========== 被征收户房产【征收-房屋建筑列表】 ========== */
+    public function buildingrelated(Request $request){
+        $item_id = $this->item_id;
+        $item = $this->item;
+        $household_id = $request->input('household_id');
+        DB::beginTransaction();
+        $householdbuilding =  Householdbuilding::with([
+            'estatebuilding'=>function($query){
+                $query->select(['id','household_building_id']);
+            }])
+            ->where('item_id',$item_id)
+            ->where('household_id',$household_id)
+            ->get();
+        DB::commit();
+        if(blank($householdbuilding)){
+            $code = 'warning';
+            $msg = '数据不存在';
+            $sdata = null;
+            $edata = ['item'=>$item,'item_id'=>$item_id];
+            $url = null;
+        }else{
+            $code = 'success';
+            $msg = '查询成功';
+            $sdata = $householdbuilding;
+            $edata = ['item'=>$item,'item_id'=>$item_id];
+            $url = null;
+        }
+
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.buildingconfirm.related')->with($result);
+        }
+
+    }
+
+    /* ========== 被征收户房产【征收建筑关联评估建筑】 ========== */
+    public function buildingrelated_com(Request $request)
+    {
+        $item_id = $this->item_id;
+        $item = $this->item;
+        $id = $request->input('id');
+        if(blank($id)){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else {
+                return view('gov.error')->with($result);
+            }
+        }
+        $household_id = $request->input('household_id');
+        if($request->isMethod('get')){
+            DB::beginTransaction();
+            $estatebuilding =  Estatebuilding::where('item_id',$item_id)->where('household_id',$household_id)->where('household_building_id',0)->get();
+            DB::commit();
+            if(blank($estatebuilding)){
+                $code = 'warning';
+                $msg = '暂无相关数据';
+                $sdata = null;
+                $edata = ['item'=>$item,'item_id'=>$item_id,'household_building_id'=>$id,'household_id'=>$household_id];
+                $url = null;
+            }else{
+                $code = 'success';
+                $msg = '查询成功';
+                $sdata = $estatebuilding;
+                $edata = ['item'=>$item,'item_id'=>$item_id,'household_building_id'=>$id,'household_id'=>$household_id];
+                $url = null;
+            }
+
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else {
+                return view('gov.buildingconfirm.relatedcom')->with($result);
+            }
+        }else{
+            DB::beginTransaction();
+            try{
+                $estatebuilding = new Estatebuilding();
+                $estatebuilding->where('id',$id)->update(['household_building_id'=>$request->input('household_building_id'),'updated_at'=>date('Y-m-d H:i:s')]);
+                if(blank($estatebuilding)){
+                    throw new \Exception('关联失败',404404);
+                }
+                $code = 'success';
+                $msg = '关联成功';
+                $sdata = $estatebuilding;
+                $edata = null;
+                $url = route('g_buildingrelated',['item'=>$item_id,'household_id'=>$household_id]);
+                DB::commit();
+            }catch (\Exception $exception){
+                dd($exception->getMessage());
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'关联失败';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+    /* ========== 被征收户房产【征收建筑关联评估建筑详情】 ========== */
+    public function relatedcom_info(Request $request){
+        $item_id = $this->item_id;
+        $item = $this->item;
+        $household_id = $request->input('household_id');
+        $id = $request->input('id');
+
+        DB::beginTransaction();
+        $estatebuilding =  Estatebuilding::sharedLock()->where('household_building_id',$id)->first();
+        DB::commit();
+
+        if(blank($estatebuilding)){
+            $code = 'error';
+            $msg = '数据不存在';
+            $sdata = null;
+            $edata = ['item'=>$item,'item_id'=>$item_id,'household_id'=>$household_id];
+            $url = null;
+        }else{
+            $code = 'success';
+            $msg = '查询成功';
+            $sdata = $estatebuilding;
+            $edata = ['item'=>$item,'item_id'=>$item_id,'household_id'=>$household_id];
+            $url = null;
+        }
+
+        if($code == 'error'){
+            $view = 'gov.error';
+        }else{
+            $view = 'gov.buildingconfirm.relatedinfo';
+        }
+
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view($view)->with($result);
+        }
+    }
+
+
+
+    /* ========== 被征收户房产详情 ========== */
+    public function buildingconfirm_info(Request $request){
+        $id=$request->input('id');
+        if(blank($id)){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.error')->with($result);
+            }
+        }
+        $item_id=$this->item_id;
+        $item=$this->item;
+
+        /* ********** 当前数据 ********** */
+        $data['item_id'] = $item_id;
+        $data['item'] = $item;
+        DB::beginTransaction();
+        /*------------ 被征收户信息 ----------------*/
+        $data['household_detail'] = Householddetail::with([
+            'defbuildinguse'=>function($query){
+                $query->select(['id','name']);
+            },
+            'realbuildinguse'=>function($query){
+                $query->select(['id','name']);
+            },
+            'layout'=>function($query){
+                $query->select(['id','name']);
+            }])
+            ->where('household_id',$id)
+            ->first();
+        $data['estate']=Estate::with([
+            'defbuildinguse'=>function($query){
+                $query->select(['id','name']);
+            },
+            'realbuildinguse'=>function($query){
+                $query->select(['id','name']);
+            }])
+            ->where('item_id',$item_id)
+            ->where('household_id',$request->input('household_id'))
+            ->sharedLock()
+            ->first();
+        /*------------ 房屋建筑信息 ----------------*/
+        $data['householdbuildings']=Householdbuilding::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            },
+            'itembuilding'=>function($query){
+                $query->select(['id','building']);
+            },
+            'buildingstruct'=>function($query){
+                $query->select(['id','name']);
+            },
+            'buildinguse'=>function($query){
+                $query->select(['id','name']);
+            },
+            'buildinguses'=>function($query){
+                $query->select(['id','name']);
+            },
+            'landlayout'=>function($query){
+                $query->select(['id','name','area','gov_img']);
+            }])
+            ->where('item_id',$item_id)
+            ->where('household_id',$id)
+            ->sharedLock()
+            ->get();
+        $data['estatebuildings'] = Estatebuilding::with([
+            'itemland'=>function($query){
+                $query->select(['id','address']);
+            },
+            'itembuilding'=>function($query){
+                $query->select(['id','building']);
+            },
+            'buildingstruct'=>function($query){
+                $query->select(['id','name']);
+            },
+            'buildinguse'=>function($query){
+                $query->select(['id','name']);
+            },
+            'buildinguses'=>function($query){
+                $query->select(['id','name']);
+            },
+            'landlayout'=>function($query){
+                $query->select(['id','name','area','gov_img']);
+            }])
+            ->where('item_id',$item_id)
+            ->where('household_id',$id)
+            ->sharedLock()
+            ->get();
+        DB::commit();
+        /* ++++++++++ 数据不存在 ++++++++++ */
+        if(blank($data)){
+            $code='warning';
+            $msg='数据不存在';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+        }else{
+            $code='success';
+            $msg='获取成功';
+            $sdata=null;
+            $edata=$data;
+            $url=null;
+
+            $view='gov.buildingconfirm.info';
+        }
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+    }
+
 }

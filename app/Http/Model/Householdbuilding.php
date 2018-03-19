@@ -94,4 +94,9 @@ class Householdbuilding extends Model
     public function landlayout(){
         return $this->belongsTo('App\Http\Model\Landlayout','layout_id','id')->withDefault();
     }
+
+    /* ++++++++++ 关联评估-房产建筑 ++++++++++ */
+    public function estatebuilding(){
+        return $this->hasOne('App\Http\Model\Estatebuilding','household_building_id','id')->withDefault();
+    }
 }

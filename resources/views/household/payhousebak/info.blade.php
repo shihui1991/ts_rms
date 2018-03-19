@@ -17,12 +17,6 @@
     @if(filled($sdata))
 
         <div class="profile-user-info profile-user-info-striped">
-            <div class="profile-info-row">
-                <div class="profile-info-name"> 价格走势：</div>
-                <div class="profile-info-value" id="price-line" style="width: 600px;height:400px;">
-
-                </div>
-            </div>
 
             <div class="profile-info-row">
                 <div class="profile-info-name"> 房屋图片：</div>
@@ -60,56 +54,7 @@
 @section('js')
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script src="{{asset('echarts/echarts.common.min.js')}}"></script>
     <script>
         $('.img-content').viewer('update');
-        var myChart = echarts.init(document.getElementById('price-line'));
-        var option = {
-            title: {
-                text: '安置房价格曲线图'
-            },
-            tooltip: {
-                trigger: 'axis'
-            },
-            legend: {
-                data:['市场评估价','安置优惠价']
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            toolbox: {
-                feature: {
-                    saveAsImage: {}
-                }
-            },
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data:@json($sdata->date)
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [
-                {
-                    name:'市场评估价',
-                    type:'line',
-                    step: 'end',
-                    data:@json($sdata->market)
-                },
-                {
-                    name:'安置优惠价',
-                    type:'line',
-                    step: 'end',
-                    data:@json($sdata->price)
-                }
-            ]
-        };
-
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
     </script>
 @endsection

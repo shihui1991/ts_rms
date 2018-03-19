@@ -46,6 +46,13 @@
                         资产确认
                     </a>
                 </li>
+
+                <li class="">
+                    <a href="{{route('g_buildingconfirm',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        房产确认
+                    </a>
+                </li>
             </ul>
             <div class="tab-content">
                 <div id="householdbuildingarea" class="tab-pane fade">
@@ -68,6 +75,7 @@
                             <th>序号</th>
                             <th>地块</th>
                             <th>楼栋</th>
+                            <th>位置</th>
                             <th>房屋产权证号</th>
                             <th>征收意见</th>
                             <th>操作</th>
@@ -80,6 +88,11 @@
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$infos->itemland->address}}</td>
                                     <td>{{$infos->itembuilding->building}}</td>
+                                    <td>
+                                        {{$infos->household->unit?$infos->household->unit.'单元':''}}
+                                        {{$infos->household->floor?$infos->household->floor.'楼':''}}
+                                        {{$infos->household->number?$infos->household->number.'号':''}}
+                                    </td>
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
                                     <td>

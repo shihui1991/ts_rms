@@ -184,6 +184,13 @@ Route::any('/householdassets_report','HouseholdassetsController@report')->name('
 Route::any('/householdassets_reportlist','HouseholdassetsController@reportlist')->name('g_householdassets_reportlist');
 Route::any('/householdassets_reportadd','HouseholdassetsController@reportadd')->name('g_householdassets_reportadd');
 Route::any('/householdassets_reportinfo','HouseholdassetsController@reportinfo')->name('g_householdassets_reportinfo');
+/*---------- 项目-房产确认 ----------*/
+Route::any('/buildingconfirm','HouseholddetailController@buildingconfirm')->name('g_buildingconfirm');
+Route::any('/buildingrelated','HouseholddetailController@buildingrelated')->name('g_buildingrelated');
+Route::any('/buildingrelated_com','HouseholddetailController@buildingrelated_com')->name('g_buildingrelated_com');
+Route::any('/relatedcom_info','HouseholddetailController@relatedcom_info')->name('g_relatedcom_info');
+Route::any('/buildingconfirm_info','HouseholddetailController@buildingconfirm_info')->name('g_buildingconfirm_info');
+Route::any('/buildingconfirm_edit','HouseholddetailController@buildingconfirm_edit')->name('g_buildingconfirm_edit');
 
 /*+++++++++++++++ 【征收决定】 ++++++++++++++++*/
 /*---------- 项目-自选社会风险评估调查话题 ----------*/

@@ -118,8 +118,15 @@ class ItemhouseController extends BaseController{
         DB::beginTransaction();
         $house=House::sharedLock()
             ->find($id);
-        /* ********** 查询 ********** */
+        $house->market=DB::table('house_price')->where('house_id',$id)->pluck('market');
+        $house->market[]=DB::table('house_price')->where('house_id',$id)->orderBy('created_at','desc')->value('market');
+        $house->price=DB::table('house_price')->where('house_id',$id)->pluck('price');
+        $house->price[]=DB::table('house_price')->where('house_id',$id)->orderBy('created_at','desc')->value('price');
+        $date=DB::table('house_price')->where('house_id',$id)->pluck('start_at');
+        $date[]=DB::table('house_price')->where('house_id',$id)->orderBy('created_at','desc')->value('end_at');
+        $house->date=$date;
         DB::commit();
+
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($house)){
             $code='warning';
