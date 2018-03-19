@@ -277,7 +277,7 @@ class ItemriskreportController extends BaseitemController
                     throw new \Exception('项目不存在',404404);
                 }
                 /* ++++++++++ 检查项目状态 ++++++++++ */
-                if($item->schedule_id!=4 || $item->process_id!=34 ||  $item->code!='2'){
+                if(!in_array($item->process_id,['34','35']) || ($item->process_id =='34' && $item->code!='2') || ($item->process_id =='35' && $item->code!='23')){
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
                 /* ++++++++++ 检查操作权限 ++++++++++ */
@@ -348,7 +348,7 @@ class ItemriskreportController extends BaseitemController
                     throw new \Exception('项目不存在',404404);
                 }
                 /* ++++++++++ 检查项目状态 ++++++++++ */
-                if($item->schedule_id!=4 || $item->process_id!=34 ||  $item->code!='2'){
+                if(!in_array($item->process_id,['34','35']) || ($item->process_id =='34' && $item->code!='2') || ($item->process_id =='35' && $item->code!='23')){
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
                 /* ++++++++++ 检查操作权限 ++++++++++ */
@@ -363,6 +363,57 @@ class ItemriskreportController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
+                /* ++++++++++ 审查驳回处理 ++++++++++ */
+                if($item->process_id==35 && $item->code=='23'){
+                    /* ++++++++++ 删除相同工作推送 ++++++++++ */
+                    Worknotice::lockForUpdate()
+                        ->where([
+                            ['item_id',$item->id],
+                            ['schedule_id',$item->schedule_id],
+                            ['process_id',34],
+                            ['code','0'],
+                        ])
+                        ->delete();
+                    /* ++++++++++ 风险评估报告审查 可操作人员 ++++++++++ */
+                    $itemusers=Itemuser::with(['role'=>function($query){
+                        $query->select(['id','parent_id']);
+                    }])
+                        ->sharedLock()
+                        ->where('process_id',35)
+                        ->get();
+                    $values=[];
+                    /* ++++++++++ 风险评估报告审查 工作提醒推送 ++++++++++ */
+                    foreach ($itemusers as $user){
+                        $values[]=[
+                            'item_id'=>$user->item_id,
+                            'schedule_id'=>$user->schedule_id,
+                            'process_id'=>$user->process_id,
+                            'menu_id'=>$user->menu_id,
+                            'dept_id'=>$user->dept_id,
+                            'parent_id'=>$user->role->parent_id,
+                            'role_id'=>$user->role_id,
+                            'user_id'=>$user->user_id,
+                            'url'=>route('g_riskreport_check',['item'=>$this->item->id]),
+                            'code'=>'20',
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                    }
+
+                    $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
+                    $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
+                    if(!$sqls){
+                        throw new \Exception('操作失败',404404);
+                    }
+                    foreach ($sqls as $sql){
+                        DB::statement($sql);
+                    }
+
+                    $item->schedule_id=4;
+                    $item->process_id=34;
+                    $item->code='22';
+                    $item->save();
+                }
                 /* ++++++++++ 社会稳定风险评估报告 ++++++++++ */
                 $risk_report=Itemriskreport::lockForUpdate()->where('item_id',$this->item_id)->first();
                 if(blank($risk_report)){
@@ -372,6 +423,7 @@ class ItemriskreportController extends BaseitemController
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $risk_report->fill($request->input());
                 $risk_report->editOther($request);
+                $risk_report->code='22';
                 $risk_report->save();
                 if(blank($risk_report)){
                     throw new \Exception('保存失败',404404);

@@ -49,14 +49,19 @@
                                         </div>
                                     </div>
                                     <div class="profile-info-row">
-                                        <div class="profile-info-name"> 附件： </div>
+                                        <div class="profile-info-name"> 评估报告： </div>
                                         <div class="profile-info-value">
                                             <ul class="ace-thumbnails clearfix img-content viewer">
                                                 @if(filled($sdata['itemriskreport']->picture))
-                                                    @foreach($sdata['itemriskreport']->picture as $v)
+                                                    @foreach($sdata['itemriskreport']->picture as $pic)
                                                         <li>
                                                             <div>
-                                                                <img width="120" height="120" src="{{$v}}" alt="加载失败">
+                                                                <img width="120" height="120" src="{{$pic}}" alt="加载失败">
+                                                                <div class="text">
+                                                                    <div class="inner">
+                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </li>
                                                     @endforeach
@@ -107,14 +112,20 @@
 {{-- 样式 --}}
 @section('css')
 
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+
 @endsection
 
 {{-- 插件 --}}
 @section('js')
+    @parent
+    <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
     <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>
     <script src="{{asset('echarts/echarts.common.min.js')}}"></script>
     <script>
+        $('.img-content').viewer();
+
         var ue = UE.getEditor('content',{
             readonly:true
             ,toolbars:null

@@ -35,7 +35,7 @@ class HouseholddetailController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','household_id','has_assets'];
+        $select=['id','item_id','land_id','building_id','household_id','has_assets','status','dispute','area_dispute'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
