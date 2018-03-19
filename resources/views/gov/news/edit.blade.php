@@ -132,7 +132,7 @@
 
                         <div class="widget-body">
                             <div class="widget-main">
-                                <textarea id="content" name="content" style="min-height: 360px;">{{$sdata['news']->content}}</textarea>
+                                <textarea id="content" name="content" style="width:100%;min-height: 360px;">{{$sdata['news']->content}}</textarea>
                             </div>
                         </div>
                     </div>

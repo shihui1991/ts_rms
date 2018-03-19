@@ -449,7 +449,15 @@ class NewsController extends BaseitemController
                 }
                 /* ++++++++++ 审查驳回处理 ++++++++++ */
                 if($item->schedule_id==2 && $item->process_id==24 && $item->code=='23'){
-
+                    /* ++++++++++ 删除相同工作推送 ++++++++++ */
+                    Worknotice::lockForUpdate()
+                        ->where([
+                            ['item_id',$item->id],
+                            ['schedule_id',2],
+                            ['process_id',23],
+                            ['code','0'],
+                        ])
+                        ->delete();
                     /* ++++++++++ 征收范围公告审查 可操作人员 ++++++++++ */
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
@@ -536,5 +544,15 @@ class NewsController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 添加征收意见稿公告 ========== */
+    public function draft_notice_add(Request $request){
+
+    }
+
+    /* ========== 修改征收意见稿公告 ========== */
+    public function draft_notice_edit(Request $request){
+
     }
 }
