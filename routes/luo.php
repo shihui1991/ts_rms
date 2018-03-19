@@ -29,6 +29,7 @@ Route::any('/survey_check','ItemprocessController@survey_check')->name('g_survey
 Route::any('/draft_check','ItemprocessController@draft_check')->name('g_draft_check'); //征收决定 -  征收意见稿审查
 Route::any('/draft_notice_add','NewsController@draft_notice_add')->name('g_draft_notice_add'); //征收决定 -  发布征收意见稿公告
 Route::any('/draft_notice_edit','NewsController@draft_notice_edit')->name('g_draft_notice_edit'); //征收决定 -  修改征收意见稿公告
+Route::any('/riskreport_check','NewsController@riskreport_check')->name('g_riskreport_check'); //征收决定 -  风险评估报告审查
 
 /*---------- 初步预算 ----------*/
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算

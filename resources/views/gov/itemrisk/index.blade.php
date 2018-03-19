@@ -12,15 +12,17 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>被征户账号</th>
-            <th>征收意见稿态度</th>
+            <th>被征收户</th>
+            <th>账号</th>
+            <th>意见</th>
             <th>操作</th>
         </tr>
         </thead>
         <tbody>
-        @if($code=='success')
+        @if(filled($sdata))
             @foreach($sdata as $infos)
                 <tr>
+                    <td>{{$infos->household->itemland->address}}{{$infos->household->itembuilding->building}}栋{{$infos->household->unit}}单元{{$infos->household->floor}}楼{{$infos->household->number}}号</td>
                     <td>{{$infos->household->username}}</td>
                     <td>{{$infos->agree}}</td>
                     <td>

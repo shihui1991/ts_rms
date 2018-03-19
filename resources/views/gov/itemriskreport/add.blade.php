@@ -53,7 +53,7 @@
 
                         <div class="form-group img-box">
                             <label class="col-sm-3 control-label no-padding-right">
-                                附件：<br>
+                                评估报告：<br>
                                 <span class="btn btn-xs">
                             <span>上传图片</span>
                             <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">

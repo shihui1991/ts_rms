@@ -144,6 +144,7 @@ class ItemriskreportController extends BaseitemController
                 'content'=>'required',
                 'name'=>'required',
                 'agree' => 'required',
+                'picture' => 'required',
             ];
             $messages = [
                 'required' => ':attribute必须填写'
@@ -255,7 +256,7 @@ class ItemriskreportController extends BaseitemController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = null;
+                $edata = $exception;
                 $url = null;
                 DB::rollBack();
             }
@@ -299,7 +300,7 @@ class ItemriskreportController extends BaseitemController
 
                 $code='success';
                 $msg='请求成功';
-                $sdata=['item'=>$this->item,'risk_report'=>$risk_report];
+                $sdata=['item'=>$this->item,'risk_report'=>$risk_report,'item_id'=>$this->item_id,];
                 $edata=$model;
                 $url=null;
 
