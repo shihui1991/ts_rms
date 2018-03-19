@@ -158,4 +158,13 @@ class Householddetail extends Model
     public function layout(){
         return $this->belongsTo('App\Http\Model\Layout','layout_id','id')->withDefault();
     }
+    /* ++++++++++ 关联被征户房屋建筑 ++++++++++ */
+    public function householdbuildings(){
+        return $this->hasMany('App\Http\Model\Householdbuilding','household_id','household_id');
+    }
+
+    /* ++++++++++ 关联评估房屋建筑 ++++++++++ */
+    public function estatebuildings(){
+        return $this->hasMany('App\Http\Model\Estatebuilding','household_id','household_id');
+    }
 }
