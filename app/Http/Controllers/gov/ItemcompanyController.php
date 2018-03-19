@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Company;
 use App\Http\Model\Companyhousehold;
 use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemcompany;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ItemcompanyController extends BaseitemController
 {
@@ -29,7 +31,7 @@ class ItemcompanyController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','company_id','type','created_at'];
+
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
         $ordername=$ordername?$ordername:'id';
@@ -39,29 +41,18 @@ class ItemcompanyController extends BaseitemController
         $orderby=$orderby?$orderby:'asc';
         $infos['orderby']=$orderby;
         /* ********** 查询 ********** */
-        $model=new Itemcompany();
         DB::beginTransaction();
         try{
-            $itemcompanys=$model
-                ->with(['item'=>function($query){
+            $itemcompanys=Itemcompany::with(['company'=>function($query){
                     $query->select(['id','name']);
-                },
-                    'company'=>function($query){
-                        $query->select(['id','name']);
-                    }])
+                }])
+                ->withCount('households')
                 ->where($where)
-                ->select($select)
+                ->orderBy('type','asc')
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->get();
-            $infos['typecount'] = $model
-                ->where($where)
-                ->where('type',0)
-                ->count();
-            $infos['typecounts'] = $model
-                ->where($where)
-                ->where('type',1)
-                ->count();
+
             if(blank($itemcompanys)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -93,15 +84,50 @@ class ItemcompanyController extends BaseitemController
         $item_id=$this->item_id;
         $model=new Itemcompany();
         if($request->isMethod('get')){
-            $sdata['item_id'] = $item_id;
-            $sdata['type'] = $request->input('type');
-            $sdata['itemland'] = Itemland::select(['id','address'])->where('item_id',$item_id)->get()?:[];
-            $sdata['itembuilding'] = Itembuilding::select(['id','building'])->distinct()->where('item_id',$item_id)->get()?:[];
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
+            DB::beginTransaction();
+            try{
+                $type=$request->input('type');
+                if(!is_numeric($type) || !in_array($type,[0,1])){
+                    throw new \Exception('错误操作',404404);
+                }
+                $companys=Company::sharedLock()->where('type',$type)->get();
+                if(blank($companys)){
+                    throw new \Exception('没有可选的评估机构',404404);
+                }
+                $itemlands=Itemland::sharedLock()->select(['id','address'])->where('item_id',$item_id)->get();
+
+                if(blank($itemlands)){
+                    throw new \Exception('没有被征收户数据',404404);
+                }
+
+                $code = 'success';
+                $msg = '请求成功';
+                $sdata = [
+                    'item'=>$this->item,
+                    'item_id'=>$item_id,
+                    'type'=>$type,
+                    'companys'=>$companys,
+                    'itemlands'=>$itemlands,
+                ];
+                $edata = null;
+                $url = null;
+
+                $view='gov.itemcompany.add';
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemcompany.add')->with($result);
+                return view($view)->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -109,20 +135,24 @@ class ItemcompanyController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'type'=>'required',
-                'company_id'=>'required'
+                'type'=>'required|boolean',
+                'company_id'=>['required',Rule::unique('item_company')->where(function($query){
+                    $query->where([
+                        ['item_id',$this->item_id],
+                        ['type',request()->input('type')],
+                    ]);
+                })],
+                'household_ids'=>'required',
             ];
             $messages = [
-                'required' => ':attribute必须填写'
+                'required' => ':attribute 必须填写',
+                'unique' => ':attribute 已存在',
+                'household_ids.required' => '请选择被征收户',
+                'boolean' => '错误操作',
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
-            $household_ids = $request->input('household_id');
-            if(blank($household_ids)){
-                $result=['code'=>'error','message'=>'请勾选被征收户','sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
             /* ++++++++++ 新增 ++++++++++ */
@@ -137,17 +167,21 @@ class ItemcompanyController extends BaseitemController
                     throw new \Exception('添加失败', 404404);
                 }
                 /* ++++++++++ 【选定评估机构-评估范围】 ++++++++++ */
+                $household_ids = $request->input('household_ids');
                 $datas = [];
-                foreach ($household_ids as $k=>$v){
-                    $datas[$k]['item_id'] = $item_id;
-                    $datas[$k]['company_id'] = $request->input('company_id');
-                    $datas[$k]['item_company_id'] = $itemcompany->id;
-                    $datas[$k]['household_id'] = $v;
-                    $datas[$k]['created_at'] = date('Y-m-d H:i:s');
+                foreach ($household_ids as $household_id){
+                    $datas[]=[
+                        'item_id'=>$item_id,
+                        'company_id'=>$request->input('company_id'),
+                        'item_company_id'=>$itemcompany->id,
+                        'household_id'=>$household_id,
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
                 }
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $field=['item_id','company_id','item_company_id','household_id','created_at'];
-                $sqls=batch_update_or_insert_sql('item_company_household',$field,$datas,$field);
+                $field=['item_id','company_id','item_company_id','household_id','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('item_company_household',$field,$datas,'updated_at');
                 if(!$sqls){
                     throw new \Exception('数据错误',404404);
                 }
@@ -156,7 +190,7 @@ class ItemcompanyController extends BaseitemController
                 }
                 $code = 'success';
                 $msg = '添加成功';
-                $sdata = null;
+                $sdata = ['itemcompany'=>$itemcompany];
                 $edata = null;
                 $url = route('g_itemcompany',['item'=>$item_id]);
                 DB::commit();
@@ -177,65 +211,60 @@ class ItemcompanyController extends BaseitemController
     /* ========== 详情 ========== */
     public function info(Request $request){
         $id=$request->input('id');
-        if(!$id){
-            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
+        try{
+            if(!$id){
+                throw new \Exception('请先选择数据',404404);
             }
-        }
-        $item_id=$this->item_id;
-
-        /* ********** 当前数据 ********** */
-        $data['item_id'] = $item_id;
-        $data['companyhousehold'] = Companyhousehold::with([
-            'household'=>function($query){
-                $query->select(['id','land_id','building_id','unit','floor','number','type'])
-                    ->with(['itemland'=>function($querys){
-                        $querys->select(['id','address']);
-                    },
-                    'itembuilding'=>function($querys){
-                        $querys->select(['id','building']);
-                    },
-                    'householddetail'=>function($querys){
-                        $querys->select(['id','household_id','has_assets']);
+            /* ********** 当前数据 ********** */
+            $itemcompany=Itemcompany::with([
+                'company'=>function($query){
+                    $query->select(['id','name']);
+                },'households'=>function($query){
+                    $query->with(['household'=>function($query){
+                        $query->select(['id','land_id','building_id','unit','floor','number','type'])
+                            ->with(['itemland'=>function($querys){
+                                $querys->select(['id','address']);
+                            },
+                                'itembuilding'=>function($querys){
+                                    $querys->select(['id','building']);
+                                },
+                                'householddetail'=>function($querys){
+                                    $querys->select(['id','household_id','has_assets']);
+                                }]);
                     }]);
-            }])
-            ->where('item_company_id',$id)
-            ->where('item_id',$item_id)
-            ->get()?:[];
-        DB::beginTransaction();
-        $itemcompany=Itemcompany::with([
-            'company'=>function($query){
-                $query->select(['id','name']);
-            }])
-            ->sharedLock()
-            ->find($id);
-        DB::commit();
-        /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($itemcompany)){
-            $code='warning';
-            $msg='数据不存在';
-            $sdata=null;
-            $edata=$data;
-            $url=null;
-        }else{
-            $code='success';
-            $msg='获取成功';
-            $sdata=$itemcompany;
-            $edata=$data;
-            $url=null;
+                }])
+                ->sharedLock()
+                ->find($id);
+            if(blank($itemcompany)){
+                throw new \Exception('数据不存在',404404);
+            }
+
+            $code = 'success';
+            $msg = '请求成功';
+            $sdata = [
+                'item_id'=>$this->item_id,
+                'itemcompany'=>$itemcompany,
+            ];
+            $edata = null;
+            $url = null;
 
             $view='gov.itemcompany.info';
+        } catch (\Exception $exception) {
+            $code = 'error';
+            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+            $sdata = null;
+            $edata = null;
+            $url = null;
+
+            $view='gov.error';
         }
+        DB::commit();
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);
         }
-
     }
 
     /* ========== 修改 ========== */
@@ -244,106 +273,100 @@ class ItemcompanyController extends BaseitemController
         $model=new Itemcompany();
         $id =$request->input('id');
         if($request->isMethod('get')){
-            $edata['item_id'] = $item_id;
-            $edata['itemland'] = Itemland::select(['id','address'])->where('item_id',$item_id)->get()?:[];
-            $edata['itembuilding'] = Itembuilding::select(['id','building'])->distinct()->where('item_id',$item_id)->get()?:[];
-            $edata['companyhousehold'] = Companyhousehold::with([
-                'household'=>function($query){
-                    $query->select(['id','land_id','building_id','unit','floor','number','type'])
-                        ->with(['itemland'=>function($querys){
-                            $querys->select(['id','address']);
-                        },
-                            'itembuilding'=>function($querys){
-                                $querys->select(['id','building']);
-                            },
-                            'householddetail'=>function($querys){
-                                $querys->select(['id','household_id','has_assets']);
-                            }]);
-                }])
-                ->where('item_company_id',$id)
-                ->where('item_id',$item_id)
-                ->get()?:[];
-            $household_ids_str = '';
-            if(!blank($edata['companyhousehold'])){
-                foreach ($edata['companyhousehold'] as $k=>$v){
-                    if($k+1 == count($edata['companyhousehold'])){
-                        $household_ids_str .= $v->household_id;
-                    }else{
-                        $household_ids_str .= $v->household_id.',';
-                    }
+            try{
+                if(!$id){
+                    throw new \Exception('请先选择数据',404404);
                 }
-            }
-            $edata['household_ids_str'] = $household_ids_str;
-            $sdata = Itemcompany::with([
-                'company'=>function($query){
-                    $query->select(['id','name']);
-                }])
-                ->sharedLock()
-                ->find($id);
+                /* ********** 当前数据 ********** */
+                $itemcompany=Itemcompany::with([
+                    'company'=>function($query){
+                        $query->select(['id','name']);
+                    },'households'=>function($query){
+                        $query->with(['household'=>function($query){
+                            $query->select(['id','land_id','building_id','unit','floor','number','type'])
+                                ->with(['itemland'=>function($querys){
+                                    $querys->select(['id','address']);
+                                },
+                                    'itembuilding'=>function($querys){
+                                        $querys->select(['id','building']);
+                                    },
+                                    'householddetail'=>function($querys){
+                                        $querys->select(['id','household_id','has_assets']);
+                                    }]);
+                        }]);
+                    }])
+                    ->sharedLock()
+                    ->find($id);
+                if(blank($itemcompany)){
+                    throw new \Exception('数据不存在',404404);
+                }
+                $itemlands=Itemland::sharedLock()->select(['id','address'])->where('item_id',$item_id)->get();
 
-            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$edata,'url'=>null];
+                $code = 'success';
+                $msg = '请求成功';
+                $sdata = [
+                    'item_id'=>$this->item_id,
+                    'itemcompany'=>$itemcompany,
+                    'itemlands'=>$itemlands,
+                ];
+                $edata = null;
+                $url = null;
+
+                $view='gov.itemcompany.edit';
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemcompany.edit')->with($result);
+                return view($view)->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
         else {
-            /* ********** 保存 ********** */
-            /* ++++++++++ 表单验证 ++++++++++ */
-            $rules = [
-                'type'=>'required',
-                'company_id'=>'required'
-            ];
-            $messages = [
-                'required' => ':attribute必须填写'
-            ];
-            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
-            if ($validator->fails()) {
-                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
-            $household_ids = $request->input('household_id');
-            if(blank($household_ids)){
-                $result=['code'=>'error','message'=>'请勾选被征收户','sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
             /* ++++++++++ 修改 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 【选定评估机构-修改】 ++++++++++ */
+                if(!$id){
+                    throw new \Exception('错误操作',404404);
+                }
+                $household_ids = $request->input('household_ids');
+                if(blank($household_ids)){
+                    throw new \Exception('请选择被征收户',404404);
+                }
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $itemcompany=Itemcompany::lockForUpdate()->find($id);
+                $itemcompany=Itemcompany::sharedLock()->find($id);
                 if(blank($itemcompany)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
-                /* ++++++++++ 批量赋值 ++++++++++ */
-                $itemcompany->fill($request->all());
-                $itemcompany->editOther($request);
-                $itemcompany->save();
-                if (blank($itemcompany)) {
-                    throw new \Exception('修改失败', 404404);
-                }
                 /* ++++++++++ 【选定评估机构-评估范围-删除旧数据】 ++++++++++ */
-                $item_company_household = Companyhousehold::where('item_company_id',$id)
+                Companyhousehold::lockForUpdate()
+                    ->where('item_company_id',$id)
                     ->where('item_id',$item_id)
                     ->delete();
-                if (blank($item_company_household)) {
-                    throw new \Exception('修改失败', 404404);
-                }
                 /* ++++++++++ 【选定评估机构-评估范围-添加新数据】 ++++++++++ */
                 $datas = [];
-                foreach ($household_ids as $k=>$v){
-                    $datas[$k]['item_id'] = $item_id;
-                    $datas[$k]['company_id'] = $request->input('company_id');
-                    $datas[$k]['item_company_id'] = $id;
-                    $datas[$k]['household_id'] = $v;
-                    $datas[$k]['created_at'] = date('Y-m-d H:i:s');
+                foreach ($household_ids as $household_id){
+                    $datas[]=[
+                        'item_id'=>$item_id,
+                        'company_id'=>$itemcompany->company_id,
+                        'item_company_id'=>$itemcompany->id,
+                        'household_id'=>$household_id,
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
                 }
                 /* ++++++++++ 批量赋值 ++++++++++ */
-                $field=['item_id','company_id','item_company_id','household_id','created_at'];
-                $sqls=batch_update_or_insert_sql('item_company_household',$field,$datas,$field);
+                $field=['item_id','company_id','item_company_id','household_id','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('item_company_household',$field,$datas,'updated_at');
                 if(!$sqls){
                     throw new \Exception('数据错误',404404);
                 }

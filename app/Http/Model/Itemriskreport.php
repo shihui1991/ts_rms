@@ -21,11 +21,11 @@ class Itemriskreport extends Model
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
-        'name'=>'报告名称',
+        'name'=>'标题名称',
         'item_id'=>'项目',
         'content'=>'内容',
         'agree'=>'评估结论',
-        'picture'=>'图片',
+        'picture'=>'评估报告',
     ];
 
     /* ++++++++++ 获取评估结论 ++++++++++ */

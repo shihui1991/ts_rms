@@ -14,24 +14,26 @@
     </p>
 
 
-    <form class="form-horizontal" role="form" action="{{route('g_itemdraft_edit')}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_itemdraft_edit',['item'=>$sdata['item']->id])}}" method="post">
         {{csrf_field()}}
-        <input type="hidden" name="item" value="{{$sdata['item_id']}}">
-        <input type="hidden" name="id" value="{{$sdata['id']}}">
+
+        <input type="hidden" name="id" value="{{$sdata['itemdraft']->id}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="name">标题：</label>
             <div class="col-sm-9">
-                <input type="text" id="name" name="name" value="{{$sdata->name}}" class="col-xs-10 col-sm-5" required>
+                <input type="text" id="name" name="name" value="{{$sdata['itemdraft']->name}}" class="col-xs-10 col-sm-5" required>
             </div>
         </div>
         <div class="space-4"></div>
 
-
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="content">内容：</label>
-            <div class="col-sm-9">
-                <textarea id="content" name="content" style="height: 500px;width: 90%">{{$sdata->content}}</textarea>
-            </div>
+            <div class="col-sm-9"></div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
+            <textarea id="content" name="content" class="col-xs-11 col-sm-11" style="min-height: 300px;">{{$sdata['itemdraft']->content}}</textarea>
         </div>
         <div class="space-4"></div>
 
