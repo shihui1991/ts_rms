@@ -5157,14 +5157,14 @@ class ItemprocessController extends BaseitemController
                             $item->code='21';
                             $risk_report->code='21';
                         }else{
-                            /* ++++++++++ 正式征收方案  可操作人员 ++++++++++ */
+                            /* ++++++++++ 正式征收方案提交审查  可操作人员 ++++++++++ */
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
                                 ->where('process_id',36)
                                 ->get();
                             $values=[];
-                            /* ++++++++++ 正式征收方案  工作提醒推送 ++++++++++ */
+                            /* ++++++++++ 正式征收方案提交审查  工作提醒推送 ++++++++++ */
                             foreach ($itemusers as $user){
                                 $values[]=[
                                     'item_id'=>$user->item_id,
@@ -5175,7 +5175,7 @@ class ItemprocessController extends BaseitemController
                                     'parent_id'=>$user->role->parent_id,
                                     'role_id'=>$user->role_id,
                                     'user_id'=>$user->user_id,
-                                    'url'=>route('g_itemprogram',['item'=>$this->item->id]),
+                                    'url'=>route('g_program_to_check',['item'=>$this->item->id]),
                                     'code'=>'0',
                                     'created_at'=>date('Y-m-d H:i:s'),
                                     'updated_at'=>date('Y-m-d H:i:s'),
@@ -5279,5 +5279,15 @@ class ItemprocessController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 征收决定 - 正式征收方案提交审查 ========== */
+    public function program_to_check(Request $request){
+
+    }
+
+    /* ========== 征收决定 - 正式征收方案审查 ========== */
+    public function program_check(Request $request){
+
     }
 }

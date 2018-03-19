@@ -6,6 +6,7 @@
 
 
     <div class="well well-sm">
+        <a href="javascript:history.back();" class="btn">返回</a>
         <a href="{{route('g_itemsubject_add',['item'=>$edata['item_id']])}}" class="btn">添加项目重要补偿事项</a>
     </div>
 

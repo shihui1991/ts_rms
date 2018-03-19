@@ -6,6 +6,7 @@
 
 
     <div class="well well-sm">
+        <a href="javascript:history.back();" class="btn">返回</a>
         <a href="{{route('g_itemcrowd_add',['item'=>$edata['item_id']])}}" class="btn">添加特殊人群优惠</a>
     </div>
 
