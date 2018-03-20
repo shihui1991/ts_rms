@@ -23,7 +23,8 @@ class Assess extends Model
         'land_id'=>'地块',
         'building_id'=>'楼栋',
         'assets'=>'资产评估总价',
-        'estate'=>'房产评估总价'
+        'estate'=>'房产评估总价',
+        'code'=>'状态'
     ];
 
 

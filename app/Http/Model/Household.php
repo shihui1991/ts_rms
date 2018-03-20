@@ -87,6 +87,10 @@ class Household extends Model
     public function state(){
         return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
+    /* ++++++++++ 评估-房产 ++++++++++ */
+    public function estates(){
+        return $this->hasOne('App\Http\Model\Estate','household_id','id')->withDefault();
+    }
 
 
     /* ++++++++++ 密钥 ++++++++++ */
