@@ -125,7 +125,7 @@
 
 {{-- 插件 --}}
 @section('js')
-    <script src="{{asset('js/func.js')}}"></script>
+    @parent
     <script src="{{asset('laydate/laydate.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>

@@ -16,12 +16,18 @@ use App\Http\Model\Householddetail;
 use App\Http\Model\Initbudget;
 use App\Http\Model\Item;
 use App\Http\Model\Itemadmin;
+use App\Http\Model\Itemcrowd;
 use App\Http\Model\Itemdraft;
 use App\Http\Model\Itemhouse;
+use App\Http\Model\Itemhouserate;
 use App\Http\Model\Itemland;
 use App\Http\Model\Itemnotice;
+use App\Http\Model\Itemobject;
+use App\Http\Model\Itemprogram;
 use App\Http\Model\Itempublic;
+use App\Http\Model\Itemreward;
 use App\Http\Model\Itemriskreport;
+use App\Http\Model\Itemsubject;
 use App\Http\Model\Itemtime;
 use App\Http\Model\Itemuser;
 use App\Http\Model\News;
@@ -5283,7 +5289,127 @@ class ItemprocessController extends BaseitemController
 
     /* ========== 征收决定 - 正式征收方案提交审查 ========== */
     public function program_to_check(Request $request){
+        DB::beginTransaction();
+        try{
+            $item=$this->item;
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if($item->schedule_id!=4 || $item->process_id!=36 || $item->code != '1'){
+                throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+            }
+            /* ++++++++++ 检查推送 ++++++++++ */
+            $result=$this->hasNotice();
+            $process=$result['process'];
+            $worknotice=$result['worknotice'];
+            $worknotice->code='2';
+            $worknotice->save();
+            /* ++++++++++ 检查方案 ++++++++++ */
+            $program_count=Itemprogram::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->count();
+            if(!$program_count){
+                throw new \Exception('正式征收方案还未添加',404404);
+            }
+            $subject_count=Itemsubject::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->count();
+            if(!$subject_count){
+                throw new \Exception('补偿科目还未设置',404404);
+            }
+            $crowd_count=Itemcrowd::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->get();
+            if(!$crowd_count){
+                throw new \Exception('特殊人群优惠政策还未设置',404404);
+            }
+            $house_rate_count=Itemhouserate::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->count();
+            if(!$house_rate_count){
+                throw new \Exception('产权调换房优惠政策还未设置',404404);
+            }
+            $object_count=Itemobject::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->count();
+            if(!$object_count){
+                throw new \Exception('其他补偿事项的补偿方案还未设置',404404);
+            }
+            $reward_count=Itemreward::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->count();
+            if(!$reward_count){
+                throw new \Exception('产权调换房的签约奖励政策还未设置',404404);
+            }
+            /* ++++++++++ 删除相同工作推送 ++++++++++ */
+            Worknotice::lockForUpdate()
+                ->where([
+                    ['item_id',$item->id],
+                    ['schedule_id',$process->schedule_id],
+                    ['process_id',$process->id],
+                    ['menu_id',$process->menu_id],
+                    ['code','0'],
+                ])
+                ->delete();
 
+            /* ++++++++++ 正式征收方案审查 可操作人员 ++++++++++ */
+            $itemusers=Itemuser::with(['role'=>function($query){
+                $query->select(['id','parent_id']);
+            }])
+                ->sharedLock()
+                ->where('process_id',37)
+                ->get();
+            $values=[];
+            /* ++++++++++ 正式征收方案审查 工作提醒推送 ++++++++++ */
+            foreach ($itemusers as $user){
+                $values[]=[
+                    'item_id'=>$user->item_id,
+                    'schedule_id'=>$user->schedule_id,
+                    'process_id'=>$user->process_id,
+                    'menu_id'=>$user->menu_id,
+                    'dept_id'=>$user->dept_id,
+                    'parent_id'=>$user->role->parent_id,
+                    'role_id'=>$user->role_id,
+                    'user_id'=>$user->user_id,
+                    'url'=>route('g_program_check',['item'=>$this->item->id]),
+                    'code'=>'20',
+                    'created_at'=>date('Y-m-d H:i:s'),
+                    'updated_at'=>date('Y-m-d H:i:s'),
+                ];
+            }
+
+            $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
+            $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
+            if(!$sqls){
+                throw new \Exception('操作失败',404404);
+            }
+            foreach ($sqls as $sql){
+                DB::statement($sql);
+            }
+
+            $item->schedule_id=$worknotice->schedule_id;
+            $item->process_id=$worknotice->process_id;
+            $item->code=$worknotice->code;
+            $item->save();
+
+            $code = 'success';
+            $msg = '操作成功';
+            $sdata = null;
+            $edata = null;
+            $url = route('g_itemprocess',['item'=>$this->item_id]);
+            DB::commit();
+        }catch (\Exception $exception){
+            $code = 'error';
+            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '操作成功';
+            $sdata = null;
+            $edata = null;
+            $url = null;
+            DB::rollBack();
+        }
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
     }
 
     /* ========== 征收决定 - 正式征收方案审查 ========== */
