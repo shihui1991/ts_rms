@@ -9,6 +9,7 @@
         <a href="{{route('g_news_add',['item'=>$sdata['item']->id])}}" class="btn">添加征收范围公告</a>
         <a href="{{route('g_draft_notice_add',['item'=>$sdata['item']->id])}}" class="btn">添加征收意见稿公告</a>
         <a href="{{route('g_program_notice_add',['item'=>$sdata['item']->id])}}" class="btn">添加征收决定公告</a>
+        <a href="{{route('g_assess_report_add',['item'=>$sdata['item']->id])}}" class="btn">添加评估报告</a>
     </div>
 
     <table class="table table-hover table-bordered">

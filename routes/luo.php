@@ -35,6 +35,8 @@ Route::any('/program_check','ItemprocessController@program_check')->name('g_prog
 Route::any('/program_notice_add','NewsController@program_notice_add')->name('g_program_notice_add'); //征收决定 -  发布征收决定公告
 Route::any('/program_notice_edit','NewsController@program_notice_edit')->name('g_program_notice_edit'); //征收决定 -  修改征收决定公告
 
+Route::any('/pay_start','ItemprocessController@pay_start')->name('g_pay_start'); //项目实施 -  项目开始实施
+
 /*---------- 初步预算 ----------*/
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算
 Route::any('/initbudget_add','InitbudgetController@add')->name('g_initbudget_add'); //添加初步预算
@@ -56,6 +58,8 @@ Route::any('/news','NewsController@index')->name('g_news'); //政务公告
 Route::any('/news_add','NewsController@add')->name('g_news_add'); //添加范围公告
 Route::any('/news_edit','NewsController@edit')->name('g_news_edit'); //修改范围公告
 Route::any('/news_info','NewsController@info')->name('g_news_info'); //公告详情
+Route::any('/assess_report_add','NewsController@assess_report_add')->name('g_assess_report_add'); //添加评估报告
+Route::any('/assess_report_edit','NewsController@assess_report_edit')->name('g_assess_report_edit'); //添加评估报告
 
 /*---------- 评估机构投票 ----------*/
 Route::any('/companyvote','CompanyvoteController@index')->name('g_companyvote'); //评估机构投票

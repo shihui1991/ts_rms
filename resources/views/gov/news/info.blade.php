@@ -27,6 +27,12 @@
                 修改征收决定公告
             </a>
         @endif
+
+        @if($sdata['news']->cate_id==4)
+            <a href="{{route('g_assess_report_edit',['item'=>$sdata['item']->id,'id'=>$sdata['news']->id])}}" class="btn">
+                修改评估报告
+            </a>
+        @endif
     </div>
     <div class="row">
         <div class="col-sm-5 col-xs-12">

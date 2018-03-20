@@ -44,7 +44,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-right" for="calculate"> 补偿计算公式： </label>
                                     <div class="col-sm-9 radio">
-                                        <textarea name="calculate" id="calculate" readonly class="col-xs-10 col-sm-10"></textarea>
+                                        <textarea name="calculate" id="calculate" class="col-xs-10 col-sm-10"></textarea>
                                     </div>
                                 </div>
                                 <div class="space-4"></div>
