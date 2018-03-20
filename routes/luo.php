@@ -47,7 +47,6 @@ Route::any('/itemreward','ItemrewardController@index')->name('g_itemreward'); //
 Route::any('/itemreward_add','ItemrewardController@add')->name('g_itemreward_add'); //产权调换房的签约奖励
 Route::any('/itemreward_edit','ItemrewardController@edit')->name('g_itemreward_edit'); //产权调换房的签约奖励
 
-
 /*---------- 资金管理 ----------*/
 Route::any('/funds','FundsController@index')->name('g_funds'); //项目资金
 Route::any('/funds_add','FundsController@add')->name('g_funds_add'); //录入资金
@@ -60,6 +59,8 @@ Route::any('/news_edit','NewsController@edit')->name('g_news_edit'); //修改范
 Route::any('/news_info','NewsController@info')->name('g_news_info'); //公告详情
 Route::any('/assess_report_add','NewsController@assess_report_add')->name('g_assess_report_add'); //添加评估报告
 Route::any('/assess_report_edit','NewsController@assess_report_edit')->name('g_assess_report_edit'); //添加评估报告
+Route::any('/news_other_add','NewsController@other_add')->name('g_news_other_add'); //添加公告
+Route::any('/news_other_edit','NewsController@other_edit')->name('g_news_other_edit'); //修改公告
 
 /*---------- 评估机构投票 ----------*/
 Route::any('/companyvote','CompanyvoteController@index')->name('g_companyvote'); //评估机构投票
