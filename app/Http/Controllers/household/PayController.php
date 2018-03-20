@@ -40,7 +40,7 @@ class PayController extends BaseController{
         $household_id=session('household_user.user_id');
         $this->item_id=session('household_user.item_id');
         $this->item=Item::sharedLock()->find($this->item_id);
-        DB::beginTransaction();
+
         $model=Pay::with(['itemland' => function ($query) {
                 $query->select(['id', 'address']);
                 }, 'itembuilding'=>function($query){
@@ -49,9 +49,9 @@ class PayController extends BaseController{
                 ->where('item_id',$this->item_id)
                 ->where('household_id',$household_id)
                 ->first();
-        DB::commit();
 
         if (blank($model)){
+            DB::beginTransaction();
             try{
                 $itemrisk = Itemrisk::sharedLock()
                     ->where([

@@ -5,7 +5,12 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Itemcrowd;
+use App\Http\Model\Itemhouserate;
+use App\Http\Model\Itemobject;
 use App\Http\Model\Itemprogram;
+use App\Http\Model\Itemreward;
+use App\Http\Model\Itemsubject;
 use Illuminate\Http\Request;
 use App\Http\Model\Statecode;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +23,72 @@ class ItemprogramController extends BaseitemController
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /* ========== 首页 ========== */
+    public function index(Request $request){
+        DB::beginTransaction();
+        try{
+            $program=Itemprogram::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->first();
+            $subjects=Itemsubject::with(['subject'=>function($query){
+                $query->select(['id','name']);
+            }])
+                ->sharedLock()
+                ->where('item_id',$this->item_id)
+                ->get();
+            $crowds=Itemcrowd::with(['cate'=>function($query){
+                $query->select(['id','name']);
+            },'crowd'=>function($query){
+                $query->select(['id','name']);
+            }])
+                ->sharedLock()
+                ->where('item_id',$this->item_id)
+                ->get();
+            $house_rates=Itemhouserate::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->orderBy('start_area','asc')
+                ->get();
+            $objects=Itemobject::with(['object'=>function($query){
+                $query->select(['id','name','num_unit']);
+            }])
+                ->sharedLock()
+                ->where('item_id',$this->item_id)
+                ->get();
+            $rewards=Itemreward::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->orderBy('start_at','asc')
+                ->get();
+
+            $code='success';
+            $msg='查询成功';
+
+        }catch(\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+
+        }
+        $sdata=[
+            'item_id'=>$this->item_id,
+            'item'=>$this->item,
+            'program'=>$program,
+            'subjects'=>$subjects,
+            'crowds'=>$crowds,
+            'house_rates'=>$house_rates,
+            'objects'=>$objects,
+            'rewards'=>$rewards,
+        ];
+        $edata=null;
+        $url=null;
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('gov.itemprogram.index')->with($result);
+        }
     }
 
     /* ========== 添加 ========== */
