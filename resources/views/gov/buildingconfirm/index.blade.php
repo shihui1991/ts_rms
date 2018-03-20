@@ -33,8 +33,8 @@
                     </a>
                 </li>
 
-                <li class="active">
-                    <a  data-toggle="tab" href="#landlayout" aria-expanded="true">
+                <li class="">
+                    <a href="{{route('g_landlayout_reportlist',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         测绘报告
                     </a>
@@ -47,22 +47,27 @@
                     </a>
                 </li>
 
-                <li class="">
-                    <a href="{{route('g_buildingconfirm',['item'=>$edata['item_id']])}}">
+                <li class="active">
+                    <a  data-toggle="tab" href="#buildingconfirm" aria-expanded="true">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
                         房产确认
                     </a>
                 </li>
             </ul>
             <div class="tab-content">
-                <div id="landlayout" class="tab-pane fade active in">
+                <div id="householdright" class="tab-pane fade">
+                </div>
+
+                <div id="buildingconfirm" class="tab-pane fade active in">
                     <table class="table table-hover table-bordered">
                         <thead>
                         <tr>
                             <th>序号</th>
                             <th>地块</th>
-                            <th>名称</th>
-                            <th>面积</th>
+                            <th>楼栋</th>
+                            <th>位置</th>
+                            <th>房屋产权证号</th>
+                            <th>征收意见</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -72,13 +77,18 @@
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$infos->itemland->address}}</td>
-                                    <td>{{$infos->name}}</td>
-                                    <td>{{$infos->area}}</td>
+                                    <td>{{$infos->itembuilding->building}}</td>
                                     <td>
-                                        @if(blank($infos->getOriginal('picture')))
-                                            <a href="{{route('g_landlayout_reportadd',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">提交测绘报告</a>
-                                        @else
-                                            <a href="{{route('g_landlayout_reportinfo',['id'=>$infos->id,'item'=>$infos->item_id])}}" class="btn btn-sm">测绘报告详情</a>
+                                        {{$infos->household->unit?$infos->household->unit.'单元':''}}
+                                        {{$infos->household->floor?$infos->household->floor.'楼':''}}
+                                        {{$infos->household->number?$infos->household->number.'号':''}}
+                                    </td>
+                                    <td>{{$infos->register}}</td>
+                                    <td>{{$infos->agree}}</td>
+                                    <td>
+                                        <a href="{{route('g_buildingrelated',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">建筑关联</a>
+                                        @if($infos->householdbuildings_count == $infos->estatebuildings_count&&$infos->estatebuildings_where==0)
+                                            <a href="{{route('g_buildingconfirm_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">房产确认</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -96,9 +106,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div id="householdbuildingdeal" class="tab-pane fade">
                 </div>
 
                 <div id="householdarea" class="tab-pane fade">
