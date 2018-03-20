@@ -7,6 +7,9 @@
 
     {{-- 页面内容 --}}
 @section('content')
+    <div class="well well-sm">
+            <a href="{{route('h_itemrisk_add')}}" class="btn">有效选房</a>
+    </div>
     <div class="row">
         <div class="col-xs-12">
             @if($code=='success')
