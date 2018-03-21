@@ -824,7 +824,7 @@ class FundsController extends BaseitemController
             $funds_total->item_id=$this->item_id;
             $funds_total->type=1;
             $funds_total->val_id=$unit_pact->unit_id;
-            $funds_total->cate_id=3;
+            $funds_total->cate_id=6;
             $funds_total->amount= 0-$pact_total;
             $funds_total->code='112';
             $funds_total->save();
@@ -880,6 +880,101 @@ class FundsController extends BaseitemController
 
     /* ========== 项目支出 ========== */
     public function out(Request $request){
+        if($request->isMethod('get')){
+            DB::beginTransaction();
+            try{
+                $banks=Bank::sharedLock()->select('id','name')->get();
 
+                $code='success';
+                $msg='查询成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'banks'=>$banks,
+                ];
+                $edata=null;
+                $url=null;
+
+                $view='gov.funds.out';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ********** 保存 ********** */
+        else{
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules=[
+                'cate_id'=>'required|in:7,8',
+                'amount'=>'required|numeric|min:0.01',
+                'voucher'=>'required',
+                'bank_id'=>'required',
+                'account'=>'required',
+                'name'=>'required',
+                'entry_at'=>'required|date_format:Y-m-d H:i:s',
+                'infos'=>'required',
+                'picture'=>'required',
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'in'=>':attribute 错误选择',
+                'date_format'=>':attribute 输入格式错误',
+                'numeric'=>':attribute 输入格式错误',
+                'min'=>':attribute 不能少于 :min',
+            ];
+            $model=new Funds();
+            $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+            if($validator->fails()){
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $funds=$model;
+                $funds->fill($request->input());
+                $funds->addOther($request);
+                $funds->item_id=$this->item_id;
+                $funds->cate_id=$request->input('cate_id');
+                $funds->amount= 0-$funds->amount;
+                $funds->save();
+                if(blank($funds)){
+                    throw new \Exception('保存失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=$funds;
+                $edata=null;
+                $url=route('g_funds',['item'=>$this->item_id]);
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 }
