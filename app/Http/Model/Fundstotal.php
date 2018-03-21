@@ -44,4 +44,10 @@ class Fundstotal extends Model
     public function fundscate(){
         return $this->belongsTo('App\Http\Model\Fundscate','cate_id','id')->withDefault();
     }
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    }
+    public function funds(){
+        return $this->hasMany('App\Http\Model\Funds','total_id','id');
+    }
 }

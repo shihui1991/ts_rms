@@ -5,8 +5,16 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <form class="form-horizontal" role="form" action="{{route('g_funds_add',['item'=>$sdata['item']->id])}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_funds_pay_total_funds',['item'=>$sdata['item']->id,'total_id'=>$sdata['funds_total']->id])}}" method="post">
         {{csrf_field()}}
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="cate_id"> 类别： </label>
+            <div class="col-sm-9">
+                <input type="text" id="cate_id" value="{{$sdata['funds_total']->fundscate->name}}" class="col-xs-10 col-sm-5"  readonly>
+            </div>
+        </div>
+        <div class="space-4"></div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="voucher"> 转账凭证号： </label>
@@ -19,7 +27,10 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="amount"> 转账金额： </label>
             <div class="col-sm-9">
-                <input type="number" min="0.01" id="amount" name="amount" value="{{old('amount')}}" class="col-xs-10 col-sm-5"  required>
+                <input type="number" min="0.01" id="amount" name="amount" value="{{abs($sdata['funds_total']->amount - $sdata['funds_amount'])}}" class="col-xs-10 col-sm-5"  required>
+                <span class="help-inline col-xs-12 col-sm-7">
+                    <span class="middle">最多转账金额：{{abs($sdata['funds_total']->amount - $sdata['funds_amount'])}}</span>
+                </span>
             </div>
         </div>
         <div class="space-4"></div>

@@ -51,6 +51,12 @@ Route::any('/itemreward_edit','ItemrewardController@edit')->name('g_itemreward_e
 Route::any('/funds','FundsController@index')->name('g_funds'); //项目资金
 Route::any('/funds_add','FundsController@add')->name('g_funds_add'); //录入资金
 Route::any('/funds_info','FundsController@info')->name('g_funds_info'); //转账详情
+Route::any('/funds_household','FundsController@household')->name('g_funds_household'); //被征收户
+Route::any('/funds_household_info','FundsController@household_info')->name('g_funds_household_info'); //被征收户-补偿详情
+Route::any('/funds_pay_total','FundsController@pay_total')->name('g_funds_pay_total'); //被征收户-生成兑付总单
+Route::any('/funds_pay_total_funds','FundsController@pay_total_funds')->name('g_funds_pay_total_funds'); //被征收户-兑付总单- 支付
+Route::any('/funds_unit','FundsController@unit')->name('g_funds_unit'); //公房单位
+Route::any('/funds_out','FundsController@out')->name('g_funds_out'); //项目支出
 
 /*---------- 通知公告 ----------*/
 Route::any('/news','NewsController@index')->name('g_news'); //政务公告
@@ -87,3 +93,12 @@ Route::any('/payhouse_add','PayhouseController@add')->name('g_payhouse_add'); //
 Route::any('/payhouse_cal','PayhouseController@calculate')->name('g_payhouse_cal'); //选房计算
 
 Route::any('/pact','PactController@index')->name('g_pact'); //协议
+
+/*---------- 腾空搬迁 ----------*/
+Route::any('/move','MoveController@index')->name('g_move'); //腾空搬迁
+
+/*---------- 监督拆除 ----------*/
+Route::any('/tear','TearController@index')->name('g_tear'); //监督拆除
+
+/*---------- 项目审查 ----------*/
+Route::any('/audit','AuditController@index')->name('g_audit'); //审计报告
