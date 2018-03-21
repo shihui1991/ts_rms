@@ -403,11 +403,11 @@ class PaysubjectController extends BaseitemController
                                                 'crowd_id' => $itemcrowd->crowd_id,
                                                 'transit' => $pay_subject->amount,
                                                 'rate' => $itemcrowd->rate,
-                                                'amount' => $itemcrowd->rate * $pay_subject->amount,
+                                                'amount' => $itemcrowd->rate * $pay_subject->amount/100,
                                                 'created_at' => date('Y-m-d H:i:s'),
                                                 'updated_at' => date('Y-m-d H:i:s'),
                                             ];
-                                            $crowd_total += $itemcrowd->rate * $pay_subject->amount;
+                                            $crowd_total += $itemcrowd->rate * $pay_subject->amount/100;
                                             break;
                                         }
                                     }
@@ -525,11 +525,11 @@ class PaysubjectController extends BaseitemController
                                                 'crowd_id' => $itemcrowd->crowd_id,
                                                 'transit' => $pay_subject->amount,
                                                 'rate' => $itemcrowd->rate,
-                                                'amount' => $itemcrowd->rate * $pay_subject->amount,
+                                                'amount' => $itemcrowd->rate * $pay_subject->amount/100,
                                                 'created_at' => date('Y-m-d H:i:s'),
                                                 'updated_at' => date('Y-m-d H:i:s'),
                                             ];
-                                            $crowd_total += $itemcrowd->rate * $pay_subject->amount;
+                                            $crowd_total += $itemcrowd->rate * $pay_subject->amount/100;
                                             break;
                                         }
                                     }
@@ -881,11 +881,11 @@ class PaysubjectController extends BaseitemController
                                                             'crowd_id' => $itemcrowd->crowd_id,
                                                             'transit' =>$transit_total,
                                                             'rate' => $itemcrowd->rate,
-                                                            'amount' => $itemcrowd->rate * $transit_total,
+                                                            'amount' => $itemcrowd->rate * $transit_total/100,
                                                             'created_at' => date('Y-m-d H:i:s'),
                                                             'updated_at' => date('Y-m-d H:i:s'),
                                                         ];
-                                                        $crowd_total += $itemcrowd->rate * $transit_total;
+                                                        $crowd_total += $itemcrowd->rate * $transit_total/100;
                                                         break;
                                                     }
                                                 }

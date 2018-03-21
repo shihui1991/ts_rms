@@ -17,6 +17,7 @@ use App\Http\Model\House;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Model\Payhousebak;
+use Symfony\Component\Routing\Annotation\Route;
 
 class PayhousebakController extends BaseController{
     public $item;
@@ -62,7 +63,33 @@ class PayhousebakController extends BaseController{
                 throw new \Exception('错误操作',404404);
             }
 
-            $house_ids=DB::table('pay_house_bak')->where('household_id',$household_id)->pluck('house_id')->toArray();
+            /*判断是否通过临时周转房过渡*/
+            if($pay->getOriginal('transit_way')==1){
+                $transit_house=Payhousebak::with(['house'=>function($query){
+                    $query->with([
+                        'housecommunity'=> function ($query) {
+                            $query->select(['id','name']);
+                        },
+                        'layout'=> function ($query) {
+                            $query->select(['id','name']);
+                        },
+                        'housecompany'=> function ($query) {
+                            $query->select(['id','name']);
+                        }]);
+                }])
+                    ->where([
+                        ['household_id',$household_id],
+                        ['item_id',$item_id],
+                        ['house_type',2]
+                    ])
+                    ->sharedLock()
+                    ->get();
+                if (blank($transit_house)){
+                    throw new \Exception('暂未选择临时周转房', 404404);
+                }
+            }
+
+            $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1]])->pluck('house_id')->toArray();
             /* ++++++++++ 被征收户 ++++++++++ */
             $household=Household::sharedLock()
                 ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
@@ -250,6 +277,7 @@ class PayhousebakController extends BaseController{
                 'resettle_total'=>$resettle_total,
                 'last_total'=>$end_total,
                 'plus_area'=>$plus_area,
+                'transit_house'=>$transit_house,
             ];
             $edata=$fails;
             $url=null;
@@ -275,6 +303,7 @@ class PayhousebakController extends BaseController{
     public function add(Request $request){
         $household_id=session('household_user.user_id');
         $item_id=session('household_user.item_id');
+        $this->item=Item::find($item_id);
         DB::beginTransaction();
         try{
             /* ++++++++++ 兑付 ++++++++++ */
@@ -289,6 +318,10 @@ class PayhousebakController extends BaseController{
             }
             if($pay->getOriginal('repay_way')==0){
                 throw new \Exception('选择货币补偿的不能选择安置房',404404);
+            }
+
+            if($pay->getOriginal('transit_way')==0 && $request->input('house_type')==2){
+                throw new \Exception('选择货币过渡的不能选择临时周转房',404404);
             }
 
             $house_id=$request->input('house_id');
@@ -355,6 +388,7 @@ class PayhousebakController extends BaseController{
 
             $payhousebak->item_id=$item_id;
             $payhousebak->house_id=$request->input('house_id');
+            $payhousebak->house_type=$request->input('house_type');
             $payhousebak->household_id=$household_id;
             $payhousebak->land_id=session('household_user.land_id');
             $payhousebak->building_id=session('household_user.building_id');
@@ -366,7 +400,7 @@ class PayhousebakController extends BaseController{
             $msg = '选房成功';
             $sdata = $payhousebak;
             $edata = null;
-            $url = null;
+            $url = route('h_payhousebak');;
             $view='household.payhousebak.index';
             DB::commit();
         }catch (\Exception $exception){

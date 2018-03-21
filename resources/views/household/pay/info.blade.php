@@ -237,7 +237,7 @@
                                 <td>{{$subject->state->name}}</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="{{route('g_paysubject_info',['id'=>$subject->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">查看详情</a>
+                                        <a href="{{route('h_paysubject_info',['id'=>$subject->id])}}" class="btn btn-sm">查看详情</a>
 
                                     </div>
 
