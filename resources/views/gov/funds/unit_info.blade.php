@@ -153,7 +153,7 @@
                                                     @php $total += $payunit->amount; @endphp
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
-                                                        <td>{{$payunit->household->itemland->name}}{{$payunit->household->itembuilding->building}}栋{{$payunit->household->unit}}单元{{$payunit->household->floor}}楼{{$payunit->household->number}}号</td>
+                                                        <td>{{$payunit->household->itemland->address}}{{$payunit->household->itembuilding->building}}栋{{$payunit->household->unit}}单元{{$payunit->household->floor}}楼{{$payunit->household->number}}号</td>
                                                         <td>{{$payunit->calculate}}</td>
                                                         <td>{{number_format($payunit->amount,2)}}</td>
                                                         <td>{{$payunit->state->name}}</td>
