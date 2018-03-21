@@ -63,4 +63,7 @@ class Payunit extends Model
     public function fundstotal(){
         return $this->belongsTo('App\Http\Model\Fundstotal','total_id','id')->withDefault();
     }
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    }
 }

@@ -29,9 +29,13 @@ Route::any('/survey_check','ItemprocessController@survey_check')->name('g_survey
 Route::any('/draft_check','ItemprocessController@draft_check')->name('g_draft_check'); //征收决定 -  征收意见稿审查
 Route::any('/draft_notice_add','NewsController@draft_notice_add')->name('g_draft_notice_add'); //征收决定 -  发布征收意见稿公告
 Route::any('/draft_notice_edit','NewsController@draft_notice_edit')->name('g_draft_notice_edit'); //征收决定 -  修改征收意见稿公告
-Route::any('/riskreport_check','NewsController@riskreport_check')->name('g_riskreport_check'); //征收决定 -  风险评估报告审查
-Route::any('/program_to_check','NewsController@program_to_check')->name('g_program_to_check'); //征收决定 -  正式征收方案提交审查
-Route::any('/program_check','NewsController@program_check')->name('g_program_check'); //征收决定 -  正式征收方案审查
+Route::any('/riskreport_check','ItemprocessController@riskreport_check')->name('g_riskreport_check'); //征收决定 -  风险评估报告审查
+Route::any('/program_to_check','ItemprocessController@program_to_check')->name('g_program_to_check'); //征收决定 -  正式征收方案提交审查
+Route::any('/program_check','ItemprocessController@program_check')->name('g_program_check'); //征收决定 -  正式征收方案审查
+Route::any('/program_notice_add','NewsController@program_notice_add')->name('g_program_notice_add'); //征收决定 -  发布征收决定公告
+Route::any('/program_notice_edit','NewsController@program_notice_edit')->name('g_program_notice_edit'); //征收决定 -  修改征收决定公告
+
+Route::any('/pay_start','ItemprocessController@pay_start')->name('g_pay_start'); //项目实施 -  项目开始实施
 
 /*---------- 初步预算 ----------*/
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算
@@ -43,17 +47,27 @@ Route::any('/itemreward','ItemrewardController@index')->name('g_itemreward'); //
 Route::any('/itemreward_add','ItemrewardController@add')->name('g_itemreward_add'); //产权调换房的签约奖励
 Route::any('/itemreward_edit','ItemrewardController@edit')->name('g_itemreward_edit'); //产权调换房的签约奖励
 
-
 /*---------- 资金管理 ----------*/
 Route::any('/funds','FundsController@index')->name('g_funds'); //项目资金
 Route::any('/funds_add','FundsController@add')->name('g_funds_add'); //录入资金
 Route::any('/funds_info','FundsController@info')->name('g_funds_info'); //转账详情
+Route::any('/funds_household','FundsController@household')->name('g_funds_household'); //被征收户
+Route::any('/funds_household_info','FundsController@household_info')->name('g_funds_household_info'); //被征收户-补偿详情
+Route::any('/funds_pay_total','FundsController@pay_total')->name('g_funds_pay_total'); //被征收户-生成兑付总单
+Route::any('/funds_pay_total_funds','FundsController@pay_total_funds')->name('g_funds_pay_total_funds'); //被征收户-兑付总单- 支付
+Route::any('/funds_unit','FundsController@unit')->name('g_funds_unit'); //公房单位
+Route::any('/funds_unit_info','FundsController@unit_info')->name('g_funds_unit_info'); //公房单位 - 补偿详情
+Route::any('/funds_out','FundsController@out')->name('g_funds_out'); //项目支出
 
 /*---------- 通知公告 ----------*/
 Route::any('/news','NewsController@index')->name('g_news'); //政务公告
 Route::any('/news_add','NewsController@add')->name('g_news_add'); //添加范围公告
 Route::any('/news_edit','NewsController@edit')->name('g_news_edit'); //修改范围公告
 Route::any('/news_info','NewsController@info')->name('g_news_info'); //公告详情
+Route::any('/assess_report_add','NewsController@assess_report_add')->name('g_assess_report_add'); //添加评估报告
+Route::any('/assess_report_edit','NewsController@assess_report_edit')->name('g_assess_report_edit'); //添加评估报告
+Route::any('/news_other_add','NewsController@other_add')->name('g_news_other_add'); //添加公告
+Route::any('/news_other_edit','NewsController@other_edit')->name('g_news_other_edit'); //修改公告
 
 /*---------- 评估机构投票 ----------*/
 Route::any('/companyvote','CompanyvoteController@index')->name('g_companyvote'); //评估机构投票
@@ -80,3 +94,12 @@ Route::any('/payhouse_add','PayhouseController@add')->name('g_payhouse_add'); //
 Route::any('/payhouse_cal','PayhouseController@calculate')->name('g_payhouse_cal'); //选房计算
 
 Route::any('/pact','PactController@index')->name('g_pact'); //协议
+
+/*---------- 腾空搬迁 ----------*/
+Route::any('/move','MoveController@index')->name('g_move'); //腾空搬迁
+
+/*---------- 监督拆除 ----------*/
+Route::any('/tear','TearController@index')->name('g_tear'); //监督拆除
+
+/*---------- 项目审查 ----------*/
+Route::any('/audit','AuditController@index')->name('g_audit'); //审计报告

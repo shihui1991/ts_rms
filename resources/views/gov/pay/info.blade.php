@@ -184,6 +184,18 @@
             添加补偿科目
         </a>
 
+        @if(in_array($sdata['household']->code,['68','76']))
+            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_paysubject_recal',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" data-method="post">
+                <i class="ace-icon fa fa-support bigger-110"></i>
+                重新计算补偿
+            </a>
+        @endif
+        @if($sdata['pay']->getOriginal('repay_way')==1)
+            <a href="{{route('g_payhouse_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
+                选房
+            </a>
+        @endif
+
         <a href="{{route('g_pact',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
             补偿安置协议
         </a>

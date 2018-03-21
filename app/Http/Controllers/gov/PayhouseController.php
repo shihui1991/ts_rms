@@ -156,7 +156,7 @@ class PayhouseController extends BaseitemController
                     ->limit($per_page)
                     ->get();
                 $houses=new LengthAwarePaginator($houses,$total,$per_page,$page);
-                $houses->withPath(route('g_payreserve_house',['item'=>$this->item_id,'pay_id'=>$pay_id]));
+                $houses->withPath(route('g_payhouse_add',['item'=>$this->item_id,'pay_id'=>$pay_id]));
 
                 $code='success';
                 $msg='请求成功';
@@ -538,19 +538,8 @@ class PayhouseController extends BaseitemController
             if($house_ids==$transits){
                 throw new \Exception('请选择产权调换房源',404404);
             }
-
-            /* ++++++++++ 临时周转房过渡 ++++++++++ */
-            if($pay->getOriginal('transit_way')){
-                if(blank($transits)){
-                    throw new \Exception('请选择临时周转房源',404404);
-                }
+            if(filled($transits)){
                 $house_ids=array_diff($house_ids,$transits);
-            }
-            /* ++++++++++ 货币过渡 ++++++++++ */
-            else{
-                if(filled($transits)){
-                    throw new \Exception('选择货币过渡则不能选择临时周转房',404404);
-                }
             }
 
             /* ++++++++++ 选房时间 ++++++++++ */

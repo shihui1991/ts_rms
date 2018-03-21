@@ -286,8 +286,30 @@
                             </div>
                         </form>
                     @else
-                        <form class="form-horizontal" role="form" action="{{route('c_comassess_add')}}" method="post">
-                            <input type="hidden" name="id" value="{{$sdata->id}}">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>计量单位</th>
+                                <th>确认数量</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if($code=='success')
+                                @foreach($sdata['householdassetss'] as $infos)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$infos->name}}</td>
+                                        <td>{{$infos->num_unit}}</td>
+                                        <td>{{$infos->number}}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <form class="form-horizontal" role="form" action="{{route('c_comassess_info')}}" method="post">
+                            <input type="hidden" name="household_id" value="{{$sdata['assets']->household_id}}">
                             <input type="hidden" name="item" value="{{$sdata['item_id']}}">
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="total"> 资产总价： </label>

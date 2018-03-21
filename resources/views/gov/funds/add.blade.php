@@ -19,7 +19,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="amount"> 转账金额： </label>
             <div class="col-sm-9">
-                <input type="number" min="1" id="amount" name="amount" value="{{old('amount')}}" class="col-xs-10 col-sm-5"  required>
+                <input type="number" min="0.01" id="amount" name="amount" value="{{old('amount')}}" class="col-xs-10 col-sm-5"  required>
             </div>
         </div>
         <div class="space-4"></div>

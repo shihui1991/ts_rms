@@ -64,8 +64,6 @@
 
 {{-- 插件 --}}
 @section('js')
-    <script>
-
-    </script>
+    @parent
 
 @endsection

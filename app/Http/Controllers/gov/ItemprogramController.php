@@ -11,6 +11,7 @@ use App\Http\Model\Itemobject;
 use App\Http\Model\Itemprogram;
 use App\Http\Model\Itemreward;
 use App\Http\Model\Itemsubject;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use App\Http\Model\Statecode;
 use Illuminate\Support\Facades\DB;
@@ -151,6 +152,29 @@ class ItemprogramController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->process_id!=35 || $item->code != '22'){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',$item->schedule_id],
+                        ['process_id',36],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->process_id=36;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $model->fill($request->all());
                 $model->addOther($request);
@@ -310,6 +334,29 @@ class ItemprogramController extends BaseitemController
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,['36','37']) || ($item->process_id =='36' && $item->code!='1') || ($item->process_id =='37' && $item->code!='23')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',$item->schedule_id],
+                        ['process_id',36],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->process_id=36;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $itemprogram=$model::lockForUpdate()->find($id);
                 if(blank($itemprogram)){

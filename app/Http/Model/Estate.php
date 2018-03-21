@@ -143,4 +143,9 @@ class Estate extends Model
     public function company(){
         return $this->belongsTo('App\Http\Model\Company','company_id','id')->withDefault();
     }
+
+    /* ++++++++++ 关联资产评估 ++++++++++ */
+    public function assets(){
+        return $this->hasOne('App\Http\Model\Assets','assess_id','assess_id')->withDefault();
+    }
 }

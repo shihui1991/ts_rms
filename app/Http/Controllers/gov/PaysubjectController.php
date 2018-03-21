@@ -127,10 +127,11 @@ class PaysubjectController extends BaseitemController
             $rules = [
                 'subject_id' => 'required',
                 'calculate' => 'required',
-                'amount' => 'required|min:1',
+                'amount' => 'required|numeric|min:0.01',
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
+                'numeric' => ':attribute 格式错误',
                 'min' => ':attribute 不能少于 :min',
             ];
             $model = new Paysubject();

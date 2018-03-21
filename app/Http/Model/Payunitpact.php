@@ -48,4 +48,11 @@ class Payunitpact extends Model
     public function pactcate(){
         return $this->belongsTo('App\Http\Model\Pactcate','cate_id','id')->withDefault();
     }
+    public function state(){
+        return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
+    }
+
+    public function payunits(){
+        return $this->hasMany('App\Http\Model\Payunit','pact_id','id');
+    }
 }

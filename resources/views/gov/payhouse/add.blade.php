@@ -142,10 +142,9 @@
         <div class="widget-body">
             <div class="widget-main padding-8">
 
-                <form class="form-horizontal" role="form" action="{{route('g_payhouse_add',['item'=>$sdata['item']->id])}}" method="post" id="house-choose-form">
+                <form class="form-horizontal" role="form" action="{{route('g_payhouse_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" method="post" id="house-choose-form">
                     {{csrf_field()}}
-
-                    <input type="hidden" name="reserve_id" value="{{$sdata['reserve']->id}}">
+                    
                 <table class="table table-hover table-bordered">
                     <thead>
                     <tr>
@@ -219,7 +218,7 @@
                                     <tfoot>
                                     <tr>
                                         <th colspan="2">可调换安置房的补偿总额：{{number_format($sdata['resettle_total'],2)}} 元</th>
-                                        <th class="2">上浮面积：<span id="plus_area">0</span> ㎡</th>
+                                        <th colspan="2">上浮面积：<span id="plus_area">0</span> ㎡</th>
                                         <th colspan="7">
                                             产权调换后结余补偿款：
                                             <span id="last_total">
@@ -261,6 +260,7 @@
 {{-- 插件 --}}
 @section('js')
     @parent
+    <script src="{{asset('pagination/jquery.pagination.min.js')}}"></script>
     <script>
         var houselist_temp=@json($sdata['houses']);
         var choose_houses=[];
@@ -273,7 +273,7 @@
             var checkbox=$(this);
             var index=checkbox.data('index');
             var house_id=checkbox.val();
-            var house_temp=houselist_temp[index];
+            var house_temp=houselist_temp.data[index];
             if(checkbox.prop('checked')){
                 if(!choose_house_ids || !choose_house_ids.length || $.inArray(house_id,choose_house_ids) == -1){
                     choose_houses.push(house_temp);
@@ -302,7 +302,7 @@
                 }
             }else{
                 if(choose_house_ids && choose_house_ids.length && $.inArray(house_id,choose_house_ids) != -1){
-                    choose_houses.splice($.inArray(house_temp,houselist_temp),1);
+                    choose_houses.splice($.inArray(house_temp,houselist_temp.data),1);
                     choose_house_ids.splice($.inArray(house_id,choose_house_ids),1);
                 }
                 $('#house-'+house_temp.id).remove();
@@ -318,7 +318,7 @@
         // 计算
         function houseCalculate() {
             toastr.info('请稍等！计算中……');
-            ajaxAct('{{route('g_payhouse_cal',['item'=>$sdata['item']->id,'reserve_id'=>$sdata['reserve']->id])}}',$('#house-choose-form').serialize(),'post');
+            ajaxAct('{!! route('g_payhouse_cal',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id]) !!}',$('#house-choose-form').serialize(),'post');
 
             var plus_area=0;
             var last_total=0;
@@ -331,7 +331,8 @@
                         '<td>'+info.housecommunity.address+'</td>' +
                         '<td>'+info.housecommunity.name+'</td>' +
                         '<td>'+ info.building+ '栋'+info.unit+'单元'+info.floor+'楼'+info.number+($.isNumeric(info.number)?'号':'')+'</td>'+
-                        '<td>'+house_temp.area+'</td>' +
+                        '<td>'+info.layout.name+'</td>' +
+                        '<td>'+info.area+'</td>' +
                         '<td>'+info.is_real+'</td>' +
                         '<td>'+info.itemhouseprice.market+'</td>' +
                         '<td>'+info.itemhouseprice.price+'</td>' +
@@ -359,7 +360,8 @@
         // 获取
         function getHouses(data) {
             toastr.info('请稍等！处理中……');
-            ajaxAct('{{route('g_payhouse_add',['item'=>$sdata['item']->id,'reserve_id'=>$sdata['reserve']->id])}}',data,'get');
+            var url='{!! route('g_payhouse_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id]) !!}';
+            ajaxAct(url,data,'get');
             if(ajaxResp.code=='success'){
                 houselist_temp=ajaxResp.sdata.houses;
                 houselist(houselist_temp,data);
