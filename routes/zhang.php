@@ -191,6 +191,10 @@ Route::any('/buildingrelated_com','HouseholddetailController@buildingrelated_com
 Route::any('/relatedcom_info','HouseholddetailController@relatedcom_info')->name('g_relatedcom_info');
 Route::any('/buildingconfirm_info','HouseholddetailController@buildingconfirm_info')->name('g_buildingconfirm_info');
 Route::any('/buildingconfirm_edit','HouseholddetailController@buildingconfirm_edit')->name('g_buildingconfirm_edit');
+/*---------- 项目-公共附属物确认 ----------*/
+Route::any('/landiist','ItempublicController@landiist')->name('g_public_landiist');
+Route::any('/publiclist','ItempublicController@publiclist')->name('g_publiclist');
+Route::any('/publicinfo','ItempublicController@publicinfo')->name('g_publicinfo');
 
 /*+++++++++++++++ 【征收决定】 ++++++++++++++++*/
 /*---------- 项目-自选社会风险评估调查话题 ----------*/

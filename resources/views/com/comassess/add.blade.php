@@ -65,7 +65,6 @@
                             </div>
                         </div>
                         <br/>
-
                         <div class="profile-info-row">
                             <div class="profile-info-name"> 产权争议： </div>
                             <div class="profile-info-value">
@@ -271,13 +270,35 @@
                             </div>
                         </form>
                     @else
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>计量单位</th>
+                                <th>确认数量</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if($code=='success')
+                                @foreach($sdata['householdassetss'] as $infos)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$infos->name}}</td>
+                                        <td>{{$infos->num_unit}}</td>
+                                        <td>{{$infos->number}}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
                         <form class="form-horizontal" role="form" action="{{route('c_comassess_add')}}" method="post">
                             <input type="hidden" name="household_id" value="{{$sdata['assets']->household_id}}">
                             <input type="hidden" name="item" value="{{$sdata['item_id']}}">
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="total"> 资产总价： </label>
                                 <div class="col-sm-9">
-                                    <input type="text" id="total" name="total" value="{{$sdata['assets']->total}}" class="col-xs-10 col-sm-5"  placeholder="请输入资产总价" required>
+                                    <input type="text" id="total" name="total" value="" class="col-xs-10 col-sm-5"  placeholder="请输入资产总价" required>
                                 </div>
                             </div>
                             <div class="space-4"></div>
@@ -286,7 +307,7 @@
                                 <div class="col-sm-9 checkbox">
                                     @foreach($sdata['valuer'] as $valuer)
                                         <label>
-                                            <input name="valuer_id[]" type="checkbox" class="ace" value="{{$valuer->id}}" @if($sdata['comassessvaluers']->contains($valuer->id)) checked @endif>
+                                            <input name="valuer_id[]" type="checkbox" class="ace" value="{{$valuer->id}}">
                                             <span class="lbl">{{$valuer->name}}【{{$valuer->register}}】</span>
                                         </label>
                                     @endforeach
@@ -306,22 +327,7 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <ul class="ace-thumbnails clearfix img-content viewer">
-                                                @if($sdata['assets']->picture)
-                                                    @foreach(json_decode($sdata['assets']->picture,true) as $pic)
-                                                        <li>
-                                                            <div>
-                                                                <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                                                <input type="hidden" name="picture[]" value="{!! $pic !!}">
-                                                                <div class="text">
-                                                                    <div class="inner">
-                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                        <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    @endforeach
-                                                @endif
+
                                             </ul>
                                         </div>
                                     </div>

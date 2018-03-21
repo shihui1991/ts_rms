@@ -46,11 +46,10 @@ Route::any('/household_buildingedit','HouseholdController@buildingedit')->name('
 Route::get('/comassess','ComassessController@index')->name('c_comassess');
 Route::any('/comassess_add','ComassessController@add')->name('c_comassess_add');
 Route::any('/comassess_info','ComassessController@info')->name('c_comassess_info');
+/*---------- 评估[公共附属物] ----------*/
+Route::get('/comassess_publiclist','ComassessController@publiclist')->name('c_comassess_publiclist');
+Route::any('/comassess_publicadd','ComassessController@publicadd')->name('c_comassess_publicadd');
 
-/*---------- 评估【公共附属物】 ----------*/
-Route::get('/compublic','CompublicController@index')->name('c_compublic');
-Route::any('/compublic_add','CompublicController@add')->name('c_compublic_add');
-Route::any('/compublic_edit','CompublicController@edit')->name('c_compublic_edit');
 /*============================================ 【管理】 ================================================*/
 /*---------- 操作员 ----------*/
 Route::get('/companyuser','CompanyuserController@index')->name('c_companyuser');
