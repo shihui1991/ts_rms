@@ -179,7 +179,8 @@ class PayController extends BaseitemController
                     ->where([
                         ['item_id',$this->item_id],
                         ['id',$household_id],
-                    ]);
+                    ])
+                    ->first();
                 if(blank($household)){
                     throw new \Exception('被征收户不存在',404404);
                 }

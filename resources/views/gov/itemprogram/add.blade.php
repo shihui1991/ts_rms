@@ -220,7 +220,7 @@
 
 {{-- 插件 --}}
 @section('js')
-    <script src="{{asset('js/func.js')}}"></script>
+    @parent
     <script src="{{asset('laydate/laydate.js')}}"></script>
     <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
     <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>

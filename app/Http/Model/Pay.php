@@ -87,4 +87,8 @@ class Pay extends Model
     public function itembuilding(){
         return $this->belongsTo('App\Http\Model\Itembuilding','building_id','id')->withDefault();
     }
+
+    public function paysubjects(){
+        return $this->hasMany('App\Http\Model\Paysubject','pay_id','id');
+    }
 }

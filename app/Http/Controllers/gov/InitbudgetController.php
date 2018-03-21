@@ -117,13 +117,14 @@ class InitbudgetController extends BaseitemController
         else{
             /* ++++++++++ 表单验证 初步预算 ++++++++++ */
             $rules=[
-                'holder'=>'required|min:0',
-                'money'=>'required|min:0',
-                'house'=>'required|min:0',
+                'holder'=>'required|numeric|min:0',
+                'money'=>'required|numeric|min:0.01',
+                'house'=>'required|numeric|min:0',
                 'picture'=>'required',
                 ];
             $messages=[
                 'required'=>':attribute 为必须项',
+                'numeric'=>':attribute 格式错误',
                 'min'=>':attribute 不能少于 :min',
                 ];
             
@@ -337,13 +338,14 @@ class InitbudgetController extends BaseitemController
         else{
             /* ++++++++++ 表单验证 初步预算 ++++++++++ */
             $rules=[
-                'holder'=>'required|min:0',
-                'money'=>'required|min:0',
-                'house'=>'required|min:0',
+                'holder'=>'required|numeric|min:0',
+                'money'=>'required|numeric|min:0.01',
+                'house'=>'required|numeric|min:0',
                 'picture'=>'required',
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
+                'numeric'=>':attribute 格式错误',
                 'min'=>':attribute 不能少于 :min',
             ];
 

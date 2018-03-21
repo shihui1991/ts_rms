@@ -17,6 +17,13 @@
             <a href="{{route('g_itemreward',['item'=>$sdata['item_id']])}}" class="btn">产权调换的签约奖励</a>
             <a href="{{route('g_itemobject',['item'=>$sdata['item_id']])}}" class="btn">其他补偿事项</a>
 
+            @if($sdata['item']->process_id==36 && $sdata['item']->code=='1')
+                <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_program_to_check',['item'=>$sdata['item_id']])}}" data-method="post">
+                    <i class="ace-icon fa fa-check-circle bigger-110"></i>
+                    正式方案提交审查
+                </a>
+            @endif
+
     </div>
 
     <div class="tabbable">

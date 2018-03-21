@@ -77,4 +77,8 @@ class Pact extends Model
     public function state(){
         return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
+
+    public function paysubjects(){
+        return $this->hasMany('App\Http\Model\Paysubject','pact_id','id');
+    }
 }
