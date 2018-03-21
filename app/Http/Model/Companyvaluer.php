@@ -26,7 +26,7 @@ class Companyvaluer extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-        $this->attributes['company_id']=$request->input('company_id');
+
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){

@@ -42,6 +42,11 @@ Route::any('/household_buildingadd','HouseholdController@buildingadd')->name('c_
 Route::any('/household_buildinginfo','HouseholdController@buildinginfo')->name('c_household_buildinginfo');
 Route::any('/household_buildingedit','HouseholdController@buildingedit')->name('c_household_buildingedit');
 
+/*---------- 评估[房产][资产] ----------*/
+Route::get('/comassess','ComassessController@index')->name('c_comassess');
+Route::any('/comassess_add','ComassessController@add')->name('c_comassess_add');
+Route::any('/comassess_info','ComassessController@info')->name('c_comassess_info');
+
 /*---------- 评估【公共附属物】 ----------*/
 Route::get('/compublic','CompublicController@index')->name('c_compublic');
 Route::any('/compublic_add','CompublicController@add')->name('c_compublic_add');

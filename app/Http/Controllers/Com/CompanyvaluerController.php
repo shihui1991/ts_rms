@@ -117,8 +117,8 @@ class CompanyvaluerController extends BaseController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'company_id' => 'required',
-                'name' => 'required|unique:company_valuer',
-                'register' => 'required',
+                'name' => 'required',
+                'register' => 'required|unique:company_valuer',
                 'valid_at' => 'required'
             ];
             $messages = [
@@ -138,7 +138,7 @@ class CompanyvaluerController extends BaseController
                 /*--- 评估机构 ---*/
                 $companyvaluer = $model;
                 $companyvaluer->fill($request->input());
-                $companyvaluer->editOther($request);
+                $companyvaluer->company_id=session('com_user.company_id');
                 $companyvaluer->save();
                 if (blank($companyvaluer)) {
                     throw  new \Exception('添加失败', 404404);
