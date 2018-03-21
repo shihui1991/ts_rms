@@ -319,7 +319,7 @@ class PayhouseController extends BaseitemController
                     else{
                         // 原补偿款结余为正
                         if(($last_total+$house_amount)>=0){
-                            $def_area=($last_total+$house_amount)/$house->itemhouseprice->price; // 补偿款可完全优惠面积
+                            $def_area=round(($last_total+$house_amount)/$house->itemhouseprice->price,2); // 补偿款可完全优惠面积
                             $last_area=$house->area-$def_area; // 房屋面积与补偿款可完全优惠面积之差：上浮面积
                         }else{
                             // 上浮累计面积 超过限制
@@ -339,7 +339,7 @@ class PayhouseController extends BaseitemController
                                 // 上浮累计面积加上浮面积 在当前区间
                                 if(($plus_area+$last_area) <= $rate->end_area){
                                     $plus_area += $last_area;
-                                    $amount=$last_area * $house->itemhouseprice->price * $rate->rate;
+                                    $amount=$last_area * $house->itemhouseprice->price * $rate->rate /100;
                                     $plus_toal += $amount;
 
                                     $plus_data[]=[
@@ -364,7 +364,7 @@ class PayhouseController extends BaseitemController
                                 // 上浮累计面积加上浮面积 超出当前区间
                                 else{
                                     $up_area=$rate->end_area - $plus_area;
-                                    $amount=$up_area * $house->itemhouseprice->price * $rate->rate;
+                                    $amount=$up_area * $house->itemhouseprice->price * $rate->rate /100;
                                     $plus_area += $up_area;
                                     $last_area -= $up_area;
                                     $plus_toal += $amount;
@@ -414,11 +414,6 @@ class PayhouseController extends BaseitemController
                                 break;
                             }
                         }
-
-                        // 上浮累计面积 超过限制
-                        if($plus_area>=30){
-                            break;
-                        }
                     }
                     $resettles[]=$house->id;
                     $house_data[]=[
@@ -436,6 +431,10 @@ class PayhouseController extends BaseitemController
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
+                    // 上浮累计面积 超过限制
+                    if($plus_area>=30){
+                        break;
+                    }
                 }
 
                 $field=['item_id','household_id','land_id','building_id','house_id','area','market','price','amount','amount_plus','total','created_at','updated_at'];
@@ -633,7 +632,7 @@ class PayhouseController extends BaseitemController
                 else{
                     // 原补偿款结余为正
                     if(($last_total+$house_amount)>=0){
-                        $def_area=($last_total+$house_amount)/$house->itemhouseprice->price; // 补偿款可完全优惠面积
+                        $def_area=round(($last_total+$house_amount)/$house->itemhouseprice->price,2); // 补偿款可完全优惠面积
                         $last_area=$house->area-$def_area; // 房屋面积与补偿款可完全优惠面积之差：上浮面积
                     }else{
                         // 上浮累计面积 超过限制
@@ -653,7 +652,7 @@ class PayhouseController extends BaseitemController
                             // 上浮累计面积加上浮面积 在当前区间
                             if(($plus_area+$last_area) <= $rate->end_area){
                                 $plus_area += $last_area;
-                                $amount=$last_area * $house->itemhouseprice->price * $rate->rate;
+                                $amount=$last_area * $house->itemhouseprice->price * $rate->rate /100;
                                 $plus_toal += $amount;
 
                                 $plus_data[]=[
@@ -671,7 +670,7 @@ class PayhouseController extends BaseitemController
                             // 上浮累计面积加上浮面积 超出当前区间
                             else{
                                 $up_area=$rate->end_area - $plus_area;
-                                $amount=$up_area * $house->itemhouseprice->price * $rate->rate;
+                                $amount=$up_area * $house->itemhouseprice->price * $rate->rate /100;
                                 $plus_area += $up_area;
                                 $last_area -= $up_area;
                                 $plus_toal += $amount;
@@ -707,11 +706,6 @@ class PayhouseController extends BaseitemController
                             break;
                         }
                     }
-
-                    // 上浮累计面积 超过限制
-                    if($plus_area>=30){
-                        break;
-                    }
                 }
                 $house->amount=$house_amount;
                 $house->amount_plus=$plus_toal;
@@ -721,6 +715,10 @@ class PayhouseController extends BaseitemController
                 $resettle_ids[]=$house->id;
 
                 $end_total -= $house->total;
+                // 上浮累计面积 超过限制
+                if($plus_area>=30){
+                    break;
+                }
             }
 
             $fails=array_diff($house_ids,$resettle_ids);

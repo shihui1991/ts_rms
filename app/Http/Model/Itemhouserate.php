@@ -32,6 +32,14 @@ class Itemhouserate extends Model
 
     }
 
+    public function setEndAreaAttribute($value=0){
+        $this->attributes['end_area'] = round($value,2);
+    }
+
+    public function setRateAttribute($value=0){
+        $this->attributes['rate'] = round($value,2);
+    }
+
     /* ++++++++++ 关联项目 ++++++++++ */
     public function item(){
         return $this->belongsTo('App\Http\Model\Item','item_id','id')->withDefault();

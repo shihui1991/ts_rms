@@ -291,7 +291,7 @@ class PayreserveController extends BaseitemController
                                 // 上浮累计面积加上浮面积 在当前区间
                                 if(($plus_area+$last_area) <= $rate->end_area){
                                     $plus_area += $last_area;
-                                    $amount=$last_area * $house->itemhouseprice->price * $rate->rate;
+                                    $amount=$last_area * $house->itemhouseprice->price * $rate->rate/100;
                                     $plus_toal += $amount;
 
                                     $plus_data[]=[
@@ -316,7 +316,7 @@ class PayreserveController extends BaseitemController
                                 // 上浮累计面积加上浮面积 超出当前区间
                                 else{
                                     $up_area=$rate->end_area - $plus_area;
-                                    $amount=$up_area * $house->itemhouseprice->price * $rate->rate;
+                                    $amount=$up_area * $house->itemhouseprice->price * $rate->rate/100;
                                     $plus_area += $up_area;
                                     $last_area -= $up_area;
                                     $plus_toal += $amount;
@@ -583,7 +583,7 @@ class PayreserveController extends BaseitemController
                             // 上浮累计面积加上浮面积 在当前区间
                             if(($plus_area+$last_area) <= $rate->end_area){
                                 $plus_area += $last_area;
-                                $amount=$last_area * $house->itemhouseprice->price * $rate->rate;
+                                $amount=$last_area * $house->itemhouseprice->price * $rate->rate/100;
                                 $plus_toal += $amount;
 
                                 $plus_data[]=[
@@ -601,7 +601,7 @@ class PayreserveController extends BaseitemController
                             // 上浮累计面积加上浮面积 超出当前区间
                             else{
                                 $up_area=$rate->end_area - $plus_area;
-                                $amount=$up_area * $house->itemhouseprice->price * $rate->rate;
+                                $amount=$up_area * $house->itemhouseprice->price * $rate->rate/100;
                                 $plus_area += $up_area;
                                 $last_area -= $up_area;
                                 $plus_toal += $amount;

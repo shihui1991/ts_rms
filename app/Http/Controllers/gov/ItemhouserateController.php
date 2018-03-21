@@ -87,10 +87,11 @@ class ItemhouserateController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
-                'start_area'=>'required'
+                'start_area'=>'required|min:0'
             ];
             $messages=[
-                'required'=>':attribute 为必须项'
+                'required'=>':attribute 为必须项',
+                'min'=>':attribute 不能少于 :min',
             ];
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
@@ -175,10 +176,11 @@ class ItemhouserateController extends BaseitemController
             $model=new Itemhouserate();
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules=[
-                'start_area'=>'required'
+                'start_area'=>'required|min:0'
             ];
             $messages=[
-                'required'=>':attribute 为必须项'
+                'required'=>':attribute 为必须项',
+                'min'=>':attribute 不能少于 :min',
             ];
             $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
             if($validator->fails()){
