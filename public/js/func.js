@@ -35,7 +35,7 @@ function uplfile(obj) {
             var formdata=new FormData();
 
             formdata.append('file',file);
-            ajaxUpd('/gov/upl',formdata);
+            ajaxUpd(updUrl,formdata);
             if(ajaxResp.code=='success'){
                 imgs +='<li>'+
                     '<div>'+

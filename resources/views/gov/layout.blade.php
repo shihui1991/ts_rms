@@ -107,11 +107,12 @@
         @endswitch
     @endisset
 
-    <script src="{{asset('js/func.js')}}"></script>
     <script>
+        var updUrl='{!! route('g_upl') !!}';
+        var noticeNumUrl='{!! route('g_noticenum') !!}';
         noticenum();
         function noticenum() {
-            $.get('{{route('g_noticenum')}}',function (resp) {
+            $.get(noticeNumUrl,function (resp) {
                 if(resp.code=='success'){
                     $('#notice-num').html(resp.sdata);
                 }else{
@@ -128,5 +129,6 @@
             setTimeout(noticenum,60000);
         }
     </script>
+    <script src="{{asset('js/func.js')}}"></script>
 
 @endsection

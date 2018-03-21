@@ -57,6 +57,7 @@ Route::any('/funds_pay_total','FundsController@pay_total')->name('g_funds_pay_to
 Route::any('/funds_pay_total_funds','FundsController@pay_total_funds')->name('g_funds_pay_total_funds'); //被征收户-兑付总单- 支付
 Route::any('/funds_unit','FundsController@unit')->name('g_funds_unit'); //公房单位
 Route::any('/funds_unit_info','FundsController@unit_info')->name('g_funds_unit_info'); //公房单位 - 补偿详情
+Route::any('/funds_unit_total','FundsController@unit_total')->name('g_funds_unit_total'); //公房单位 - 兑付总单
 Route::any('/funds_out','FundsController@out')->name('g_funds_out'); //项目支出
 
 /*---------- 通知公告 ----------*/
