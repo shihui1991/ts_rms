@@ -190,6 +190,11 @@
                 重新计算补偿
             </a>
         @endif
+        @if($sdata['pay']->getOriginal('repay_way')==1)
+            <a href="{{route('g_payhouse_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
+                选房
+            </a>
+        @endif
 
         <a href="{{route('g_pact',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
             补偿安置协议
