@@ -171,6 +171,7 @@ class PayController extends BaseitemController
             DB::beginTransaction();
             try{
                 $pay_id=Pay::sharedLock()->where([['item_id',$this->item_id],['household_id',$household_id]])->value('id');
+
                 if($pay_id){
                     throw new \Exception('该被征收户已存在兑付数据',404404);
                 }
@@ -222,6 +223,7 @@ class PayController extends BaseitemController
                 if(blank($assess)){
                     throw new \Exception('暂无有效的房产评估数据',404404);
                 }
+
                 $estatebuildings=Estatebuilding::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],

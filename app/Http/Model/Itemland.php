@@ -67,4 +67,10 @@ class Itemland extends Model
     public function households(){
         return $this->hasMany('App\Http\Model\Household','land_id','id');
     }
+    /* ++++++++++ 关联公共附属物 ++++++++++ */
+    public function itempublics(){
+        return $this->hasMany('App\Http\Model\Itempublic','land_id','id');
+    }
+
+
 }

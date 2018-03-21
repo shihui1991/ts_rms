@@ -12,7 +12,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <div class="col-xs-6 col-sm-3 pricing-box">
-                        <div class="widget-box widget-color-dark">
+                        <div class="widget-box widget-color-blue">
                             <div class="widget-header">
                                 <h5 class="widget-title bigger lighter">{{$infos->house->housecommunity->name}}</h5>
                             </div>
@@ -21,21 +21,14 @@
                                 <div class="widget-main">
 
                                     <div class="profile-user-info profile-user-info-striped">
-
-                                        <div class="profile-info-row">
-                                            <div class="profile-info-name"> 管理机构：</div>
-                                            <div class="profile-info-value">
-                                                <span class="editable editable-click">{{$infos->house->housecompany->name}}</span>
-                                            </div>
-                                        </div>
-
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> 位置：</div>
                                             <div class="profile-info-value">
-                                                <span class="editable editable-click"> {{$infos->house->building?$infos->building.'栋':''}}
-                                                    {{$infos->house->unit?$infos->unit.'单元':''}}
-                                                    {{$infos->house->floor?$infos->floor.'层':''}}
-                                                    {{$infos->house->number?$infos->number.'号':''}}</span>
+                                                <span class="editable editable-click">           {{$infos->house->building?$infos->house->building.'栋':''}}
+                                                    {{$infos->house->unit?$infos->house->unit.'单元':''}}
+                                                    {{$infos->house->floor?$infos->house->floor.'层':''}}
+                                                    {{$infos->house->number?$infos->house->number.'号':''}}
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="profile-info-row">
@@ -79,18 +72,6 @@
                                             </div>
                                         </div>
 
-
-                                        {{--<div class="profile-info-row">
-                                            <div class="profile-info-name"> LOGO： </div>
-
-                                            <div class="profile-info-value img-content">
-                                                @if($company->logo)
-                                                    <img width="120" height="120" src="{{$company->logo}}" alt="{{$company->logo}}">
-                                                @else
-                                                    暂无
-                                                @endif
-                                            </div>
-                                        </div>--}}
                                     </div>
                                     <hr>
                                     <div class="price">
@@ -102,22 +83,24 @@
 
                                 </div>
                                 <div>
-                                    {{-- @if($company->id==$sdata['companyvote']->company->id)
-                                         <a href="javascript:;"  class="btn btn-block btn-inverse" >
-                                             <span>已投</span>
-                                             <i class="ace-icon fa fa-check bigger-110"></i>
-                                         </a>
-                                     @else
-                                         <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
-                                             <span>投票</span>
-                                             <i class="ace-icon fa fa-check bigger-110"></i>
-                                         </a>
-                                     @endif--}}
-                                    <a href="javascript:;" onclick="selectHouse({{$infos->house_id}})"
-                                       class="btn btn-block btn-inverse">
-                                        <span>选房</span>
+                                    @if($infos->house->getOriginal('is_transit')==1)
+                                    <a href="javascript:;" onclick="selectHouse({{$infos->house_id}},1)"
+                                       class="btn btn-inline-block btn-primary" style="width: 50%">
+                                        <span>安置房</span>
                                         <i class="ace-icon fa fa-check bigger-110"></i>
                                     </a>
+                                    <a href="javascript:;" onclick="selectHouse({{$infos->house_id}},2)"
+                                       class="btn btn-inline-block btn-primary" style="width: 50%;float: right">
+                                        <span>周转房</span>
+                                        <i class="ace-icon fa fa-tags bigger-110"></i>
+                                    </a>
+                                        @else
+                                        <a href="javascript:;" onclick="selectHouse({{$infos->house_id}},1)"
+                                           class="btn btn-block btn-primary">
+                                            <span>安置房</span>
+                                            <i class="ace-icon fa fa-check bigger-110"></i>
+                                        </a>
+                                        @endif
                                 </div>
                             </div>
                         </div>
@@ -154,8 +137,8 @@
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
-        function selectHouse(house_id) {
-            var data = {house_id: house_id};
+        function selectHouse(house_id,house_type) {
+            var data = {house_id: house_id,house_type:house_type};
             ajaxAct('{{route('h_payhousebak_add')}}', data, 'post');
             console.log(ajaxResp);
             if (ajaxResp.code == 'success') {

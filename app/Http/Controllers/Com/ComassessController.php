@@ -10,9 +10,14 @@ use App\Http\Model\Assets;
 use App\Http\Model\Comassessvaluer;
 use App\Http\Model\Companyhousehold;
 use App\Http\Model\Companyvaluer;
+use App\Http\Model\Compublic;
+use App\Http\Model\Compublicdetail;
 use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
 use App\Http\Model\Household;
+use App\Http\Model\Householdassets;
+use App\Http\Model\Itemland;
+use App\Http\Model\Itempublic;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -26,15 +31,13 @@ class ComassessController extends BaseitemController
         parent::__construct();
     }
 
-    /* ++++++++++ 评估首页 ++++++++++ */
+    /* ++++++++++ 评估首页[房产-资产] ++++++++++ */
     public function index(Request $request){
         $infos = [];
         $where = [];
         $item_id = $this->item_id;
         $infos['item_id'] = $item_id;
         $where[] = ['item_id',$item_id];
-
-        $infos['type'] = session('com_user.type');
 
         $company_id = session('com_user.company_id');
         $infos['company_id'] = $company_id;
@@ -57,6 +60,27 @@ class ComassessController extends BaseitemController
                     ->whereBetween('c.code',[130,132])
                     ->where('c.has_assets',1)
                     ->count();
+                $households = Companyhousehold::with([
+                    'household'=>function($querys){
+                        $querys->with([
+                            'itemland' => function ($query) {
+                                $query->select(['id', 'address']);
+                            },
+                            'itembuilding' => function ($query) {
+                                $query->select(['id', 'building']);
+                            },
+                            'estates'=>function($query){
+                                $query->whereBetween('code',[130,132])->select(['id','household_id','code','has_assets']);
+                            },
+                            'assets'=>function($query){
+                                $query->whereBetween('code',[130,132])->select(['id','household_id','code']);
+                            }
+                        ]);
+                    }])
+                    ->where($where)
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
             }else{
                 $total=Companyhousehold::sharedLock()
                     ->leftJoin('item_household as h', 'item_company_household.household_id', '=', 'h.id')
@@ -65,26 +89,27 @@ class ComassessController extends BaseitemController
                     ->where('item_company_household.company_id',$company_id)
                     ->whereBetween('c.code',[130,132])
                     ->count();
+                $households = Companyhousehold::with([
+                    'household'=>function($querys){
+                        $querys->with([
+                            'itemland' => function ($query) {
+                                $query->select(['id', 'address']);
+                            },
+                            'itembuilding' => function ($query) {
+                                $query->select(['id', 'building']);
+                            },
+                            'estates'=>function($query){
+                                $query->whereBetween('code',[130,132])->select(['id','household_id','code','has_assets']);
+                            }
+                        ]);
+                    }])
+                    ->where($where)
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
             }
 
-            $households = Companyhousehold::with([
-                'household'=>function($querys){
-                    $querys->with([
-                        'itemland' => function ($query) {
-                            $query->select(['id', 'address']);
-                        },
-                        'itembuilding' => function ($query) {
-                            $query->select(['id', 'building']);
-                         },
-                        'estates'=>function($query){
-                            $query->whereBetween('code',[130,132])->select(['id','household_id','code','has_assets']);
-                        }
-                    ]);
-                }])
-                ->where($where)
-                ->offset($per_page*($page-1))
-                ->limit($per_page)
-                ->get();
+
             $households=new LengthAwarePaginator($households,$total,$per_page,$page);
             $households->withPath(route('c_comassess'));
             if(blank($households)){
@@ -96,7 +121,6 @@ class ComassessController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
@@ -113,7 +137,7 @@ class ComassessController extends BaseitemController
         }
     }
 
-    /* ++++++++++ 开始评估 ++++++++++ */
+    /* ++++++++++ 开始评估[房产-资产] ++++++++++ */
     public function add(Request $request){
       $item_id = $this->item_id;
       $household_id = $request->input('household_id');
@@ -161,7 +185,7 @@ class ComassessController extends BaseitemController
                   $comassess->building_id = $household->building_id;
                   $comassess->assets = 0;
                   $comassess->estate = 0;
-                  $comassess->code = 0;
+                  $comassess->code = 130;
                   $comassess->save();
                   if(blank($comassess)){
                       throw new \Exception('数据异常',404404);
@@ -181,27 +205,15 @@ class ComassessController extends BaseitemController
                           throw new \Exception('数据异常',404404);
                       }
                   }
-                  $data['estate'] = Estate::with([
-                      'defbuildinguse'=>function($query){
-                          $query->select(['id','name']);
-                      },
-                      'realbuildinguse'=>function($query){
-                          $query->select(['id','name']);
-                      }])
-                      ->where('item_id',$item_id)
-                      ->where('household_id',$household_id)
-                      ->where('company_id',$company_id)
-                      ->first();
 
                   $data['estatebuildings'] = Estatebuilding::where('item_id',$item_id)
                       ->where('household_id',$household_id)
                       ->where('company_id',$company_id)
                       ->get();
-                  $data['valuer'] = Companyvaluer::where('valid_at','>=',date('Y-m-d'))->get()?:[];
               }else{
                   /*=== 资产 ===*/
-                  $assets_count = Assets::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->count();
-                  if($assets_count==0){
+                  $assets = Assets::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->sharedLock()->first();
+                  if(blank($assets)){
                      $assets = new Assets();
                      $assets->item_id = $item_id;
                      $assets->household_id = $household_id;
@@ -210,7 +222,7 @@ class ComassessController extends BaseitemController
                      $assets->assess_id = $comassess->id;
                      $assets->company_id = $company_id;
                      $assets->total = 0;
-                     $assets->code = 0;
+                     $assets->code = 130;
                      $assets->save();
                       if(blank($assets)){
                           throw new \Exception('数据异常',404404);
@@ -218,7 +230,29 @@ class ComassessController extends BaseitemController
                   }
                   $data['assets'] = $assets;
 
+                  $data['householdassetss']=Householdassets::with([
+                          'itemland'=>function($query){
+                              $query->select(['id','address']);
+                          },
+                          'itembuilding'=>function($query){
+                              $query->select(['id','building']);
+                          }])
+                      ->where('item_id',$item_id)
+                      ->where('household_id',$household_id)
+                      ->sharedLock()
+                      ->get();
               }
+              $data['valuer'] = Companyvaluer::where('company_id',$company_id)->where('valid_at','>=',date('Y-m-d'))->get()?:[];
+              $data['estate'] = Estate::with([
+                  'defbuildinguse'=>function($query){
+                      $query->select(['id','name']);
+                  },
+                  'realbuildinguse'=>function($query){
+                      $query->select(['id','name']);
+                  }])
+                  ->where('item_id',$item_id)
+                  ->where('household_id',$household_id)
+                  ->first();
 
               $code = 'success';
               $msg = '请求成功';
@@ -262,6 +296,12 @@ class ComassessController extends BaseitemController
                 $price_datas[$i]['price'] = $v;
                 $i++;
             }
+        }else{
+            $total = $request->input('total');
+            if(blank($total)){
+                $result=['code'=>'error','message'=>'资产总价不能为空','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
         }
           /*------------------- 数据填写验证 -----------------------*/
         $rules=[
@@ -282,11 +322,11 @@ class ComassessController extends BaseitemController
         }
         /*------------------- 被征户基本信息 -----------------------*/
         $household=Household::sharedLock()->find($household_id);
-        if($type==0){
+         if($type==0){
             /*============================【房产数据】==============================*/
-            /*------------------- 房产汇总信息 -----------------------*/
-            $estates = Estate::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->first();
-            /*------------------- 评估价格修改数据 -----------------------*/
+             /*------------------- 房产汇总信息 -----------------------*/
+             $estates = Estate::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->first();
+             /*------------------- 评估价格修改数据 -----------------------*/
             $realputer = Estatebuilding::select(['id','real_outer','real_use'])->whereIn('id',$household_ids)->get();
             /*****************【数据验证】**********************/
             if(count($price_datas) == count($realputer)){
@@ -397,14 +437,24 @@ class ComassessController extends BaseitemController
                 }
             }else{
                 /* ++++++++++ 修改资产评估汇总数据 ++++++++++ */
-                $assetss = Assets::where('id',$assets->id)->update(['total'=>$request->input('total'),'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                $assetss = Assets::where('id',$assets->id)->update(['total'=>$total,'code'=>132,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
                 if(blank($assetss)){
                     throw new \Exception('数据错误', 404404);
                 }
                 /* ++++++++++ 修改评估汇总数据 ++++++++++ */
-                $comassess = Assess::where('id',$assets->assess_id)->update(['assets'=>$request->input('total'),'updated_at'=>date('Y-m-d H:i:s')]);
-                if(blank($comassess)){
-                    throw new \Exception('数据错误', 404404);
+                /*检测是否资产和房产都已评估完成*/
+                $estate_code =  Estate::sharedLock()->where('assess_id',$assets->assess_id)->value('code');
+                if($estate_code==132){
+                    /*已评估完成*/
+                    $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'132','updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($comassess)){
+                        throw new \Exception('数据错误', 404404);
+                    }
+                }else{
+                    $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'131','updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($comassess)){
+                        throw new \Exception('数据错误', 404404);
+                    }
                 }
                 /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
                 $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('assets_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
@@ -427,6 +477,7 @@ class ComassessController extends BaseitemController
 
             DB::commit();
         }catch (\Exception $exception){
+            dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
@@ -441,7 +492,7 @@ class ComassessController extends BaseitemController
       }
     }
 
-    /* ++++++++++ 修改评估 ++++++++++ */
+    /* ++++++++++ 修改评估[房产-资产] ++++++++++ */
     public function info(Request $request){
         $item_id = $this->item_id;
         $household_id = $request->input('household_id');
@@ -509,31 +560,15 @@ class ComassessController extends BaseitemController
                             throw new \Exception('数据异常',404404);
                         }
                     }
-                    $data['comassessvaluers'] = Comassessvaluer::where('item_id',$item_id)
-                        ->where('household_id',$household_id)
-                        ->where('company_id',$company_id)
-                        ->pluck('valuer_id');
-                    $data['estate'] = Estate::with([
-                        'defbuildinguse'=>function($query){
-                            $query->select(['id','name']);
-                        },
-                        'realbuildinguse'=>function($query){
-                            $query->select(['id','name']);
-                        }])
-                        ->where('item_id',$item_id)
-                        ->where('household_id',$household_id)
-                        ->where('company_id',$company_id)
-                        ->first();
-
                     $data['estatebuildings'] = Estatebuilding::where('item_id',$item_id)
                         ->where('household_id',$household_id)
                         ->where('company_id',$company_id)
                         ->get();
-                    $data['valuer'] = Companyvaluer::where('valid_at','>=',date('Y-m-d'))->get()?:[];
+
                 }else{
                     /*=== 资产 ===*/
-                    $assets_count = Assets::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->count();
-                    if($assets_count==0){
+                    $assets = Assets::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->sharedLock()->first();
+                    if(blank($assets)){
                         $assets = new Assets();
                         $assets->item_id = $item_id;
                         $assets->household_id = $household_id;
@@ -542,15 +577,41 @@ class ComassessController extends BaseitemController
                         $assets->assess_id = $comassess->id;
                         $assets->company_id = $company_id;
                         $assets->total = 0;
-                        $assets->code = 0;
+                        $assets->code = 130;
                         $assets->save();
                         if(blank($assets)){
                             throw new \Exception('数据异常',404404);
                         }
                     }
+                    $data['assets'] = $assets;
 
+                    $data['householdassetss']=Householdassets::with([
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        },
+                        'itembuilding'=>function($query){
+                            $query->select(['id','building']);
+                        }])
+                        ->where('item_id',$item_id)
+                        ->where('household_id',$household_id)
+                        ->sharedLock()
+                        ->get();
                 }
-
+                $data['comassessvaluers'] = Comassessvaluer::where('item_id',$item_id)
+                    ->where('household_id',$household_id)
+                    ->where('company_id',$company_id)
+                    ->pluck('valuer_id');
+                $data['estate'] = Estate::with([
+                    'defbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    },
+                    'realbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    }])
+                    ->where('item_id',$item_id)
+                    ->where('household_id',$household_id)
+                    ->first();
+                $data['valuer'] = Companyvaluer::where('company_id',$company_id)->where('valid_at','>=',date('Y-m-d'))->get()?:[];
                 $code = 'success';
                 $msg = '请求成功';
                 $sdata = $data;
@@ -592,6 +653,12 @@ class ComassessController extends BaseitemController
                     $price_datas[$i]['id'] = $k;
                     $price_datas[$i]['price'] = $v;
                     $i++;
+                }
+            }else{
+                $total = $request->input('total');
+                if(blank($total)){
+                    $result=['code'=>'error','message'=>'资产总价不能为空','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
                 }
             }
             /*------------------- 数据填写验证 -----------------------*/
@@ -735,9 +802,19 @@ class ComassessController extends BaseitemController
                         throw new \Exception('数据错误', 404404);
                     }
                     /* ++++++++++ 修改评估汇总数据 ++++++++++ */
-                    $comassess = Assess::where('id',$assets->assess_id)->update(['assets'=>$request->input('total'),'updated_at'=>date('Y-m-d H:i:s')]);
-                    if(blank($comassess)){
-                        throw new \Exception('数据错误', 404404);
+                    /*检测是否资产和房产都已评估完成*/
+                    $estate_code =  Estate::sharedLock()->where('assess_id',$assets->assess_id)->value('code');
+                    if($estate_code==132){
+                        /*已评估完成*/
+                        $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'132','updated_at'=>date('Y-m-d H:i:s')]);
+                        if(blank($comassess)){
+                            throw new \Exception('数据错误', 404404);
+                        }
+                    }else{
+                        $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'131','updated_at'=>date('Y-m-d H:i:s')]);
+                        if(blank($comassess)){
+                            throw new \Exception('数据错误', 404404);
+                        }
                     }
                     /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
                     $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('assets_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
@@ -769,6 +846,181 @@ class ComassessController extends BaseitemController
             }
 
             /******结果*****/
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+
+
+    /* ++++++++++ 评估首页[公共附属物] ++++++++++ */
+    public function publiclist(Request $request){
+        $item_id = $this->item_id;
+        $company_id = session('com_user.company_id');
+        $infos['item_id'] = $item_id;
+        $infos['company_id'] = $company_id;
+        /* ********** 查询 ********** */
+        DB::beginTransaction();
+        try{
+            $householde_ids=Companyhousehold::query()->where('item_id',$item_id)
+                ->where('company_id',$company_id)
+                ->sharedLock()
+                ->pluck('household_id');
+            if(blank($householde_ids)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+            $land_ids = Household::sharedLock()->whereIn('id',$householde_ids)->distinct()->pluck('land_id');
+            if(blank($land_ids)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+           $remove_land_id = Compublicdetail::where('item_id',$item_id)->where('company_id',$company_id)->distinct()->pluck('land_id');
+            if(filled($remove_land_id)){
+                $diff = $land_ids->diff($remove_land_id);
+            }else{
+                $diff = $land_ids;
+            }
+            $land_infos = Itemland::sharedLock()->whereIn('id',$diff)->get();
+            if(blank($land_infos)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+            $code='success';
+            $msg='查询成功';
+            $sdata=$land_infos;
+            $edata=$infos;
+            $url=null;
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=$infos;
+            $url=null;
+        }
+        DB::commit();
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('com.comassess.publiclist')->with($result);
+        }
+    }
+
+    /* ++++++++++ 评估[公共附属物] ++++++++++ */
+    public function publicadd(Request $request){
+        $model=new Compublic();
+        $item_id = $this->item_id;
+        $company_id = session('com_user.company_id');
+        if($request->isMethod('get')){
+            $land_id = $request->input('land_id');
+            if(blank($land_id)){
+                return redirect()->back();
+            }
+            $sdata['itempublics'] = Itempublic::where('item_id',$item_id)
+                ->whereIn('land_id',$land_id)
+                ->get();
+            $sdata['item_id'] = $item_id;
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
+            return view('com.comassess.publicadd')->with($result);
+        }
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $price = $request->input('price');
+            $picture = $request->input('picture');
+            $publicdetail_datas = [];
+            $i = 0;
+            foreach ($price as $k=>$v){
+                if(blank($v)){
+                    $result=['code'=>'error','message'=>'评估单价不能为空','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
+                $publicdetail_datas[$i]['item_id'] = $item_id;
+                $publicdetail_datas[$i]['item_public_id'] = $k;
+                $publicdetail_datas[$i]['company_id'] = $company_id;
+                $publicdetail_datas[$i]['price'] = $v;
+                $i++;
+            }
+            /* ++++++++++ 数据验证 ++++++++++ */
+            $item_public_id = $request->input('item_public_id');
+            if(count($price)!=count($item_public_id)){
+                $result=['code'=>'error','message'=>'数据异常','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            $itempublic = Itempublic::whereIn('id',$item_public_id)->get();
+            if(blank($itempublic)){
+                $result=['code'=>'error','message'=>'数据异常','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules = [
+                'picture' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute不能为空'
+            ];
+            $filed_msg = [
+                'picture'=>'评估报告'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $filed_msg);
+            if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 评估-公共附属物 ++++++++++ */
+                $compublic = $model;
+                $compublic->item_id = $item_id;
+                $compublic->company_id = $company_id;
+                $compublic->total = 0;
+                $compublic->picture = $picture;
+                $compublic->save();
+                if (blank($compublic)) {
+                    throw new \Exception('添加失败', 404404);
+                }
+                /* ++++++++++ 评估-公共附属物明细 ++++++++++ */
+                $totals = 0;
+                foreach ($itempublic as $k=>$v){
+                    for ($j=0;$j<count($itempublic);$j++) {
+                        if ($publicdetail_datas[$j]['item_public_id'] == $v->id) {
+                            $amount = $publicdetail_datas[$j]['price'] * $v->number;
+                            $publicdetail_datas[$j]['land_id'] = $v->land_id;
+                            $publicdetail_datas[$j]['building_id'] = $v->building_id;
+                            $publicdetail_datas[$j]['com_public_id'] = $compublic->id;
+                            $publicdetail_datas[$j]['amount'] = $amount;
+                            $publicdetail_datas[$j]['created_at'] = date('Y-m-d H:i:s');
+                            $publicdetail_datas[$j]['updated_at'] = date('Y-m-d H:i:s');
+                            $totals += $amount;
+                        }
+                    }
+                }
+                $compublicdetail = Compublicdetail::insert($publicdetail_datas);
+                if(blank($compublicdetail)){
+                    throw new \Exception('添加失败', 404404);
+                }
+                /* ++++++++++ 【修改总价】评估-公共附属物 ++++++++++ */
+                $compublics_data =  Compublic::lockForUpdate()->find($compublic->id);
+                $compublics_data->total = $totals;
+                $compublics_data->save();
+                if(blank($compublics_data)){
+                    throw new \Exception('添加失败', 404404);
+                }
+                $code = 'success';
+                $msg = '添加成功';
+                $sdata = $compublic;
+                $edata = null;
+                $url = route('c_comassess_publiclist',['item'=>$item_id]);
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }

@@ -91,6 +91,10 @@ class Household extends Model
     public function estates(){
         return $this->hasOne('App\Http\Model\Estate','household_id','id')->withDefault();
     }
+    /* ++++++++++ 评估-资产 ++++++++++ */
+    public function assets(){
+        return $this->hasOne('App\Http\Model\Assets','household_id','id')->withDefault();
+    }
 
 
     /* ++++++++++ 密钥 ++++++++++ */

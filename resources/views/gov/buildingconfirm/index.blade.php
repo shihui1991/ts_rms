@@ -53,6 +53,13 @@
                         房产确认
                     </a>
                 </li>
+
+                <li class="">
+                    <a href="{{route('g_public_landiist',['item'=>$edata['item_id']])}}">
+                        <i class="green ace-icon fa fa-home bigger-120"></i>
+                        公共附属物确认
+                    </a>
+                </li>
             </ul>
             <div class="tab-content">
                 <div id="householdright" class="tab-pane fade">
