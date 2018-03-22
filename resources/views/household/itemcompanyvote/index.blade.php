@@ -37,7 +37,7 @@
 
                                         <div class="profile-info-value img-content">
                                             @if($sdata['companyvote']->company->logo)
-                                                <img width="120" height="120" src="{{$sdata['companyvote']->company->logo}}" alt="{{$sdata['companyvote']->company->logo}}">
+                                                <img width="120" height="120" src="{{$sdata['companyvote']->company->logo}}" alt="加载失败">
                                             @else
                                                 暂无
                                             @endif
@@ -93,7 +93,7 @@
 
                                             <div class="profile-info-value img-content">
                                                 @if($company->logo)
-                                                    <img width="120" height="120" src="{{$company->logo}}" alt="{{$company->logo}}">
+                                                    <img width="120" height="120" src="{{$company->logo}}" alt="加载失败">
                                                     @else
                                                     暂无
                                                     @endif

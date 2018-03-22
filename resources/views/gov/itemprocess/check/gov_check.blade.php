@@ -166,7 +166,7 @@
                                     <ul class="ace-thumbnails clearfix img-content">
                                         <li>
                                             <div>
-                                                <img width="120" height="120" src="{{$sdata['item']->map}}" alt="{{$sdata['item']->map}}">
+                                                <img width="120" height="120" src="{{$sdata['item']->map}}" alt="加载失败">
                                                 <div class="text">
                                                     <div class="inner">
                                                         <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
@@ -244,7 +244,7 @@
                                             @foreach($pictures as $pic)
                                                 <li>
                                                     <div>
-                                                        <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                                        <img width="120" height="120" src="{{$pic}}" alt="加载失败">
                                                         <div class="text">
                                                             <div class="inner">
                                                                 <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
