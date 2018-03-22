@@ -107,9 +107,9 @@
         @endswitch
     @endisset
 
-    <script src="{{asset('js/func.js')}}"></script>
     <script>
+        var updUrl='{!! route('c_upl') !!}';
 
     </script>
-
+    <script src="{{asset('js/func.js')}}"></script>
 @endsection
