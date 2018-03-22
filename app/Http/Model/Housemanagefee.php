@@ -19,9 +19,9 @@ class Housemanagefee extends Model
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
-        'house_id'=>'所属房源',
-        'manage_at'=>'管理日期（年-月）',
-        'manage_fee'=>'房源每月管理费'
+        'house_id'=>'房源',
+        'manage_at'=>'管理日期',
+        'manage_fee'=>'月管理费'
     ];
 
     /* ++++++++++ 设置添加数据 ++++++++++ */

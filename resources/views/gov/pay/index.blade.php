@@ -43,16 +43,20 @@
         </tbody>
     </table>
 
+    @if(filled($sdata['households']))
     <div class="row">
         <div class="col-xs-6">
-            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if(filled($sdata['households'])) {{ $sdata['households']->total() }} @else 0 @endif 条数据</div>
+            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">
+                共  {{ $sdata['households']->total() }} 条数据
+            </div>
         </div>
         <div class="col-xs-6">
             <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
-                @if(filled($sdata['households'])) {{ $sdata['households']->links() }} @endif
+                 {{ $sdata['households']->links() }}
             </div>
         </div>
     </div>
+    @endif
 
 @endsection
 

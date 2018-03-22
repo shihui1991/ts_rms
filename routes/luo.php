@@ -123,3 +123,7 @@ Route::any('/resettle','ResettleController@index')->name('g_resettle'); //产权
 Route::any('/resettle_info','ResettleController@info')->name('g_resettle_info'); //产权调换详情
 Route::any('/resettle_add','ResettleController@add')->name('g_resettle_add'); //开始安置
 Route::any('/resettle_edit','ResettleController@edit')->name('g_resettle_edit'); //更新
+
+/*---------- 房源管理费 ----------*/
+Route::any('/housemanagefee','HousemanagefeeController@index')->name('g_housemanagefee'); // 房源管理费
+Route::any('/housemanagefee_add','HousemanagefeeController@add')->name('g_housemanagefee_add'); // 房源管理费 - 计算

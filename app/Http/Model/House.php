@@ -128,4 +128,17 @@ class House extends Model
     public function state(){
         return $this->belongsTo('App\Http\Model\Statecode','code','code')->withDefault();
     }
+
+    public function housemanageprice(){
+        return $this->hasOne('App\Http\Model\Housemanageprice','house_id','id')->withDefault();
+    }
+    public function housemanagefees(){
+        return $this->hasMany('App\Http\Model\Housemanagefee','house_id','id');
+    }
+    public function transits(){
+        return $this->hasMany('App\Http\Model\Housetransit','house_id','id');
+    }
+    public function resettles(){
+        return $this->hasMany('App\Http\Model\Houseresettle','house_id','id');
+    }
 }
