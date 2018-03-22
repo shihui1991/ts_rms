@@ -406,7 +406,7 @@ class FundsController extends BaseitemController
         }
     }
 
-    /* ========== 被征收户 - 兑付总单 ========== */
+    /* ========== 被征收户 - 支付总单 ========== */
     public function pay_total(Request $request){
         $pact_id=$request->input('pact_id');
         DB::beginTransaction();
@@ -480,7 +480,7 @@ class FundsController extends BaseitemController
             $funds_total->type=0;
             $funds_total->val_id=$pact->household_id;
             $funds_total->cate_id=$funds_cate;
-            $funds_total->amount= - $pact_total;
+            $funds_total->amount= 0-$pact_total;
             $funds_total->code='112';
             $funds_total->save();
             if(blank($funds_total)){
@@ -533,7 +533,7 @@ class FundsController extends BaseitemController
         return response()->json($result);
     }
 
-    /* ========== 兑付总单 - 支付 ========== */
+    /* ========== 支付总单 - 支付 ========== */
     public function pay_total_funds(Request $request){
         $total_id=$request->input('total_id');
         if($request->isMethod('get')){
@@ -720,7 +720,7 @@ class FundsController extends BaseitemController
             if(blank($admin_unit)){
                 throw new \Exception('数据不存在',404404);
             }
-            /* ++++++++++ 公房单位 - 补偿详情 ++++++++++ */
+            /* ++++++++++ 公房单位 - 补偿总额 ++++++++++ */
             $total=Payunit::sharedLock()
                 ->where([
                     ['item_id',$this->item_id],
@@ -731,26 +731,6 @@ class FundsController extends BaseitemController
             if(blank($total)){
                 throw new \Exception('没有【'.$admin_unit->name.'】的补偿数据',404404);
             }
-            $per_page=15;
-            $page=$request->input('page',1);
-            $pay_units=Payunit::with(['household'=>function($query){
-                $query->with(['itemland'=>function($query){
-                    $query->select(['id','address']);
-                },'itembuilding'=>function($query){
-                    $query->select(['id','building']);
-                },'state'])
-                    ->select(['id','land_id','building_id','unit','floor','number','type','code']);
-            },'state'])
-                ->sharedLock()
-                ->where([
-                    ['item_id',$this->item_id],
-                    ['unit_id',$unit_id]
-                ])
-                ->offset($per_page*($page-1))
-                ->limit($per_page)
-                ->get();
-            $pay_units=new LengthAwarePaginator($pay_units,$total->count,$per_page,$page);
-            $pay_units->withPath(route('g_funds_unit_info',['item'=>$this->item_id,'unit_id'=>$unit_id]));
             /* ++++++++++ 公房单位 - 补偿协议 ++++++++++ */
             $unit_pacts=Payunitpact::with(['pactcate','state','payunits'=>function($query){
                 $query->with(['household'=>function($query){
@@ -784,8 +764,10 @@ class FundsController extends BaseitemController
             $msg='获取成功';
             $sdata=[
                 'item'=>$this->item,
+                'admin_unit'=>$admin_unit,
                 'total'=>$total,
-                'pay_units'=>$pay_units,
+                'unit_pacts'=>$unit_pacts,
+                'funds_totals'=>$funds_totals,
             ];
             $edata=null;
             $url=null;
@@ -810,8 +792,189 @@ class FundsController extends BaseitemController
         }
     }
 
+    /* ========== 公房单位 - 支付总单 ========== */
+    public function unit_total(Request $request){
+        $pact_id=$request->input('pact_id');
+        DB::beginTransaction();
+        try{
+            if(!$pact_id){
+                throw new \Exception('错误操作',404404);
+            }
+            /* ++++++++++ 公房单位 - 补偿协议 ++++++++++ */
+            $unit_pact=Payunitpact::with('payunits')
+                ->sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['id',$pact_id]
+                ])
+                ->first();
+            if(!$unit_pact){
+                throw new \Exception('数据不存在',404404);
+            }
+            if($unit_pact->getOriginal('status') !=1){
+                throw new \Exception('当前协议没有生效',404404);
+            }
+            if($unit_pact->code != '111'){
+                throw new \Exception('当前协议正在处理中，请勿重复操作',404404);
+            }
+            /* ++++++++++ 协议兑付金额 ++++++++++ */
+            $pact_total=$unit_pact->payunits->sum('amount');
+            /* ++++++++++ 生成总单 ++++++++++ */
+            $funds_total=new Fundstotal();
+            $funds_total->item_id=$this->item_id;
+            $funds_total->type=1;
+            $funds_total->val_id=$unit_pact->unit_id;
+            $funds_total->cate_id=6;
+            $funds_total->amount= 0-$pact_total;
+            $funds_total->code='112';
+            $funds_total->save();
+            if(blank($funds_total)){
+                throw new \Exception('操作失败',404404);
+            }
+            /* ++++++++++ 更新协议状态 ++++++++++ */
+            $unit_pact->code='112';
+            $unit_pact->save();
+            /* ++++++++++ 更新补偿科目 ++++++++++ */
+            $values=[];
+            foreach($unit_pact->payunits as $payunit){
+                $values[]=[
+                    'id'=>$payunit->id,
+                    'total_id'=>$funds_total->id,
+                    'code'=>'112',
+                    'updated_at'=>date('Y-m-d H:i:s'),
+                ];
+            }
+            $field=['id','total_id','code','updated_at'];
+            $sqls=batch_update_or_insert_sql('pay_unit',$field,$values,$field);
+            if(!$sqls){
+                throw new \Exception('操作失败',404404);
+            }
+            foreach ($sqls as $sql){
+                DB::statement($sql);
+            }
+
+            $code='success';
+            $msg='获取成功';
+            $sdata=[
+                'item'=>$this->item,
+                'unit_pact'=>$unit_pact,
+                'funds_total'=>$funds_total,
+            ];
+            $edata=null;
+            $url=route('g_funds_pay_total_funds',['item'=>$this->item_id,'total_id'=>$funds_total->id]);
+
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            DB::rollBack();
+        }
+
+        $result=['code'=>$code, 'message'=>$msg, 'sdata'=>$sdata, 'edata'=>$edata, 'url'=>$url];
+        return response()->json($result);
+    }
+
     /* ========== 项目支出 ========== */
     public function out(Request $request){
+        if($request->isMethod('get')){
+            DB::beginTransaction();
+            try{
+                $banks=Bank::sharedLock()->select('id','name')->get();
 
+                $code='success';
+                $msg='查询成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'banks'=>$banks,
+                ];
+                $edata=null;
+                $url=null;
+
+                $view='gov.funds.out';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ********** 保存 ********** */
+        else{
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $rules=[
+                'cate_id'=>'required|in:7,8',
+                'amount'=>'required|numeric|min:0.01',
+                'voucher'=>'required',
+                'bank_id'=>'required',
+                'account'=>'required',
+                'name'=>'required',
+                'entry_at'=>'required|date_format:Y-m-d H:i:s',
+                'infos'=>'required',
+                'picture'=>'required',
+            ];
+            $messages=[
+                'required'=>':attribute 为必须项',
+                'in'=>':attribute 错误选择',
+                'date_format'=>':attribute 输入格式错误',
+                'numeric'=>':attribute 输入格式错误',
+                'min'=>':attribute 不能少于 :min',
+            ];
+            $model=new Funds();
+            $validator = Validator::make($request->all(),$rules,$messages,$model->columns);
+            if($validator->fails()){
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            /* ++++++++++ 新增 ++++++++++ */
+            DB::beginTransaction();
+            try{
+                /* ++++++++++ 批量赋值 ++++++++++ */
+                $funds=$model;
+                $funds->fill($request->input());
+                $funds->addOther($request);
+                $funds->item_id=$this->item_id;
+                $funds->cate_id=$request->input('cate_id');
+                $funds->amount= 0-$funds->amount;
+                $funds->save();
+                if(blank($funds)){
+                    throw new \Exception('保存失败',404404);
+                }
+
+                $code='success';
+                $msg='保存成功';
+                $sdata=$funds;
+                $edata=null;
+                $url=route('g_funds',['item'=>$this->item_id]);
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'保存失败';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 }

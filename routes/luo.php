@@ -53,10 +53,11 @@ Route::any('/funds_add','FundsController@add')->name('g_funds_add'); //录入资
 Route::any('/funds_info','FundsController@info')->name('g_funds_info'); //转账详情
 Route::any('/funds_household','FundsController@household')->name('g_funds_household'); //被征收户
 Route::any('/funds_household_info','FundsController@household_info')->name('g_funds_household_info'); //被征收户-补偿详情
-Route::any('/funds_pay_total','FundsController@pay_total')->name('g_funds_pay_total'); //被征收户-生成兑付总单
-Route::any('/funds_pay_total_funds','FundsController@pay_total_funds')->name('g_funds_pay_total_funds'); //被征收户-兑付总单- 支付
+Route::any('/funds_pay_total','FundsController@pay_total')->name('g_funds_pay_total'); //被征收户-生成支付总单
+Route::any('/funds_pay_total_funds','FundsController@pay_total_funds')->name('g_funds_pay_total_funds'); //支付总单- 支付
 Route::any('/funds_unit','FundsController@unit')->name('g_funds_unit'); //公房单位
 Route::any('/funds_unit_info','FundsController@unit_info')->name('g_funds_unit_info'); //公房单位 - 补偿详情
+Route::any('/funds_unit_total','FundsController@unit_total')->name('g_funds_unit_total'); //公房单位 - 支付总单
 Route::any('/funds_out','FundsController@out')->name('g_funds_out'); //项目支出
 
 /*---------- 通知公告 ----------*/
@@ -79,6 +80,9 @@ Route::any('/pay_add','PayController@add')->name('g_pay_add'); //补偿决定
 Route::any('/pay_info','PayController@info')->name('g_pay_info'); //兑付详情
 Route::any('/pay_edit','PayController@edit')->name('g_pay_edit'); //修改兑付
 
+Route::any('/payunit','PayunitController@index')->name('g_payunit'); //公房单位
+Route::any('/payunit_info','PayunitController@info')->name('g_payunit_info'); //公房单位 - 补偿详情
+
 Route::any('/paysubject_add','PaysubjectController@add')->name('g_paysubject_add'); //添加补偿科目
 Route::any('/paysubject_info','PaysubjectController@info')->name('g_paysubject_info'); //补偿科目详情
 Route::any('/paysubject_edit','PaysubjectController@edit')->name('g_paysubject_edit'); //修改补偿科目
@@ -97,9 +101,14 @@ Route::any('/pact','PactController@index')->name('g_pact'); //协议
 
 /*---------- 腾空搬迁 ----------*/
 Route::any('/move','MoveController@index')->name('g_move'); //腾空搬迁
+Route::any('/move_edit','MoveController@edit')->name('g_move_edit'); //腾空搬迁 - 已搬迁
 
 /*---------- 监督拆除 ----------*/
 Route::any('/tear','TearController@index')->name('g_tear'); //监督拆除
+Route::any('/tear_add','TearController@add')->name('g_tear_add'); //拆除委托
+Route::any('/tear_edit','TearController@edit')->name('g_tear_edit'); //修改委托
+Route::any('/tear_detail_add','TearController@detail_add')->name('g_tear_detail_add'); //添加拆除记录
 
 /*---------- 项目审查 ----------*/
 Route::any('/audit','AuditController@index')->name('g_audit'); //审计报告
+Route::any('/audit_add','AuditController@add')->name('g_audit_add'); //添加审计报告

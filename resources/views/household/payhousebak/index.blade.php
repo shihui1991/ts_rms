@@ -7,13 +7,15 @@
 
     {{-- 页面内容 --}}
 @section('content')
+    @if(filled($sdata))
+        <h3 class="header smaller green">有效选房</h3>
     <div class="row">
 
         <div class="col-xs-9 col-sm-9">
             <div class="widget-container-col ui-sortable">
                 <div class="widget-box ui-sortable-handle">
                     <div class="widget-header">
-                        <h5 class="widget-title">有效选房</h5>
+                        <h5 class="widget-title">安置房</h5>
 
                         <div class="widget-toolbar">
                             <a href="#" data-action="collapse">
@@ -139,125 +141,155 @@
                 </div>
             </div>
         </div>
-    </div>
+        @if(filled($sdata['transit_house']))
+            <div class="col-xs-9 col-sm-9">
+                <div class="widget-container-col ui-sortable">
+                <div class="widget-box ui-sortable-handle">
+                    <div class="widget-header">
+                        <h5 class="widget-title">临时周转房</h5>
 
-    <hr>
+                        <div class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-main">
+
+
+                                <table class="table table-hover table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>房源</th>
+                                        <th>位置</th>
+                                        <th>总楼层</th>
+                                        <th>是否电梯房</th>
+                                        <th>类型</th>
+                                        <th>户型</th>
+                                        <th>面积</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    @foreach($sdata['transit_house'] as $object)
+                                        <tr>
+                                            <td>{{$loop->iteration}}</td>
+                                            <td>{{$object->house->housecommunity->name}}</td>
+
+                                            <td>{{$object->house->building?$object->house->building.'栋':''}}
+                                                {{$object->house->unit?$object->house->unit.'单元':''}}
+                                                {{$object->house->floor?$object->house->floor.'层':''}}
+                                                {{$object->house->number?$object->house->number.'号':''}}</td>
+                                            <td>{{$object->house->total_floor}}</td>
+                                            <td>{{$object->house->lift}}</td>
+                                            <td>{{$object->house->is_real}}|{{$object->house->is_transit}}</td>
+                                            <td>{{$object->house->layout->name}}</td>
+                                            <td>{{$object->house->area}}</td>
+                                        </tr>
+                                    @endforeach
+
+                                    </tbody>
+                                </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        @endif
+    </div>
+        <h3 class="header smaller red">所有选房</h3>
     <div class="row">
         <div class="col-sm-12 col-xs-12">
             <div class="widget-container-col ui-sortable">
                 <div class="widget-box ui-sortable-handle">
                     <div class="widget-header">
                         <h5 class="widget-title">所有选房</h5>
+
+                        <div class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-up"></i>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="widget-body">
                         <div class="widget-main">
-                            <div class="profile-user-info">
 
-                                @if($code=='success')
-                                    @foreach($sdata['allhouse'] as $infos)
-                                        <div class="col-xs-12 col-sm-3 pricing-box">
-                                            <div class="widget-box widget-color-green">
-                                                <div class="widget-header">
-                                                    <h5 class="widget-title bigger lighter">{{$infos->house->housecommunity->name}}</h5>
-                                                </div>
+                            @if(filled($sdata['allhouse']))
+                                <table class="table table-hover table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>房源</th>
+                                        <th>位置</th>
+                                        <th>总楼层</th>
+                                        <th>是否电梯房</th>
+                                        <th>类型</th>
+                                        <th>户型</th>
+                                        <th>面积</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
 
-                                                <div class="widget-body">
-                                                    <div class="widget-main">
+                                    @foreach($sdata['allhouse'] as $object)
+                                        <tr>
+                                            <td>{{$loop->iteration}}</td>
+                                            <td>{{$object->house->housecommunity->name}}</td>
 
-                                                        <div class="profile-user-info profile-user-info-striped">
-
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 管理机构：</div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click">{{$infos->house->housecompany->name}}</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 位置：</div>
-                                                                <div class="profile-info-value">
-                                                <span class="editable editable-click"> {{$infos->house->building?$infos->building.'栋':''}}
-                                                    {{$infos->house->unit?$infos->unit.'单元':''}}
-                                                    {{$infos->house->floor?$infos->floor.'层':''}}
-                                                    {{$infos->house->number?$infos->number.'号':''}}</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 面积：</div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click">{{$infos->house->area}}</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 总楼层：</div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click">{{$infos->house->total_floor}}</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 是否电梯房：</div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click">{{$infos->house->lift}}</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 类型：</div>
-                                                                <div class="profile-info-value">
-                                                <span class="editable editable-click">{{$infos->house->is_real}}
-                                                    |{{$infos->house->is_transit}}</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 户型：</div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click">{{$infos->house->layout->name}}</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 户型图：</div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click"></span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <a href="{{route('h_itemhouse_info',['id'=>$infos->house_id])}}"
-                                                           style="font-size: 15px"  class="btn btn-block btn-success"> 查看详情 <i
-                                                                    class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            <td>{{$object->house->building?$object->house->building.'栋':''}}
+                                                {{$object->house->unit?$object->house->unit.'单元':''}}
+                                                {{$object->house->floor?$object->house->floor.'层':''}}
+                                                {{$object->house->number?$object->house->number.'号':''}}</td>
+                                            <td>{{$object->house->total_floor}}</td>
+                                            <td>{{$object->house->lift}}</td>
+                                            <td>{{$object->house->is_real}}|{{$object->house->is_transit}}</td>
+                                            <td>{{$object->house->layout->name}}</td>
+                                            <td>{{$object->house->area}}</td>
+                                            <td>
+                                                <a href="{{route('h_itemhouse_info',['id'=>$object->house_id])}}" class="btn btn-sm">查看详情</a>
+                                                <a href="{{route('h_payhousebak_remove',['id'=>$object->house_id])}}" class="btn btn-sm">移除</a>
+                                        </tr>
                                     @endforeach
-                                @else
 
-                                    <div class="alert alert-warning">
-                                        <button type="button" class="close" data-dismiss="alert">
-                                            <i class="ace-icon fa fa-times"></i>
-                                        </button>
-                                        <strong>
-                                            <i class="ace-icon fa fa-exclamation-circle"></i>
-                                        </strong>
-                                        <strong class="resp-error">{{$message}}</strong>
+                                    </tbody>
+                                </table>
+                            @else
+                                <div class="alert alert-warning">
+                                    <button type="button" class="close" data-dismiss="alert">
+                                        <i class="ace-icon fa fa-times"></i>
+                                    </button>
+                                    <strong>
+                                        <i class="ace-icon fa fa-exclamation-circle"></i>
+                                    </strong>
+                                    <strong class="resp-error">{{$message}}</strong>
 
-                                        <br>
-                                    </div>
-
-                                @endif
-                            </div>
+                                    <br>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    @else
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">
+                <i class="ace-icon fa fa-times"></i>
+            </button>
+            <strong>
+                <i class="ace-icon fa fa-exclamation-circle"></i>
+            </strong>
+            <strong class="resp-error">{{$message}}</strong>
 
+            <br>
+        </div>
+    @endif
 @endsection
 
 {{-- 样式 --}}

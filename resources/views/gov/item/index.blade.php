@@ -4,11 +4,10 @@
 
 {{-- 页面内容 --}}
 @section('content')
-
+    @if($code=='success')
     <div class="row">
         <div class="col-xs-12">
-            @if($code=='success')
-                @foreach($sdata as $infos)
+            @foreach($sdata as $infos)
                     <div class="col-xs-6 col-sm-3 pricing-box">
                         <div class="widget-box widget-color-dark">
                             <div class="widget-header">

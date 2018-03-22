@@ -123,7 +123,7 @@
 <p style="text-indent:43px;line-height:37px">
     <span style="font-size:21px;font-family:仿宋">房屋所在地
         <span style="text-decoration:underline;">
-            {{$household->itemland->address}}{{$household->itemland->name}}
+            {{$household->itemland->address}}
             @if($household->itembuilding->building){{$household->itembuilding->building}}栋@endif
             @if($household->unit){{$household->unit}}单元@endif
             @if($household->floor){{$household->floor}}楼@endif
