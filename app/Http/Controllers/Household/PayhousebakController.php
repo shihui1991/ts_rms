@@ -84,9 +84,9 @@ class PayhousebakController extends BaseController{
                     ])
                     ->sharedLock()
                     ->get();
-                if (blank($transit_house)){
+               /* if (blank($transit_house)){
                     throw new \Exception('暂未选择临时周转房', 404404);
-                }
+                }*/
             }
 
             $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1]])->pluck('house_id')->toArray();
@@ -459,5 +459,60 @@ class PayhousebakController extends BaseController{
         }else{
             return view($view)->with($result);
         }
+    }
+
+    /*移除备选房*/
+    public function remove(Request $request){
+        $id=$request->input('house_id');
+        if(!$id){
+            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('household.error')->with($result);
+            }
+        }
+        DB::beginTransaction();
+        try{
+            $house=Payhousebak::sharedLock()
+                ->where([
+                    ['house_id',$id],
+                    ['household_id',session('household_user.user_id')],
+                    ['item_id',session('household_user.item_id')]
+                ])
+                ->first();
+            if (blank($house)){
+                throw new \Exception('错误操作',404404);
+            }
+            if(!Payhousebak::where([
+                ['house_id',$id],
+                ['household_id',session('household_user.user_id')],
+                ['item_id',session('household_user.item_id')]
+            ])
+                ->delete()){
+                throw new \Exception('删除失败，请稍后重试!',404404);
+            }
+            $code='success';
+            $msg='操作成功';
+            $sdata=null;
+            $edata=null;
+            $url=route('h_payhousebak');
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+            $view='household.error';
+        }
+        $result=['code'=>$code,'message'=>$exception->getMessage(),'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
+
     }
 }
