@@ -33,7 +33,8 @@
 {{-- 侧边导航 --}}
 @section('nav')
 
-    {{--{!! $nav !!}--}}
+    {!! $nav_menus !!}
+
 
 @endsection
 
@@ -48,7 +49,13 @@
                 <a href="{{route('c_home')}}">评估机构端</a>
             </li>
 
+            @if(filled($parents_menus))
+                @foreach($parents_menus as $parents_menu)
+                    <li>{{$parents_menu->name}}</li>
+                @endforeach
+            @endif
 
+            <li class="active">{{$current_menu->name}}</li>
         </ul><!-- /.breadcrumb -->
 
     </div>

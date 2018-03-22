@@ -18,6 +18,10 @@ class ItemController extends BaseController
     public function __construct()
     {
         parent::__construct();
+        $this->middleware(function($request,$next){
+            view()->share(['nav_menus'=>null]);
+            return $next($request);
+        });
     }
 
     /* ++++++++++ 我的项目 ++++++++++ */

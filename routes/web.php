@@ -79,6 +79,12 @@ Route::namespace('com')->prefix('com')->group(function (){
     Route::any('/logout','IndexController@logout')->name('c_logout'); //退出
 
     Route::middleware('CheckLogin:com_user,c_index')->group(function (){
+        /*---------- 工具 ----------*/
+        Route::any('/error','ToolsController@error')->name('c_error'); // 错误提示
+        Route::any('/upl','ToolsController@upl')->name('c_upl'); // 文件上传
+    });
+
+    Route::middleware('CheckLogin:com_user,c_index')->group(function (){
         require 'web_com_login.php';
     });
 });
