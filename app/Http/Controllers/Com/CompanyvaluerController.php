@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class CompanyvaluerController extends BaseController
+class CompanyvaluerController extends BaseauthController
 {
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()

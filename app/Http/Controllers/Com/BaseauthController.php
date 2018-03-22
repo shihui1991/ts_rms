@@ -1,39 +1,27 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目菜单
+| 授权菜单
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\com;
-use App\Http\Model\Item;
+
 use App\Http\Model\Menu;
-use App\Http\Model\Process;
-use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
 
-class BaseitemController extends BaseController
+class BaseauthController extends BaseController
 {
-    public $item_id;
-    public $item;
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
         parent::__construct();
 
         $this->middleware(function ($request,$next){
-            $item_id=$request->input('item');
-            if(blank($item_id)){
-                $result=['code'=>'error','message'=>'请指定征收项目','sdata'=>null,'edata'=>null,'url'=>null];
-                if(request()->ajax()){
-                    return response()->json($result);
-                }else{
-                    return redirect()->route('c_error')->with($result);
-                }
-            }
-            $this->item_id=$item_id;
-            $this->item=Item::sharedLock()->find($item_id);
 
             if(!$request->ajax()){
+                $cur_pids=session('menu.cur_pids');
+                $top_id=array_last($cur_pids);
+
                 $menus=Menu::with(['childs'=>function($query){
                     $query->where('display',1)->orderBy('sort','asc');
                 }])
@@ -42,23 +30,20 @@ class BaseitemController extends BaseController
                     }])
                     ->sharedLock()
                     ->where([
-                        ['parent_id',265],
-                        ['id','<>',265],
+                        ['parent_id',$top_id],
                         ['display',1],
                     ])
                     ->orderBy('sort','asc')
                     ->get();
+                $nav_menus=$this->makeMenu($menus,session('menu.cur_menu.id'),$cur_pids,1,$top_id);
 
-                $nav_menus=$this->makeMenu2($menus,session('menu.cur_menu.id'),session('menu.cur_pids'),1,265,$item_id);
-
-                view()->share(['nav_menus'=>$nav_menus,'item'=>$this->item]);
+                view()->share(['nav_menus'=>$nav_menus]);
             }
 
             return $next($request);
         });
     }
-
-    public function makeMenu2($menus,$cur_id,$pids,$level=1,$pid=0,$item_id){
+    public function makeMenu($menus,$cur_id,$pids,$level=1,$pid=0){
         $str='';
 
         foreach($menus as $menu){
@@ -85,12 +70,12 @@ class BaseitemController extends BaseController
             if($menu->childs_count){
                 $a_class=' class="dropdown-toggle" ';
                 $b_in_a='<b class="arrow fa fa-angle-down"></b>';
-                $str .= '<li '.$li_class.'><a href="'.$menu->url.'?item='.$item_id.'" '.$a_class.'>'.$icon.$menu_name.$b_in_a.'</a><b class="arrow"></b>';
-                $str .=$this->makeMenu2($menu->childs,$cur_id,$pids,$level+1,$menu->id,$item_id);;
+                $str .= '<li '.$li_class.'><a href="'.$menu->url.'" '.$a_class.'>'.$icon.$menu_name.$b_in_a.'</a><b class="arrow"></b>';
+                $str .=$this->makeMenu($menu->childs,$cur_id,$pids,$level+1,$menu->id);;
             }else{
                 $a_class='';
                 $b_in_a='';
-                $str .= '<li '.$li_class.'><a href="'.$menu->url.'?item='.$item_id.'" '.$a_class.'>'.$icon.$menu_name.'</span>'.$b_in_a.'</a><b class="arrow"></b>';
+                $str .= '<li '.$li_class.'><a href="'.$menu->url.'" '.$a_class.'>'.$icon.$menu_name.'</span>'.$b_in_a.'</a><b class="arrow"></b>';
             }
             $str.='</li>';
         }

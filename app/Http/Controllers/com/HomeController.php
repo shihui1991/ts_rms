@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class HomeController extends BaseController
+class HomeController extends BaseauthController
 {
     /* ========== 初始化 ========== */
     public function __construct()

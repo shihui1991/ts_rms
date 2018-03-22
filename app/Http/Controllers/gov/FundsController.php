@@ -406,7 +406,7 @@ class FundsController extends BaseitemController
         }
     }
 
-    /* ========== 被征收户 - 兑付总单 ========== */
+    /* ========== 被征收户 - 支付总单 ========== */
     public function pay_total(Request $request){
         $pact_id=$request->input('pact_id');
         DB::beginTransaction();
@@ -533,7 +533,7 @@ class FundsController extends BaseitemController
         return response()->json($result);
     }
 
-    /* ========== 兑付总单 - 支付 ========== */
+    /* ========== 支付总单 - 支付 ========== */
     public function pay_total_funds(Request $request){
         $total_id=$request->input('total_id');
         if($request->isMethod('get')){
@@ -792,7 +792,7 @@ class FundsController extends BaseitemController
         }
     }
 
-    /* ========== 公房单位 - 兑付总单 ========== */
+    /* ========== 公房单位 - 支付总单 ========== */
     public function unit_total(Request $request){
         $pact_id=$request->input('pact_id');
         DB::beginTransaction();
