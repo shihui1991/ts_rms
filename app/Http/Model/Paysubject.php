@@ -26,7 +26,7 @@ class Paysubject extends Model
         'pay_id'=>'兑付汇总',
         'pact_id'=>'兑付协议',
         'subject_id'=>'补偿科目',
-        'total_id'=>'兑付总单',
+        'total_id'=>'支付总单',
         'calculate'=>'计算公式',
         'amount'=>'补偿小计',
         'code'=>'状态',

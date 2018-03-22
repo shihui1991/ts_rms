@@ -5,8 +5,8 @@
 {{-- 页面内容 --}}
 @section('content')
 
-    <div class="widget-container-col ui-sortable" id="widget-container-col-1">
-        <div class="widget-box ui-sortable-handle" id="widget-box-1">
+    <div class="widget-container-col ui-sortable" >
+        <div class="widget-box ui-sortable-handle" >
             <div class="widget-header">
                 <h5 class="widget-title">项目概述</h5>
 
