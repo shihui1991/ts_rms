@@ -26,7 +26,7 @@ class ItemrewardController extends BaseitemController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $item_rewards=Itemreward::query()->sharedLock()
+            $item_rewards=Itemreward::sharedLock()
                 ->where('item_id',$this->item_id)
                 ->orderBy('start_at','asc')
                 ->get();

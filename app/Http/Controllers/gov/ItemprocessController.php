@@ -4120,23 +4120,23 @@ class ItemprocessController extends BaseitemController
                     ->groupBy('def_use')
                     ->get();
                 // 产权争议
-                $dispute_num=Householddetail::query()->sharedLock()
+                $dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where('dispute',1)
                     ->count();
                 // 面积争议
-                $area_dispute_num=Householddetail::query()->sharedLock()
+                $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereNotIn('area_dispute',[0,3])
                     ->count();
                 // 合法性认定
-                $legal_num=Householdbuilding::query()->sharedLock()
+                $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereIn('code',['91'])
                     ->distinct()
                     ->count('household_id');
                 // 资产确认
-                $assets_num=Householdassets::query()->sharedLock()
+                $assets_num=Householdassets::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
@@ -4144,7 +4144,7 @@ class ItemprocessController extends BaseitemController
                     ->distinct()
                     ->count('household_id');
                 // 公共附属物确认
-                $public_num=Itempublic::query()->sharedLock()
+                $public_num=Itempublic::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
@@ -4203,7 +4203,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
                 // 产权争议
-                $dispute_num=Householddetail::query()->sharedLock()
+                $dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where('dispute',1)
                     ->count();
@@ -4211,7 +4211,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在产权争议未解决',404404);
                 }
                 // 面积争议
-                $area_dispute_num=Householddetail::query()->sharedLock()
+                $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereNotIn('area_dispute',[0,3])
                     ->count();
@@ -4219,7 +4219,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在面积争议未解决',404404);
                 }
                 // 合法性认定
-                $legal_num=Householdbuilding::query()->sharedLock()
+                $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereIn('code',['91'])
                     ->count();
@@ -4227,7 +4227,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在合法性认定未解决',404404);
                 }
                 // 资产确认
-                $assets_num=Householdassets::query()->sharedLock()
+                $assets_num=Householdassets::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
@@ -4237,7 +4237,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在资产确认未解决',404404);
                 }
                 // 公共附属物确认
-                $public_num=Itempublic::query()->sharedLock()
+                $public_num=Itempublic::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
@@ -4345,7 +4345,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
                 // 产权争议
-                $dispute_num=Householddetail::query()->sharedLock()
+                $dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where('dispute',1)
                     ->count();
@@ -4353,7 +4353,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在产权争议未解决',404404);
                 }
                 // 面积争议
-                $area_dispute_num=Householddetail::query()->sharedLock()
+                $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereNotIn('area_dispute',[0,3])
                     ->count();
@@ -4361,7 +4361,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在面积争议未解决',404404);
                 }
                 // 合法性认定
-                $legal_num=Householdbuilding::query()->sharedLock()
+                $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereIn('code',['91'])
                     ->count();
@@ -4369,7 +4369,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在合法性认定未解决',404404);
                 }
                 // 资产确认
-                $assets_num=Householdassets::query()->sharedLock()
+                $assets_num=Householdassets::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
@@ -4379,7 +4379,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在资产确认未解决',404404);
                 }
                 // 公共附属物确认
-                $public_num=Itempublic::query()->sharedLock()
+                $public_num=Itempublic::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
@@ -4461,7 +4461,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
                 // 产权争议
-                $dispute_num=Householddetail::query()->sharedLock()
+                $dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where('dispute',1)
                     ->count();
@@ -4469,7 +4469,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在产权争议未解决',404404);
                 }
                 // 面积争议
-                $area_dispute_num=Householddetail::query()->sharedLock()
+                $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereNotIn('area_dispute',[0,3])
                     ->count();
@@ -4477,7 +4477,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在面积争议未解决',404404);
                 }
                 // 合法性认定
-                $legal_num=Householdbuilding::query()->sharedLock()
+                $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->whereIn('code',['91'])
                     ->count();
@@ -4485,7 +4485,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在合法性认定未解决',404404);
                 }
                 // 资产确认
-                $assets_num=Householdassets::query()->sharedLock()
+                $assets_num=Householdassets::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
@@ -4495,7 +4495,7 @@ class ItemprocessController extends BaseitemController
                     throw new \Exception('存在资产确认未解决',404404);
                 }
                 // 公共附属物确认
-                $public_num=Itempublic::query()->sharedLock()
+                $public_num=Itempublic::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->where(function($query){
                         $query->whereNull ('number')->orWhere('number',0);
