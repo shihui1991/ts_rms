@@ -430,7 +430,7 @@ class FundsController extends BaseitemController
             if($pact->getOriginal('status') !=1){
                 throw new \Exception('当前协议没有生效',404404);
             }
-            if($pact->code != '111'){
+            if($pact->code != '173'){
                 throw new \Exception('当前协议正在处理中，请勿重复操作',404404);
             }
             /* ++++++++++ 协议兑付科目金额 ++++++++++ */
@@ -487,7 +487,7 @@ class FundsController extends BaseitemController
                 throw new \Exception('操作失败',404404);
             }
             /* ++++++++++ 更新协议状态 ++++++++++ */
-            $pact->code='112';
+            $pact->code='175';
             $pact->save();
             /* ++++++++++ 更新补偿科目 ++++++++++ */
             $values=[];
@@ -814,7 +814,7 @@ class FundsController extends BaseitemController
             if($unit_pact->getOriginal('status') !=1){
                 throw new \Exception('当前协议没有生效',404404);
             }
-            if($unit_pact->code != '111'){
+            if($unit_pact->code != '173'){
                 throw new \Exception('当前协议正在处理中，请勿重复操作',404404);
             }
             /* ++++++++++ 协议兑付金额 ++++++++++ */
@@ -832,7 +832,7 @@ class FundsController extends BaseitemController
                 throw new \Exception('操作失败',404404);
             }
             /* ++++++++++ 更新协议状态 ++++++++++ */
-            $unit_pact->code='112';
+            $unit_pact->code='175';
             $unit_pact->save();
             /* ++++++++++ 更新补偿科目 ++++++++++ */
             $values=[];

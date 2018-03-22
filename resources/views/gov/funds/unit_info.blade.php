@@ -163,7 +163,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    @if($pact->code=='111' && $pact->getOriginal('status')==1)
+                                    @if($pact->code=='173' && $pact->getOriginal('status')==1)
                                         <div>
                                             <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_funds_unit_total',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" data-method="post">
                                                 <i class="ace-icon fa fa-check-square-o bigger-110"></i>

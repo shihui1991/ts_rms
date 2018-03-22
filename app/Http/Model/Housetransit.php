@@ -1,19 +1,19 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 兑付 - 产权调换房 模型
+| 临时周转 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Payhouse extends Model
+class Housetransit extends Model
 {
     use SoftDeletes;
-    protected $table='pay_house';
-
-    protected $fillable=[];
+    protected $table='house_transit';
+    protected $primaryKey='id';
+    protected $fillable=['start_at','exp_end','end_at'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
@@ -24,14 +24,13 @@ class Payhouse extends Model
         'land_id'=>'地块',
         'building_id'=>'楼栋',
         'house_id'=>'房源',
-        'area'=>'面积',
-        'market'=>'评估市场价',
-        'price'=>'安置优惠价',
-        'amount'=>'安置优惠总价',
-        'amount_plus'=>'安置优惠上浮金额',
-        'total'=>'产权调换总值',
+        'pay_id'=>'兑付',
+        'pact_id'=>'协议',
+        'start_at'=>'开始日期',
+        'exp_end'=>'预计结束日期',
+        'end_at'=>'结束日期',
     ];
-
+    
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
 
@@ -59,11 +58,11 @@ class Payhouse extends Model
     public function house(){
         return $this->belongsTo('App\Http\Model\House','house_id','id')->withDefault();
     }
-    public function housepluses(){
-        return $this->hasMany('App\Http\Model\Payhouse','house_id','house_id');
+    public function pay(){
+        return $this->belongsTo('App\Http\Model\Pay','pay_id','id')->withDefault();
+    }
+    public function pact(){
+        return $this->belongsTo('App\Http\Model\Pact','pact_id','id')->withDefault();
     }
 
-    public function houseresettle(){
-        return $this->hasOne('App\Http\Model\Houseresettle','house_id','house_id')->withDefault();
-    }
 }

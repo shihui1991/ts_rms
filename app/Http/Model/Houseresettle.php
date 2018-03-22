@@ -1,21 +1,23 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 兑付 - 产权调换房 模型
+| 产权调换 模型
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Payhouse extends Model
+class Houseresettle extends Model
 {
     use SoftDeletes;
-    protected $table='pay_house';
-
-    protected $fillable=[];
+    protected $table='house_resettle';
+    protected $primaryKey='id';
+    protected $fillable=['settle_at','hold_at','end_at','register','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [];
+    protected $casts = [
+        'picture'=>'array',
+    ];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
@@ -24,14 +26,14 @@ class Payhouse extends Model
         'land_id'=>'地块',
         'building_id'=>'楼栋',
         'house_id'=>'房源',
-        'area'=>'面积',
-        'market'=>'评估市场价',
-        'price'=>'安置优惠价',
-        'amount'=>'安置优惠总价',
-        'amount_plus'=>'安置优惠上浮金额',
-        'total'=>'产权调换总值',
+        'pay_id'=>'兑付',
+        'settle_at'=>'安置日期',
+        'hold_at'=>'产权调换日期',
+        'end_at'=>'结束日期',
+        'register'=>'新证件号',
+        'picture'=>'证件',
     ];
-
+    
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
 
@@ -59,11 +61,8 @@ class Payhouse extends Model
     public function house(){
         return $this->belongsTo('App\Http\Model\House','house_id','id')->withDefault();
     }
-    public function housepluses(){
-        return $this->hasMany('App\Http\Model\Payhouse','house_id','house_id');
+    public function pay(){
+        return $this->belongsTo('App\Http\Model\Pay','pay_id','id')->withDefault();
     }
 
-    public function houseresettle(){
-        return $this->hasOne('App\Http\Model\Houseresettle','house_id','house_id')->withDefault();
-    }
 }

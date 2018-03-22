@@ -112,3 +112,14 @@ Route::any('/tear_detail_add','TearController@detail_add')->name('g_tear_detail_
 /*---------- 项目审查 ----------*/
 Route::any('/audit','AuditController@index')->name('g_audit'); //审计报告
 Route::any('/audit_add','AuditController@add')->name('g_audit_add'); //添加审计报告
+
+/*---------- 安置 ----------*/
+Route::any('/transit','TransitController@index')->name('g_transit'); //临时周转
+Route::any('/transit_info','TransitController@info')->name('g_transit_info'); //临时周转详情
+Route::any('/transit_add','TransitController@add')->name('g_transit_add'); //开始过渡
+Route::any('/transit_edit','TransitController@edit')->name('g_transit_edit'); //修改过渡
+
+Route::any('/resettle','ResettleController@index')->name('g_resettle'); //产权调换
+Route::any('/resettle_info','ResettleController@info')->name('g_resettle_info'); //产权调换详情
+Route::any('/resettle_add','ResettleController@add')->name('g_resettle_add'); //开始安置
+Route::any('/resettle_edit','ResettleController@edit')->name('g_resettle_edit'); //更新
