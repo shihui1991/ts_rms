@@ -1,5 +1,5 @@
 {{-- 继承布局 --}}
-@extends('household.home')
+@extends('household.layout')
 
 
 {{-- 页面内容 --}}
@@ -154,6 +154,6 @@
 
 {{-- 插件 --}}
 @section('js')
-
+    @parent
 
 @endsection

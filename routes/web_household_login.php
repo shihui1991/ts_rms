@@ -56,4 +56,7 @@ Route::any('/payhousebak_add','PayhousebakController@add')->name('h_payhousebak_
 Route::any('/payhousebak','PayhousebakController@index')->name('h_payhousebak');
 Route::any('/payhousebak_remove','PayhousebakController@remove')->name('h_payhousebak_remove');
 
+/*通知公告*/
+Route::any('/news_info','NewsController@info')->name('h_news_info');
+
 
