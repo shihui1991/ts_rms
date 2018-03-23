@@ -5,6 +5,30 @@
 {{-- 页面内容 --}}
 @section('content')
 
+    <div class="well well-sm">
+        <a href="javascript:history.back();" class="btn">返回</a>
+
+        <a href="{{route('g_paysubject_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
+            添加补偿科目
+        </a>
+
+        @if(in_array($sdata['household']->code,['68','76']))
+            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_paysubject_recal',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" data-method="post">
+                <i class="ace-icon fa fa-support bigger-110"></i>
+                重新计算补偿
+            </a>
+        @endif
+        @if($sdata['pay']->getOriginal('repay_way')==1)
+            <a href="{{route('g_payhouse_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
+                选房
+            </a>
+        @endif
+
+        <a href="{{route('g_pact',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
+            补偿安置协议
+        </a>
+    </div>
+
     <div class="row">
         <div class="col-sm-6 col-xs-12">
             <div class="widget-container-col ui-sortable">
@@ -178,28 +202,7 @@
             </div>
         </div>
     </div>
-    
-    <div class="well well-sm">
-        <a href="{{route('g_paysubject_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
-            添加补偿科目
-        </a>
 
-        @if(in_array($sdata['household']->code,['68','76']))
-            <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_paysubject_recal',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" data-method="post">
-                <i class="ace-icon fa fa-support bigger-110"></i>
-                重新计算补偿
-            </a>
-        @endif
-        @if($sdata['pay']->getOriginal('repay_way')==1)
-            <a href="{{route('g_payhouse_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
-                选房
-            </a>
-        @endif
-
-        <a href="{{route('g_pact',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
-            补偿安置协议
-        </a>
-    </div>
 
     <div class="tabbable">
         <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">

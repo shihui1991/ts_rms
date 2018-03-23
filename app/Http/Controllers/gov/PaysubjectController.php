@@ -6,6 +6,7 @@
 */
 namespace App\Http\Controllers\gov;
 
+use App\Http\Model\Assets;
 use App\Http\Model\Crowd;
 use App\Http\Model\House;
 use App\Http\Model\Household;
@@ -18,6 +19,7 @@ use App\Http\Model\Pay;
 use App\Http\Model\Paybuilding;
 use App\Http\Model\Paycrowd;
 use App\Http\Model\Payhouse;
+use App\Http\Model\Payobject;
 use App\Http\Model\Paypublic;
 use App\Http\Model\Paysubject;
 use App\Http\Model\Subject;
@@ -609,7 +611,173 @@ class PaysubjectController extends BaseitemController
 
     /* ========== 查看补偿科目详情 ========== */
     public function info(Request $request){
+        $id=$request->input('id');
+        DB::beginTransaction();
+        try{
+            if(!$id){
+                throw new \Exception('错误操作',404404);
+            }
+            $pay_subject=Paysubject::with(['household'=>function($query){
+                $query->select(['id','item_id','land_id','building_id','unit','floor','number','type','code']);
+            },'subject'=>function($query){
+                $query->select(['id','name']);
+            },'itemsubject'=>function($query){
+                $query->where('item_id',$this->item_id);
+            },'state'])
+                ->sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['id',$id],
+                ])
+                ->first();
+            if(blank($pay_subject)){
+                throw new \Exception('数据不存在',404404);
+            }
+            /* ++++++++++ 无明细的补偿科目 ++++++++++ */
+            if(in_array($pay_subject->subject_id,[7,8,10])){
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay_subject'=>$pay_subject,
+                ];
+            }
+            /* ++++++++++ 有明细的补偿科目 ++++++++++ */
+            else{
+                switch($pay_subject->subject_id){
+                    // 合法房屋及附属物
+                    case 1:
+                        $pay_buildings=Paybuilding::with(['householdbuilding'=>function($query){
+                            $query->select(['id','name']);
+                        },'realuse','buildingstruct'])
+                            ->sharedLock()
+                            ->where([
+                                ['item_id',$pay_subject->item_id],
+                                ['household_id',$pay_subject->household_id],
+                                ['pay_id',$pay_subject->pay_id],
+                            ])
+                            ->whereIn('code',['90'])
+                            ->get();
 
+                        $sdata=[
+                            'item'=>$this->item,
+                            'pay_subject'=>$pay_subject,
+                            'pay_buildings'=>$pay_buildings,
+                        ];
+                        break;
+                    // 合法临建
+                    case 2:
+                        $pay_buildings=Paybuilding::with(['householdbuilding'=>function($query){
+                            $query->select(['id','name']);
+                        },'realuse','buildingstruct'])
+                            ->sharedLock()
+                            ->where([
+                                ['item_id',$pay_subject->item_id],
+                                ['household_id',$pay_subject->household_id],
+                                ['pay_id',$pay_subject->pay_id],
+                            ])
+                            ->whereIn('code',['92','95'])
+                            ->get();
+
+                        $sdata=[
+                            'item'=>$this->item,
+                            'pay_subject'=>$pay_subject,
+                            'pay_buildings'=>$pay_buildings,
+                        ];
+                        break;
+                    // 违建自行拆除补助
+                    case 3:
+                        $pay_buildings=Paybuilding::with(['householdbuilding'=>function($query){
+                            $query->select(['id','name']);
+                        },'realuse','buildingstruct'])
+                            ->sharedLock()
+                            ->where([
+                                ['item_id',$pay_subject->item_id],
+                                ['household_id',$pay_subject->household_id],
+                                ['pay_id',$pay_subject->pay_id],
+                            ])
+                            ->whereIn('code',['94'])
+                            ->get();
+
+                        $sdata=[
+                            'item'=>$this->item,
+                            'pay_subject'=>$pay_subject,
+                            'pay_buildings'=>$pay_buildings,
+                        ];
+                        break;
+                    // 公共附属物
+                    case 4:
+                        $pay_publics=Paypublic::sharedLock()
+                            ->where([
+                                ['item_id',$pay_subject->item_id],
+                                ['land_id',$pay_subject->land_id],
+                            ])
+                            ->get();
+
+                        $sdata=[
+                            'item'=>$this->item,
+                            'pay_subject'=>$pay_subject,
+                            'pay_publics'=>$pay_publics,
+                        ];
+                        break;
+                    // 其他补偿事项
+                    case 5:
+                        $pay_objects=Payobject::sharedLock()
+                            ->where([
+                                ['item_id',$pay_subject->item_id],
+                                ['household_id',$pay_subject->household_id],
+                                ['pay_id',$pay_subject->pay_id],
+                            ])
+                            ->get();
+
+                        $sdata=[
+                            'item'=>$this->item,
+                            'pay_subject'=>$pay_subject,
+                            'pay_objects'=>$pay_objects,
+                        ];
+                        break;
+                    // 固定资产
+                    case 6:
+                        $assets=Assets::sharedLock()
+                            ->where([
+                                ['item_id',$pay_subject->item_id],
+                                ['household_id',$pay_subject->household_id],
+                            ])
+                            ->first();
+
+                        $sdata=[
+                            'item'=>$this->item,
+                            'pay_subject'=>$pay_subject,
+                            'assets'=>$assets,
+                        ];
+                        break;
+                }
+            }
+            $sdata=[
+                'item'=>$this->item,
+                'pay_subject'=>$pay_subject,
+            ];
+            $code='success';
+            $msg='请求成功';
+
+            $edata=null;
+            $url=null;
+
+            $view='gov.paysubject.info';
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            $view='gov.error';
+        }
+        DB::commit();
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view($view)->with($result);
+        }
     }
 
     /* ========== 修改补偿科目 ========== */

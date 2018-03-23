@@ -5,6 +5,10 @@
 {{-- 页面内容 --}}
 @section('content')
 
+    <div class="well well-sm">
+        <a href="javascript:history.back();" class="btn">返回</a>
+    </div>
+
     <div class="row">
         <div class="col-sm-7 col-xs-12">
             <div class="widget-container-col ui-sortable">

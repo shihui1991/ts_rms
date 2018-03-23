@@ -143,7 +143,6 @@ class ItemsubjectController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'item_id' => 'required',
                 'subject_id' => ['required',Rule::unique('item_subject')->where(function ($query) use($item_id){
                     $query->where('item_id', $item_id);
                 })],

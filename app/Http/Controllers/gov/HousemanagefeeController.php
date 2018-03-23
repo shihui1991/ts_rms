@@ -205,7 +205,7 @@ class HousemanagefeeController extends BaseauthController
             $url=route('g_housemanagefee');
 
             DB::commit();
-        }catch (\Exception $exception){dd($exception);
+        }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'计算失败';
             $sdata=null;
