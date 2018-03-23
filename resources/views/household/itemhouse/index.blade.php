@@ -1,5 +1,5 @@
 {{-- 继承主体 --}}
-@extends('household.home')
+@extends('household.layout')
 
 
 

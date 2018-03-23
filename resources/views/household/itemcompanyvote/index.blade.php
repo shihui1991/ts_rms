@@ -1,5 +1,5 @@
 {{-- 继承aceAdmin后台布局 --}}
-@extends('household.home')
+@extends('household.layout')
 
 
 {{-- 页面内容 --}}
