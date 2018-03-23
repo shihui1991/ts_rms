@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2018-03-16 21:22:43
+Date: 2018-03-22 20:11:40
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -176,7 +176,7 @@ CREATE TABLE `a_menu` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`) COMMENT '上级ID'
-) ENGINE=MyISAM AUTO_INCREMENT=387 DEFAULT CHARSET=utf8 COMMENT='功能与菜单';
+) ENGINE=MyISAM AUTO_INCREMENT=474 DEFAULT CHARSET=utf8 COMMENT='功能与菜单';
 
 -- ----------------------------
 -- Records of a_menu
@@ -221,11 +221,11 @@ INSERT INTO `a_menu` VALUES ('37', '36', '登录', null, '0', '/gov/login', 'pos
 INSERT INTO `a_menu` VALUES ('38', '36', '退出', null, '0', '/gov/logout', null, '0', '0', '0', '0', null, '2018-02-10 11:43:30', '2018-02-10 11:44:45', null);
 INSERT INTO `a_menu` VALUES ('39', '0', '首页', '<i class=\"menu-icon fa fa-dashboard bigger-120\"></i>', '0', '/gov/home', null, '1', '0', '1', '0', null, '2018-02-10 11:44:08', '2018-02-11 14:16:09', null);
 INSERT INTO `a_menu` VALUES ('40', '0', '项目', '<i class=\"menu-icon fa fa-th bigger-120\"></i>', '0', '/gov/item#', null, '1', '1', '1', '0', null, '2018-02-10 12:20:16', '2018-02-10 16:30:07', null);
-INSERT INTO `a_menu` VALUES ('41', '40', '项目管理', null, '0', '/gov/item#', null, '1', '1', '1', '0', null, '2018-02-10 12:25:16', '2018-02-10 12:31:43', null);
+INSERT INTO `a_menu` VALUES ('41', '40', '项目管理', '<i class=\"menu-icon fa fa-folder bigger-120\"></i>', '0', '/gov/item#', null, '1', '1', '1', '1', null, '2018-02-10 12:25:16', '2018-02-10 12:31:43', null);
 INSERT INTO `a_menu` VALUES ('42', '41', '我的项目', '<i class=\"menu-icon fa fa-grav bigger-120\"></i>', '0', '/gov/item', null, '1', '1', '1', '0', null, '2018-02-10 12:25:59', '2018-02-10 17:41:25', null);
 INSERT INTO `a_menu` VALUES ('43', '41', '所有项目', '<i class=\"menu-icon fa fa-cubes bigger-120\"></i>', '0', '/gov/item_all', null, '1', '1', '1', '0', null, '2018-02-10 12:26:44', '2018-02-10 17:42:25', null);
 INSERT INTO `a_menu` VALUES ('44', '41', '新建项目', '<i class=\"menu-icon fa fa-puzzle-piece bigger-120\"></i>', '0', '/gov/item_add', null, '1', '1', '1', '0', null, '2018-02-10 12:27:28', '2018-02-10 17:43:17', null);
-INSERT INTO `a_menu` VALUES ('45', '40', '项目配置', null, '0', '/gov/iteminfo#', null, '1', '1', '1', '0', null, '2018-02-10 12:29:22', '2018-02-10 12:32:04', null);
+INSERT INTO `a_menu` VALUES ('45', '40', '项目配置', '<i class=\"menu-icon fa fa-cog bigger-120\"></i>', '0', '/gov/iteminfo#', null, '1', '1', '1', '2', null, '2018-02-10 12:29:22', '2018-02-10 12:32:04', null);
 INSERT INTO `a_menu` VALUES ('46', '45', '项目概述', null, '0', '/gov/iteminfo', null, '1', '1', '1', '0', null, '2018-02-10 12:33:05', '2018-02-10 12:33:05', null);
 INSERT INTO `a_menu` VALUES ('47', '45', '项目信息', null, '0', '/gov/iteminfo_info', null, '1', '1', '1', '0', null, '2018-02-10 12:33:47', '2018-02-10 12:33:47', null);
 INSERT INTO `a_menu` VALUES ('48', '47', '修改项目资料', null, '0', '/gov/iteminfo_edit', null, '1', '1', '0', '0', null, '2018-02-10 12:34:45', '2018-02-10 12:34:45', null);
@@ -252,10 +252,10 @@ INSERT INTO `a_menu` VALUES ('68', '64', '重置密码', null, '0', '/gov/user_r
 INSERT INTO `a_menu` VALUES ('69', '52', '个人中心', null, '0', '/gov/userself', null, '1', '0', '1', '0', null, '2018-02-10 14:12:38', '2018-02-10 14:12:38', null);
 INSERT INTO `a_menu` VALUES ('70', '69', '修改个人资料', null, '0', '/gov/userself_edit', null, '1', '0', '0', '0', null, '2018-02-10 14:13:19', '2018-02-10 14:13:55', null);
 INSERT INTO `a_menu` VALUES ('71', '69', '修改密码', null, '0', '/gov/userself_pwd', null, '1', '0', '0', '0', null, '2018-02-10 14:14:26', '2018-02-10 14:14:26', null);
-INSERT INTO `a_menu` VALUES ('72', '51', '公产单位', null, '0', '/gov/adminunit', null, '1', '1', '1', '0', null, '2018-02-11 13:30:34', '2018-02-11 13:30:34', null);
-INSERT INTO `a_menu` VALUES ('73', '72', '添加公产单位', null, '0', '/gov/adminunit_add', null, '1', '1', '0', '0', null, '2018-02-11 13:31:16', '2018-02-11 13:31:16', null);
-INSERT INTO `a_menu` VALUES ('74', '72', '公产单位详情', null, '0', '/gov/adminunit_info', null, '1', '1', '0', '0', null, '2018-02-11 13:31:43', '2018-02-11 13:31:43', null);
-INSERT INTO `a_menu` VALUES ('75', '72', '修改公产单位', null, '0', '/gov/adminunit_edit', null, '1', '1', '0', '0', null, '2018-02-11 13:32:12', '2018-02-11 13:32:12', null);
+INSERT INTO `a_menu` VALUES ('72', '51', '公房单位', null, '0', '/gov/adminunit', null, '1', '1', '1', '0', null, '2018-02-11 13:30:34', '2018-03-20 14:54:52', null);
+INSERT INTO `a_menu` VALUES ('73', '72', '添加公房单位', null, '0', '/gov/adminunit_add', null, '1', '1', '0', '0', null, '2018-02-11 13:31:16', '2018-03-20 14:55:14', null);
+INSERT INTO `a_menu` VALUES ('74', '72', '公房单位详情', null, '0', '/gov/adminunit_info', null, '1', '1', '0', '0', null, '2018-02-11 13:31:43', '2018-03-20 14:55:25', null);
+INSERT INTO `a_menu` VALUES ('75', '72', '修改公房单位', null, '0', '/gov/adminunit_edit', null, '1', '1', '0', '0', null, '2018-02-11 13:32:12', '2018-03-20 14:55:36', null);
 INSERT INTO `a_menu` VALUES ('76', '51', '银行列表', null, '0', '/gov/bank', null, '1', '1', '1', '0', null, '2018-02-11 13:32:36', '2018-02-11 13:32:36', null);
 INSERT INTO `a_menu` VALUES ('77', '76', '添加银行', null, '0', '/gov/bank_add', null, '1', '1', '0', '0', null, '2018-02-11 13:32:55', '2018-02-11 13:32:55', null);
 INSERT INTO `a_menu` VALUES ('78', '76', '银行详情', null, '0', '/gov/bank_info', null, '1', '1', '0', '0', null, '2018-02-11 13:33:26', '2018-02-11 13:33:26', null);
@@ -337,7 +337,7 @@ INSERT INTO `a_menu` VALUES ('154', '147', '修改土地来源', null, '0', '/go
 INSERT INTO `a_menu` VALUES ('261', '173', '修改社会稳定风险评估报告', null, '0', '/gov/itemriskreport_edit', null, '1', '1', '0', '0', null, '2018-03-01 14:06:34', '2018-03-01 19:08:04', null);
 INSERT INTO `a_menu` VALUES ('156', '147', '添加土地权益状况', null, '0', '/gov/landstate_add', null, '1', '1', '0', '0', null, '2018-02-22 11:46:17', '2018-02-22 11:46:17', null);
 INSERT INTO `a_menu` VALUES ('158', '147', '修改土地权益状况', null, '0', '/gov/landstate_edit', null, '1', '1', '0', '0', null, '2018-02-22 11:49:39', '2018-02-22 11:49:39', null);
-INSERT INTO `a_menu` VALUES ('159', '40', '调查建档', null, '0', '/gov/itemland#', null, '1', '1', '1', '0', null, '2018-02-22 13:41:45', '2018-02-22 15:09:40', null);
+INSERT INTO `a_menu` VALUES ('159', '40', '调查建档', '<i class=\"menu-icon fa fa-book bigger-120\"></i>', '0', '/gov/itemland#', null, '1', '1', '1', '4', null, '2018-02-22 13:41:45', '2018-02-22 15:09:40', null);
 INSERT INTO `a_menu` VALUES ('160', '159', '项目地块', null, '0', '/gov/itemland', null, '1', '1', '1', '0', null, '2018-02-22 13:43:51', '2018-02-22 13:43:51', null);
 INSERT INTO `a_menu` VALUES ('161', '160', '添加项目地块', null, '0', '/gov/itemland_add', null, '1', '1', '0', '0', null, '2018-02-22 13:44:53', '2018-02-22 13:44:53', null);
 INSERT INTO `a_menu` VALUES ('162', '160', '项目地块详情', null, '0', '/gov/itemland_info', null, '1', '1', '0', '0', null, '2018-02-22 13:46:17', '2018-02-22 13:46:17', null);
@@ -350,27 +350,27 @@ INSERT INTO `a_menu` VALUES ('168', '160', '公共附属物', null, '0', '/gov/i
 INSERT INTO `a_menu` VALUES ('169', '168', '添加公共附属物', null, '0', '/gov/itempublic_add', null, '1', '1', '0', '0', null, '2018-02-22 13:55:53', '2018-02-22 13:55:53', null);
 INSERT INTO `a_menu` VALUES ('170', '168', '公共附属物详情', null, '0', '/gov/itempublic_info', null, '1', '1', '0', '0', null, '2018-02-22 14:00:59', '2018-02-22 14:00:59', null);
 INSERT INTO `a_menu` VALUES ('171', '168', '修改公共附属物', null, '0', '/gov/itempublic_edit', null, '1', '1', '0', '0', null, '2018-02-22 14:02:04', '2018-02-22 14:02:04', null);
-INSERT INTO `a_menu` VALUES ('172', '40', '征收决定', null, '0', '/gov/itemdraft#', null, '1', '1', '1', '0', null, '2018-02-22 14:04:50', '2018-03-05 18:38:59', null);
-INSERT INTO `a_menu` VALUES ('173', '172', '社会风险评估报告', null, '0', '/gov/itemriskreport', null, '1', '1', '1', '0', null, '2018-02-22 14:06:05', '2018-03-01 16:53:25', null);
+INSERT INTO `a_menu` VALUES ('172', '40', '征收决定', '<i class=\"menu-icon fa fa-file bigger-120\"></i>', '0', '/gov/itemdraft#', null, '1', '1', '1', '8', null, '2018-02-22 14:04:50', '2018-03-05 18:38:59', null);
+INSERT INTO `a_menu` VALUES ('173', '172', '社会稳定风险评估', null, '0', '/gov/itemriskreport', null, '1', '1', '1', '2', null, '2018-02-22 14:06:05', '2018-03-20 15:20:35', null);
 INSERT INTO `a_menu` VALUES ('174', '173', '自选社会风险评估调查话题', null, '0', '/gov/itemtopic', null, '1', '1', '1', '0', null, '2018-02-22 14:06:35', '2018-02-22 14:06:35', null);
 INSERT INTO `a_menu` VALUES ('175', '174', '添加自选社会风险评估调查话题', null, '0', '/gov/itemtopic_add', null, '1', '1', '0', '0', null, '2018-02-22 14:07:55', '2018-02-22 14:07:55', null);
 INSERT INTO `a_menu` VALUES ('176', '174', '自选社会风险评估调查话题详情', null, '0', '/gov/itemtopic_info', null, '1', '1', '0', '0', null, '2018-02-22 14:08:46', '2018-02-22 14:08:46', null);
 INSERT INTO `a_menu` VALUES ('177', '174', '修改自选社会风险评估调查话题', null, '0', '/gov/itemtopic_edit', null, '1', '1', '0', '0', null, '2018-02-22 14:10:01', '2018-02-22 14:10:01', null);
-INSERT INTO `a_menu` VALUES ('178', '172', '其他补偿事项单价', null, '0', '/gov/itemobject', null, '1', '1', '1', '0', null, '2018-02-22 14:13:20', '2018-02-22 14:13:20', null);
+INSERT INTO `a_menu` VALUES ('178', '192', '其他补偿事项单价', null, '0', '/gov/itemobject', null, '1', '1', '1', '0', null, '2018-02-22 14:13:20', '2018-02-22 14:13:20', null);
 INSERT INTO `a_menu` VALUES ('179', '178', '添加其他补偿事项单价', null, '0', '/gov/itemobject_add', null, '1', '1', '0', '0', null, '2018-02-22 14:14:44', '2018-02-22 14:14:44', null);
 INSERT INTO `a_menu` VALUES ('180', '178', '其他补偿事项单价详情', null, '0', '/gov/itemobject_info', null, '1', '1', '0', '0', null, '2018-02-22 14:15:31', '2018-02-22 14:15:31', null);
 INSERT INTO `a_menu` VALUES ('181', '178', '修改其他补偿事项单价', null, '0', '/gov/itemobject_edit', null, '1', '1', '0', '0', null, '2018-02-22 14:16:31', '2018-02-22 14:16:31', null);
-INSERT INTO `a_menu` VALUES ('182', '172', '补偿科目说明', null, '0', '/gov/itemsubject', null, '1', '1', '1', '0', null, '2018-02-22 14:18:08', '2018-02-22 14:18:08', null);
+INSERT INTO `a_menu` VALUES ('182', '192', '补偿科目说明', null, '0', '/gov/itemsubject', null, '1', '1', '1', '0', null, '2018-02-22 14:18:08', '2018-02-22 14:18:08', null);
 INSERT INTO `a_menu` VALUES ('183', '182', '添加补偿科目说明', null, '0', '/gov/itemsubject_add', null, '1', '1', '0', '0', null, '2018-02-22 14:18:58', '2018-02-22 14:18:58', null);
 INSERT INTO `a_menu` VALUES ('184', '182', '补偿科目说明详情', null, '0', '/gov/itemsubject_info', null, '1', '1', '0', '0', null, '2018-02-22 14:20:15', '2018-02-22 14:20:15', null);
 INSERT INTO `a_menu` VALUES ('185', '182', '修改补偿科目说明', null, '0', '/gov/itemsubject_edit', null, '1', '1', '0', '0', null, '2018-02-22 14:21:39', '2018-02-22 14:21:39', null);
-INSERT INTO `a_menu` VALUES ('186', '40', '通知公告', null, '0', '/gov/itemnotice#', null, '1', '1', '1', '0', null, '2018-02-22 14:24:46', '2018-02-22 14:24:46', null);
+INSERT INTO `a_menu` VALUES ('186', '40', '通知公告', '<i class=\"menu-icon fa fa-newspaper-o bigger-120\"></i>', '0', '/gov/itemnotice#', null, '1', '1', '1', '3', null, '2018-02-22 14:24:46', '2018-02-22 14:24:46', null);
 INSERT INTO `a_menu` VALUES ('187', '186', '内部通知', null, '0', '/gov/itemnotice', null, '1', '1', '1', '0', null, '2018-02-22 14:26:35', '2018-03-02 09:08:23', null);
 INSERT INTO `a_menu` VALUES ('188', '187', '添加内部通知', null, '0', '/gov/itemnotice_add', null, '1', '1', '0', '0', null, '2018-02-22 14:27:37', '2018-02-22 14:27:37', null);
 INSERT INTO `a_menu` VALUES ('189', '187', '内部通知详情', null, '0', '/gov/itemnotice_info', null, '1', '1', '0', '0', null, '2018-02-22 14:29:02', '2018-02-22 14:29:02', null);
 INSERT INTO `a_menu` VALUES ('190', '187', '修改内部通知', null, '0', '/gov/itemnotice_edit', null, '1', '1', '0', '0', null, '2018-02-22 14:29:56', '2018-02-22 14:29:56', null);
 INSERT INTO `a_menu` VALUES ('191', '192', '添加征收方案', null, '0', '/gov/itemprogram_add', null, '1', '1', '0', '0', null, '2018-02-22 14:33:24', '2018-02-22 14:33:24', null);
-INSERT INTO `a_menu` VALUES ('192', '172', '征收方案', null, '0', '/gov/itemprogram_info', null, '1', '1', '1', '0', null, '2018-02-22 14:34:52', '2018-03-05 18:36:02', null);
+INSERT INTO `a_menu` VALUES ('192', '172', '征收方案', null, '0', '/gov/itemprogram', null, '1', '1', '1', '3', null, '2018-02-22 14:34:52', '2018-03-20 15:20:57', null);
 INSERT INTO `a_menu` VALUES ('193', '192', '修改征收方案', null, '0', '/gov/itemprogram_edit', null, '1', '1', '0', '0', null, '2018-02-22 14:35:55', '2018-02-22 14:35:55', null);
 INSERT INTO `a_menu` VALUES ('194', '45', '时间规划', null, '0', '/gov/itemtime', null, '1', '1', '1', '0', null, '2018-02-22 15:58:09', '2018-02-22 15:58:09', null);
 INSERT INTO `a_menu` VALUES ('195', '194', '修改时间规划', null, '0', '/gov/itemtime_edit', null, '1', '1', '0', '0', null, '2018-02-22 16:01:35', '2018-02-22 16:01:35', null);
@@ -389,7 +389,7 @@ INSERT INTO `a_menu` VALUES ('207', '45', '进度与流程', null, '0', '/gov/it
 INSERT INTO `a_menu` VALUES ('208', '203', '添加被征收户', null, '0', '/gov/householddetail_add', null, '1', '1', '0', '0', null, '2018-02-23 11:28:53', '2018-02-23 11:28:53', null);
 INSERT INTO `a_menu` VALUES ('209', '207', '提交部门审查（项目审查）', null, '0', '/gov/check_to_dept_check', null, '1', '1', '0', '0', null, '2018-02-23 11:58:55', '2018-02-23 11:58:55', null);
 INSERT INTO `a_menu` VALUES ('210', '203', '修改被征收户', null, '0', '/gov/householddetail_edit', null, '1', '1', '0', '0', null, '2018-02-23 18:18:16', '2018-02-23 18:18:16', null);
-INSERT INTO `a_menu` VALUES ('211', '159', '入户摸底', null, '0', '/gov/household', null, '1', '1', '1', '0', null, '2018-02-24 09:01:14', '2018-03-16 20:06:47', null);
+INSERT INTO `a_menu` VALUES ('211', '159', '入户摸底', null, '0', '/gov/householddetail', null, '1', '1', '1', '0', null, '2018-02-24 09:01:14', '2018-03-19 10:56:43', null);
 INSERT INTO `a_menu` VALUES ('212', '211', '被征户账号', null, '0', '/gov/household', null, '1', '1', '1', '0', null, '2018-02-24 09:16:21', '2018-02-24 09:16:21', null);
 INSERT INTO `a_menu` VALUES ('214', '211', '家庭成员', null, '0', '/gov/householdmember', null, '1', '1', '1', '0', null, '2018-02-24 10:18:31', '2018-02-24 10:18:31', null);
 INSERT INTO `a_menu` VALUES ('215', '214', '添加家庭成员', null, '0', '/gov/householdmember_add', null, '1', '1', '0', '0', null, '2018-02-24 10:26:47', '2018-02-24 10:26:47', null);
@@ -411,15 +411,15 @@ INSERT INTO `a_menu` VALUES ('230', '207', '区政府审查（项目审查）', 
 INSERT INTO `a_menu` VALUES ('231', '207', '开启项目启动配置（项目审查）', null, '0', '/gov/check_start_set', null, '1', '1', '0', '0', null, '2018-02-26 16:52:22', '2018-02-26 19:56:18', null);
 INSERT INTO `a_menu` VALUES ('232', '228', '其他事项详情', null, '0', '/gov/householdobject_info', null, '1', '1', '0', '0', null, '2018-02-26 11:34:48', '2018-02-26 11:34:48', null);
 INSERT INTO `a_menu` VALUES ('233', '228', '修改其他事项', null, '0', '/gov/householdobject_edit', null, '1', '1', '0', '0', null, '2018-02-26 11:35:36', '2018-02-26 11:35:36', null);
-INSERT INTO `a_menu` VALUES ('234', '40', '房源控制', null, '0', '/gov/itemhouse#', null, '1', '1', '1', '0', null, '2018-02-26 16:12:36', '2018-02-26 16:12:36', null);
+INSERT INTO `a_menu` VALUES ('234', '40', '房源控制', '<i class=\"menu-icon fa fa-building bigger-120\"></i>', '0', '/gov/itemhouse#', null, '1', '1', '1', '6', null, '2018-02-26 16:12:36', '2018-02-26 16:12:36', null);
 INSERT INTO `a_menu` VALUES ('235', '234', '冻结房源', null, '0', '/gov/itemhouse', null, '1', '1', '1', '0', null, '2018-02-26 16:13:29', '2018-02-26 16:13:29', null);
 INSERT INTO `a_menu` VALUES ('236', '235', '添加冻结房源', null, '0', '/gov/itemhouse_add', null, '1', '1', '0', '0', null, '2018-02-26 16:30:36', '2018-02-26 16:30:36', null);
 INSERT INTO `a_menu` VALUES ('237', '235', '冻结房源详情', null, '0', '/gov/itemhouse_info', null, '1', '1', '0', '0', null, '2018-02-27 09:18:40', '2018-02-27 09:18:40', null);
-INSERT INTO `a_menu` VALUES ('238', '40', '入围机构', null, '0', '/gov/itemcompany#', null, '1', '1', '1', '0', null, '2018-02-27 11:06:59', '2018-02-27 11:06:59', null);
+INSERT INTO `a_menu` VALUES ('238', '40', '入围机构', '<i class=\"menu-icon fa fa-bank bigger-120\"></i>', '0', '/gov/itemcompany#', null, '1', '1', '1', '5', null, '2018-02-27 11:06:59', '2018-02-27 11:06:59', null);
 INSERT INTO `a_menu` VALUES ('239', '238', '选定评估机构', null, '0', '/gov/itemcompany', null, '1', '1', '1', '0', null, '2018-02-27 11:21:37', '2018-02-27 11:21:37', null);
 INSERT INTO `a_menu` VALUES ('240', '239', '选定评估机构-添加', null, '0', '/gov/itemcompany_add', null, '1', '1', '0', '0', null, '2018-02-27 11:57:51', '2018-02-27 11:57:51', null);
 INSERT INTO `a_menu` VALUES ('241', '194', '添加时间规划', null, '0', '/gov/itemtime_add', null, '1', '1', '0', '0', null, '2018-02-27 18:55:38', '2018-02-27 18:55:38', null);
-INSERT INTO `a_menu` VALUES ('242', '172', '征收意见稿', null, '0', '/gov/itemdraft', null, '1', '1', '1', '0', null, '2018-02-28 09:41:23', '2018-02-28 10:12:04', null);
+INSERT INTO `a_menu` VALUES ('242', '172', '征收意见稿', null, '0', '/gov/itemdraft', null, '1', '1', '1', '1', null, '2018-02-28 09:41:23', '2018-03-20 15:20:12', null);
 INSERT INTO `a_menu` VALUES ('243', '239', '选定评估机构-详情', null, '0', '/gov/itemcompany_info', null, '1', '1', '0', '0', null, '2018-02-28 09:45:06', '2018-02-28 09:45:06', null);
 INSERT INTO `a_menu` VALUES ('244', '231', '配置项目负责人（项目审查）', null, '0', '/gov/check_set_itemadmin', null, '1', '1', '0', '0', null, '2018-02-28 09:53:25', '2018-02-28 09:53:25', null);
 INSERT INTO `a_menu` VALUES ('245', '231', '配置项目人员（项目审查）', null, '0', '/gov/check_set_itemuser', null, '1', '1', '0', '0', null, '2018-02-28 09:59:47', '2018-02-28 09:59:47', null);
@@ -436,13 +436,13 @@ INSERT INTO `a_menu` VALUES ('256', '253', '修改听证会意见', null, '0', '
 INSERT INTO `a_menu` VALUES ('257', '45', '初步预算', null, '0', '/gov/initbudget', null, '1', '1', '1', '0', null, '2018-02-28 19:55:21', '2018-02-28 19:55:21', null);
 INSERT INTO `a_menu` VALUES ('258', '257', '添加初步预算', null, '0', '/gov/initbudget_add', null, '1', '1', '0', '0', null, '2018-02-28 19:56:27', '2018-02-28 19:56:27', null);
 INSERT INTO `a_menu` VALUES ('262', '173', '社会稳定风险评估', null, '0', '/gov/itemrisk', null, '1', '1', '0', '0', null, '2018-03-01 14:07:26', '2018-03-01 19:08:28', null);
-INSERT INTO `a_menu` VALUES ('263', '0', '首页', '<i class=\"menu-icon fa fa-home bigger-120\"></i>', '1', '/com/home#', null, '1', '1', '1', '0', null, '2018-03-01 14:29:00', '2018-03-08 15:10:08', null);
+INSERT INTO `a_menu` VALUES ('263', '0', '首页', '<i class=\"menu-icon fa fa-home bigger-120\"></i>', '1', '/com/home', null, '1', '1', '1', '0', null, '2018-03-01 14:29:00', '2018-03-22 10:19:51', null);
 INSERT INTO `a_menu` VALUES ('264', '0', '简介', '<i class=\"menu-icon fa fa-list bigger-120\"></i>', '1', '/com/company_info#', null, '1', '1', '1', '0', null, '2018-03-01 14:29:45', '2018-03-08 15:26:41', null);
-INSERT INTO `a_menu` VALUES ('265', '0', '我的项目', '<i class=\"menu-icon fa fa-th bigger-120\"></i>', '1', '/com/item', null, '1', '1', '1', '0', null, '2018-03-01 14:30:37', '2018-03-01 14:48:19', null);
+INSERT INTO `a_menu` VALUES ('265', '0', '我的项目', '<i class=\"menu-icon fa fa-th bigger-120\"></i>', '1', '/com/item', null, '1', '1', '1', '0', null, '2018-03-01 14:30:37', '2018-03-22 10:20:32', null);
 INSERT INTO `a_menu` VALUES ('266', '0', '管理', '<i class=\"menu-icon fa fa-server bigger-120\"></i>', '1', '/com/companyuser#', null, '1', '1', '1', '0', null, '2018-03-01 14:57:35', '2018-03-08 15:57:40', null);
 INSERT INTO `a_menu` VALUES ('267', '0', '设置', '<i class=\"menu-icon fa fa-cogs bigger-120\"></i>', '1', '/com/userself#', null, '1', '1', '1', '0', null, '2018-03-01 14:59:04', '2018-03-01 14:59:04', null);
-INSERT INTO `a_menu` VALUES ('268', '40', '资金管理', null, '0', '/gov/funds#', null, '1', '1', '1', '0', null, '2018-03-01 15:30:36', '2018-03-01 15:31:10', null);
-INSERT INTO `a_menu` VALUES ('269', '265', '摸底资料', null, '1', '/com/household', null, '1', '1', '1', '0', null, '2018-03-01 15:37:28', '2018-03-08 14:43:57', null);
+INSERT INTO `a_menu` VALUES ('268', '40', '资金管理', '<i class=\"menu-icon fa fa-cny bigger-120\"></i>', '0', '/gov/funds#', null, '1', '1', '1', '7', null, '2018-03-01 15:30:36', '2018-03-01 15:31:10', null);
+INSERT INTO `a_menu` VALUES ('269', '265', '项目地块', null, '1', '/com/itemland', null, '1', '1', '1', '0', null, '2018-03-01 15:37:28', '2018-03-22 09:19:47', null);
 INSERT INTO `a_menu` VALUES ('270', '268', '资金预览', null, '0', '/gov/funds', null, '1', '1', '1', '0', null, '2018-03-01 17:25:43', '2018-03-01 17:25:43', null);
 INSERT INTO `a_menu` VALUES ('271', '211', '被征收户-房屋建筑', null, '0', '/gov/householdbuilding', null, '1', '1', '1', '0', null, '2018-03-01 18:57:04', '2018-03-01 18:57:04', null);
 INSERT INTO `a_menu` VALUES ('272', '268', '录入资金', null, '0', '/gov/funds_add', null, '1', '1', '1', '0', null, '2018-03-01 18:58:36', '2018-03-01 18:58:36', null);
@@ -461,21 +461,21 @@ INSERT INTO `a_menu` VALUES ('287', '238', '评估机构投票', '', '0', '/gov/
 INSERT INTO `a_menu` VALUES ('285', '283', '添加社会稳定风险评估', null, '2', '/household/itemrisk_add', null, '1', '0', '0', '0', null, '2018-03-02 15:26:29', '2018-03-02 15:31:12', null);
 INSERT INTO `a_menu` VALUES ('286', '283', '修改社会稳定风险评估', null, '2', '/household/itemrisk_edit', null, '1', '0', '0', '0', null, '2018-03-02 15:31:54', '2018-03-02 15:31:54', null);
 INSERT INTO `a_menu` VALUES ('288', '287', '评估机构投票详情', null, '0', '/gov/companyvote_info', null, '1', '1', '0', '0', null, '2018-03-02 18:14:55', '2018-03-02 18:14:55', null);
-INSERT INTO `a_menu` VALUES ('289', '40', '协商协议', null, '0', '/gov/pay#', null, '1', '1', '1', '0', null, '2018-03-05 08:43:01', '2018-03-05 08:43:01', null);
-INSERT INTO `a_menu` VALUES ('290', '289', '补偿兑付', null, '0', '/gov/pay', null, '1', '1', '1', '0', null, '2018-03-05 08:43:40', '2018-03-05 08:43:40', null);
+INSERT INTO `a_menu` VALUES ('289', '40', '项目实施', '<i class=\"menu-icon fa fa-balance-scale bigger-120\"></i>', '0', '/gov/pay#', null, '1', '1', '1', '9', null, '2018-03-05 08:43:01', '2018-03-20 15:39:16', null);
+INSERT INTO `a_menu` VALUES ('290', '289', '协商协议', null, '0', '/gov/pay', null, '1', '1', '1', '0', null, '2018-03-05 08:43:40', '2018-03-20 14:50:29', null);
 INSERT INTO `a_menu` VALUES ('291', '290', '补偿决定', null, '0', '/gov/pay_add', null, '1', '1', '0', '0', null, '2018-03-05 08:44:26', '2018-03-10 15:51:49', null);
-INSERT INTO `a_menu` VALUES ('292', '290', '兑付详情', null, '0', '/gov/pay_info', null, '1', '1', '0', '0', null, '2018-03-05 08:44:46', '2018-03-05 08:44:46', null);
+INSERT INTO `a_menu` VALUES ('292', '290', '补偿详情', null, '0', '/gov/pay_info', null, '1', '1', '0', '0', null, '2018-03-05 08:44:46', '2018-03-20 14:50:47', null);
 INSERT INTO `a_menu` VALUES ('293', '290', '修改兑付', null, '0', '/gov/pay_edit', null, '1', '1', '0', '0', null, '2018-03-05 08:46:34', '2018-03-05 08:46:34', null);
-INSERT INTO `a_menu` VALUES ('294', '319', '评估机构投票', null, '2', '/household/itemcompanyvote', null, '1', '0', '1', '0', null, '2018-03-05 09:25:24', '2018-03-07 14:05:16', null);
+INSERT INTO `a_menu` VALUES ('294', '319', '评估机构投票', null, '2', '/household/itemcompanyvote', null, '1', '1', '1', '0', null, '2018-03-05 09:25:24', '2018-03-19 09:45:40', null);
 INSERT INTO `a_menu` VALUES ('320', '294', '我的投票', null, '2', '/household/itemcompanyvote_info', null, '1', '1', '0', '0', null, '2018-03-07 15:28:14', '2018-03-07 15:28:14', null);
 INSERT INTO `a_menu` VALUES ('295', '294', '添加评估机构投票', null, '2', '/household/itemcompanyvote_add', null, '1', '0', '0', '0', null, '2018-03-05 09:45:55', '2018-03-05 10:35:44', null);
 INSERT INTO `a_menu` VALUES ('296', '294', '修改评估机构投票', null, '2', '/household/itemcompanyvote_edit', null, '1', '0', '0', '0', null, '2018-03-05 09:46:52', '2018-03-05 11:14:38', null);
-INSERT INTO `a_menu` VALUES ('297', '172', '特殊人群优惠', null, '0', '/gov/itemcrowd', null, '1', '1', '1', '0', null, '2018-03-05 14:09:06', '2018-03-05 14:09:34', null);
+INSERT INTO `a_menu` VALUES ('297', '192', '特殊人群的优惠上浮', null, '0', '/gov/itemcrowd', null, '1', '1', '1', '0', null, '2018-03-05 14:09:06', '2018-03-19 21:00:22', null);
 INSERT INTO `a_menu` VALUES ('298', '297', '添加特殊人群优惠上浮率', null, '0', '/gov/itemcrowd_add', null, '1', '1', '0', '0', null, '2018-03-05 14:12:18', '2018-03-05 14:12:18', null);
 INSERT INTO `a_menu` VALUES ('299', '297', '特殊人群优惠上浮率详情', null, '0', '/gov/itemcrowd_info', null, '1', '1', '0', '0', null, '2018-03-05 14:13:12', '2018-03-05 14:13:12', null);
 INSERT INTO `a_menu` VALUES ('300', '297', '修改特殊人群优惠上浮率', null, '0', '/gov/itemcrowd_edit', null, '1', '1', '0', '0', null, '2018-03-05 14:14:01', '2018-03-05 14:14:01', null);
 INSERT INTO `a_menu` VALUES ('301', '54', '工作提醒数量', null, '0', '/gov/noticenum', null, '1', '0', '0', '0', null, '2018-03-05 16:19:43', '2018-03-05 16:19:43', null);
-INSERT INTO `a_menu` VALUES ('302', '172', '产权调换优惠', null, '0', '/gov/itemhouserate', null, '1', '1', '1', '0', null, '2018-03-05 16:45:03', '2018-03-05 16:45:03', null);
+INSERT INTO `a_menu` VALUES ('302', '192', '产权调换房的优惠上浮', null, '0', '/gov/itemhouserate', null, '1', '1', '1', '0', null, '2018-03-05 16:45:03', '2018-03-19 21:00:02', null);
 INSERT INTO `a_menu` VALUES ('303', '302', '产权调换优惠详情', null, '0', '/gov/itemhouserate_info', null, '1', '1', '0', '0', null, '2018-03-05 16:46:18', '2018-03-05 16:46:18', null);
 INSERT INTO `a_menu` VALUES ('304', '302', '添加产权调换优惠', null, '0', '/gov/itemhouserate_add', null, '1', '1', '0', '0', null, '2018-03-05 16:46:49', '2018-03-05 16:46:49', null);
 INSERT INTO `a_menu` VALUES ('305', '302', '修改产权调换优惠', null, '0', '/gov/itemhouserate_edit', null, '1', '1', '0', '0', null, '2018-03-05 16:47:26', '2018-03-05 16:47:26', null);
@@ -491,7 +491,7 @@ INSERT INTO `a_menu` VALUES ('314', '290', '开始选房', null, '0', '/gov/payh
 INSERT INTO `a_menu` VALUES ('315', '307', '其他补偿事项', null, '2', '/household/householdobject_info', null, '1', '1', '0', '0', null, '2018-03-06 13:56:49', '2018-03-06 13:57:52', null);
 INSERT INTO `a_menu` VALUES ('316', '307', '特殊人群信息', null, '2', '/household/householdmembercrowd_info', null, '1', '1', '0', '0', null, '2018-03-06 14:47:41', '2018-03-06 14:47:41', null);
 INSERT INTO `a_menu` VALUES ('317', '321', '征收补偿', '<i class=\"menu-icon fa fa-money bigger-120\"></i>', '2', '/household/pay_info', null, '1', '1', '1', '0', null, '2018-03-06 15:02:20', '2018-03-08 14:12:28', null);
-INSERT INTO `a_menu` VALUES ('318', '265', '公共附属物', null, '1', '/com/compublic', null, '1', '1', '1', '0', null, '2018-03-07 09:11:44', '2018-03-07 09:11:44', null);
+INSERT INTO `a_menu` VALUES ('318', '265', '入户摸底', null, '1', '/com/household', null, '1', '1', '1', '0', null, '2018-03-07 09:11:44', '2018-03-22 09:20:17', null);
 INSERT INTO `a_menu` VALUES ('319', '0', '投票', '<i class=\"menu-icon fa fa-comment bigger-120\"></i>', '2', '/household/itemcompanyvote#', null, '1', '1', '1', '0', null, '2018-03-07 13:41:51', '2018-03-07 14:03:24', null);
 INSERT INTO `a_menu` VALUES ('321', '0', '更多', '<i class=\"menu-icon fa fa-th-large bigger-120\"></i>', '2', '/household/pay#', null, '1', '1', '1', '10', null, '2018-03-07 15:56:59', '2018-03-07 15:56:59', null);
 INSERT INTO `a_menu` VALUES ('322', '319', '入围机构', null, '2', '/household/itemcompany', null, '1', '1', '1', '0', null, '2018-03-07 16:24:34', '2018-03-07 16:24:34', null);
@@ -557,7 +557,93 @@ INSERT INTO `a_menu` VALUES ('382', '381', '添加资产确认', null, '0', '/go
 INSERT INTO `a_menu` VALUES ('383', '381', '资产确认详情', null, '0', '/gov/householdassets_reportinfo', null, '1', '1', '0', '0', null, '2018-03-16 09:52:02', '2018-03-16 09:52:02', null);
 INSERT INTO `a_menu` VALUES ('384', '381', '资产列表', null, '0', '/gov/householdassets_reportlist', null, '1', '1', '0', '0', null, '2018-03-16 11:33:42', '2018-03-16 11:33:42', null);
 INSERT INTO `a_menu` VALUES ('385', '327', '房源详情', null, '2', '/household/itemhouse_info', null, '1', '1', '0', '0', null, '2018-03-16 17:25:58', '2018-03-16 17:25:58', null);
-INSERT INTO `a_menu` VALUES ('386', '327', '添加备选安置房', null, '2', '/household/payhousebak_add', null, '1', '1', '0', '0', null, '2018-03-16 18:03:40', '2018-03-16 18:03:40', null);
+INSERT INTO `a_menu` VALUES ('386', '327', '添加备选安置房', null, '2', '/household/payhousebak_add', null, '1', '1', '0', '0', null, '2018-03-16 18:03:40', '2018-03-21 11:18:51', null);
+INSERT INTO `a_menu` VALUES ('387', '326', '我的选房', null, '2', '/household/payhousebak', null, '1', '1', '1', '0', null, '2018-03-19 09:23:10', '2018-03-19 09:46:36', null);
+INSERT INTO `a_menu` VALUES ('388', '358', '房产确认', null, '0', '/gov/buildingconfirm', null, '1', '1', '1', '0', null, '2018-03-19 10:13:53', '2018-03-19 10:13:53', null);
+INSERT INTO `a_menu` VALUES ('389', '388', '房产确认详情', null, '0', '/gov/buildingconfirm_info', null, '1', '1', '0', '0', null, '2018-03-19 10:15:26', '2018-03-19 10:15:26', null);
+INSERT INTO `a_menu` VALUES ('390', '207', '征收意见稿审查（征收决定）', null, '0', '/gov/draft_check', null, '1', '1', '0', '0', null, '2018-03-19 11:06:04', '2018-03-19 11:08:25', null);
+INSERT INTO `a_menu` VALUES ('391', '278', '添加征收意见稿公告', null, '0', '/gov/draft_notice_add', null, '1', '1', '0', '0', null, '2018-03-19 12:03:00', '2018-03-19 12:03:00', null);
+INSERT INTO `a_menu` VALUES ('392', '278', '修改征收意见稿公告', null, '0', '/gov/draft_notice_edit', null, '1', '1', '0', '0', null, '2018-03-19 12:03:41', '2018-03-19 12:03:41', null);
+INSERT INTO `a_menu` VALUES ('393', '388', '关联建筑-房屋建筑列表', null, '0', '/gov/buildingrelated', null, '1', '1', '0', '0', null, '2018-03-19 14:43:46', '2018-03-19 14:55:18', null);
+INSERT INTO `a_menu` VALUES ('394', '388', '关联建筑-关联评估数据', null, '0', '/gov/buildingrelated_com', null, '1', '1', '0', '0', null, '2018-03-19 15:13:44', '2018-03-19 15:13:44', null);
+INSERT INTO `a_menu` VALUES ('395', '317', '修改兑付方式', null, '2', '/household/pay_edit', null, '1', '1', '0', '0', null, '2018-03-19 16:54:58', '2018-03-19 16:54:58', null);
+INSERT INTO `a_menu` VALUES ('396', '207', '风险评估报告审查（征收决定）', null, '0', '/gov/riskreport_check', null, '1', '1', '0', '0', null, '2018-03-19 17:20:26', '2018-03-19 17:20:26', null);
+INSERT INTO `a_menu` VALUES ('397', '388', '关联建筑-关联评估数据详情', null, '0', '/gov/relatedcom_info', null, '1', '1', '0', '0', null, '2018-03-19 17:23:03', '2018-03-19 17:23:03', null);
+INSERT INTO `a_menu` VALUES ('398', '207', '正式征收方案提交审查（征收决定）', null, '0', '/gov/program_to_check', null, '1', '1', '0', '0', null, '2018-03-19 17:51:13', '2018-03-19 17:51:13', null);
+INSERT INTO `a_menu` VALUES ('399', '207', '正式征收方案审查（征收决定）', null, '0', '/gov/program_check', null, '1', '1', '0', '0', null, '2018-03-19 17:51:37', '2018-03-19 17:51:37', null);
+INSERT INTO `a_menu` VALUES ('400', '192', '产权调换房的签约奖励', null, '0', '/gov/itemreward', null, '1', '1', '0', '0', null, '2018-03-19 20:56:39', '2018-03-19 20:56:39', null);
+INSERT INTO `a_menu` VALUES ('401', '400', '添加签约奖励', null, '0', '/gov/itemreward_add', null, '1', '1', '0', '0', null, '2018-03-19 20:57:36', '2018-03-19 20:57:36', null);
+INSERT INTO `a_menu` VALUES ('402', '400', '修改签约奖励', null, '0', '/gov/itemreward_edit', null, '1', '1', '0', '0', null, '2018-03-19 20:57:59', '2018-03-19 20:57:59', null);
+INSERT INTO `a_menu` VALUES ('403', '278', '添加征收决定公告', null, '0', '/gov/program_notice_add', null, '1', '1', '0', '0', null, '2018-03-20 11:57:55', '2018-03-20 11:57:55', null);
+INSERT INTO `a_menu` VALUES ('404', '278', '修改征收决定公告', null, '0', '/gov/program_notice_edit', null, '1', '1', '0', '0', null, '2018-03-20 11:58:23', '2018-03-20 11:58:23', null);
+INSERT INTO `a_menu` VALUES ('405', '207', '项目开始实施（项目实施）', null, '0', '/gov/pay_start', null, '1', '1', '0', '0', null, '2018-03-20 13:58:32', '2018-03-20 13:58:32', null);
+INSERT INTO `a_menu` VALUES ('406', '234', '临时周转', null, '0', '/gov/transit', null, '1', '1', '1', '0', null, '2018-03-20 14:36:48', '2018-03-20 14:36:48', null);
+INSERT INTO `a_menu` VALUES ('407', '234', '产权调换', null, '0', '/gov/resettle', null, '1', '1', '1', '0', null, '2018-03-20 14:37:17', '2018-03-20 14:37:17', null);
+INSERT INTO `a_menu` VALUES ('408', '49', '房源管理费', null, '0', '/gov/housemanagefee', null, '1', '1', '1', '0', null, '2018-03-20 14:54:25', '2018-03-20 14:54:25', null);
+INSERT INTO `a_menu` VALUES ('409', '268', '被征收户', null, '0', '/gov/funds_household', null, '1', '1', '1', '0', null, '2018-03-20 15:07:43', '2018-03-20 15:07:43', null);
+INSERT INTO `a_menu` VALUES ('410', '268', '公房单位', null, '0', '/gov/funds_unit', null, '1', '1', '1', '0', null, '2018-03-20 15:08:14', '2018-03-20 15:08:14', null);
+INSERT INTO `a_menu` VALUES ('411', '268', '项目支出', null, '0', '/gov/funds_out', null, '1', '1', '1', '0', null, '2018-03-20 15:09:01', '2018-03-20 15:09:01', null);
+INSERT INTO `a_menu` VALUES ('412', '289', '公房单位', null, '0', '/gov/payunit', null, '1', '1', '1', '0', null, '2018-03-20 15:15:26', '2018-03-20 15:15:26', null);
+INSERT INTO `a_menu` VALUES ('413', '289', '腾空搬迁', null, '0', '/gov/move', null, '1', '1', '1', '0', null, '2018-03-20 15:17:11', '2018-03-20 15:17:11', null);
+INSERT INTO `a_menu` VALUES ('414', '40', '项目审计', '<i class=\"menu-icon fa fa-legal bigger-120\"></i>', '0', '/gov/audit#', null, '1', '1', '1', '10', null, '2018-03-20 15:18:45', '2018-03-20 15:18:45', null);
+INSERT INTO `a_menu` VALUES ('415', '414', '审计报告', null, '0', '/gov/audit', null, '1', '1', '1', '0', null, '2018-03-20 15:19:24', '2018-03-20 15:19:24', null);
+INSERT INTO `a_menu` VALUES ('416', '278', '添加其他公告', null, '0', '/gov/news_other_add', null, '1', '1', '0', '0', null, '2018-03-20 15:59:16', '2018-03-20 15:59:16', null);
+INSERT INTO `a_menu` VALUES ('417', '278', '修改公告', null, '0', '/gov/news_other_edit', null, '1', '1', '0', '0', null, '2018-03-20 15:59:36', '2018-03-20 15:59:36', null);
+INSERT INTO `a_menu` VALUES ('418', '409', '被征收户补偿详情', null, '0', '/gov/funds_household_info', null, '1', '1', '0', '0', null, '2018-03-20 18:50:04', '2018-03-20 18:50:04', null);
+INSERT INTO `a_menu` VALUES ('422', '420', '公共附属物信息确认', null, '0', '/gov/publicinfo', null, '1', '1', '0', '0', null, '2018-03-21 14:21:17', '2018-03-21 14:21:17', null);
+INSERT INTO `a_menu` VALUES ('420', '358', '公共附属物确认', null, '0', '/gov/landiist', null, '1', '1', '1', '0', null, '2018-03-21 11:17:17', '2018-03-21 11:17:17', null);
+INSERT INTO `a_menu` VALUES ('421', '420', '公共附属物列表', null, '0', '/gov/publiclist', null, '1', '1', '0', '0', null, '2018-03-21 11:18:29', '2018-03-21 11:18:29', null);
+INSERT INTO `a_menu` VALUES ('423', '387', '移除房源', null, '2', '/household/payhousebak_remove', null, '1', '1', '0', '0', null, '2018-03-21 16:54:41', '2018-03-21 16:54:41', null);
+INSERT INTO `a_menu` VALUES ('424', '289', '监督拆除', null, '0', '/gov/tear', null, '1', '1', '1', '0', null, '2018-03-21 17:02:57', '2018-03-21 17:02:57', null);
+INSERT INTO `a_menu` VALUES ('425', '317', '补偿科目详情', null, '2', '/household/paysubject_info', null, '1', '1', '0', '0', null, '2018-03-21 17:48:22', '2018-03-21 17:48:22', null);
+INSERT INTO `a_menu` VALUES ('426', '265', '信息评估', null, '1', '/com/comassess', null, '1', '1', '1', '0', null, '2018-03-21 18:00:18', '2018-03-22 09:20:51', null);
+INSERT INTO `a_menu` VALUES ('463', '415', '添加审计报告', null, '0', '/gov/audit_add', null, '1', '1', '0', '0', null, '2018-03-22 10:27:34', '2018-03-22 10:27:34', null);
+INSERT INTO `a_menu` VALUES ('427', '269', '项目地块-添加', null, '1', '/com/itemland_add', null, '1', '1', '0', '0', null, '2018-03-22 09:22:30', '2018-03-22 09:22:30', null);
+INSERT INTO `a_menu` VALUES ('428', '269', '项目地块-详情', null, '1', '/com/itemland_info', null, '1', '1', '0', '0', null, '2018-03-22 09:23:11', '2018-03-22 09:23:11', null);
+INSERT INTO `a_menu` VALUES ('429', '269', '项目地块-修改', null, '1', '/com/itemland_edit', null, '1', '1', '0', '0', null, '2018-03-22 09:23:58', '2018-03-22 09:23:58', null);
+INSERT INTO `a_menu` VALUES ('430', '269', '地块楼栋', null, '1', '/com/itembuilding', null, '1', '1', '0', '0', null, '2018-03-22 09:27:44', '2018-03-22 10:35:14', null);
+INSERT INTO `a_menu` VALUES ('431', '430', '地块楼栋-添加', null, '1', '/com/itembuilding_add', null, '1', '1', '0', '0', null, '2018-03-22 09:28:47', '2018-03-22 09:28:47', null);
+INSERT INTO `a_menu` VALUES ('432', '430', '地块楼栋-详情', null, '1', '/com/itembuilding_info', null, '1', '1', '0', '0', null, '2018-03-22 09:28:47', '2018-03-22 09:28:47', null);
+INSERT INTO `a_menu` VALUES ('433', '430', '地块楼栋-修改', null, '1', '/com/itembuilding_edit', null, '1', '1', '0', '0', null, '2018-03-22 09:28:47', '2018-03-22 09:28:47', null);
+INSERT INTO `a_menu` VALUES ('434', '269', '公共附属物', null, '1', '/com/itempublic', null, '1', '1', '0', '0', null, '2018-03-22 09:33:22', '2018-03-22 10:35:31', null);
+INSERT INTO `a_menu` VALUES ('435', '434', '公共附属物-添加', null, '1', '/com/itempublic_add', null, '1', '1', '0', '0', null, '2018-03-22 09:36:10', '2018-03-22 09:36:10', null);
+INSERT INTO `a_menu` VALUES ('436', '434', '公共附属物-详情', null, '1', '/com/itempublic_info', null, '1', '1', '0', '0', null, '2018-03-22 09:36:10', '2018-03-22 09:36:10', null);
+INSERT INTO `a_menu` VALUES ('437', '434', '公共附属物-修改', null, '1', '/com/itempublic_edit', null, '1', '1', '0', '0', null, '2018-03-22 09:36:10', '2018-03-22 09:36:10', null);
+INSERT INTO `a_menu` VALUES ('438', '269', '地块户型', null, '1', '/comlandlayout', null, '1', '1', '0', '0', null, '2018-03-22 09:50:44', '2018-03-22 10:36:06', null);
+INSERT INTO `a_menu` VALUES ('439', '412', '补偿详情', null, '0', '/gov/payunit_info', null, '1', '1', '0', '0', null, '2018-03-22 09:52:40', '2018-03-22 09:52:40', null);
+INSERT INTO `a_menu` VALUES ('440', '409', '生成支付总单', null, '0', '/gov/funds_pay_total', null, '1', '1', '0', '0', null, '2018-03-22 09:54:13', '2018-03-22 09:54:13', null);
+INSERT INTO `a_menu` VALUES ('441', '438', '地块户型-添加', null, '1', '/com/landlayout_add', null, '1', '1', '0', '0', null, '2018-03-22 09:53:38', '2018-03-22 09:53:38', null);
+INSERT INTO `a_menu` VALUES ('442', '268', '支付总单支付', null, '0', '/gov/funds_pay_total_funds', null, '1', '1', '0', '0', null, '2018-03-22 09:56:24', '2018-03-22 09:56:24', null);
+INSERT INTO `a_menu` VALUES ('443', '410', '补偿详情', null, '0', '/gov/funds_unit_info', null, '1', '1', '0', '0', null, '2018-03-22 09:56:55', '2018-03-22 09:56:55', null);
+INSERT INTO `a_menu` VALUES ('444', '410', '生成支付总单', null, '0', '/gov/funds_unit_total', null, '1', '1', '0', '0', null, '2018-03-22 09:57:22', '2018-03-22 09:57:22', null);
+INSERT INTO `a_menu` VALUES ('445', '438', '地块户型-详情', null, '1', '/com/landlayout_info', null, '1', '1', '0', '0', null, '2018-03-22 09:55:55', '2018-03-22 09:55:55', null);
+INSERT INTO `a_menu` VALUES ('446', '438', '地块户型-修改', null, '1', '/com/landlayout_edit', null, '1', '1', '0', '0', null, '2018-03-22 09:56:46', '2018-03-22 09:56:46', null);
+INSERT INTO `a_menu` VALUES ('447', '413', '标记已搬迁', null, '0', '/gov/move_edit', null, '1', '1', '0', '0', null, '2018-03-22 10:00:12', '2018-03-22 10:00:12', null);
+INSERT INTO `a_menu` VALUES ('448', '424', '添加拆除委托', null, '0', '/gov/tear_add', null, '1', '1', '0', '0', null, '2018-03-22 10:01:07', '2018-03-22 10:01:07', null);
+INSERT INTO `a_menu` VALUES ('449', '318', '入户摸底详情', null, '1', '/com/household_info', null, '1', '1', '0', '0', null, '2018-03-22 10:04:06', '2018-03-22 10:04:06', null);
+INSERT INTO `a_menu` VALUES ('450', '318', '摸底信息-添加', null, '1', '/com/household_add', null, '1', '1', '0', '0', null, '2018-03-22 10:05:08', '2018-03-22 10:05:08', null);
+INSERT INTO `a_menu` VALUES ('451', '318', '摸底信息-修改', null, '1', '/com/household_edit', null, '1', '1', '0', '0', null, '2018-03-22 10:05:57', '2018-03-22 10:05:57', null);
+INSERT INTO `a_menu` VALUES ('452', '318', '添加房屋建筑', null, '1', '/com/household_buildingadd', null, '1', '1', '0', '0', null, '2018-03-22 10:07:20', '2018-03-22 10:07:20', null);
+INSERT INTO `a_menu` VALUES ('453', '318', '房屋建筑详情', null, '1', '/com/household_buildinginfo', null, '1', '1', '0', '0', null, '2018-03-22 10:08:14', '2018-03-22 10:08:14', null);
+INSERT INTO `a_menu` VALUES ('454', '318', '修改房屋建筑信息', null, '1', '/com/household_buildingedit', null, '1', '1', '0', '0', null, '2018-03-22 10:08:50', '2018-03-22 10:08:50', null);
+INSERT INTO `a_menu` VALUES ('455', '426', '开始评估', null, '1', '/com/comassess_add', null, '1', '1', '0', '0', null, '2018-03-22 10:10:51', '2018-03-22 10:10:51', null);
+INSERT INTO `a_menu` VALUES ('456', '426', '修改评估', null, '1', '/com/comassess_info', null, '1', '1', '0', '0', null, '2018-03-22 10:12:29', '2018-03-22 10:12:29', null);
+INSERT INTO `a_menu` VALUES ('457', '426', '评估公共附属物-地块列表', null, '1', '/com/comassess_publiclist', null, '1', '1', '0', '0', null, '2018-03-22 10:13:40', '2018-03-22 10:13:40', null);
+INSERT INTO `a_menu` VALUES ('458', '426', '评估公共附属物-开始评估', null, '1', '/com/comassess_publiclist', null, '1', '1', '0', '0', null, '2018-03-22 10:14:23', '2018-03-22 10:14:23', null);
+INSERT INTO `a_menu` VALUES ('459', '267', '修改信息', null, '1', '/com/userself_edit', null, '1', '1', '0', '0', null, '2018-03-22 10:15:18', '2018-03-22 10:15:18', null);
+INSERT INTO `a_menu` VALUES ('460', '424', '修改拆除委托', null, '0', '/gov/tear_edit', null, '1', '1', '0', '0', null, '2018-03-22 10:17:25', '2018-03-22 10:17:25', null);
+INSERT INTO `a_menu` VALUES ('461', '267', '修改密码', null, '1', '/com/userself_pwd', null, '1', '1', '0', '0', null, '2018-03-22 10:15:48', '2018-03-22 10:15:48', null);
+INSERT INTO `a_menu` VALUES ('462', '424', '添加拆除记录', null, '0', '/gov/tear_detail_add', null, '1', '1', '0', '0', null, '2018-03-22 10:18:00', '2018-03-22 10:18:00', null);
+INSERT INTO `a_menu` VALUES ('464', '0', '常用工具', null, '1', '#', null, '1', '1', '0', '0', null, '2018-03-22 11:57:01', '2018-03-22 11:57:01', null);
+INSERT INTO `a_menu` VALUES ('465', '464', '错误提示页', null, '1', '/com/error', null, '1', '1', '0', '0', null, '2018-03-22 11:57:32', '2018-03-22 11:57:32', null);
+INSERT INTO `a_menu` VALUES ('466', '464', '文件上传', null, '1', '/com/upl', null, '1', '1', '0', '0', null, '2018-03-22 11:58:09', '2018-03-22 11:58:09', null);
+INSERT INTO `a_menu` VALUES ('467', '406', '临时周转详情', null, '0', '/gov/transit_info', null, '1', '1', '0', '0', null, '2018-03-22 15:29:55', '2018-03-22 15:29:55', null);
+INSERT INTO `a_menu` VALUES ('468', '406', '开始过渡', null, '0', '/gov/transit_add', null, '1', '1', '0', '0', null, '2018-03-22 15:30:21', '2018-03-22 15:30:21', null);
+INSERT INTO `a_menu` VALUES ('469', '406', '结束过渡', null, '0', '/gov/transit_edit', null, '1', '1', '0', '0', null, '2018-03-22 15:30:43', '2018-03-22 15:30:43', null);
+INSERT INTO `a_menu` VALUES ('470', '407', '产权调换详情', null, '0', '/gov/resettle_info', null, '1', '1', '0', '0', null, '2018-03-22 17:18:56', '2018-03-22 17:18:56', null);
+INSERT INTO `a_menu` VALUES ('471', '407', '开始安置', null, '0', '/gov/resettle_add', null, '1', '1', '0', '0', null, '2018-03-22 17:19:25', '2018-03-22 17:19:25', null);
+INSERT INTO `a_menu` VALUES ('472', '407', '更新安置状态', null, '0', '/gov/resettle_edit', null, '1', '1', '0', '0', null, '2018-03-22 17:19:59', '2018-03-22 17:19:59', null);
+INSERT INTO `a_menu` VALUES ('473', '408', '计算房源管理费', null, '0', '/gov/housemanagefee_add', null, '1', '1', '0', '0', null, '2018-03-22 18:32:49', '2018-03-22 18:32:49', null);
 
 -- ----------------------------
 -- Table structure for a_news_cate
@@ -572,12 +658,16 @@ CREATE TABLE `a_news_cate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='通知公告-分类';
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='通知公告-分类';
 
 -- ----------------------------
 -- Records of a_news_cate
 -- ----------------------------
 INSERT INTO `a_news_cate` VALUES ('1', '征收范围公告', null, '2018-02-09 16:24:03', '2018-02-09 16:27:03', null);
+INSERT INTO `a_news_cate` VALUES ('2', '征收意见稿公告', null, '2018-03-19 11:31:26', '2018-03-19 11:31:26', null);
+INSERT INTO `a_news_cate` VALUES ('3', '征收决定公告', null, '2018-03-20 11:22:50', '2018-03-20 11:22:50', null);
+INSERT INTO `a_news_cate` VALUES ('4', '评估报告', null, '2018-03-20 13:35:04', '2018-03-20 13:35:04', null);
+INSERT INTO `a_news_cate` VALUES ('5', '其他公告', null, '2018-03-20 15:52:55', '2018-03-20 15:52:55', null);
 
 -- ----------------------------
 -- Table structure for a_pact_cate
@@ -592,13 +682,14 @@ CREATE TABLE `a_pact_cate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) COMMENT '名称唯一'
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='协议分类';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='协议分类';
 
 -- ----------------------------
 -- Records of a_pact_cate
 -- ----------------------------
 INSERT INTO `a_pact_cate` VALUES ('1', '补偿安置协议', null, '2018-03-13 14:49:28', '2018-03-13 14:49:28', null);
 INSERT INTO `a_pact_cate` VALUES ('2', '补偿安置补充协议', null, '2018-03-13 14:49:40', '2018-03-13 14:49:40', null);
+INSERT INTO `a_pact_cate` VALUES ('3', '公房单位补偿协议', null, '2018-03-21 16:28:44', '2018-03-21 16:28:44', null);
 
 -- ----------------------------
 -- Table structure for a_process
@@ -621,7 +712,7 @@ CREATE TABLE `a_process` (
   UNIQUE KEY `sort` (`sort`) COMMENT '顺序唯一',
   UNIQUE KEY `menu_id` (`menu_id`) COMMENT '菜单 ID',
   KEY `schedule_id` (`schedule_id`) COMMENT '进度ID'
-) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COMMENT='项目流程';
+) ENGINE=MyISAM AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COMMENT='项目流程';
 
 -- ----------------------------
 -- Records of a_process
@@ -657,9 +748,17 @@ INSERT INTO `a_process` VALUES ('28', '3', '25', '确权确户', '1', '358', '15
 INSERT INTO `a_process` VALUES ('29', '3', '25', '选定评估机构', '1', '239', '154', '1', null, '2018-03-16 09:07:03', '2018-03-16 09:10:49', null);
 INSERT INTO `a_process` VALUES ('30', '3', '0', '入户调查数据审查', '2', '377', '160', '1', null, '2018-03-16 09:09:12', '2018-03-16 17:50:52', null);
 INSERT INTO `a_process` VALUES ('31', '4', '0', '拟定征收意见稿', '1', '250', '170', '1', null, '2018-03-16 17:19:16', '2018-03-16 17:19:16', null);
-INSERT INTO `a_process` VALUES ('32', '4', '0', '征收意见稿审查', '2', '39', '180', '1', null, '2018-03-16 17:21:24', '2018-03-16 17:21:24', null);
-INSERT INTO `a_process` VALUES ('33', '4', '0', '发布征收意见稿', '1', '40', '190', '1', null, '2018-03-16 17:23:24', '2018-03-16 17:23:24', null);
-INSERT INTO `a_process` VALUES ('34', '4', '0', '社会稳定风险评估', '1', '49', '200', '1', null, '2018-03-16 17:24:16', '2018-03-16 17:24:16', null);
+INSERT INTO `a_process` VALUES ('32', '4', '0', '征收意见稿审查', '2', '390', '180', '1', null, '2018-03-16 17:21:24', '2018-03-19 11:06:35', null);
+INSERT INTO `a_process` VALUES ('33', '4', '0', '发布征收意见稿', '1', '391', '190', '1', null, '2018-03-16 17:23:24', '2018-03-19 13:35:45', null);
+INSERT INTO `a_process` VALUES ('34', '4', '0', '社会稳定风险评估', '1', '260', '200', '1', null, '2018-03-16 17:24:16', '2018-03-19 13:38:50', null);
+INSERT INTO `a_process` VALUES ('35', '4', '0', '风险评估报告审查', '2', '396', '210', '1', null, '2018-03-19 13:52:22', '2018-03-19 17:50:15', null);
+INSERT INTO `a_process` VALUES ('36', '4', '0', '正式征收方案', '1', '398', '220', '1', null, '2018-03-19 13:54:28', '2018-03-19 17:52:14', null);
+INSERT INTO `a_process` VALUES ('37', '4', '0', '正式征收方案审查', '2', '399', '230', '1', null, '2018-03-20 10:14:28', '2018-03-20 10:14:39', null);
+INSERT INTO `a_process` VALUES ('38', '4', '0', '发布征收决定公告', '1', '403', '240', '1', null, '2018-03-20 10:58:08', '2018-03-20 11:58:37', null);
+INSERT INTO `a_process` VALUES ('39', '5', '0', '项目实施', '1', '405', '250', '1', null, '2018-03-20 11:42:56', '2018-03-20 13:58:50', null);
+INSERT INTO `a_process` VALUES ('40', '5', '0', '项目实施完成', '1', '39', '260', '1', null, '2018-03-20 13:36:51', '2018-03-20 13:36:51', null);
+INSERT INTO `a_process` VALUES ('41', '6', '0', '项目审计', '1', '40', '270', '1', null, '2018-03-20 13:37:25', '2018-03-20 13:37:25', null);
+INSERT INTO `a_process` VALUES ('42', '6', '0', '项目审结', '2', '49', '280', '1', null, '2018-03-20 13:38:15', '2018-03-20 13:38:15', null);
 
 -- ----------------------------
 -- Table structure for a_schedule
@@ -701,7 +800,7 @@ CREATE TABLE `a_state_code` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`) COMMENT '代码唯一'
-) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 COMMENT='状态代码';
+) ENGINE=MyISAM AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 COMMENT='状态代码';
 
 -- ----------------------------
 -- Records of a_state_code
@@ -761,7 +860,14 @@ INSERT INTO `a_state_code` VALUES ('52', '151', '冻结（房源）', '2018-03-1
 INSERT INTO `a_state_code` VALUES ('53', '152', '临时周转（房源）', '2018-03-10 17:01:03', '2018-03-10 17:01:03', null);
 INSERT INTO `a_state_code` VALUES ('54', '153', '产权调换（房源）', '2018-03-10 17:01:20', '2018-03-10 17:01:20', null);
 INSERT INTO `a_state_code` VALUES ('55', '154', '失效（房源）', '2018-03-10 17:01:40', '2018-03-10 17:01:40', null);
-INSERT INTO `a_state_code` VALUES ('56', '155', '售出（房源）', '2018-03-10 17:01:54', '2018-03-10 17:01:54', null);
+INSERT INTO `a_state_code` VALUES ('56', '155', '锁定（房源）', '2018-03-10 17:01:54', '2018-03-20 17:13:13', null);
+INSERT INTO `a_state_code` VALUES ('57', '170', '待签约（协议）', '2018-03-22 15:56:46', '2018-03-22 15:56:46', null);
+INSERT INTO `a_state_code` VALUES ('58', '171', '已签约（协议）', '2018-03-22 15:57:03', '2018-03-22 15:57:03', null);
+INSERT INTO `a_state_code` VALUES ('59', '172', '审查中（协议）', '2018-03-22 15:57:17', '2018-03-22 15:57:17', null);
+INSERT INTO `a_state_code` VALUES ('60', '173', '审查通过（协议）', '2018-03-22 15:57:33', '2018-03-22 15:57:33', null);
+INSERT INTO `a_state_code` VALUES ('61', '174', '审查驳回（协议）', '2018-03-22 15:59:30', '2018-03-22 15:59:30', null);
+INSERT INTO `a_state_code` VALUES ('62', '175', '兑付中（协议）', '2018-03-22 16:01:28', '2018-03-22 16:01:28', null);
+INSERT INTO `a_state_code` VALUES ('63', '176', '兑付完成（协议）', '2018-03-22 16:01:44', '2018-03-22 16:01:44', null);
 
 -- ----------------------------
 -- Table structure for a_subject
@@ -921,8 +1027,8 @@ CREATE TABLE `company_user` (
 -- ----------------------------
 -- Records of company_user
 -- ----------------------------
-INSERT INTO `company_user` VALUES ('1', '1', null, null, '123456', 'eyJpdiI6Im9Vck15OThVNGRhbEUzWHdqbDZlY0E9PSIsInZhbHVlIjoib0VwMzNOcWEyMXpZMEVcL2hxeEJPaEE9PSIsIm1hYyI6ImM5ZjY1YzdmZTA4YTM2N2JiMTJhYjNkZGE5ZTFhMGRkOWYxMTNlYmFkN2Q0NGRkY2YxNDMzMDc0YjY1OTAxYTYifQ==', '457320B0-B96E-3EBF-B302-BD12880D258A', '0o1ZGgVW94VKC4atcfHsBYijQ33Lmmf1O3icizpN', '2018-03-16 17:39:14', '2018-03-12 09:09:39', '2018-03-16 17:39:14', null);
-INSERT INTO `company_user` VALUES ('2', '2', null, null, '654321', 'eyJpdiI6InQxdm1DaFdEaFBobFpcL3FcL1R2WWxFZz09IiwidmFsdWUiOiJVbXhZSk5rTjFuMjFLVXVRRXpQQUN3PT0iLCJtYWMiOiJiZGJjNmEzMTcwMTAwYTZjMWMyODIzNTg3NTYyOGU3YjJjMTJhNDA4M2NlMWZmYTY4YTk0YTE5NTcwODA5MmI5In0=', 'EE7867F0-B340-5CD3-394A-D0C2D789A6FE', 'mOy7VydkXi19WPs0unyYqwJatT8glwxOlmDFYIrf', '2018-03-14 14:38:11', '2018-03-12 09:36:27', '2018-03-14 14:38:11', null);
+INSERT INTO `company_user` VALUES ('1', '1', '操作员', null, '123456', 'eyJpdiI6Im9Vck15OThVNGRhbEUzWHdqbDZlY0E9PSIsInZhbHVlIjoib0VwMzNOcWEyMXpZMEVcL2hxeEJPaEE9PSIsIm1hYyI6ImM5ZjY1YzdmZTA4YTM2N2JiMTJhYjNkZGE5ZTFhMGRkOWYxMTNlYmFkN2Q0NGRkY2YxNDMzMDc0YjY1OTAxYTYifQ==', '457320B0-B96E-3EBF-B302-BD12880D258A', 'U32hRfKN1raN6GRq9R0QGPRUXePV9keQzisAbVFE', '2018-03-22 10:25:47', '2018-03-12 09:09:39', '2018-03-22 10:25:47', null);
+INSERT INTO `company_user` VALUES ('2', '2', '操作员2', null, '654321', 'eyJpdiI6InQxdm1DaFdEaFBobFpcL3FcL1R2WWxFZz09IiwidmFsdWUiOiJVbXhZSk5rTjFuMjFLVXVRRXpQQUN3PT0iLCJtYWMiOiJiZGJjNmEzMTcwMTAwYTZjMWMyODIzNTg3NTYyOGU3YjJjMTJhNDA4M2NlMWZmYTY4YTk0YTE5NTcwODA5MmI5In0=', 'EE7867F0-B340-5CD3-394A-D0C2D789A6FE', 'U32hRfKN1raN6GRq9R0QGPRUXePV9keQzisAbVFE', '2018-03-22 14:39:49', '2018-03-12 09:36:27', '2018-03-22 14:39:49', null);
 
 -- ----------------------------
 -- Table structure for company_valuer
@@ -940,11 +1046,15 @@ CREATE TABLE `company_valuer` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `company_id` (`company_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评估机构-评估师';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='评估机构-评估师';
 
 -- ----------------------------
 -- Records of company_valuer
 -- ----------------------------
+INSERT INTO `company_valuer` VALUES ('1', '1', '张三', '13012341234', '21546957465456', '2018-03-20', '2018-03-20 15:07:42', '2018-03-20 15:07:42', null);
+INSERT INTO `company_valuer` VALUES ('2', '1', '李四', '123545644', '3213254', '2018-03-19', '2018-03-20 15:08:05', '2018-03-20 15:08:05', null);
+INSERT INTO `company_valuer` VALUES ('3', '2', '资产评估师', '4564612', '13246845', '2018-03-24', '2018-03-21 09:58:37', '2018-03-21 09:58:37', null);
+INSERT INTO `company_valuer` VALUES ('4', '2', '资产2', '1545641', '13216464', '2018-03-31', '2018-03-21 09:58:54', '2018-03-21 09:58:54', null);
 
 -- ----------------------------
 -- Table structure for com_assess
@@ -967,11 +1077,13 @@ CREATE TABLE `com_assess` (
   KEY `household_id` (`household_id`),
   KEY `land_id` (`land_id`),
   KEY `building_id` (`building_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评估-汇总';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='评估-汇总';
 
 -- ----------------------------
 -- Records of com_assess
 -- ----------------------------
+INSERT INTO `com_assess` VALUES ('3', '1', '1', '1', '1', '0.00', '1.00', '132', '2018-03-20 16:20:00', '2018-03-21 10:50:01', null);
+INSERT INTO `com_assess` VALUES ('4', '1', '2', '1', '1', '5000.00', '5000.00', '136', null, null, null);
 
 -- ----------------------------
 -- Table structure for com_assess_assets
@@ -998,11 +1110,13 @@ CREATE TABLE `com_assess_assets` (
   KEY `building_id` (`building_id`),
   KEY `assess_id` (`assess_id`),
   KEY `company_id` (`company_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评估-资产评估';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='评估-资产评估';
 
 -- ----------------------------
 -- Records of com_assess_assets
 -- ----------------------------
+INSERT INTO `com_assess_assets` VALUES ('1', '1', '1', '1', '1', '3', '2', '1.00', '[\"\\/storage\\/180321\\/BLcZekN0ORFQyJbh9wKvEqTTqoQqMNWXgOGLOjEP.jpeg\"]', '132', '2018-03-20 18:04:49', '2018-03-21 10:50:01', null);
+INSERT INTO `com_assess_assets` VALUES ('2', '1', '2', '1', '1', '4', '2', '100000.00', '[\"\\/storage\\/180321\\/1EjnPvbymhVAArgWkG2eH12QlDNJcFz6EuuyPtbd.jpeg\"]', '136', '2018-03-20 18:04:49', '2018-03-21 10:30:57', null);
 
 -- ----------------------------
 -- Table structure for com_assess_estate
@@ -1044,12 +1158,13 @@ CREATE TABLE `com_assess_estate` (
   KEY `building_id` (`building_id`),
   KEY `assess_id` (`assess_id`),
   KEY `company_id` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='评估-房产评估';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='评估-房产评估';
 
 -- ----------------------------
 -- Records of com_assess_estate
 -- ----------------------------
-INSERT INTO `com_assess_estate` VALUES ('1', '1', '1', '1', '1', '0', '1', '0.00', '0.00', '0.00', '', '130', '0', '123456789', null, '100.00', '10.00', '0', '0', '[\"\\/storage\\/180314\\/oYeWrYBNdTsvFRTF14cKq36MkpTxQAWurqa3XddD.jpeg\",\"\\/storage\\/180314\\/xi2u5EBKnddH4sA9EMO6HwIS31dc3XtdUDF5IvkJ.jpeg\"]', '1', '1', '1', null, '/storage/180314/lMjVjLuOt5DRLtk1CnnBB7oa3N0p9jRa9NLrLpFE.jpeg', '2018-03-14 11:29:33', '2018-03-14 14:23:15', null);
+INSERT INTO `com_assess_estate` VALUES ('1', '1', '1', '1', '1', '3', '1', '2241.00', '0.00', '2241.00', '[\"\\/storage\\/180320\\/NaVJhlPc6M5WvYvOUvm4EYmRRuTOSz1WV9unFQcv.jpeg\"]', '132', '0', '123456789', null, '100.00', '10.00', '0', '0', '[\"\\/storage\\/180314\\/oYeWrYBNdTsvFRTF14cKq36MkpTxQAWurqa3XddD.jpeg\",\"\\/storage\\/180314\\/xi2u5EBKnddH4sA9EMO6HwIS31dc3XtdUDF5IvkJ.jpeg\"]', '1', '1', '1', null, '/storage/180314/lMjVjLuOt5DRLtk1CnnBB7oa3N0p9jRa9NLrLpFE.jpeg', '2018-03-14 11:29:33', '2018-03-20 17:46:17', null);
+INSERT INTO `com_assess_estate` VALUES ('2', '1', '2', '1', '1', '4', '1', '2241.00', '0.00', '2241.00', '[\"\\/storage\\/180320\\/NaVJhlPc6M5WvYvOUvm4EYmRRuTOSz1WV9unFQcv.jpeg\"]', '136', '0', '123456789', null, '100.00', '10.00', '0', '0', '[\"\\/storage\\/180314\\/oYeWrYBNdTsvFRTF14cKq36MkpTxQAWurqa3XddD.jpeg\",\"\\/storage\\/180314\\/xi2u5EBKnddH4sA9EMO6HwIS31dc3XtdUDF5IvkJ.jpeg\"]', '1', '1', '1', null, '/storage/180314/lMjVjLuOt5DRLtk1CnnBB7oa3N0p9jRa9NLrLpFE.jpeg', '2018-03-14 11:29:33', '2018-03-20 17:46:17', null);
 
 -- ----------------------------
 -- Table structure for com_assess_valuer
@@ -1081,6 +1196,8 @@ CREATE TABLE `com_assess_valuer` (
 -- ----------------------------
 -- Records of com_assess_valuer
 -- ----------------------------
+INSERT INTO `com_assess_valuer` VALUES ('1', '1', '1', '1', '3', '0', '1', '1', '1', '2018-03-20 17:46:17', '2018-03-20 17:46:17', null);
+INSERT INTO `com_assess_valuer` VALUES ('1', '1', '1', '1', '3', '1', '0', '2', '3', '2018-03-21 10:50:01', '2018-03-21 10:50:01', null);
 
 -- ----------------------------
 -- Table structure for com_estate_building
@@ -1124,12 +1241,13 @@ CREATE TABLE `com_estate_building` (
   KEY `assess_id` (`assess_id`),
   KEY `estate_id` (`estate_id`),
   KEY `household_building_id` (`household_building_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='评估-房产-房屋建筑';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='评估-房产-房屋建筑';
 
 -- ----------------------------
 -- Records of com_estate_building
 -- ----------------------------
-INSERT INTO `com_estate_building` VALUES ('1', '1', '1', '0', '0', '1', '1', '1', '0', '0.00', '0.00', '建筑A', '90', null, '100.00', '20.00', null, '120.00', '1', '1', '1', '东', '12', '1', '[\"\\/storage\\/180316\\/VXFFgitn4ylvifRLPXpmUUV3KkaUal9nt39n0HlR.jpeg\"]', '2018-03-16 16:47:43', '2018-03-16 16:47:43', null);
+INSERT INTO `com_estate_building` VALUES ('1', '1', '1', '0', '0', '1', '1', '1', '4', '1.00', '120.00', '建筑A', '90', null, '100.00', '20.00', null, '120.00', '1', '1', '1', '东', '12', '1', '[\"\\/storage\\/180316\\/VXFFgitn4ylvifRLPXpmUUV3KkaUal9nt39n0HlR.jpeg\"]', '2018-03-16 16:47:43', '2018-03-20 17:46:17', null);
+INSERT INTO `com_estate_building` VALUES ('2', '1', '1', '4', '2', '2', '1', '1', '6', '1.00', '2121.00', '建筑B', '90', null, '1212.00', '121.00', null, '2121.00', '1', '1', '1', '南', '35', '1', '[\"\\/storage\\/180319\\/f0AtZJLuguu57UMRBuXsN0is3cEO1VEtkIF6ZOoI.jpeg\"]', '2018-03-19 19:11:39', '2018-03-20 17:46:17', null);
 
 -- ----------------------------
 -- Table structure for com_public
@@ -1147,11 +1265,12 @@ CREATE TABLE `com_public` (
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`),
   KEY `company_id` (`company_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评估-公共附属物';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='评估-公共附属物';
 
 -- ----------------------------
 -- Records of com_public
 -- ----------------------------
+INSERT INTO `com_public` VALUES ('2', '1', '2', '220.00', '[\"\\/storage\\/180321\\/RoQLR6pjJA4K90vkzesP8rZT0W5YSMkiYgXOV8Ya.jpeg\"]', '2018-03-21 17:37:39', '2018-03-21 17:37:39', null);
 
 -- ----------------------------
 -- Table structure for com_public_detail
@@ -1177,11 +1296,13 @@ CREATE TABLE `com_public_detail` (
   KEY `company_id` (`company_id`),
   KEY `item_public_id` (`item_public_id`),
   KEY `com_public_id` (`com_public_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评估-公共附属物明细';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='评估-公共附属物明细';
 
 -- ----------------------------
 -- Records of com_public_detail
 -- ----------------------------
+INSERT INTO `com_public_detail` VALUES ('3', '1', '1', '1', '1', '2', '2', '11.00', '110.00', '2018-03-21 17:37:39', '2018-03-21 17:37:39', null);
+INSERT INTO `com_public_detail` VALUES ('4', '1', '1', '0', '2', '2', '2', '11.00', '110.00', '2018-03-21 17:37:39', '2018-03-21 17:37:39', null);
 
 -- ----------------------------
 -- Table structure for crowd
@@ -1230,16 +1351,17 @@ CREATE TABLE `dept` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) USING BTREE COMMENT '名称唯一',
   KEY `parent_id` (`parent_id`) COMMENT '上级ID'
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='组织与部门';
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='组织与部门';
 
 -- ----------------------------
 -- Records of dept
 -- ----------------------------
-INSERT INTO `dept` VALUES ('1', '0', '征收管理中心', '0', null, '2018-02-02 19:44:47', '2018-02-02 21:47:11', null);
-INSERT INTO `dept` VALUES ('2', '1', '政策法规股', '0', '按照《天水市秦州区人民政府关于天水信号厂片区土地熟化项目二期房屋征收补偿安置实施方案》及《天水信号厂片区土地熟化项目二期房屋征收补偿安置协议书(一)》的规定，甲乙双方本着公平合理、平等协商的原则，就乙方的临时安置及搬迁奖励等达成如下协议。', '2018-02-02 19:45:31', '2018-02-03 09:18:48', null);
-INSERT INTO `dept` VALUES ('3', '1', '征收股', '0', null, '2018-02-02 19:45:49', '2018-02-02 19:45:49', null);
-INSERT INTO `dept` VALUES ('4', '1', '安置股', '0', null, '2018-02-02 19:46:04', '2018-02-02 19:46:04', null);
-INSERT INTO `dept` VALUES ('5', '1', '账务股', '0', null, '2018-02-02 19:50:14', '2018-02-03 09:17:22', null);
+INSERT INTO `dept` VALUES ('1', '0', '秦州区房屋征收补偿管理局', '0', null, '2018-02-02 19:44:47', '2018-02-02 21:47:11', null);
+INSERT INTO `dept` VALUES ('2', '1', '政策法规股', '0', '', '2018-02-02 19:45:31', '2018-02-03 09:18:48', null);
+INSERT INTO `dept` VALUES ('3', '1', '社会稳定风险评估办公室', '0', null, '2018-03-20 16:36:11', '2018-03-20 16:36:14', null);
+INSERT INTO `dept` VALUES ('4', '1', '办公室', '0', null, '2018-02-02 19:45:49', '2018-02-02 19:45:49', null);
+INSERT INTO `dept` VALUES ('5', '1', '安置管理股', '0', null, '2018-02-02 19:46:04', '2018-02-02 19:46:04', null);
+INSERT INTO `dept` VALUES ('6', '1', '计划账务股', '0', null, '2018-02-02 19:50:14', '2018-02-03 09:17:22', null);
 
 -- ----------------------------
 -- Table structure for file_cate
@@ -1302,9 +1424,9 @@ CREATE TABLE `house` (
 -- ----------------------------
 -- Records of house
 -- ----------------------------
-INSERT INTO `house` VALUES ('1', '1', '1', '1', '1', '1', '1', '1', '1', '90.00', '20', '1', '0', '0', '0', '0', null, null, '150', '2018-03-01 14:55:29', '2018-03-01 15:23:48', null);
-INSERT INTO `house` VALUES ('2', '2', '3', '2', '6', '2', '2', '2', '2', '100.00', '9', '0', '1', '1', '0', '0', null, '2017-03-01', '150', '2018-03-01 15:01:47', '2018-03-01 15:23:48', null);
-INSERT INTO `house` VALUES ('3', '1', '2', '2', '4', '1', '2', '20', '1', '100.00', '30', '1', '1', '1', '1', '1', '[\"\\/storage\\/180308\\/2htQfYDAwT9OiUUnZr2oRThBpVtWGvr8pPHItfGF.jpeg\"]', '2018-03-08', '150', '2018-03-08 16:53:43', '2018-03-08 17:06:14', null);
+INSERT INTO `house` VALUES ('1', '1', '1', '1', '1', '1', '1', '1', '1', '90.00', '20', '1', '0', '0', '0', '0', null, null, '151', '2018-03-01 14:55:29', '2018-03-01 15:23:48', null);
+INSERT INTO `house` VALUES ('2', '2', '3', '2', '6', '2', '2', '2', '2', '100.00', '9', '0', '1', '1', '0', '0', null, '2017-03-01', '151', '2018-03-01 15:01:47', '2018-03-01 15:23:48', null);
+INSERT INTO `house` VALUES ('3', '1', '2', '2', '4', '1', '2', '20', '1', '100.00', '30', '1', '1', '1', '1', '1', '[\"\\/storage\\/180308\\/2htQfYDAwT9OiUUnZr2oRThBpVtWGvr8pPHItfGF.jpeg\"]', '2018-03-08', '151', '2018-03-08 16:53:43', '2018-03-08 17:06:14', null);
 
 -- ----------------------------
 -- Table structure for house_community
@@ -1446,14 +1568,15 @@ CREATE TABLE `house_price` (
   KEY `house_id` (`house_id`),
   KEY `start_at` (`start_at`),
   KEY `end_at` (`end_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='房源-评估单价';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='房源-评估单价';
 
 -- ----------------------------
 -- Records of house_price
 -- ----------------------------
 INSERT INTO `house_price` VALUES ('1', '1', '2018-01-01', '2018-12-31', '5000.00', '4000.00', '2018-03-01 14:55:29', '2018-03-01 14:55:29', null);
-INSERT INTO `house_price` VALUES ('2', '2', '2017-01-01', '2017-12-31', '6000.00', '5000.00', '2018-03-01 15:01:47', '2018-03-01 15:01:47', null);
-INSERT INTO `house_price` VALUES ('3', '3', '2018-03-08', '2018-03-08', '12121212.00', '1323213.00', '2018-03-08 16:53:43', '2018-03-08 16:53:43', null);
+INSERT INTO `house_price` VALUES ('2', '2', '2018-01-01', '2018-12-31', '6000.00', '5000.00', '2018-03-01 15:01:47', '2018-03-20 15:01:47', null);
+INSERT INTO `house_price` VALUES ('3', '3', '2018-01-01', '2018-12-31', '7000.00', '5500.00', '2018-03-08 16:53:43', '2018-03-08 16:53:43', null);
+INSERT INTO `house_price` VALUES ('4', '1', '2019-01-01', '2019-12-31', '6000.00', '5000.00', '2018-03-19 14:42:42', '2018-03-19 14:42:44', null);
 
 -- ----------------------------
 -- Table structure for house_resettle
@@ -1466,12 +1589,10 @@ CREATE TABLE `house_resettle` (
   `land_id` int(11) NOT NULL COMMENT ' 项目地块ID',
   `building_id` int(11) NOT NULL COMMENT ' 楼栋ID',
   `pay_id` int(11) NOT NULL COMMENT '兑付ID',
-  `pact_id` int(11) NOT NULL COMMENT '协议ID',
   `house_id` int(11) NOT NULL COMMENT '房源ID',
-  `code` char(20) NOT NULL DEFAULT '' COMMENT '状态代码',
   `settle_at` date NOT NULL COMMENT '安置日期',
   `hold_at` date DEFAULT NULL COMMENT '产权调换日期',
-  `end_at` date DEFAULT NULL COMMENT '取消调换日期',
+  `end_at` date DEFAULT NULL COMMENT '完成日期',
   `register` varchar(255) DEFAULT NULL COMMENT '新证件号',
   `picture` text COMMENT '图片',
   `created_at` datetime DEFAULT NULL,
@@ -1483,7 +1604,6 @@ CREATE TABLE `house_resettle` (
   KEY `land_id` (`land_id`),
   KEY `building_id` (`building_id`),
   KEY `pay_id` (`pay_id`),
-  KEY `pact_id` (`pact_id`),
   KEY `house_id` (`house_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产权调换';
 
@@ -1503,7 +1623,7 @@ CREATE TABLE `house_resettle_notice` (
   `land_id` int(11) NOT NULL COMMENT ' 项目地块ID',
   `building_id` int(11) NOT NULL COMMENT ' 楼栋ID',
   `pay_id` int(11) NOT NULL COMMENT '兑付ID',
-  `pact_id` int(11) NOT NULL COMMENT '协议ID',
+  `pact_id` int(11) NOT NULL DEFAULT '0' COMMENT '协议ID',
   `company_id` int(11) NOT NULL DEFAULT '0' COMMENT '管理机构',
   `community_id` int(11) NOT NULL COMMENT '房源社区ID',
   `house_id` int(11) NOT NULL COMMENT '房源ID',
@@ -1774,7 +1894,7 @@ CREATE TABLE `item_control` (
 -- Records of item_control
 -- ----------------------------
 INSERT INTO `item_control` VALUES ('2', '1', '1', 'A', '2018-03-06 08:00:00', '2018-03-07 17:00:00', '2018-03-06 13:41:08', '2018-03-06 13:54:15', null);
-INSERT INTO `item_control` VALUES ('3', '1', '3', 'A', '2018-03-05 00:00:00', '2018-03-15 17:00:00', '2018-03-06 17:48:48', '2018-03-06 17:48:48', null);
+INSERT INTO `item_control` VALUES ('3', '1', '3', 'A', '2018-03-05 00:00:00', '2018-03-31 17:00:00', '2018-03-06 17:48:48', '2018-03-06 17:48:48', null);
 
 -- ----------------------------
 -- Table structure for item_crowd
@@ -1798,7 +1918,7 @@ CREATE TABLE `item_crowd` (
 -- Records of item_crowd
 -- ----------------------------
 INSERT INTO `item_crowd` VALUES ('1', '1', '1', '2', '21.00', '2018-03-05 15:08:14', '2018-03-05 15:55:21', null);
-INSERT INTO `item_crowd` VALUES ('2', '1', '1', '2', '21.00', '2018-03-05 15:08:14', '2018-03-05 15:55:21', null);
+INSERT INTO `item_crowd` VALUES ('2', '1', '1', '5', '21.00', '2018-03-05 15:08:14', '2018-03-05 15:55:21', null);
 
 -- ----------------------------
 -- Table structure for item_draft
@@ -1815,12 +1935,12 @@ CREATE TABLE `item_draft` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='项目-征收意见稿';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='项目-征收意见稿';
 
 -- ----------------------------
 -- Records of item_draft
 -- ----------------------------
-INSERT INTO `item_draft` VALUES ('2', '1', '标题测试', '<p>1</p>', '20', '2018-02-28 14:58:00', '2018-03-01 10:25:20', null);
+INSERT INTO `item_draft` VALUES ('1', '1', '征收意见稿', '111111', '20', '2018-03-19 10:19:31', '2018-03-19 10:19:33', null);
 
 -- ----------------------------
 -- Table structure for item_draft_report
@@ -1838,12 +1958,11 @@ CREATE TABLE `item_draft_report` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='项目-征收意见稿-听证会修改意见';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目-征收意见稿-听证会修改意见';
 
 -- ----------------------------
 -- Records of item_draft_report
 -- ----------------------------
-INSERT INTO `item_draft_report` VALUES ('10', '1', '2', '标题测试', '<p><strong>test</strong></p><p><strong>45656</strong></p><p><strong><img src=\"/ueditor/php/upload/image/20180301/1519872915204711.png\" title=\"1519872915204711.png\" alt=\"棋牌.png\"/></strong></p>', '20', '2018-02-28 19:19:03', '2018-03-01 10:55:17', null);
 
 -- ----------------------------
 -- Table structure for item_funds
@@ -1853,7 +1972,7 @@ CREATE TABLE `item_funds` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_id` int(11) NOT NULL DEFAULT '0' COMMENT '项目ID',
   `cate_id` int(11) NOT NULL DEFAULT '0' COMMENT '进出类型ID',
-  `total_id` int(11) NOT NULL DEFAULT '0' COMMENT '支付总单ID',
+  `total_id` int(11) NOT NULL DEFAULT '0' COMMENT '兑付总单ID',
   `amount` decimal(20,2) NOT NULL COMMENT '金额，收入为正，支出为负',
   `voucher` varchar(255) NOT NULL COMMENT '转账凭证号',
   `bank_id` int(11) NOT NULL COMMENT ' 银行ID',
@@ -1952,8 +2071,8 @@ CREATE TABLE `item_household` (
 -- ----------------------------
 -- Records of item_household
 -- ----------------------------
-INSERT INTO `item_household` VALUES ('1', '1', '1', '1', '1', '1', '1', '0', 'test', 'eyJpdiI6ImdMU01yY1dkZlJIVm5Yd1dQM1NvbGc9PSIsInZhbHVlIjoiTVZJZXJWYlZ0cUJodFwvYkZybW9GOHc9PSIsIm1hYyI6ImZiYWI3MDQ4NWRmOWRkMDM2YjQzMGZmODIxODhkNmU3MWExN2Y5MDUyZWQxNjRkYWMwZWE4ZGQxNWJlOGZiOTAifQ==', '6C8EC565-6B2C-ADD1-16FB-2D6563930893', null, '60', '2018-03-12 15:00:22', '2018-03-12 15:59:30', null);
-INSERT INTO `item_household` VALUES ('2', '1', '1', '1', '1', '13', '1', '0', 'asdfg', 'eyJpdiI6Imo3cWVkWXZKVEZnZjhoaUhuSTN2Mnc9PSIsInZhbHVlIjoiNG1yVGc2dFwvZ3Zpd1VJbU01ZnhmR0E9PSIsIm1hYyI6ImYxMWFiNjc0ZDEzZmQ1YWQzNzcyYzhkYWVkYzVjZmY1OTAyNjI2NTg5ZjA4NzNlMzRiMzYwNTNhNGY5ZDYzZGQifQ==', '48A1C9EC-3883-6F07-3338-620BD306525C', null, '60', '2018-03-14 17:03:01', '2018-03-14 17:03:01', null);
+INSERT INTO `item_household` VALUES ('1', '1', '1', '1', '1', '1', '1', '0', 'test', 'eyJpdiI6ImdMU01yY1dkZlJIVm5Yd1dQM1NvbGc9PSIsInZhbHVlIjoiTVZJZXJWYlZ0cUJodFwvYkZybW9GOHc9PSIsIm1hYyI6ImZiYWI3MDQ4NWRmOWRkMDM2YjQzMGZmODIxODhkNmU3MWExN2Y5MDUyZWQxNjRkYWMwZWE4ZGQxNWJlOGZiOTAifQ==', '6C8EC565-6B2C-ADD1-16FB-2D6563930893', null, '68', '2018-03-12 15:00:22', '2018-03-12 15:59:30', null);
+INSERT INTO `item_household` VALUES ('2', '1', '1', '1', '1', '13', '1', '0', 'asdfg', 'eyJpdiI6Imo3cWVkWXZKVEZnZjhoaUhuSTN2Mnc9PSIsInZhbHVlIjoiNG1yVGc2dFwvZ3Zpd1VJbU01ZnhmR0E9PSIsIm1hYyI6ImYxMWFiNjc0ZDEzZmQ1YWQzNzcyYzhkYWVkYzVjZmY1OTAyNjI2NTg5ZjA4NzNlMzRiMzYwNTNhNGY5ZDYzZGQifQ==', '48A1C9EC-3883-6F07-3338-620BD306525C', null, '76', '2018-03-14 17:03:01', '2018-03-14 17:03:01', null);
 
 -- ----------------------------
 -- Table structure for item_household_assets
@@ -2028,7 +2147,7 @@ CREATE TABLE `item_household_building` (
 -- ----------------------------
 INSERT INTO `item_household_building` VALUES ('4', '1', '1', '1', '1', null, '90', null, '120.00', '20.00', null, '120.00', '1', '1', '1', '东', '3', '1', '[\"\\/storage\\/180312\\/aA2Wi54YOvniaiYDKEwlsjzX68uZ6YB57VaWa4al.jpeg\"]', '2018-03-12 17:19:19', '2018-03-12 17:19:19', null);
 INSERT INTO `item_household_building` VALUES ('5', '1', '1', '1', '1', null, '90', null, '111.00', '11.00', null, '111.00', '2', '2', '2', '南', '3', '2', '[\"\\/storage\\/180312\\/KbeZ1GX6d965i664QzyJtAoyGNsyD6X5FHy2Trrg.jpeg\"]', '2018-03-12 17:28:30', '2018-03-12 17:28:30', null);
-INSERT INTO `item_household_building` VALUES ('6', '1', '1', '1', '1', null, '90', null, '120.00', '20.00', null, '100.00', '1', '1', '1', '西', '12', '1', '[\"\\/storage\\/180313\\/aTLtm221sZMfnKJ8AvJLZt2VoyGk5DuzM8qZPovP.jpeg\"]', '2018-03-13 11:34:52', '2018-03-13 11:34:52', null);
+INSERT INTO `item_household_building` VALUES ('6', '1', '2', '1', '1', null, '90', null, '120.00', '20.00', null, '100.00', '1', '1', '1', '西', '12', '1', '[\"\\/storage\\/180313\\/aTLtm221sZMfnKJ8AvJLZt2VoyGk5DuzM8qZPovP.jpeg\"]', '2018-03-13 11:34:52', '2018-03-13 11:34:52', null);
 INSERT INTO `item_household_building` VALUES ('7', '1', '2', '1', '1', '建筑1', '94', null, '60.00', '0.00', null, '60.00', '4', '4', '1', '东', '2', '4', '[\"\\/storage\\/180315\\/oh7zWCY5Ul5Hv8WQmiYek9k3rPxAEYgRjsT2rWOC.jpeg\"]', '2018-03-15 14:09:15', '2018-03-15 16:39:52', null);
 INSERT INTO `item_household_building` VALUES ('8', '1', '2', '1', '1', '建筑2', '90', null, '121.00', '12.00', null, '121.00', '1', '1', '1', '东', '3', '1', '[\"\\/storage\\/180315\\/RBz6gbaHqt9CVB0fIdauzVGlm8SCOWJrKldODumS.jpeg\"]', '2018-03-15 14:09:58', '2018-03-15 14:09:58', null);
 
@@ -2280,13 +2399,15 @@ CREATE TABLE `item_house_rate` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='项目-产权调换优惠上浮';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='项目-产权调换优惠上浮';
 
 -- ----------------------------
 -- Records of item_house_rate
 -- ----------------------------
 INSERT INTO `item_house_rate` VALUES ('1', '1', '0.00', '15.00', '10.00', '2018-03-05 17:37:10', '2018-03-05 17:55:58', null);
-INSERT INTO `item_house_rate` VALUES ('2', '1', '15.00', '30.00', '15.00', '2018-03-09 16:52:22', '2018-03-09 17:52:24', null);
+INSERT INTO `item_house_rate` VALUES ('2', '1', '15.00', '25.00', '20.00', '2018-03-09 16:52:22', '2018-03-20 17:53:26', null);
+INSERT INTO `item_house_rate` VALUES ('3', '1', '25.00', '30.00', '30.00', '2018-03-20 17:53:42', '2018-03-20 17:53:42', null);
+INSERT INTO `item_house_rate` VALUES ('4', '1', '30.00', '0.00', '0.00', '2018-03-21 18:27:54', '2018-03-21 18:27:54', null);
 
 -- ----------------------------
 -- Table structure for item_init_budget
@@ -2456,7 +2577,7 @@ CREATE TABLE `item_program` (
 -- ----------------------------
 -- Records of item_program
 -- ----------------------------
-INSERT INTO `item_program` VALUES ('2', '1', '测试', '<p>修改测试<img src=\"/ueditor/php/upload/image/20180312/1520824497997680.png\" title=\"1520824497997680.png\" alt=\"棋牌.png\"/></p>', '20', '2018-03-31', '1.00', '1.00', '1.00', '1.00', '1.00', '1.00', '1.00', '1.00', '1.00', '1.00', '1', '1', '1.00', '1.00', '1.00', '1.00', '2018-03-12 11:14:59', '2018-03-12 11:18:48', null);
+INSERT INTO `item_program` VALUES ('2', '1', '测试', '<p>修改测试<img src=\"/ueditor/php/upload/image/20180312/1520824497997680.png\" title=\"1520824497997680.png\" alt=\"棋牌.png\"/></p>', '22', '2018-03-06', '20.00', '80.00', '900.00', '20.00', '20.00', '25.00', '40.00', '1000.00', '30.00', '130.00', '6', '30', '3000.00', '15.00', '300.00', '5000.00', '2018-03-12 11:14:59', '2018-03-12 11:18:48', null);
 
 -- ----------------------------
 -- Table structure for item_public
@@ -2487,8 +2608,8 @@ CREATE TABLE `item_public` (
 -- ----------------------------
 -- Records of item_public
 -- ----------------------------
-INSERT INTO `item_public` VALUES ('1', '1', '1', '1', '砖', '块', '120', '120', null, null, '[\"\\/storage\\/180310\\/vBTcY0u9bkNb5VeWHV52ch88I3uNT7QcvGdCvyjW.jpeg\"]', '[\"\\/storage\\/180312\\/JqukckHrtKcsREaUBJbVyrjHsrw6sAlLA9qkcedB.jpeg\"]', '2018-03-10 17:12:20', '2018-03-12 09:31:33', null);
-INSERT INTO `item_public` VALUES ('2', '1', '1', '0', '围墙', '面', '4', '4', null, null, '[\"\\/storage\\/180310\\/eH0urX1pn4e01Qf9YcuuyBayT2gwiI9JX2W1TIXS.jpeg\"]', '[\"\\/storage\\/180313\\/5YjU9Y71YrowzUDZTpKaMM4lDaTCFVBqLNzPWCKS.jpeg\"]', '2018-03-10 17:12:58', '2018-03-13 16:34:43', null);
+INSERT INTO `item_public` VALUES ('1', '1', '1', '1', '砖', '块', '120', '120', '10.00', null, '[\"\\/storage\\/180310\\/vBTcY0u9bkNb5VeWHV52ch88I3uNT7QcvGdCvyjW.jpeg\"]', '[\"\\/storage\\/180312\\/JqukckHrtKcsREaUBJbVyrjHsrw6sAlLA9qkcedB.jpeg\"]', '2018-03-10 17:12:20', '2018-03-21 14:27:37', null);
+INSERT INTO `item_public` VALUES ('2', '1', '1', '0', '围墙', '面', '4', '4', '10.00', null, '[\"\\/storage\\/180310\\/eH0urX1pn4e01Qf9YcuuyBayT2gwiI9JX2W1TIXS.jpeg\"]', '[\"\\/storage\\/180313\\/5YjU9Y71YrowzUDZTpKaMM4lDaTCFVBqLNzPWCKS.jpeg\"]', '2018-03-10 17:12:58', '2018-03-21 14:26:26', null);
 
 -- ----------------------------
 -- Table structure for item_reward
@@ -2506,13 +2627,12 @@ CREATE TABLE `item_reward` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='项目-签约奖励';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='项目-签约奖励';
 
 -- ----------------------------
 -- Records of item_reward
 -- ----------------------------
-INSERT INTO `item_reward` VALUES ('1', '1', '0000-00-00', '0000-00-00', '200.00', '0.00', '2018-02-22 16:43:15', '2018-02-22 16:43:15', null);
-INSERT INTO `item_reward` VALUES ('2', '1', '0000-00-00', '0000-00-00', '50.00', '0.00', '2018-03-09 18:13:55', '2018-03-09 18:13:55', null);
+INSERT INTO `item_reward` VALUES ('1', '1', '2018-03-20', '2018-03-21', '800.00', '15.00', '2018-03-20 09:32:33', '2018-03-20 09:42:37', null);
 
 -- ----------------------------
 -- Table structure for item_risk
@@ -2576,7 +2696,7 @@ CREATE TABLE `item_risk_report` (
 -- ----------------------------
 -- Records of item_risk_report
 -- ----------------------------
-INSERT INTO `item_risk_report` VALUES ('1', '1', '社会稳定风险评估报告', '<p>测试<img src=\"/ueditor/php/upload/image/20180312/1520825973170959.png\" title=\"1520825973170959.png\" alt=\"棋牌.png\"/></p>', '[\"\\/storage\\/180312\\/jBlJpySG0B2LCAd7m76nRxTk8ZfbXLxk2hYwzRv5.png\"]', '0', '20', '2018-03-12 11:33:02', '2018-03-12 11:39:35', null);
+INSERT INTO `item_risk_report` VALUES ('1', '1', '风险评估报告', '<p>风险评估报告</p>', '[\"\\/storage\\/180319\\/QlTvzIZ8fAPRrMDKgknI2P2pjMLhoe0uUtTyXUbs.jpeg\"]', '1', '20', '2018-03-19 16:19:25', '2018-03-19 16:19:25', null);
 
 -- ----------------------------
 -- Table structure for item_risk_topic
@@ -3065,12 +3185,13 @@ CREATE TABLE `pay` (
   KEY `household_id` (`household_id`),
   KEY `land_id` (`land_id`),
   KEY `building_id` (`building_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='兑付-汇总';
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COMMENT='兑付-汇总';
 
 -- ----------------------------
 -- Records of pay
 -- ----------------------------
-INSERT INTO `pay` VALUES ('23', '1', '1', '1', '2', '0', '1', '0', '56358.00', null, '2018-03-08 15:15:03', '2018-03-08 15:15:03', null);
+INSERT INTO `pay` VALUES ('23', '1', '1', '1', '1', '1', '1', '0', '863580.00', null, '2018-03-08 15:15:03', '2018-03-19 17:17:48', null);
+INSERT INTO `pay` VALUES ('25', '1', '2', '1', '1', '1', '1', '0', '13479.00', '[\"\\/storage\\/180321\\/oSPhQPfNZk5KSLvT2C4ARwanadbjlGuEvVTuxh4S.png\"]', '2018-03-21 10:57:49', '2018-03-21 10:57:49', null);
 
 -- ----------------------------
 -- Table structure for pay_building
@@ -3108,7 +3229,7 @@ CREATE TABLE `pay_building` (
   KEY `estate_id` (`estate_id`),
   KEY `household_building_id` (`household_building_id`),
   KEY `pay_id` (`pay_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COMMENT='兑付-建筑';
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COMMENT='兑付-建筑';
 
 -- ----------------------------
 -- Records of pay_building
@@ -3116,6 +3237,8 @@ CREATE TABLE `pay_building` (
 INSERT INTO `pay_building` VALUES ('18', '1', '1', '1', '2', '1', '1', '4', '0', '20', '', '100.00', '1', '2', '0', '南', '10', '8000.00', '800000.00', '2018-03-06 19:31:33', '2018-03-06 19:31:33', null);
 INSERT INTO `pay_building` VALUES ('21', '1', '1', '1', '2', '1', '1', '4', '0', '23', '', '100.00', '2', '1', '0', '东', '20', '0.00', '0.00', '2018-03-08 15:15:03', '2018-03-08 15:15:03', null);
 INSERT INTO `pay_building` VALUES ('22', '1', '1', '1', '2', '1', '1', '5', '0', '23', '', '100.00', '1', '2', '0', '东', '21', '8000.00', '800000.00', '2018-03-08 15:15:03', '2018-03-08 15:15:03', null);
+INSERT INTO `pay_building` VALUES ('23', '1', '2', '1', '1', '4', '2', '6', '2', '24', '90', '2121.00', '1', '1', '1', '南', '35', '1.00', '2121.00', '2018-03-21 10:56:44', '2018-03-21 10:56:44', null);
+INSERT INTO `pay_building` VALUES ('24', '1', '2', '1', '1', '4', '2', '6', '2', '25', '90', '2121.00', '1', '1', '1', '南', '35', '1.00', '2121.00', '2018-03-21 10:57:49', '2018-03-21 10:57:49', null);
 
 -- ----------------------------
 -- Table structure for pay_crowd
@@ -3161,6 +3284,7 @@ CREATE TABLE `pay_crowd` (
 -- ----------------------------
 DROP TABLE IF EXISTS `pay_house`;
 CREATE TABLE `pay_house` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(11) NOT NULL COMMENT ' 项目ID',
   `household_id` int(11) NOT NULL COMMENT ' 被征收户ID',
   `land_id` int(11) NOT NULL COMMENT ' 项目地块ID',
@@ -3175,6 +3299,7 @@ CREATE TABLE `pay_house` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`),
   KEY `household_id` (`household_id`),
   KEY `land_id` (`land_id`),
@@ -3198,15 +3323,17 @@ CREATE TABLE `pay_house_bak` (
   `house_id` int(11) NOT NULL COMMENT '房源ID',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL
+  `deleted_at` datetime DEFAULT NULL,
+  `house_type` tinyint(4) NOT NULL COMMENT '1安置房   2周转房'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='兑付-备选安置房';
 
 -- ----------------------------
 -- Records of pay_house_bak
 -- ----------------------------
-INSERT INTO `pay_house_bak` VALUES ('1', '1', '1', '1', '3', '2018-03-16 18:16:27', '2018-03-16 18:16:27', null);
-INSERT INTO `pay_house_bak` VALUES ('1', '1', '1', '1', '3', '2018-03-16 18:18:47', '2018-03-16 18:18:47', null);
-INSERT INTO `pay_house_bak` VALUES ('1', '1', '1', '1', '1', '2018-03-16 18:19:19', '2018-03-16 18:19:19', null);
+INSERT INTO `pay_house_bak` VALUES ('1', '1', '1', '1', '1', '2018-03-21 15:27:26', '2018-03-22 17:08:51', '2018-03-22 17:08:51', '1');
+INSERT INTO `pay_house_bak` VALUES ('1', '1', '1', '1', '3', '2018-03-21 15:27:35', '2018-03-22 16:59:50', '2018-03-22 16:59:50', '2');
+INSERT INTO `pay_house_bak` VALUES ('1', '1', '1', '1', '3', '2018-03-22 17:00:24', '2018-03-22 17:02:17', '2018-03-22 17:02:17', '2');
+INSERT INTO `pay_house_bak` VALUES ('1', '1', '1', '1', '1', '2018-03-22 18:01:11', '2018-03-22 18:01:11', null, '1');
 
 -- ----------------------------
 -- Table structure for pay_house_plus
@@ -3358,7 +3485,7 @@ CREATE TABLE `pay_subject` (
   `pay_id` int(11) NOT NULL COMMENT '兑付ID',
   `pact_id` int(11) NOT NULL DEFAULT '0' COMMENT '协议ID',
   `subject_id` int(11) NOT NULL COMMENT '重要补偿科目 ID',
-  `total_id` int(11) NOT NULL DEFAULT '0' COMMENT '支付总单ID',
+  `total_id` int(11) NOT NULL DEFAULT '0' COMMENT '兑付总单ID',
   `calculate` text COMMENT '计算公式',
   `amount` decimal(30,2) NOT NULL DEFAULT '0.00' COMMENT '补偿小计',
   `code` char(20) NOT NULL COMMENT '兑付状态',
@@ -3372,15 +3499,21 @@ CREATE TABLE `pay_subject` (
   KEY `building_id` (`building_id`),
   KEY `pay_id` (`pay_id`),
   KEY `subject_id` (`subject_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='兑付-科目';
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='兑付-科目';
 
 -- ----------------------------
 -- Records of pay_subject
 -- ----------------------------
-INSERT INTO `pay_subject` VALUES ('23', '1', '1', '1', '2', '20', '0', '1', '0', '', '800000.00', '110', '2018-03-06 15:26:53', '2018-03-06 19:31:33', null);
-INSERT INTO `pay_subject` VALUES ('24', '1', '1', '1', '2', '20', '0', '17', '0', '', '3453.00', '111', '2018-03-06 19:31:33', '2018-03-06 19:31:33', null);
-INSERT INTO `pay_subject` VALUES ('29', '1', '1', '1', '2', '23', '0', '17', '0', '', '50000.00', '112', '2018-03-08 15:15:03', '2018-03-08 15:15:03', null);
+INSERT INTO `pay_subject` VALUES ('23', '1', '1', '1', '2', '20', '0', '1', '0', '', '800000.00', '110', '2018-03-06 15:26:53', '2018-03-21 12:00:00', null);
+INSERT INTO `pay_subject` VALUES ('24', '1', '1', '1', '2', '20', '0', '17', '0', '', '3453.00', '111', '2018-03-06 19:31:33', '2018-03-21 12:00:00', null);
+INSERT INTO `pay_subject` VALUES ('29', '1', '1', '1', '2', '23', '0', '1', '0', '', '800000.00', '112', '2018-03-08 15:15:03', '2018-03-08 15:15:03', null);
 INSERT INTO `pay_subject` VALUES ('30', '1', '1', '1', '2', '23', '0', '4', '0', '', '6358.00', '113', '2018-03-08 15:15:03', '2018-03-08 15:15:03', null);
+INSERT INTO `pay_subject` VALUES ('31', '1', '2', '1', '1', '24', '0', '1', '0', '', '2121.00', '110', '2018-03-21 10:56:44', '2018-03-21 10:56:44', null);
+INSERT INTO `pay_subject` VALUES ('32', '1', '2', '1', '1', '24', '0', '6', '0', '', '5000.00', '110', '2018-03-21 10:56:44', '2018-03-21 10:56:44', null);
+INSERT INTO `pay_subject` VALUES ('33', '1', '2', '1', '1', '24', '0', '4', '0', '', '6358.00', '110', '2018-03-21 10:56:44', '2018-03-21 10:56:44', null);
+INSERT INTO `pay_subject` VALUES ('34', '1', '2', '1', '1', '25', '0', '1', '0', '', '2121.00', '110', '2018-03-21 10:57:49', '2018-03-21 10:57:49', null);
+INSERT INTO `pay_subject` VALUES ('35', '1', '2', '1', '1', '25', '0', '6', '0', '', '5000.00', '110', '2018-03-21 10:57:49', '2018-03-21 10:57:49', null);
+INSERT INTO `pay_subject` VALUES ('36', '1', '2', '1', '1', '25', '0', '4', '0', '', '6358.00', '110', '2018-03-21 10:57:49', '2018-03-21 10:57:49', null);
 
 -- ----------------------------
 -- Table structure for pay_transit
@@ -3422,7 +3555,7 @@ CREATE TABLE `pay_unit` (
   `unit_id` int(11) NOT NULL COMMENT ' 公产单位ID',
   `pay_id` int(11) NOT NULL COMMENT '兑付ID',
   `pact_id` int(11) NOT NULL DEFAULT '0' COMMENT '公产单位协议ID',
-  `total_id` int(11) NOT NULL DEFAULT '0' COMMENT '支付总单ID',
+  `total_id` int(11) NOT NULL DEFAULT '0' COMMENT '兑付总单ID',
   `calculate` text NOT NULL COMMENT '计算公式',
   `amount` decimal(30,2) NOT NULL DEFAULT '0.00' COMMENT '补偿小计',
   `code` char(20) NOT NULL COMMENT '兑付状态',
@@ -3536,11 +3669,12 @@ CREATE TABLE `tear` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='拆除委托';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='拆除委托';
 
 -- ----------------------------
 -- Records of tear
 -- ----------------------------
+INSERT INTO `tear` VALUES ('1', '1', '2018-03-22', '[\"\\/storage\\/180322\\/x0hG4WrO4YMexV024qEMxKZZyon2f6AoI5tTb7Mt.png\"]', '20', '2018-03-22 10:16:22', '2018-03-22 10:16:22', null);
 
 -- ----------------------------
 -- Table structure for tear_detail
@@ -3616,9 +3750,9 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', '0', '1', 'demo', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA9', '测试演示账号', null, null, null, '2018-03-16 14:58:38', '127.0.0.1', '0o1ZGgVW94VKC4atcfHsBYijQ33Lmmf1O3icizpN', '2018-03-16 17:53:22', '2018-02-05 09:38:29', '2018-03-16 17:53:22', null);
-INSERT INTO `user` VALUES ('3', '1', '1', 'admin', 'eyJpdiI6IlpzbzB5UUJvc2d6dWZSVlZvQmtIWXc9PSIsInZhbHVlIjoiclM5WkdYVk1sc0FQZ1lzbHRwVnY1dz09IiwibWFjIjoiMzNiNjZiYWZiMjEyZjAwNDkyMzFjZDEwN2I1Mzk3ZWJhNmRkYWMyZmE1MjQ2M2RmOWJiOTE5ODgxMjQzM2QwOCJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA8', '我是主管', null, null, null, '2018-03-16 09:20:52', '::1', 'ZudbNRp7bahUFdXSrcRCdkVMLKfTjUipcZTfEcBv', '2018-03-16 17:31:32', '2018-02-05 09:38:29', '2018-03-16 17:31:32', null);
-INSERT INTO `user` VALUES ('4', '1', '1', 'user', 'eyJpdiI6IlJCTXJaOFN3MWxOeUdqZWwyZ0JkTHc9PSIsInZhbHVlIjoia1wvd1EzTzY1MlE2WENwcUNid3M5aGc9PSIsIm1hYyI6IjI0NTAwNjA1OWY4MDg2NGRhNjE1YjhiMGEyYzIzY2FkNTk2NmRmYWNkMWM4ZDBhNmRjY2ZiOWM0ODI5YzJmNzIifQ==', '0860480D-B2FB-C834-2336-F4A9B0DB5AA1', '测试超管', null, null, null, '2018-03-16 08:54:08', '127.0.0.1', 'PYl7IHvhv4r4yxwR4CdzwwHO7jfD3iyuL9aeYLS4', '2018-03-16 21:22:07', '2018-02-05 09:38:29', '2018-03-16 21:22:07', null);
+INSERT INTO `user` VALUES ('1', '0', '1', 'demo', 'eyJpdiI6ImhOTm1oa3JHQzduR2JqbzdLY1NEckE9PSIsInZhbHVlIjoiTlpaTFVmdjlNbUFLMjN2Q3hzYW1RZz09IiwibWFjIjoiYzc3M2VhZWEyYjg5NTMzYjMyNmFmNjg2ZDNiNjIyMjMwOTYyZjMxMzlhZDE5MWJmNDIxMTUxNzZjYzk4YjRlNSJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA9', '测试演示账号', null, null, null, '2018-03-22 09:10:10', '127.0.0.1', 'U32hRfKN1raN6GRq9R0QGPRUXePV9keQzisAbVFE', '2018-03-22 13:47:21', '2018-02-05 09:38:29', '2018-03-22 13:47:21', null);
+INSERT INTO `user` VALUES ('3', '1', '1', 'admin', 'eyJpdiI6IlpzbzB5UUJvc2d6dWZSVlZvQmtIWXc9PSIsInZhbHVlIjoiclM5WkdYVk1sc0FQZ1lzbHRwVnY1dz09IiwibWFjIjoiMzNiNjZiYWZiMjEyZjAwNDkyMzFjZDEwN2I1Mzk3ZWJhNmRkYWMyZmE1MjQ2M2RmOWJiOTE5ODgxMjQzM2QwOCJ9', '0860480D-B2FB-C834-2336-F4A9B0DB5AA8', '我是主管', null, null, null, '2018-03-22 09:13:32', '::1', 'eLyMIj11dOMN8oyIdxrn81xCKNMdJEMz7N18d0yB', '2018-03-22 16:23:42', '2018-02-05 09:38:29', '2018-03-22 16:23:42', null);
+INSERT INTO `user` VALUES ('4', '1', '1', 'user', 'eyJpdiI6IlJCTXJaOFN3MWxOeUdqZWwyZ0JkTHc9PSIsInZhbHVlIjoia1wvd1EzTzY1MlE2WENwcUNid3M5aGc9PSIsIm1hYyI6IjI0NTAwNjA1OWY4MDg2NGRhNjE1YjhiMGEyYzIzY2FkNTk2NmRmYWNkMWM4ZDBhNmRjY2ZiOWM0ODI5YzJmNzIifQ==', '0860480D-B2FB-C834-2336-F4A9B0DB5AA1', '测试超管', null, null, null, '2018-03-22 08:40:07', '127.0.0.1', '8fkSstG3Rk4Bt1g1Bcjea8qe3x5kta98msyxOuwE', '2018-03-22 20:08:54', '2018-02-05 09:38:29', '2018-03-22 20:08:54', null);
 INSERT INTO `user` VALUES ('5', '1', '2', 'main', 'eyJpdiI6IlwvUmg3Vnk3S2loQUhtaFk4QTFMWUh3PT0iLCJ2YWx1ZSI6InZPOG5zYmlDcGZkbm9BTHlSZXNGakE9PSIsIm1hYyI6IjFmYzlmOWFmZTFlYjllMWYyMGQwYmQwNGViODA5OTZlYzBiNDlkZGQ1Y2EzYjBlYmU4MjczYzVkZDk2MjlkN2MifQ==', '06F043FD-D1CA-FDC3-1CFA-D6B4F669453B', '主管是我', null, null, null, null, null, null, null, '2018-02-27 16:50:35', '2018-02-27 16:50:35', null);
 INSERT INTO `user` VALUES ('6', '1', '3', 'second', 'eyJpdiI6IktiZVJFejdpbk8wbVh3VFN3MkxidkE9PSIsInZhbHVlIjoiQitpZGN6UXVNTmR5aklqTmVWeHRpQT09IiwibWFjIjoiZDFjM2E4ZjgzMGI4MjQyNjNhNjc3ODI4ZDA0ZmJmZDNkNmNmOGVmYTBmYjBhMmEwMzI1ZjYzM2ZmNzkxNjllMSJ9', 'BA43A48B-A125-1B88-B194-12C4F2ADFC1D', '我是分管', null, null, null, null, null, null, null, '2018-02-27 16:51:51', '2018-02-27 16:51:51', null);
 INSERT INTO `user` VALUES ('7', '4', '4', 'resettle', 'eyJpdiI6IkwrMXRWRHRDaTJjeTY2TmVJUk1MWFE9PSIsInZhbHVlIjoiUGJ5cyt0cEFLS0lCdGdjQmRkZkoyZz09IiwibWFjIjoiYjUyZjVmNjJmNmFlMjEwZThmY2VmMWNiZjdlOTNkMmJiOTViMTZkMzc2MGY3MWE2NzgzN2Q4NDczMzFiMmNkZSJ9', 'AFE32CCA-C87E-D703-F577-254D58C08BB6', '安置', null, null, null, '2018-03-14 13:51:05', '127.0.0.1', 'XoR8xdN6HBrytkRtAxaMN6r7eKrhDM2t7d2KxurQ', '2018-03-14 13:52:59', '2018-02-27 16:52:32', '2018-03-14 13:52:59', null);

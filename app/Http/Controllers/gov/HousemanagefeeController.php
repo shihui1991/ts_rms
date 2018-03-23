@@ -169,7 +169,6 @@ class HousemanagefeeController extends BaseauthController
                                $fee_data[]=[
                                    'id'=>isset($fee_model)?$fee_model->id:null,
                                    'house_id'=>$house->id,
-                                   'area'=>$house->area,
                                    'manage_at'=>$date_at,
                                    'manage_fee'=>$house->housemanageprice->manage_price,
                                    'created_at'=>date('Y-m-d H:i:s'),
@@ -191,7 +190,10 @@ class HousemanagefeeController extends BaseauthController
                            throw new \Exception('数据错误',404404);
                        }
                        foreach ($sqls as $sql){
-                           DB::statement($sql);
+//                           DB::statement($sql);
+                           $pdo=new \PDO(env('DB_CONNECTION').':dbname='.env('DB_DATABASE').';host='.env('DB_HOST'),env('DB_USERNAME'),env('DB_PASSWORD'));
+                           $sth=$pdo->prepare($sql);
+                           $sth->execute();
                        }
                    }
                });
@@ -203,7 +205,7 @@ class HousemanagefeeController extends BaseauthController
             $url=route('g_housemanagefee');
 
             DB::commit();
-        }catch (\Exception $exception){
+        }catch (\Exception $exception){dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'计算失败';
             $sdata=null;
