@@ -63,7 +63,7 @@
                                         @foreach($sdata['init_budget']->picture as $pic)
                                             <li>
                                                 <div>
-                                                    <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                                    <img width="120" height="120" src="{{$pic}}" alt="加载失败">
                                                     <input type="hidden" name="budget[picture][]" value="{{$pic}}">
                                                     <div class="text">
                                                         <div class="inner">
@@ -118,7 +118,7 @@
                                         @foreach($sdata['item_notice']->picture as $pic)
                                             <li>
                                                 <div>
-                                                    <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                                    <img width="120" height="120" src="{{$pic}}" alt="加载失败">
                                                     <input type="hidden" name="notice[picture][]" value="{{$pic}}">
                                                     <div class="text">
                                                         <div class="inner">

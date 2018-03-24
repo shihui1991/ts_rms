@@ -862,7 +862,7 @@ class ComassessController extends BaseitemController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $householde_ids=Companyhousehold::query()->where('item_id',$item_id)
+            $householde_ids=Companyhousehold::where('item_id',$item_id)
                 ->where('company_id',$company_id)
                 ->sharedLock()
                 ->pluck('household_id');

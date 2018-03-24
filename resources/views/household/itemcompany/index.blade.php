@@ -1,5 +1,5 @@
 {{-- 继承aceAdmin后台布局 --}}
-@extends('household.home')
+@extends('household.layout')
 
 
 {{-- 页面内容 --}}
@@ -36,7 +36,7 @@
 
                                             <div class="profile-info-value img-content">
                                                 @if($value->company->logo)
-                                                    <img width="120" height="120" src="{{$value->company->logo}}" alt="{{$value->company->logo}}">
+                                                    <img width="120" height="120" src="{{$value->company->logo}}" alt="加载失败">
                                                     <div class="text">
                                                         <div class="inner">
                                                             <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>

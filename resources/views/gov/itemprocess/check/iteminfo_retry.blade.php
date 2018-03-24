@@ -45,7 +45,7 @@
                                     <ul class="ace-thumbnails clearfix img-content">
                                         <li>
                                             <div>
-                                                <img width="120" height="120" src="{{$sdata['item']->map}}" alt="{{$sdata['item']->map}}">
+                                                <img width="120" height="120" src="{{$sdata['item']->map}}" alt="加载失败">
                                                 <input type="hidden" name="map" value="{{$sdata['item']->map}}">
                                                 <div class="text">
                                                     <div class="inner">
@@ -98,7 +98,7 @@
                                             @foreach($sdata['item']->picture[$filecate->filename] as $pic)
                                                 <li>
                                                     <div>
-                                                        <img width="120" height="120" src="{{$pic}}" alt="{{$pic}}">
+                                                        <img width="120" height="120" src="{{$pic}}" alt="加载失败">
                                                         <input type="hidden" name="picture[{{$filecate->filename}}][]" value="{{$pic}}">
                                                         <div class="text">
                                                             <div class="inner">

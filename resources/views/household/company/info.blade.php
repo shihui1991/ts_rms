@@ -1,5 +1,5 @@
 {{-- 继承布局 --}}
-@extends('household.home')
+@extends('household.layout')
 
 
 {{-- 页面内容 --}}
@@ -75,7 +75,7 @@
         <div class="profile-info-row">
             <div class="profile-info-name">logo： </div>
             <div class="profile-info-value">
-                <img width="120" height="120" src="{{$sdata->logo}}" alt="{{$sdata->logo}}">
+                <img width="120" height="120" src="{{$sdata->logo}}" alt="加载失败">
                 <div class="text">
                     <div class="inner">
                         <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>

@@ -38,7 +38,7 @@ class  CompanyvoteController extends BaseController
         $total=Company::sharedLock()
                 ->count();
 
-        $companys=Company::query()->withCount(['companyvotes'=>function($query){
+        $companys=Company::withCount(['companyvotes'=>function($query){
             $query->where('item_id',$this->item_id);
         }])
             ->orderBy('companyvotes_count','desc')

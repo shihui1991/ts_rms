@@ -62,4 +62,8 @@ class Payhouse extends Model
     public function housepluses(){
         return $this->hasMany('App\Http\Model\Payhouse','house_id','house_id');
     }
+
+    public function houseresettle(){
+        return $this->hasOne('App\Http\Model\Houseresettle','house_id','house_id')->withDefault();
+    }
 }

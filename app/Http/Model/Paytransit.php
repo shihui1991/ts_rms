@@ -61,4 +61,7 @@ class Paytransit extends Model
     public function pact(){
         return $this->belongsTo('App\Http\Model\Pact','pact_id','id')->withDefault();
     }
+    public function housetransit(){
+        return $this->hasOne('App\Http\Model\Housetransit','house_id','house_id')->withDefault();
+    }
 }
