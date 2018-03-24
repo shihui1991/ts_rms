@@ -14,7 +14,7 @@ class Householdbuilding extends Model
     protected $table='item_household_building';
     protected $primaryKey='id';
     protected $fillable=['name','code','reg_inner','reg_outer','balcony', 'real_inner','real_outer','def_use','real_use',
-        'struct_id','direct','floor','layout_id','picture'];
+        'struct_id','direct','floor','layout_id','picture','build_year'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -37,6 +37,7 @@ class Householdbuilding extends Model
         'struct_id'=>'结构类型',
         'direct'=>'朝向',
         'floor'=>'楼层',
+        'build_year'=>'建造年份',
         'layout_id'=>'地块户型',
         'picture'=>'图片'
     ];

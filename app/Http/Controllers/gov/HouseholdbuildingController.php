@@ -132,6 +132,7 @@ class HouseholdbuildingController extends BaseitemController
                 'def_use' => 'required',
                 'real_use' => 'required',
                 'struct_id' => 'required',
+                'build_year' => 'required',
                 'direct' => 'required',
                 'floor' => 'required',
                 'picture' => 'required'
@@ -304,7 +305,6 @@ class HouseholdbuildingController extends BaseitemController
             $model=new Household();
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'code' => 'required',
                 'reg_outer' => 'required',
                 'balcony' => 'required',
                 'real_outer' => 'required',
@@ -312,6 +312,7 @@ class HouseholdbuildingController extends BaseitemController
                 'real_use' => 'required',
                 'struct_id' => 'required',
                 'direct' => 'required',
+                'build_year' => 'required',
                 'floor' => 'required',
                 'picture' => 'required'
             ];
