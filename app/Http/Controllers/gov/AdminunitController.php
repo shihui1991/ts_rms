@@ -240,7 +240,7 @@ class AdminunitController extends BaseauthController
                 $view='gov.error';
             }else{
                 $code='success';
-                $msg='查询成功';
+                $msg='获取成功';
                 $sdata=$adminunit;
                 $edata=new Adminunit();
                 $url=null;

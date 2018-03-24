@@ -13,7 +13,7 @@ class Paysubject extends Model
     use SoftDeletes;
     protected $table='pay_subject';
     protected $primaryKey='id';
-    protected $fillable=['subject_id','calculate','amount',];
+    protected $fillable=['calculate','amount',];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [];
 
@@ -35,7 +35,7 @@ class Paysubject extends Model
 
     /* ++++++++++ 设置添加数据 ++++++++++ */
     public function addOther($request){
-
+        $this->attributes['subject_id']=$request->input('subject_id');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
