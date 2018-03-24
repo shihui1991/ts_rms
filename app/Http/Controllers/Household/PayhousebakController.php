@@ -165,7 +165,7 @@ class PayhousebakController extends BaseController{
                 // 可完全优惠
                 if($last_total>=0){
                     $plus_data=[
-                        'area'=>$house->area,
+                        'area'=>0,
                         'market'=>$house->itemhouseprice->market,
                         'price'=>$house->itemhouseprice->price,
                         'agio'=>$house->itemhouseprice->market - $house->itemhouseprice->price,
