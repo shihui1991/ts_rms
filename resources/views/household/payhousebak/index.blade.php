@@ -69,8 +69,8 @@
                                         </tbody>
                                         <tfoot>
                                         <tr>
-                                            <th colspan="2">可调换安置房的补偿总额：{{number_format($sdata['resettle_total'],2)}} 元</th>
-                                            <th colspan="2">上浮面积：<span id="plus_area">{{$sdata['plus_area']}}</span> ㎡</th>
+                                            <th colspan="3">可调换安置房的补偿总额：{{number_format($sdata['resettle_total'],2)}} 元</th>
+                                            <th colspan="3">上浮面积：<span id="plus_area">{{$sdata['plus_area']}}</span> ㎡</th>
                                             <th colspan="7">
                                                 产权调换后结余补偿款：
                                                 <span id="last_total">{{number_format($sdata['last_total'],2)}}</span> 元（负数则表示被征收户需补交上浮房款）

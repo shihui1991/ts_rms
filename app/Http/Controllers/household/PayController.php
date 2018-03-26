@@ -770,4 +770,5 @@ class PayController extends BaseController{
             return response()->json($result);
         }
     }
+
 }
