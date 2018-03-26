@@ -15,6 +15,10 @@
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>
+
+        @if(blank($sdata['itemcompany']->picture))
+
+        @endif
     </p>
 
 

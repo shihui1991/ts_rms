@@ -213,7 +213,7 @@
         });
         // 删除选择
         function removeHousehold(household_id) {
-            var pos=$.inArray(household_id.toString(),choose_household_ids);
+            var pos=$.inArray(household_id,choose_household_ids);
             if(pos>-1){
                 choose_household_ids.splice(pos,1);
                 choose_households.splice(pos,1);
@@ -229,7 +229,7 @@
                 $.each(ajaxResp.sdata.data,function (index,info) {
 
                     var checked='';
-                    if($.inArray(info.household_id.toString(),choose_household_ids)>-1){
+                    if($.inArray(info.household_id,choose_household_ids)>-1){
                         checked='checked';
                     }
                     tr += ' <tr>' +
