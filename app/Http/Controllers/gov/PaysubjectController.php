@@ -1241,7 +1241,10 @@ class PaysubjectController extends BaseitemController
                     throw new \Exception('数据错误',404404);
                 }
                 foreach($sqls as $sql){
-                    DB::statement($sql);
+//                    DB::statement($sql);
+                    $pdo=new \PDO(env('DB_CONNECTION').':dbname='.env('DB_DATABASE').';host='.env('DB_HOST'),env('DB_USERNAME'),env('DB_PASSWORD'));
+                    $sth=$pdo->prepare($sql);
+                    $sth->execute();
                 }
             }
             if(filled($del_ids)){
