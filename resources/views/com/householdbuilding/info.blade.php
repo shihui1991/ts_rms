@@ -55,6 +55,13 @@
         </div>
 
         <div class="profile-info-row">
+            <div class="profile-info-name"> 建造年份： </div>
+            <div class="profile-info-value">
+                <span class="editable editable-click">{{$sdata->build_year}}</span>
+            </div>
+        </div>
+
+        <div class="profile-info-row">
             <div class="profile-info-name"> 朝向： </div>
             <div class="profile-info-value">
                 <span class="editable editable-click">{{$sdata->direct}}</span>

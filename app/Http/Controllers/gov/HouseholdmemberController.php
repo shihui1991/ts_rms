@@ -5,6 +5,8 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Filecate;
+use App\Http\Model\Filetable;
 use App\Http\Model\Household;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdmembercrowd;
@@ -98,6 +100,8 @@ class HouseholdmemberController extends BaseitemController
         if($request->isMethod('get')){
             $sdata['household'] = Household::select(['id','land_id','item_id','building_id','type'])->find($household_id);
             $sdata['nation'] = Nation::select(['id','name'])->get();
+            $file_table_id=Filetable::where('name','item_household_member')->sharedLock()->value('id');
+            $sdata['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
             $edata = $model;
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$edata,'url'=>null];
             if($request->ajax()){
@@ -157,8 +161,7 @@ class HouseholdmemberController extends BaseitemController
                 'age'=>'required',
                 'crowd'=>'required',
                 'holder'=>'required',
-                'portion'=>'required',
-                'picture'=>'required'
+                'portion'=>'required'
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
@@ -166,6 +169,21 @@ class HouseholdmemberController extends BaseitemController
             ];
             $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
             if ($validator->fails()) {
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
+            $file_table_id=Filetable::where('name','item_household_member')->sharedLock()->value('id');
+            $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+            $rules=[];
+            $messages=[];
+            foreach ($file_cates as $file_cate){
+                $name='picture.'.$file_cate->filename;
+                $rules[$name]='required';
+                $messages[$name.'.required']='必须上传【'.$file_cate->name.'】';
+            }
+            $validator = Validator::make($request->all(),$rules,$messages);
+            if($validator->fails()){
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
@@ -216,6 +234,8 @@ class HouseholdmemberController extends BaseitemController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
+        $file_table_id=Filetable::where('name','item_household_member')->sharedLock()->value('id');
+        $filecates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
         $householdmembercrowd = Householdmembercrowd::select(['id','item_id','crowd_id','picture'])
                         ->with(['crowd'=>function($query){
                             $query->select(['id','name']);
@@ -235,13 +255,13 @@ class HouseholdmemberController extends BaseitemController
             $code='warning';
             $msg='数据不存在';
             $sdata=null;
-            $edata=$householdmembercrowd;
+            $edata=['crowd'=>$householdmembercrowd,'filecates'=>$filecates];
             $url=null;
         }else{
             $code='success';
             $msg='获取成功';
             $sdata=$householdmember;
-            $edata=$householdmembercrowd;
+            $edata=['crowd'=>$householdmembercrowd,'filecates'=>$filecates];
             $url=null;
 
             $view='gov.householdmember.info';
@@ -273,6 +293,8 @@ class HouseholdmemberController extends BaseitemController
             $data['household'] = Household::select(['id','land_id','item_id','building_id','type'])->find($household_id);
             $data['nation'] = Nation::select(['id','name'])->get();
             $data['householdmember'] = new Householdmember();
+            $file_table_id=Filetable::where('name','item_household_member')->sharedLock()->value('id');
+            $data['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
             $householdmember=Householdmember::with([
                 'nation'=>function($query){
                     $query->select(['id','name']);
@@ -352,8 +374,7 @@ class HouseholdmemberController extends BaseitemController
                 'age'=>'required',
                 'crowd'=>'required',
                 'holder'=>'required',
-                'portion'=>'required',
-                'picture'=>'required'
+                'portion'=>'required'
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
@@ -364,6 +385,21 @@ class HouseholdmemberController extends BaseitemController
                 $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
+            $file_table_id=Filetable::where('name','item_household_member')->sharedLock()->value('id');
+            $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+            $rules=[];
+            $messages=[];
+            foreach ($file_cates as $file_cate){
+                $name='picture.'.$file_cate->filename;
+                $rules[$name]='required';
+                $messages[$name.'.required']='必须上传【'.$file_cate->name.'】';
+            }
+            $validator = Validator::make($request->all(),$rules,$messages);
+            if($validator->fails()){
+                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{

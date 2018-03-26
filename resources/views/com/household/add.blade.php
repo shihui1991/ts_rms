@@ -148,23 +148,23 @@
 
             <div class="form-group">
                 <div class="widget-main padding-8">
-                    <div class="form-group img-box">
-                        <label class="col-sm-3 control-label no-padding-right">
-                            房屋证件：<br>
-                            <span class="btn btn-xs">
-                                <span>上传图片</span>
-                                <input type="file" accept="image/*" class="hidden" data-name="house_pic[]" multiple  onchange="uplfile(this)">
-                            </span>
-                        </label>
-                        <div class="col-sm-9">
-                            <ul class="ace-thumbnails clearfix img-content viewer">
+                    @foreach($sdata['filecates'] as $filecate)
+                        <div class="form-group img-box">
+                            <label class="col-sm-3 control-label no-padding-right">
+                                {{$filecate->name}}<br>
+                                <span class="btn btn-xs">
+                                        <span>上传图片</span>
+                                        <input type="file" accept="image/*" class="hidden" data-name="house_pic[{{$filecate->filename}}][]" multiple onchange="uplfile(this)">
+                                    </span>
+                            </label>
+                            <div class="col-sm-9">
+                                <ul class="ace-thumbnails clearfix img-content">
 
-                            </ul>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="space-4 header green"></div>
-
+                        <div class="space-4 header green"></div>
+                    @endforeach
                 </div>
             </div>
 
