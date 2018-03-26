@@ -296,23 +296,16 @@ class PaysubjectController extends BaseitemController
                                 ['end_at','>=',date('Y-m-d')],
                             ])
                             ->first();
-                        /* ++++++++++ 公共附属物补偿总额 ++++++++++ */
-                        $public_total=Paypublic::sharedLock()
-                            ->where([
-                                ['item_id',$pay->item_id],
-                                ['land_id',$pay->land_id],
-                            ])
-                            ->sum('avg');
 
                         // 货币补偿
                         if($pay->getOriginal('repay_way')==0){
-                            $reward_total=($legal->legal_total+$public_total) * ($item_reward->portion+$program->reward_other)/100;
-                            $pay_subject->calculate=number_format(($legal->legal_total+$public_total),2).' × '.($item_reward->portion+$program->reward_other).'% = '.number_format($reward_total,2);
+                            $reward_total=($legal->legal_total) * ($item_reward->portion+$program->reward_other)/100;
+                            $pay_subject->calculate=number_format(($legal->legal_total),2).' × '.($item_reward->portion+$program->reward_other).'% = '.number_format($reward_total,2);
                         }
                         // 产权调换
                         else{
-                            $reward_total=($legal->legal_total+$public_total) * ($item_reward->portion)/100;
-                            $pay_subject->calculate=number_format(($legal->legal_total+$public_total),2).' × '.($item_reward->portion).'% = '.number_format($reward_total,2);
+                            $reward_total=($legal->legal_total) * ($item_reward->portion)/100;
+                            $pay_subject->calculate=number_format(($legal->legal_total),2).' × '.($item_reward->portion).'% = '.number_format($reward_total,2);
                         }
                         $pay_subject->amount=$reward_total;
                         break;
@@ -1030,23 +1023,16 @@ class PaysubjectController extends BaseitemController
                                     ['end_at','>=',date('Y-m-d')],
                                 ])
                                 ->first();
-                            /* ++++++++++ 公共附属物补偿总额 ++++++++++ */
-                            $public_total=Paypublic::sharedLock()
-                                ->where([
-                                    ['item_id',$pay->item_id],
-                                    ['land_id',$pay->land_id],
-                                ])
-                                ->sum('avg');
 
                             // 货币补偿
                             if($pay->getOriginal('repay_way')==0){
-                                $reward_total=($legal->legal_total+$public_total) * ($item_reward->portion+$program->reward_other)/100;
-                                $calculate=number_format(($legal->legal_total+$public_total),2).' × '.($item_reward->portion+$program->reward_other).'% = '.number_format($reward_total,2);
+                                $reward_total=($legal->legal_total) * ($item_reward->portion+$program->reward_other)/100;
+                                $calculate=number_format(($legal->legal_total),2).' × '.($item_reward->portion+$program->reward_other).'% = '.number_format($reward_total,2);
                             }
                             // 产权调换
                             else{
-                                $reward_total=($legal->legal_total+$public_total) * ($item_reward->portion)/100;
-                                $calculate=number_format(($legal->legal_total+$public_total),2).' × '.($item_reward->portion).'% = '.number_format($reward_total,2);
+                                $reward_total=($legal->legal_total) * ($item_reward->portion)/100;
+                                $calculate=number_format(($legal->legal_total),2).' × '.($item_reward->portion).'% = '.number_format($reward_total,2);
                             }
                             $subject_data[]=[
                                 'id'=>$subject->id,
