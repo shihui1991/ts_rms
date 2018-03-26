@@ -37,6 +37,7 @@ class Householdbuilding extends Model
         'struct_id'=>'结构类型',
         'direct'=>'朝向',
         'floor'=>'楼层',
+        'build_year'=>'建造年份',
         'layout_id'=>'地块户型',
         'picture'=>'图片'
     ];
