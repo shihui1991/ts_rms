@@ -11,6 +11,7 @@
             返回
         </a>
     </div>
+    <h3 class="header smaller green">公告详情</h3>
     <div class="row">
         <div class="col-sm-5 col-xs-12">
             <div class="widget-container-col ui-sortable">
@@ -138,6 +139,7 @@
         </div>
     </div>
     @if (filled($sdata['program']))
+        <h3 class="header smaller red">征收方案</h3>
         <div class="tabbable">
             <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">
                 <li class="active">
@@ -200,11 +202,11 @@
                                                     <tbody>
                                                     <tr>
                                                         <th>方案名称</th>
-                                                        <td colspan="5">{{$sdata['program']['itmeprogram']->name}}</td>
+                                                        <td colspan="5">{{$sdata['program']['itemprogram']->name}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>项目期限</th>
-                                                        <td colspan="5">{{$sdata['program']['itmeprogram']->item_end}}</td>
+                                                        <td colspan="5">{{$sdata['program']['itemprogram']->item_end}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th rowspan="2">补偿比例</th>
@@ -212,8 +214,8 @@
                                                         <th colspan="3">承租人（%）</th>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2">{{$sdata['program']['itmeprogram']->portion_holder}}</td>
-                                                        <td colspan="3">{{$sdata['program']['itmeprogram']->portion_renter}}</td>
+                                                        <td colspan="2">{{$sdata['program']['itemprogram']->portion_holder}}</td>
+                                                        <td colspan="3">{{$sdata['program']['itemprogram']->portion_renter}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th rowspan="2">搬迁补助费</th>
@@ -224,11 +226,11 @@
                                                         <th>生产加工（元/㎡/次）</th>
                                                     </tr>
                                                     <tr>
-                                                        <td>{{$sdata['program']['itmeprogram']->move_base}}</td>
-                                                        <td>{{$sdata['program']['itmeprogram']->move_house}}</td>
-                                                        <td>{{$sdata['program']['itmeprogram']->move_office}}</td>
-                                                        <td>{{$sdata['program']['itmeprogram']->move_business}}</td>
-                                                        <td>{{$sdata['program']['itmeprogram']->move_factory}}</td>
+                                                        <td>{{$sdata['program']['itemprogram']->move_base}}</td>
+                                                        <td>{{$sdata['program']['itemprogram']->move_house}}</td>
+                                                        <td>{{$sdata['program']['itemprogram']->move_office}}</td>
+                                                        <td>{{$sdata['program']['itemprogram']->move_business}}</td>
+                                                        <td>{{$sdata['program']['itemprogram']->move_factory}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th rowspan="2">临时安置费</th>
@@ -237,9 +239,9 @@
                                                         <th colspan="2">非住宅（元/㎡/月）</th>
                                                     </tr>
                                                     <tr>
-                                                        <td>{{$sdata['program']['itmeprogram']->transit_base}}</td>
-                                                        <td colspan="2">{{$sdata['program']['itmeprogram']->transit_house}}</td>
-                                                        <td colspan="2">{{$sdata['program']['itmeprogram']->transit_other}}</td>
+                                                        <td>{{$sdata['program']['itemprogram']->transit_base}}</td>
+                                                        <td colspan="2">{{$sdata['program']['itemprogram']->transit_house}}</td>
+                                                        <td colspan="2">{{$sdata['program']['itemprogram']->transit_other}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th rowspan="2" colspan="2">临时安置费的补助时长（月）</th>
@@ -247,8 +249,8 @@
                                                         <th colspan="2">期房</th>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2">{{$sdata['program']['itmeprogram']->transit_real}}</td>
-                                                        <td colspan="3">{{$sdata['program']['itmeprogram']->transit_future}}</td>
+                                                        <td colspan="2">{{$sdata['program']['itemprogram']->transit_real}}</td>
+                                                        <td colspan="3">{{$sdata['program']['itemprogram']->transit_future}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th rowspan="2" colspan="2">货币补偿的额外奖励</th>
@@ -256,16 +258,16 @@
                                                         <th colspan="2">非住宅（%）</th>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2">{{$sdata['program']['itmeprogram']->reward_house}}</td>
-                                                        <td colspan="3">{{$sdata['program']['itmeprogram']->reward_other}}</td>
+                                                        <td colspan="2">{{$sdata['program']['itemprogram']->reward_house}}</td>
+                                                        <td colspan="3">{{$sdata['program']['itemprogram']->reward_other}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th colspan="2">房屋与登记相符奖励</th>
-                                                        <td colspan="4">{{$sdata['program']['itmeprogram']->reward_real}} 元/㎡</td>
+                                                        <td colspan="4">{{$sdata['program']['itemprogram']->reward_real}} 元/㎡</td>
                                                     </tr>
                                                     <tr>
                                                         <th colspan="2">按约搬迁奖励</th>
-                                                        <td colspan="4">{{$sdata['program']['itmeprogram']->reward_move}} 元</td>
+                                                        <td colspan="4">{{$sdata['program']['itemprogram']->reward_move}} 元</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
@@ -459,6 +461,7 @@
     @endif
 
     @if(filled($sdata['itemdraft']))
+        <h3 class="header smaller red">征收意见稿</h3>
         <div class="widget-container-col ui-sortable" id="widget-container-col-1">
             <div class="widget-box ui-sortable-handle" id="widget-box-1">
                 <div class="widget-header">

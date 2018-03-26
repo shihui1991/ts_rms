@@ -113,6 +113,14 @@
         <div class="space-4"></div>
 
         <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="build_year"> 建造年份： </label>
+            <div class="col-sm-9">
+                <input type="number" id="build_year" name="build_year" data-type="year" data-format="yyyy" value="{{$sdata->build_year}}" class="col-xs-10 col-sm-5 laydate"  placeholder="请输入建造年份" required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="floor"> 楼层： </label>
             <div class="col-sm-9">
                 <input type="text" id="floor" name="floor" value="{{$sdata->floor}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼层" required>
@@ -197,6 +205,7 @@
 @section('js')
     @parent
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
+    <script src="{{asset('laydate/laydate.js')}}"></script>
     <script src="{{asset('js/func.js')}}"></script>
     <script>
         $('.img-content').viewer('update');

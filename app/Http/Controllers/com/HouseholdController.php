@@ -586,6 +586,7 @@ class HouseholdController extends BaseitemController
                 'struct_id' => 'required',
                 'direct' => 'required',
                 'floor' => 'required',
+                'build_year' => 'required',
                 'picture' => 'required'
             ];
             $messages = [
@@ -774,6 +775,7 @@ class HouseholdController extends BaseitemController
                 'struct_id' => 'required',
                 'direct' => 'required',
                 'floor' => 'required',
+                'build_year' => 'required',
                 'picture' => 'required'
             ];
             $messages = [

@@ -9,7 +9,7 @@
     @if(filled($sdata))
         <div class="row">
             @if(filled($sdata['resettles']))
-                <div class="col-xs-9 col-sm-9">
+                <div class="col-xs-12 col-sm-12">
                     <div class="widget-container-col ui-sortable">
                         <div class="widget-box ui-sortable-handle">
                             <div class="widget-header">
@@ -24,8 +24,6 @@
 
                             <div class="widget-body">
                                 <div class="widget-main">
-
-
                                     <table class="table table-hover table-bordered">
                                         <thead>
                                         <tr>
@@ -38,10 +36,9 @@
                                             <th>户型</th>
                                             <th>面积</th>
                                             <th>市场价</th>
-                                            <th>安置单价</th>
-                                            <th>安置价</th>
+                                            <th>优惠价</th>
+                                            <th>优惠总价</th>
                                             <th>上浮房款</th>
-                                            <th>补偿总价</th>
                                             <th>安置总价</th>
                                         </tr>
                                         </thead>
@@ -58,69 +55,29 @@
                                                     {{$object->number?$object->number.'号':''}}</td>
                                                 <td>{{$object->total_floor}}</td>
                                                 <td>{{$object->lift}}</td>
-                                                <td>{{$object->is_real}}|{{$object->is_transit}}</td>
+                                                <td>{{$object->is_real}}</td>
                                                 <td>{{$object->layout->name}}</td>
                                                 <td>{{$object->area}}</td>
                                                 <td>{{$object->housepluses['market']}}</td>
                                                 <td>{{$object->housepluses['price']}}</td>
-                                                <td>{{$object->amount}}</td>
-                                                <td>{{$object->amount_plus}}</td>
-                                                <td>{{$object->amount_plus}}</td>
-                                                <td style="font-weight: bold">{{$object->total}}</td>
+                                                <td>{{number_format($object->amount,2)}}</td>
+                                                <td>{{number_format($object->amount_plus,2)}}</td>
+                                                <td style="font-weight: bold">{{number_format($object->total,2)}}</td>
                                             </tr>
                                         @endforeach
 
                                         </tbody>
+                                        <tfoot>
+                                        <tr>
+                                            <th colspan="2">可调换安置房的补偿总额：{{number_format($sdata['resettle_total'],2)}} 元</th>
+                                            <th colspan="2">上浮面积：<span id="plus_area">{{$sdata['plus_area']}}</span> ㎡</th>
+                                            <th colspan="7">
+                                                产权调换后结余补偿款：
+                                                <span id="last_total">{{number_format($sdata['last_total'],2)}}</span> 元（负数则表示被征收户需补交上浮房款）
+                                            </th>
+                                        </tr>
+                                        </tfoot>
                                     </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-3 col-sm-3">
-                    <div class="widget-container-col ui-sortable">
-                        <div class="widget-box ui-sortable-handle">
-                            <div class="widget-header">
-                                <h5 class="widget-title">合计</h5>
-
-                                <div class="widget-toolbar">
-                                    <a href="#" data-action="collapse">
-                                        <i class="ace-icon fa fa-chevron-up"></i>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="widget-body">
-                                <div class="widget-main">
-                                    @if(filled($sdata['resettles']))
-                                        <table class="table table-hover table-bordered">
-                                            <thead>
-                                            <tr>
-                                                <th>安置总价</th>
-                                                <th>安置后兑付金额</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr>
-                                                <td>{{$sdata['resettle_total']}}</td>
-                                                <td>{{$sdata['last_total']}}</td>
-                                            </tr>
-
-                                            </tbody>
-                                        </table>
-                                    @else
-                                        <div class="alert alert-warning">
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <i class="ace-icon fa fa-times"></i>
-                                            </button>
-                                            <strong>
-                                                <i class="ace-icon fa fa-exclamation-circle"></i>
-                                            </strong>
-                                            <strong class="resp-error">{{$message}}</strong>
-
-                                            <br>
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -140,7 +97,7 @@
                 </div>
             @endif
 
-                <div class="col-xs-9 col-sm-9">
+                <div class="col-xs-12 col-sm-12">
 
                     <div class="widget-container-col ui-sortable">
                         <div class="widget-box ui-sortable-handle">
@@ -184,7 +141,7 @@
                                                     {{$object->house->number?$object->house->number.'号':''}}</td>
                                                 <td>{{$object->house->total_floor}}</td>
                                                 <td>{{$object->house->lift}}</td>
-                                                <td>{{$object->house->is_real}}|{{$object->house->is_transit}}</td>
+                                                <td>{{$object->house->is_real}}</td>
                                                 <td>{{$object->house->layout->name}}</td>
                                                 <td>{{$object->house->area}}</td>
                                             </tr>

@@ -54,7 +54,7 @@
             <label class="col-sm-3 control-label no-padding-right" for="area_dispute"> 面积争议： </label>
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->area_dispute as $key => $value)
-                    @if($key!=3)
+                    @if($key==0||$key==1)
                     <label>
                         <input name="area_dispute" type="radio" class="ace" value="{{$key}}" @if($key==0) checked @endif >
                         <span class="lbl">{{$value}}</span>
@@ -262,23 +262,24 @@
 
         <div class="form-group">
             <div class="widget-main padding-8">
-                <div class="form-group img-box">
-                    <label class="col-sm-3 control-label no-padding-right">
-                        房屋证件：<br>
-                        <span class="btn btn-xs">
-                            <span>上传图片</span>
-                            <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
-                        </span>
-                    </label>
-                    <div class="col-sm-9">
-                        <ul class="ace-thumbnails clearfix img-content viewer">
+                @foreach($sdata['filecates'] as $filecate)
+                    <div class="form-group img-box">
+                        <label class="col-sm-3 control-label no-padding-right">
+                            {{$filecate->name}}<br>
+                            <span class="btn btn-xs">
+                                        <span>上传图片</span>
+                                        <input type="file" accept="image/*" class="hidden" data-name="picture[{{$filecate->filename}}][]" multiple onchange="uplfile(this)">
+                                    </span>
+                        </label>
+                        <div class="col-sm-9">
+                            <ul class="ace-thumbnails clearfix img-content">
 
-                        </ul>
+
+                            </ul>
+                        </div>
                     </div>
-                </div>
-
-                <div class="space-4 header green"></div>
-
+                    <div class="space-4 header green"></div>
+                @endforeach
             </div>
         </div>
 

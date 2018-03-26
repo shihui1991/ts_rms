@@ -6,7 +6,7 @@
 
     <div class="row">
         <div class="well well-sm">
-            <a class="btn" href="{{route('g_household',['item'=>$sdata['item_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
+            <a class="btn" href="{{route('g_householddetail',['item'=>$sdata['item_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
             <a class="btn" href="{{route('g_household_edit',['id'=>$sdata->id,'item'=>$sdata->item_id])}}">
                 <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
                 修改基本信息
@@ -310,30 +310,31 @@
                                     </div>
                                 </div>
 
-
-                                <div class="profile-info-row">
-                                    <div class="profile-info-name"> 房屋证件： </div>
-                                    <div class="profile-info-value">
-                                    <span class="editable editable-click">
-                                         <ul class="ace-thumbnails clearfix img-content viewer">
-                                              @if(isset($edata['household_detail']->picture))
-                                                 @foreach($edata['household_detail']->picture as $picturepic)
-                                                     <li>
-                                                <div>
-                                                    <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
-                                                    <div class="text">
-                                                        <div class="inner">
-                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                                 @endforeach
-                                             @endif
-                                        </ul>
-                                    </span>
-                                    </div>
-                                </div>
+                                @if(isset($edata['household_detail']->picture))
+                                    @foreach($edata['household_detail']->picture as $names=>$picturepic)
+                                        <div class="profile-info-row">
+                                            <div class="profile-info-name"> {{$edata['filecates'][$names]}}： </div>
+                                            <div class="profile-info-value">
+                                            <span class="editable editable-click">
+                                                 <ul class="ace-thumbnails clearfix img-content viewer">
+                                                     @foreach($picturepic as $pics)
+                                                         <li>
+                                                            <div>
+                                                                <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                <div class="text">
+                                                                    <div class="inner">
+                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                         </li>
+                                                     @endforeach
+                                                </ul>
+                                            </span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
 
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 被征收人签名： </div>

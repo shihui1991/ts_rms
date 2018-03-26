@@ -8,6 +8,8 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Buildinguse;
 use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
+use App\Http\Model\Filecate;
+use App\Http\Model\Filetable;
 use App\Http\Model\Household;
 use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
@@ -37,7 +39,6 @@ class HouseholddetailController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','household_id','has_assets','status','dispute','area_dispute'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
@@ -49,12 +50,6 @@ class HouseholddetailController extends BaseitemController
         if(is_numeric($building_id)){
             $where[] = ['building_id',$building_id];
             $infos['building_id'] = $building_id;
-        }
-        /* ********** 资产评估 ********** */
-        $has_assets=$request->input('has_assets');
-        if(is_numeric($has_assets)){
-            $where[] = ['has_assets',$has_assets];
-            $infos['has_assets'] = $has_assets;
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
@@ -68,25 +63,22 @@ class HouseholddetailController extends BaseitemController
         $per_page=15;
         $page=$request->input('page',1);
         /* ********** 查询 ********** */
-
         DB::beginTransaction();
         try{
-            $total=Householddetail::sharedLock()
-                ->where('item_id',$item_id)
+            $total=Household::sharedLock()
                 ->where($where)
                 ->count();
-            $households=Householddetail::with([
+            $households=Household::with([
                     'itemland'=>function($query){
                         $query->select(['id','address']);
                     },
                     'itembuilding'=>function($query){
                         $query->select(['id','building']);
                     },
-                    'household'=>function($query){
-                        $query->select(['id','unit','floor','number','type','username']);
+                    'householddetail'=>function($query){
+                        $query->select(['id','household_id','dispute','area_dispute','status']);
                     }])
                 ->where($where)
-                ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->offset($per_page*($page-1))
@@ -104,6 +96,7 @@ class HouseholddetailController extends BaseitemController
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
+            dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=$exception;
@@ -111,7 +104,6 @@ class HouseholddetailController extends BaseitemController
             $url=null;
         }
         DB::commit();
-
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
@@ -143,6 +135,9 @@ class HouseholddetailController extends BaseitemController
             $sdata['item_id'] = $item_id;
             $sdata['item'] = $item;
             $sdata['detailmodel'] = $model;
+            $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
+            $sdata['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>$model,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -179,6 +174,19 @@ class HouseholddetailController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+                $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
+                $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+                $rules=[];
+                $messages=[];
+                foreach ($file_cates as $file_cate){
+                    $name='picture.'.$file_cate->filename;
+                    $rules[$name]='required';
+                    $messages[$name.'.required']='必须上传【'.$file_cate->name.'】';
+                }
+                $validator = Validator::make($request->all(),$rules,$messages);
+                if($validator->fails()){
+                    throw new \Exception($validator->errors()->first(),404404);
+                }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $householddetail = $model;
                 $householddetail->fill($request->all());
@@ -199,7 +207,7 @@ class HouseholddetailController extends BaseitemController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $householddetail;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
@@ -222,7 +230,8 @@ class HouseholddetailController extends BaseitemController
         }
         $item_id=$this->item_id;
         $item=$this->item;
-
+        $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
+        $data['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
         /* ********** 当前数据 ********** */
         $data['item_id'] = $item_id;
         $data['item'] = $item;
@@ -342,6 +351,8 @@ class HouseholddetailController extends BaseitemController
         $model=new Householddetail();
         $id =$request->input('id');
         if($request->isMethod('get')){
+            $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
+            $sdata['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
             $sdata['household'] = Householddetail::with([
                     'itemland'=>function($query){
                         $query->select(['id','address']);
