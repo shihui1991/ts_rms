@@ -131,3 +131,5 @@ Route::any('/housemanagefee_add','HousemanagefeeController@add')->name('g_housem
 
 
 Route::any('/itemcompany_pic','ItemcompanyController@pic')->name('g_itemcompany_pic'); //评估委托书
+Route::any('/assess','AssessController@index')->name('g_assess'); //评估报告
+Route::any('/assess_info','AssessController@info')->name('g_assess_info'); //分户评估报告

@@ -106,7 +106,7 @@ class HouseholdbuildingController extends BaseitemController
         $model=new Householdbuilding();
         if($request->isMethod('get')){
             $sdata['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
-            $sdata['buildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
+            $sdata['defbuildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
             $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
             $sdata['landlayouts'] = Landlayout::select(['id','item_id','land_id','name','area'])->where('item_id',$item_id)->where('land_id',$sdata['household']->land_id)->get()?:[];
@@ -207,10 +207,10 @@ class HouseholdbuildingController extends BaseitemController
             'buildingstruct'=>function($query){
                 $query->select(['id','name']);
             },
-             'buildinguse'=>function($query){
+             'defbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguses'=>function($query){
+            'realbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
             'landlayout'=>function($query){
@@ -259,7 +259,7 @@ class HouseholdbuildingController extends BaseitemController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             $data['buildingstruct'] = Buildingstruct::select(['id','name'])->get()?:[];
-            $data['buildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
+            $data['defbuildinguse'] = Buildinguse::select(['id','name'])->get()?:[];
             $data['item_id'] = $item_id;
             $data['models'] = new Householdbuilding();
             $data['household'] = Household::select(['id','land_id','building_id'])->find($household_id);

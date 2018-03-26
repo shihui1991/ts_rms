@@ -13,7 +13,9 @@ class Assets extends Model
     protected $primaryKey='id';
     protected $fillable=['total','picture','state'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [];
+    protected $casts = [
+        'picture'=>'array'
+    ];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'item_id'=>'项目',

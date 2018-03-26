@@ -80,11 +80,11 @@ class Householdbuilding extends Model
     }
 
     /* ++++++++++ 关联建筑批准用途 ++++++++++ */
-    public function buildinguse(){
+    public function defbuildinguse(){
         return $this->belongsTo('App\Http\Model\Buildinguse','def_use','id')->withDefault();
     }
     /* ++++++++++ 关联建筑实际用途 ++++++++++ */
-    public function buildinguses(){
+    public function realbuildinguse(){
         return $this->belongsTo('App\Http\Model\Buildinguse','real_use','id')->withDefault();
     }
     /* ++++++++++ 违建处理 ++++++++++ */

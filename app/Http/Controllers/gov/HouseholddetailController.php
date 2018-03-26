@@ -765,10 +765,10 @@ class HouseholddetailController extends BaseitemController
             'buildingstruct'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguse'=>function($query){
+            'defbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguses'=>function($query){
+            'realbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
             'landlayout'=>function($query){
@@ -788,10 +788,10 @@ class HouseholddetailController extends BaseitemController
             'buildingstruct'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguse'=>function($query){
+            'defbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguses'=>function($query){
+            'realbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
             'landlayout'=>function($query){

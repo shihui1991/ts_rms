@@ -41,7 +41,7 @@
                         <td>{{$infos->direct}}</td>
                         <td>{{$infos->buildingstruct->name}}</td>
                         <td>{{$infos->real_outer}}</td>
-                        <td>{{$infos->buildinguses->name}}</td>
+                        <td>{{$infos->realbuildinguse->name}}</td>
                         <td>{{$infos->state->name}}</td>
                     </tr>
                 @endforeach

@@ -40,8 +40,8 @@
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->itemland->address}}</td>
                         <td>{{$infos->itembuilding->building}}</td>
-                        <td>{{$infos->buildinguse->name}}</td>
-                        <td>{{$infos->buildinguses->name}}</td>
+                        <td>{{$infos->defbuildinguse->name}}</td>
+                        <td>{{$infos->realbuildinguse->name}}</td>
                         <td>{{$infos->buildingstruct->name}}</td>
                         <td>{{$infos->floor}}</td>
                         <td>

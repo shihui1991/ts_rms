@@ -148,4 +148,8 @@ class Estate extends Model
     public function assets(){
         return $this->hasOne('App\Http\Model\Assets','assess_id','assess_id')->withDefault();
     }
+
+    public function estatebuildings(){
+        return $this->hasMany('App\Http\Model\Estatebuilding','estate_id','id');
+    }
 }
