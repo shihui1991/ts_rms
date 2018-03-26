@@ -14,6 +14,8 @@ use App\Http\Model\Companyvaluer;
 use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
 use App\Http\Model\Companyhousehold;
+use App\Http\Model\Filecate;
+use App\Http\Model\Filetable;
 use App\Http\Model\Household;
 use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
@@ -153,6 +155,8 @@ class HouseholdController extends BaseitemController
                                         ->where('household_id',$id)
                                         ->where('company_id',$company_id)
                                         ->get();
+                $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+                $data['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
             }else{
                 $data['householdassets'] = Householdassets::where('item_id',$item_id)
                     ->where('household_id',$id)
@@ -214,6 +218,8 @@ class HouseholdController extends BaseitemController
                     ->first();
                 $sdata['defuse'] = Buildinguse::select(['id','name'])->get()?:[];
                 $sdata['models'] = $model;
+                $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+                $sdata['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
             }else{
                 $model=new Householdassets();
                 $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
@@ -251,6 +257,21 @@ class HouseholdController extends BaseitemController
                     $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                     return response()->json($result);
                 }
+                $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+                $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+                $rules=[];
+                $messages=[];
+                foreach ($file_cates as $file_cate){
+                    $name='house_pic.'.$file_cate->filename;
+                    $rules[$name]='required';
+                    $messages[$name.'.required']='必须上传【'.$file_cate->name.'】';
+                }
+                $validator = Validator::make($request->all(),$rules,$messages);
+                if($validator->fails()){
+                    $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
+
                 /* ++++++++++ 新增 ++++++++++ */
                 DB::beginTransaction();
                 try {
@@ -374,6 +395,8 @@ class HouseholdController extends BaseitemController
                     ->first();
                 $data['defuse'] = Buildinguse::select(['id','name'])->get()?:[];
                 $data['models'] = $model;
+                $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+                $data['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
                 DB::beginTransaction();
                    $estate = Estate::with([
                        'itemland'=>function($query){
@@ -459,6 +482,21 @@ class HouseholdController extends BaseitemController
                 ];
                 $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
                 if ($validator->fails()) {
+                    $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
+
+                $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+                $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+                $rules=[];
+                $messages=[];
+                foreach ($file_cates as $file_cate){
+                    $name='house_pic.'.$file_cate->filename;
+                    $rules[$name]='required';
+                    $messages[$name.'.required']='必须上传【'.$file_cate->name.'】';
+                }
+                $validator = Validator::make($request->all(),$rules,$messages);
+                if($validator->fails()){
                     $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                     return response()->json($result);
                 }

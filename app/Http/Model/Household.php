@@ -15,9 +15,7 @@ class Household extends Model
     protected $primaryKey='id';
     protected $fillable=['unit','floor','number','type','username','infos'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [
-        'picture'=>'array'
-    ];
+    protected $casts = [];
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[
         'item_id'=>'项目',
