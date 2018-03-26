@@ -276,7 +276,7 @@
         $('#house-list').on('click','input[name="house_list"]',function () {
             var checkbox=$(this);
             var index=checkbox.data('index');
-            var house_id=checkbox.val();
+            var house_id=parseInt(checkbox.val());
             var house_temp=houselist_temp.data[index];
             if(checkbox.prop('checked')){
                 if(!choose_house_ids || !choose_house_ids.length || $.inArray(house_id,choose_house_ids) == -1){

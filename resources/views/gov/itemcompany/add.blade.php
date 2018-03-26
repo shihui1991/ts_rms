@@ -180,7 +180,7 @@
                 var tr='';
                 $.each(checkboxes,function (index,obj) {
                     var checkbox=$(obj);
-                    var household_id=checkbox.val();
+                    var household_id=parseInt(checkbox.val());
                     var pos=$.inArray(household_id,choose_household_ids);
                     if(checkbox.prop('checked')){
                         if(pos == -1){

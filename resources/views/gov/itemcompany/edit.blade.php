@@ -60,7 +60,7 @@
                         <tbody id="choose-household">
                         @php $household_ids=[]; @endphp
                         @foreach($sdata['itemcompany']->households as $info)
-                            @php $household_ids[]=(string)$info->household_id; @endphp
+                            @php $household_ids[]=$info->household_id; @endphp
                             <tr id="household-{{$info->household_id}}">
                                 <td><input type="hidden" name="household_ids[]" value="{{$info->household_id}}">
                                     {{$info->household->itemland->address}}</td>
@@ -186,7 +186,7 @@
                 var tr='';
                 $.each(checkboxes,function (index,obj) {
                     var checkbox=$(obj);
-                    var household_id=checkbox.val();
+                    var household_id=parseInt(checkbox.val());
                     var pos=$.inArray(household_id,choose_household_ids);
                     if(checkbox.prop('checked')){
                         if(pos == -1){
