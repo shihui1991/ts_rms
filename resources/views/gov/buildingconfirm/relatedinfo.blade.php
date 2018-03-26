@@ -34,7 +34,7 @@
                     <td>{{$sdata->direct}}</td>
                     <td>{{$sdata->buildingstruct->name}}</td>
                     <td>{{$sdata->real_outer}}</td>
-                    <td>{{$sdata->buildinguses->name}}</td>
+                    <td>{{$sdata->realbuildinguse->name}}</td>
                     <td>{{$sdata->state->name}}</td>
                 </tr>
             @endif

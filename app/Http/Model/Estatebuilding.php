@@ -14,7 +14,7 @@ class Estatebuilding extends Model
     protected $table='com_estate_building';
     protected $primaryKey='id';
     protected $fillable=['price','name','code','reg_inner','reg_outer','balcony', 'real_inner','real_outer','def_use','real_use',
-        'struct_id','direct','floor','layout_id','picture','build_year'];
+        'struct_id','direct','floor','build_year','layout_id','picture'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
         'picture'=>'array'
@@ -100,11 +100,11 @@ class Estatebuilding extends Model
     }
 
     /* ++++++++++ 关联建筑批准用途 ++++++++++ */
-    public function buildinguse(){
+    public function defbuildinguse(){
         return $this->belongsTo('App\Http\Model\Buildinguse','def_use','id')->withDefault();
     }
     /* ++++++++++ 关联建筑实际用途 ++++++++++ */
-    public function buildinguses(){
+    public function realbuildinguse(){
         return $this->belongsTo('App\Http\Model\Buildinguse','real_use','id')->withDefault();
     }
     /* ++++++++++ 违建处理 ++++++++++ */

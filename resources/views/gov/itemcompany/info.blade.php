@@ -15,6 +15,13 @@
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改
         </a>
+
+        @if(blank($sdata['itemcompany']->picture))
+            <a class="btn" href="{{route('g_itemcompany_pic',['id'=>$sdata['itemcompany']->id,'item'=>$sdata['item_id']])}}">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                评估委托书
+            </a>
+        @endif
     </p>
 
 

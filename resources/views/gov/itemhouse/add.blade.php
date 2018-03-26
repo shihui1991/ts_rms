@@ -187,7 +187,7 @@
                 var tr='';
                 $.each(checkboxes,function (index,obj) {
                     var checkbox=$(obj);
-                    var house_id=checkbox.val();
+                    var house_id=parseInt(checkbox.val());
                     var pos=$.inArray(house_id,choose_house_ids);
                     if(checkbox.prop('checked')){
                         if(pos == -1){
@@ -224,7 +224,7 @@
         });
         // 删除选择
         function removeHouse(house_id) {
-            var pos=$.inArray(house_id.toString(),choose_house_ids);
+            var pos=$.inArray(house_id,choose_house_ids);
             if(pos>-1){
                 choose_house_ids.splice(pos,1);
                 choose_houses.splice(pos,1);
@@ -240,7 +240,7 @@
                 $.each(ajaxResp.sdata.data,function (index,info) {
 
                     var checked='';
-                    if($.inArray(info.id.toString(),choose_house_ids)>-1){
+                    if($.inArray(info.id,choose_house_ids)>-1){
                         checked='checked';
                     }
                     tr += ' <tr>' +

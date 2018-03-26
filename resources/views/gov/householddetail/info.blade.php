@@ -6,7 +6,7 @@
 
     <div class="row">
         <div class="well well-sm">
-            <a class="btn" href="{{route('g_householddetail',['item'=>$sdata['item_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
+            <a class="btn" href="{{route('g_household',['item'=>$sdata['item_id']])}}"><i class="ace-icon fa fa-arrow-left bigger-110"></i>返回</a>
             <a class="btn" href="{{route('g_household_edit',['id'=>$sdata->id,'item'=>$sdata->item_id])}}">
                 <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
                 修改基本信息
@@ -313,7 +313,7 @@
                                 @if(isset($edata['household_detail']->picture))
                                     @foreach($edata['household_detail']->picture as $names=>$picturepic)
                                         <div class="profile-info-row">
-                                            <div class="profile-info-name"> {{$edata['filecates'][$names]}}： </div>
+                                            <div class="profile-info-name"> {{$edata['detail_filecates'][$names]}}： </div>
                                             <div class="profile-info-value">
                                             <span class="editable editable-click">
                                                  <ul class="ace-thumbnails clearfix img-content viewer">
@@ -453,152 +453,154 @@
 
                     <div id="item" class="tab-pane fade">
                         @if(filled($edata['householdmember']))
-                        <div class="col-xs-12">
-                            @foreach($edata['householdmember'] as $householdmember)
-                                <div class="col-xs-6 col-sm-3 pricing-box">
-                                    <div class="widget-box widget-color-dark">
-                                        <div class="widget-header">
-                                            <h5 class="widget-title bigger lighter">{{$householdmember->holder}}</h5>
-                                            <div class="widget-toolbar">
-                                                <a href="{{route('g_householdmember_edit',['item'=>$householdmember->item_id,'id'=>$householdmember->id,'household_id'=>$householdmember->household_id])}}" class="orange2">
-                                                    <i class="ace-icon fa fa-edit"></i>
-                                                    编辑
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div class="widget-body">
-                                            <div class="widget-main">
-
-                                                <div class="profile-user-info profile-user-info-striped">
-
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 姓名： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->name}}</span>
-                                                        </div>
+                            <div class="profile-user-info profile-user-info-striped">
+                                <div class="col-xs-12">
+                                    @foreach($edata['householdmember'] as $householdmember)
+                                        <div class="col-xs-6 col-sm-3 pricing-box">
+                                            <div class="widget-box widget-color-dark">
+                                                <div class="widget-header">
+                                                    <h5 class="widget-title bigger lighter">{{$householdmember->holder}}</h5>
+                                                    <div class="widget-toolbar">
+                                                        <a href="{{route('g_householdmember_edit',['item'=>$householdmember->item_id,'id'=>$householdmember->id,'household_id'=>$householdmember->household_id])}}" class="orange2">
+                                                            <i class="ace-icon fa fa-edit"></i>
+                                                            编辑
+                                                        </a>
                                                     </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 与户主关系： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->relation}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 身份证： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->card_num}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 电话： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->phone}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 民族： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->nation->name}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 性别： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->sex}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 年龄： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->age}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 权属分配比例： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->portion}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 是否享受特殊人群优惠： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$householdmember->crowd}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 身份证,户口本页： </div>
-                                                        <div class="profile-info-value">
-                                                                <span class="editable editable-click">
-                                                                    <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                          @if($householdmember->picture)
-                                                                            @foreach($householdmember->picture as $pic)
-                                                                                <li>
-                                                                                    <div>
-                                                                                        <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                                                                        <div class="text">
-                                                                                            <div class="inner">
-                                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </li>
-                                                                            @endforeach
-                                                                        @endif
-                                                                    </ul>
-                                                                </span>
-                                                        </div>
-                                                    </div>
-                                                    @if($householdmember->getOriginal('crowd')==1)
-                                                        <br/>
-                                                        @if(filled($householdmember->householdmembercrowds))
-                                                            @foreach($householdmember->householdmembercrowds as $v)
-                                                                <div class="profile-info-row">
-                                                                    <div class="profile-info-name"> 特殊人群信息： </div>
-                                                                    <div class="profile-info-value">
-                                                                        <span class="editable editable-click">{{$v->crowd->name}}</span><br/>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="profile-info-row">
-                                                                    <div class="profile-info-name"> 证件： </div>
-                                                                    <div class="profile-info-value">
-                                                                        <span class="editable editable-click">
-                                                                             <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                                 @foreach($v->picture as $val)
-                                                                                     <li>
-                                                                                    <div>
-                                                                                        <img width="120" height="120" src="{!! $val !!}" alt="加载失败">
-                                                                                        <div class="text">
-                                                                                            <div class="inner">
-                                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                  </li>
-                                                                                 @endforeach
-                                                                            </ul>
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
-                                                        @endif
-                                                    @endif
                                                 </div>
 
-                                            </div>
+                                                <div class="widget-body">
+                                                    <div class="widget-main">
+                                                        <div class="profile-user-info profile-user-info-striped">
 
-                                            <div>
-                                                <a href="{{route('g_householdmember_info',['item'=>$householdmember->item_id,'household_id'=>$householdmember->household_id,'id'=>$householdmember->id])}}" class="btn btn-block btn-inverse">
-                                                    <span>查看详情</span>
-                                                    <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
-                                                </a>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 姓名： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->name}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 与户主关系： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->relation}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 身份证： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->card_num}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 电话： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->phone}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 民族： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->nation->name}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 性别： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->sex}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 年龄： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->age}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 权属分配比例： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->portion}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> 是否享受特殊人群优惠： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">{{$householdmember->crowd}}</span>
+                                                                </div>
+                                                            </div>
+                                                            @if(isset($householdmember->picture))
+                                                                @foreach($householdmember->picture as $names=>$picturepic)
+                                                                    <div class="profile-info-row">
+                                                                        <div class="profile-info-name"> {{$edata['member_filecates'][$names]}}： </div>
+                                                                        <div class="profile-info-value">
+                                                                                <span class="editable editable-click">
+                                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                                         @foreach($picturepic as $pics)
+                                                                                             <li>
+                                                                                                <div>
+                                                                                                    <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                                                    <div class="text">
+                                                                                                        <div class="inner">
+                                                                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                             </li>
+                                                                                         @endforeach
+                                                                                    </ul>
+                                                                                </span>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                            @if($householdmember->getOriginal('crowd')==1)
+                                                                <br/>
+                                                                @if(filled($householdmember->householdmembercrowds))
+                                                                    @foreach($householdmember->householdmembercrowds as $v)
+                                                                        <div class="profile-info-row">
+                                                                            <div class="profile-info-name"> 特殊人群信息： </div>
+                                                                            <div class="profile-info-value">
+                                                                                <span class="editable editable-click">{{$v->crowd->name}}</span><br/>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="profile-info-row">
+                                                                            <div class="profile-info-name"> 证件： </div>
+                                                                            <div class="profile-info-value">
+                                                                                <span class="editable editable-click">
+                                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                                         @foreach($v->picture as $val)
+                                                                                             <li>
+                                                                                            <div>
+                                                                                                <img width="120" height="120" src="{!! $val !!}" alt="加载失败">
+                                                                                                <div class="text">
+                                                                                                    <div class="inner">
+                                                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                          </li>
+                                                                                         @endforeach
+                                                                                    </ul>
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                @endif
+                                                            @endif
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <a href="{{route('g_householdmember_info',['item'=>$householdmember->item_id,'household_id'=>$householdmember->household_id,'id'=>$householdmember->id])}}" class="btn btn-block btn-inverse">
+                                                            <span>查看详情</span>
+                                                            <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
-                        </div>
+                            </div>
                         @else
                             <div class="profile-user-info profile-user-info-striped">
                                 <span>暂无数据</span>

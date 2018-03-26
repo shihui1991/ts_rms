@@ -24,7 +24,7 @@
             </a>
         @endif
 
-        <a href="{{route('g_pact',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
+        <a href="{{route('g_pact_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
             补偿安置协议
         </a>
     </div>

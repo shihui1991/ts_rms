@@ -243,11 +243,6 @@ class PayhousebakController extends BaseController{
                             break;
                         }
                     }
-
-                    // 上浮累计面积 超过限制
-                    if($plus_area>=30){
-                        break;
-                    }
                 }
 
                 $house->amount=$house_amount;
@@ -258,6 +253,10 @@ class PayhousebakController extends BaseController{
                 $resettle_ids[]=$house->id;
                 $end_total -= $house->total;
 
+                // 上浮累计面积 超过限制
+                if($plus_area>=30){
+                    break;
+                }
             }
 
             $fails=array_diff($house_ids,$resettle_ids);

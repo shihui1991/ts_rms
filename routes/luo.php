@@ -98,6 +98,7 @@ Route::any('/payhouse_add','PayhouseController@add')->name('g_payhouse_add'); //
 Route::any('/payhouse_cal','PayhouseController@calculate')->name('g_payhouse_cal'); //选房计算
 
 Route::any('/pact','PactController@index')->name('g_pact'); //协议
+Route::any('/pact_add','PactController@add')->name('g_pact_add'); //被征收户 - 补偿安置协议
 
 /*---------- 腾空搬迁 ----------*/
 Route::any('/move','MoveController@index')->name('g_move'); //腾空搬迁
@@ -127,3 +128,8 @@ Route::any('/resettle_edit','ResettleController@edit')->name('g_resettle_edit');
 /*---------- 房源管理费 ----------*/
 Route::any('/housemanagefee','HousemanagefeeController@index')->name('g_housemanagefee'); // 房源管理费
 Route::any('/housemanagefee_add','HousemanagefeeController@add')->name('g_housemanagefee_add'); // 房源管理费 - 计算
+
+
+Route::any('/itemcompany_pic','ItemcompanyController@pic')->name('g_itemcompany_pic'); //评估委托书
+Route::any('/assess','AssessController@index')->name('g_assess'); //评估报告
+Route::any('/assess_info','AssessController@info')->name('g_assess_info'); //分户评估报告

@@ -12,11 +12,6 @@
                     返回被征户信息
                 </a>
 
-                <a class="btn" href="{{route('g_householdmember',['item'=>$sdata->item_id,'household_id'=>$sdata->household_id])}}">
-                    <i class="ace-icon fa fa-arrow-left bigger-110"></i>
-                    返回家庭成员
-                </a>
-
                 <a class="btn" href="{{route('g_householdmember_edit',['item'=>$sdata->item_id,'id'=>$sdata->id,'household_id'=>$sdata->household_id])}}">
                     <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
                     修改家庭成员详情
@@ -123,29 +118,34 @@
                                 </div>
                             </div>
 
-                            <div class="profile-info-row">
-                                <div class="profile-info-name"> 身份证,户口本页： </div>
-                                <div class="profile-info-value">
-                                    <span class="editable editable-click">
-                                        <ul class="ace-thumbnails clearfix img-content viewer">
-                                              @if(isset($sdata->picture))
-                                                @foreach($sdata->picture as $pic)
-                                                    <li>
-                                                        <div>
-                                                            <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                                            <div class="text">
-                                                                <div class="inner">
-                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+
+
+                            @if(isset($sdata->picture))
+                                @foreach($sdata->picture as $names=>$picturepic)
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> {{$edata['filecates'][$names]}}： </div>
+                                        <div class="profile-info-value">
+                                            <span class="editable editable-click">
+                                                 <ul class="ace-thumbnails clearfix img-content viewer">
+                                                     @foreach($picturepic as $pics)
+                                                         <li>
+                                                            <div>
+                                                                <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                <div class="text">
+                                                                    <div class="inner">
+                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </li>
-                                                @endforeach
-                                            @endif
-                                        </ul>
-                                    </span>
-                                </div>
-                            </div>
+                                                         </li>
+                                                     @endforeach
+                                                </ul>
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+
 
                             <div class="profile-info-row">
                                 <div class="profile-info-name"> 创建时间： </div>
@@ -181,7 +181,7 @@
                     @if($sdata->getOriginal('crowd')==1)
                     <div id="itempublic" class="tab-pane fade">
                         <div class="col-xs-12">
-                            @foreach($edata as $crowd)
+                            @foreach($edata['crowd'] as $crowd)
                                 <div class="col-xs-6 col-sm-3 pricing-box">
                                     <div class="widget-box widget-color-dark">
                                         <div class="widget-header">

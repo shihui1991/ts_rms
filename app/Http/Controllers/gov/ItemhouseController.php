@@ -46,6 +46,11 @@ class ItemhouseController extends BaseitemController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
+            /* ++++++++++ 初步预算 ++++++++++ */
+            $init_budget=Initbudget::sharedLock()->where('item_id',$this->item_id)->first();
+            if(blank($init_budget)){
+                throw new \Exception('请先完成初步预算',404404);
+            }
             /* ++++++++++ 冻结房源 ++++++++++ */
             $total=Itemhouse::sharedLock()
                 ->where('item_id',$item_id)
@@ -75,8 +80,6 @@ class ItemhouseController extends BaseitemController
                 ->get();
             $itemhouses=new LengthAwarePaginator($itemhouses,$total,$per_page,$page);
             $itemhouses->withPath(route('g_itemhouse',['item'=>$item_id]));
-            /* ++++++++++ 初步预算 ++++++++++ */
-            $init_budget=Initbudget::sharedLock()->where('item_id',$this->item_id)->first();
 
             $code='success';
             $msg='查询成功';

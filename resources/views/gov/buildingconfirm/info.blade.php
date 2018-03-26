@@ -126,29 +126,31 @@
                                                             <span class="editable editable-click">{{$edata['household_detail']->has_assets}}</span>
                                                         </div>
                                                     </div>
-                                                    <div class="profile-info-row">
-                                                        <div class="profile-info-name"> 房屋证件： </div>
-                                                        <div class="profile-info-value">
-                                                            <span class="editable editable-click">
-                                                                 <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                      @if(isset($edata['household_detail']->picture))
-                                                                         @foreach($edata['household_detail']->picture as $picturepic)
-                                                                             <li>
-                                                                        <div>
-                                                                            <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
-                                                                            <div class="text">
-                                                                                <div class="inner">
-                                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-                                                                         @endforeach
-                                                                     @endif
-                                                                </ul>
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                                    @if(isset($edata['household_detail']->picture))
+                                                        @foreach($edata['household_detail']->picture as $names=>$picturepic)
+                                                            <div class="profile-info-row">
+                                                                <div class="profile-info-name"> {{$edata['detail_filecates'][$names]}}： </div>
+                                                                <div class="profile-info-value">
+                                                                    <span class="editable editable-click">
+                                                                         <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                             @foreach($picturepic as $pics)
+                                                                                 <li>
+                                                                                    <div>
+                                                                                        <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                                        <div class="text">
+                                                                                            <div class="inner">
+                                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                 </li>
+                                                                             @endforeach
+                                                                        </ul>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    @endif
 
                                                     <div class="profile-info-row">
                                                         <div class="profile-info-name"> 被征收人签名： </div>
@@ -298,29 +300,31 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="profile-info-row">
-                                                    <div class="profile-info-name"> 房屋证件： </div>
-                                                    <div class="profile-info-value">
-                                                        <span class="editable editable-click">
-                                                             <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                  @if(isset($edata['estate']->house_pic))
-                                                                     @foreach($edata['estate']->house_pic as $picturepic)
-                                                                         <li>
-                                                                        <div>
-                                                                            <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
-                                                                            <div class="text">
-                                                                                <div class="inner">
-                                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                @if(isset($edata['estate']->house_pic))
+                                                    @foreach($edata['estate']->house_pic as $names=>$picturepic)
+                                                        <div class="profile-info-row">
+                                                            <div class="profile-info-name"> {{$edata['com_filecates'][$names]}}： </div>
+                                                            <div class="profile-info-value">
+                                                                <span class="editable editable-click">
+                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                         @foreach($picturepic as $pics)
+                                                                             <li>
+                                                                                <div>
+                                                                                    <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                                    <div class="text">
+                                                                                        <div class="inner">
+                                                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </div>
-                                                                     </li>
-                                                                     @endforeach
-                                                                 @endif
-                                                            </ul>
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                                                             </li>
+                                                                         @endforeach
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
 
                                                 <div class="profile-info-row">
                                                     <div class="profile-info-name"> 被征收人签名： </div>
@@ -452,14 +456,14 @@
                                                     <div class="profile-info-row">
                                                         <div class="profile-info-name"> 批准用途： </div>
                                                         <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$infos->buildinguse->name}}</span>
+                                                            <span class="editable editable-click">{{$infos->defbuildinguse->name}}</span>
                                                         </div>
                                                     </div>
 
                                                     <div class="profile-info-row">
                                                         <div class="profile-info-name"> 实际用途： </div>
                                                         <div class="profile-info-value">
-                                                            <span class="editable editable-click">{{$infos->buildinguses->name}}</span>
+                                                            <span class="editable editable-click">{{$infos->realbuildinguse->name}}</span>
                                                         </div>
                                                     </div>
 
@@ -654,8 +658,8 @@
                                                         <div class="profile-info-row">
                                                             <div class="profile-info-name"> 批准用途： </div>
                                                             <div class="profile-info-value">
-                                                                <span class="editable editable-click">{{$edata['estatebuildings'][$k]->buildinguse->name}}</span>
-                                                                @if($infos->buildinguse->name != $edata['estatebuildings'][$k]->buildinguse->name)
+                                                                <span class="editable editable-click">{{$edata['estatebuildings'][$k]->defbuildinguse->name}}</span>
+                                                                @if($infos->defbuildinguse->name != $edata['estatebuildings'][$k]->defbuildinguse->name)
                                                                     <i class="red fa fa-times fa-2x"></i>
                                                                 @endif
                                                             </div>
@@ -664,8 +668,8 @@
                                                         <div class="profile-info-row">
                                                             <div class="profile-info-name"> 实际用途： </div>
                                                             <div class="profile-info-value">
-                                                                <span class="editable editable-click">{{$edata['estatebuildings'][$k]->buildinguses->name}}</span>
-                                                                @if($infos->buildinguses->name != $edata['estatebuildings'][$k]->buildinguses->name)
+                                                                <span class="editable editable-click">{{$edata['estatebuildings'][$k]->realbuildinguse->name}}</span>
+                                                                @if($infos->realbuildinguse->name != $edata['estatebuildings'][$k]->realbuildinguse->name)
                                                                     <i class="red fa fa-times fa-2x"></i>
                                                                 @endif
                                                             </div>

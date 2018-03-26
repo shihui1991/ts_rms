@@ -423,8 +423,8 @@
                                         <td>{{$infos->dispute}}</td>
                                         <td>{{$infos->real_inner}}</td>
                                         <td>{{$infos->real_outer}}</td>
-                                        <td>{{$infos->buildinguse->name}}</td>
-                                        <td>{{$infos->buildinguses->name}}</td>
+                                        <td>{{$infos->defbuildinguse->name}}</td>
+                                        <td>{{$infos->realbuildinguse->name}}</td>
                                         <td>{{$infos->state->name}}</td>
                                     </tr>
                                 @endforeach

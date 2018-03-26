@@ -87,8 +87,8 @@
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="def_use" id="def_use">
                     <option value="">--请选择--</option>
-                    @if($sdata['buildinguse'])
-                        @foreach($sdata['buildinguse'] as $buildinguse)
+                    @if($sdata['defbuildinguse'])
+                        @foreach($sdata['defbuildinguse'] as $buildinguse)
                             <option value="{{$buildinguse->id}}">{{$buildinguse->name}}</option>
                         @endforeach
                     @endif
@@ -102,8 +102,8 @@
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="real_use" id="real_use">
                     <option value="">--请选择--</option>
-                    @if($sdata['buildinguse'])
-                        @foreach($sdata['buildinguse'] as $buildinguse)
+                    @if($sdata['defbuildinguse'])
+                        @foreach($sdata['defbuildinguse'] as $buildinguse)
                             <option value="{{$buildinguse->id}}">{{$buildinguse->name}}</option>
                         @endforeach
                     @endif

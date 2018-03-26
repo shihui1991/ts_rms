@@ -87,7 +87,7 @@
 
         @foreach($sdata->picture as $name=>$pictures)
             <div class="profile-info-row">
-                <div class="profile-info-name"> {{$edata[$name]}}： </div>
+                <div class="profile-info-name"> {{$edata[$name] or '项目审查资料'}}： </div>
                 <div class="profile-info-value">
                     <ul class="ace-thumbnails clearfix img-content">
                         @foreach($pictures as $pic)
