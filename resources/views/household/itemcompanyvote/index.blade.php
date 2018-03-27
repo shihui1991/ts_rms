@@ -44,21 +44,25 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
-                                <div class="price">
-                                    <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
-                                    </a>
-                                </div>
+                                @if(filled($sdata['itemctrl']))
+                                    <hr>
+                                    <div class="price">
+                                        <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                        </a>
+                                    </div>
+                                @endif
 
                             </div>
                             <div >
-
-                                     <a href="javascript:;"  class="btn btn-block btn-inverse" >
-                                         <span>已投</span>
-                                         <i class="ace-icon fa fa-check bigger-110"></i>
-                                     </a>
-
-
+                                @if(filled($sdata['itemctrl']))
+                                    <a href="javascript:;"  class="btn btn-block btn-inverse" >
+                                        <span>已投</span>
+                                        <i class="ace-icon fa fa-check bigger-110"></i>
+                                    </a>
+                                @else
+                                    <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" class="btn btn-block btn-inverse" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -88,6 +92,7 @@
                                                 <span class="editable editable-click">{{$company->companyvotes_count}}</span>
                                             </div>
                                         </div>
+
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> LOGO： </div>
 
@@ -100,29 +105,24 @@
                                              </div>
                                         </div>
                                     </div>
+                                    @if(filled($sdata['itemctrl']))
                                     <hr>
                                     <div class="price">
                                         <a href="{{route('h_company_info',['id'=>$company->id])}}" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
                                         </a>
                                     </div>
-
+                                    @endif
                                 </div>
                                 <div >
-                                   {{-- @if($company->id==$sdata['companyvote']->company->id)
-                                        <a href="javascript:;"  class="btn btn-block btn-inverse" >
-                                            <span>已投</span>
-                                            <i class="ace-icon fa fa-check bigger-110"></i>
-                                        </a>
-                                    @else
-                                        <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
-                                            <span>投票</span>
-                                            <i class="ace-icon fa fa-check bigger-110"></i>
-                                        </a>
-                                    @endif--}}
+                                    @if(filled($sdata['itemctrl']))
                                     <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
                                         <span>投票</span>
                                         <i class="ace-icon fa fa-check bigger-110"></i>
                                     </a>
+                                        @else
+                                        <a href="{{route('h_company_info',['id'=>$company->id])}}" class="btn btn-block btn-inverse" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i>
+                                        </a>
+                                        @endif
                                 </div>
                             </div>
                         </div>
