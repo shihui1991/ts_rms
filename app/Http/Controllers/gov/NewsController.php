@@ -225,7 +225,7 @@ class NewsController extends BaseitemController
                         'parent_id'=>$user->role->parent_id,
                         'role_id'=>$user->role_id,
                         'user_id'=>$user->user_id,
-                        'url'=>route('g_ready_range_check',['item'=>$this->item->id]),
+                        'url'=>route('g_ready_range_check',['item'=>$this->item->id],false),
                         'code'=>'20',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -472,7 +472,7 @@ class NewsController extends BaseitemController
                             'parent_id'=>$user->role->parent_id,
                             'role_id'=>$user->role_id,
                             'user_id'=>$user->user_id,
-                            'url'=>route('g_ready_range_check',['item'=>$this->item->id]),
+                            'url'=>route('g_ready_range_check',['item'=>$this->item->id],false),
                             'code'=>'20',
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),
@@ -529,7 +529,7 @@ class NewsController extends BaseitemController
                 $msg='保存成功';
                 $sdata=['news'=>$news,'item_notice'=>$item_notice];
                 $edata=null;
-                $url=route('g_news_info',['item'=>$this->item_id,'id'=>$id]);
+                $url=route('g_news_info',['item'=>$this->item_id,'id'=>$news->id]);
 
                 DB::commit();
             }catch (\Exception $exception){
@@ -694,7 +694,7 @@ class NewsController extends BaseitemController
                         'parent_id'=>$user->role->parent_id,
                         'role_id'=>$user->role_id,
                         'user_id'=>$user->user_id,
-                        'url'=>route('g_itemriskreport',['item'=>$this->item->id]),
+                        'url'=>route('g_itemriskreport',['item'=>$this->item->id],false),
                         'code'=>'20',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -1031,7 +1031,7 @@ class NewsController extends BaseitemController
                         'parent_id'=>$user->role->parent_id,
                         'role_id'=>$user->role_id,
                         'user_id'=>$user->user_id,
-                        'url'=>route('g_pay_start',['item'=>$this->item->id]),
+                        'url'=>route('g_pay_start',['item'=>$this->item->id],false),
                         'code'=>'20',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
