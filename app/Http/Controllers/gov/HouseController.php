@@ -214,7 +214,7 @@ class HouseController extends BaseauthController
                 $house = $model;
                 $house->fill($request->input());
                 $house->addOther($request);
-                $house->state=0;
+                $house->code='150';
                 $house_rs = $house->save();
                 if (blank($house_rs)) {
                     throw  new \Exception('添加失败', 404404);

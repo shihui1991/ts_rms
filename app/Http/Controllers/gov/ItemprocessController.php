@@ -4069,7 +4069,7 @@ class ItemprocessController extends BaseitemController
                         ['process_id',$item->process_id],
                         ['user_id',session('gov_user.user_id')],
                     ])
-                    ->get();
+                    ->count();
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
