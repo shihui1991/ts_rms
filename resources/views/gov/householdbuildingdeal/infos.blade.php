@@ -36,7 +36,7 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td>{{$loop->iteration}}</td>
-                        <td>{{$infos->code}}</td>
+                        <td>{{$infos->state->name}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->itemland->address}}</td>
                         <td>{{$infos->itembuilding->building}}</td>

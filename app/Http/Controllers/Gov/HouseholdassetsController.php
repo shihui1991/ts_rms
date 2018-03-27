@@ -568,6 +568,7 @@ class HouseholdassetsController extends BaseitemController
                 if(blank($householdassets)){
                     throw new \Exception('修改失败',404404);
                 }
+                $this->household_status($household_id);
                 $code='success';
                 $msg='修改成功';
                 $sdata=$householdassets;

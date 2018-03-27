@@ -282,7 +282,7 @@ class HouseholdController extends BaseitemController
                     $household->item_id=$this->item_id;
                     $household->assess_id=0;
                     $household->company_id=$company_id;
-                    $household->code=130;
+                    $household->code=0;
                     $household->save();
                     if (blank($household)) {
                         throw new \Exception('添加失败', 404404);

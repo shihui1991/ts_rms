@@ -164,7 +164,7 @@ class HouseholdbuildingareaController extends BaseitemController
                 if (blank($householddetail)) {
                     throw new \Exception('数据异常', 404404);
                 }
-                $householddetail->area_dispute = 3;
+                $householddetail->area_dispute = 5;
                 $householddetail->save();
                 if (blank($householddetail)) {
                     throw new \Exception('添加失败', 404404);
