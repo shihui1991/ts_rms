@@ -204,6 +204,8 @@ class HouseholdController extends BaseitemController
             $sdata['type'] = $type;
             $sdata['item_id'] = $item_id;
             $sdata['item'] = $item;
+            $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+            $sdata['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
             if($type==0){
                 $model=new Estate();
                 $sdata['household'] = Household::select(['id','land_id','building_id'])
@@ -218,8 +220,6 @@ class HouseholdController extends BaseitemController
                     ->first();
                 $sdata['defuse'] = Buildinguse::select(['id','name'])->get()?:[];
                 $sdata['models'] = $model;
-                $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
-                $sdata['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
             }else{
                 $model=new Householdassets();
                 $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);

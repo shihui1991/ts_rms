@@ -39,16 +39,28 @@ class BaseController extends Controller
                     krsort($parents_menus);
                 }
                 /* ++++++++++ 一级菜单 ++++++++++ */
-                $top_menus=Menu::sharedLock()
-                    ->where([
-                        ['parent_id',0],
-                        ['module',1],
-                        ['login',1],
-                        ['display',1],
-                    ])
-                    ->orderBy('sort','asc')
-                    ->get();
-
+                if(session('com_user.isAdmin')==1) {
+                    $top_menus = Menu::sharedLock()
+                        ->where([
+                            ['parent_id', 0],
+                            ['module', 1],
+                            ['login', 1],
+                            ['display', 1],
+                        ])
+                        ->orderBy('sort', 'asc')
+                        ->get();
+                }else{
+                    $top_menus = Menu::sharedLock()
+                        ->where([
+                            ['parent_id', 0],
+                            ['id','<>',266],
+                            ['module', 1],
+                            ['login', 1],
+                            ['display', 1],
+                        ])
+                        ->orderBy('sort', 'asc')
+                        ->get();
+                }
                 session(['menu'=>['cur_menu'=>$current_menu,'cur_pids'=>$parents_menus_ids]]);
                 view()->share(['top_menus'=>$top_menus,'parents_menus'=>$parents_menus,'current_menu'=>$current_menu]);
             }

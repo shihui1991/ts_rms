@@ -137,29 +137,31 @@
                             </div>
                         </div>
 
-                        <div class="profile-info-row">
-                            <div class="profile-info-name"> 房屋证件，户型图，房屋图片： </div>
-                            <div class="profile-info-value">
-                                    <span class="editable editable-click">
-                                         <ul class="ace-thumbnails clearfix img-content viewer">
-                                              @if(isset($sdata['estate']->house_pic))
-                                                 @foreach($sdata['estate']->house_pic as $picturepic)
-                                                     <li>
-                                                    <div>
-                                                        <img width="120" height="120" src="{!! $picturepic !!}" alt="加载失败">
-                                                        <div class="text">
-                                                            <div class="inner">
-                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                        @if(isset($sdata['estate']->house_pic))
+                            @foreach($sdata['estate']->house_pic as $names=>$picturepic)
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> {{$sdata['filecates'][$names]}}： </div>
+                                    <div class="profile-info-value">
+                                            <span class="editable editable-click">
+                                                 <ul class="ace-thumbnails clearfix img-content viewer">
+                                                     @foreach($picturepic as $pics)
+                                                         <li>
+                                                            <div>
+                                                                <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                <div class="text">
+                                                                    <div class="inner">
+                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                 </li>
-                                                 @endforeach
-                                             @endif
-                                        </ul>
-                                    </span>
-                            </div>
-                        </div>
+                                                         </li>
+                                                     @endforeach
+                                                </ul>
+                                            </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
 
                         <div class="profile-info-row">
                             <div class="profile-info-name"> 被征收人签名： </div>
@@ -344,7 +346,7 @@
                                         <div class="col-sm-9">
                                             <ul class="ace-thumbnails clearfix img-content viewer">
                                                 @if($sdata['assets']->picture)
-                                                    @foreach(json_decode($sdata['assets']->picture,true) as $pic)
+                                                    @foreach($sdata['assets']->picture as $pic)
                                                         <li>
                                                             <div>
                                                                 <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
