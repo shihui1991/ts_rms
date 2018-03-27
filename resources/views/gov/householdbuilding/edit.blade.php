@@ -79,8 +79,8 @@
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="def_use" id="def_use">
                     <option value="">--请选择--</option>
-                    @if($edata['buildinguse'])
-                        @foreach($edata['buildinguse'] as $buildinguse)
+                    @if($edata['defbuildinguse'])
+                        @foreach($edata['defbuildinguse'] as $buildinguse)
                             <option value="{{$buildinguse->id}}" @if($sdata->def_use == $buildinguse->id) selected @endif>{{$buildinguse->name}}</option>
                         @endforeach
                     @endif
@@ -94,8 +94,8 @@
             <div class="col-sm-9">
                 <select class="col-xs-5 col-sm-5" name="real_use" id="real_use">
                     <option value="">--请选择--</option>
-                    @if($edata['buildinguse'])
-                        @foreach($edata['buildinguse'] as $buildinguse)
+                    @if($edata['defbuildinguse'])
+                        @foreach($edata['defbuildinguse'] as $buildinguse)
                             <option value="{{$buildinguse->id}}" @if($sdata->real_use == $buildinguse->id) selected @endif>{{$buildinguse->name}}</option>
                         @endforeach
                     @endif

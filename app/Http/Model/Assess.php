@@ -60,7 +60,15 @@ class Assess extends Model
         return $this->hasMany('App\Http\Model\Estate','assess_id','id');
     }
 
+    public function estate(){
+        return $this->hasOne('App\Http\Model\Estate','assess_id','id')->withDefault();
+    }
+
     public function assetses(){
         return $this->hasMany('App\Http\Model\Assets','assess_id','id');
+    }
+
+    public function assets(){
+        return $this->hasOne('App\Http\Model\Assets','assess_id','id')->withDefault();
     }
 }

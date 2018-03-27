@@ -39,6 +39,7 @@ class HouseholddetailController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
+        $select=['id','item_id','land_id','building_id','household_id','has_assets','status','dispute','area_dispute'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
@@ -50,6 +51,12 @@ class HouseholddetailController extends BaseitemController
         if(is_numeric($building_id)){
             $where[] = ['building_id',$building_id];
             $infos['building_id'] = $building_id;
+        }
+        /* ********** 资产评估 ********** */
+        $has_assets=$request->input('has_assets');
+        if(is_numeric($has_assets)){
+            $where[] = ['has_assets',$has_assets];
+            $infos['has_assets'] = $has_assets;
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
@@ -65,20 +72,19 @@ class HouseholddetailController extends BaseitemController
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $total=Household::sharedLock()
+            $total=Householddetail::sharedLock()
                 ->where($where)
                 ->count();
-            $households=Household::with([
+            $households=Householddetail::with([
                     'itemland'=>function($query){
                         $query->select(['id','address']);
-                    },
-                    'itembuilding'=>function($query){
+                    }, 'itembuilding'=>function($query){
                         $query->select(['id','building']);
-                    },
-                    'householddetail'=>function($query){
-                        $query->select(['id','household_id','dispute','area_dispute','status']);
-                    }])
+                    }, 'household'=>function($query){
+                    $query->select(['id','unit','floor','number','type','username']);
+                }])
                 ->where($where)
+                ->select($select)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->offset($per_page*($page-1))
@@ -763,10 +769,10 @@ class HouseholddetailController extends BaseitemController
             'buildingstruct'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguse'=>function($query){
+            'defbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguses'=>function($query){
+            'realbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
             'landlayout'=>function($query){
@@ -786,10 +792,10 @@ class HouseholddetailController extends BaseitemController
             'buildingstruct'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguse'=>function($query){
+            'defbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
-            'buildinguses'=>function($query){
+            'realbuildinguse'=>function($query){
                 $query->select(['id','name']);
             },
             'landlayout'=>function($query){

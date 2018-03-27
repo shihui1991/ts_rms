@@ -36,6 +36,9 @@ Route::any('/pay','PayController@index')->name('h_pay');
 Route::any('/pay_info','PayController@info')->name('h_pay_info');
 Route::any('/pay_edit','PayController@edit')->name('h_pay_edit');
 
+/*确认签约*/
+Route::any('/payhouse_add','PayhouseController@add')->name('h_payhouse_add');
+
 Route::any('/paysubject_info','PaysubjectController@info')->name('h_paysubject_info');
 
 /*---------- 评估报告 ----------*/

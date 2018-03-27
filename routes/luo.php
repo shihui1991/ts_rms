@@ -128,3 +128,8 @@ Route::any('/resettle_edit','ResettleController@edit')->name('g_resettle_edit');
 /*---------- 房源管理费 ----------*/
 Route::any('/housemanagefee','HousemanagefeeController@index')->name('g_housemanagefee'); // 房源管理费
 Route::any('/housemanagefee_add','HousemanagefeeController@add')->name('g_housemanagefee_add'); // 房源管理费 - 计算
+
+
+Route::any('/itemcompany_pic','ItemcompanyController@pic')->name('g_itemcompany_pic'); //评估委托书
+Route::any('/assess','AssessController@index')->name('g_assess'); //评估报告
+Route::any('/assess_info','AssessController@info')->name('g_assess_info'); //分户评估报告

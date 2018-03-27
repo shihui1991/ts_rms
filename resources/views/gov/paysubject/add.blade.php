@@ -109,7 +109,7 @@
                                     <div class="profile-info-name"> 房号： </div>
                                     <div class="profile-info-value">
                                 <span class="editable editable-click">
-                                    {{$sdata['household']->itembuilding->building}}栋{{$sdata['household']->unit}}单元{{$sdata['household']->floor}}楼{{$sdata['household']->number}}@if(is_numeric($sdata['household']->floor))号@endif
+                                    {{$sdata['household']->itembuilding->building}}栋{{$sdata['household']->unit}}单元{{$sdata['household']->floor}}楼{{$sdata['household']->number}}@if(is_numeric($sdata['household']->number))号@endif
                                 </span>
                                     </div>
                                 </div>

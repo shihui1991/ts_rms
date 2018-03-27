@@ -89,7 +89,7 @@ class PayhousebakController extends BaseController{
                 }*/
             }
 
-            $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1]])->pluck('house_id')->toArray();
+            $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1],['deleted_at',null]])->pluck('house_id')->toArray();
             /* ++++++++++ 被征收户 ++++++++++ */
             $household=Household::sharedLock()
                 ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
@@ -98,15 +98,7 @@ class PayhousebakController extends BaseController{
                 throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
             }
 
-            $count=Payhouse::sharedLock()
-                ->where([
-                    ['item_id',$pay->item_id],
-                    ['household_id',$pay->household_id],
-                ])
-                ->count();
-            if($count){
-                throw new \Exception('已有选房数据，请进入修改页面',404404);
-            }
+
 
             /* ++++++++++ 产权调换房 ++++++++++ */
             $houses=House::with(['housecommunity','layout','itemhouseprice'=>function($query){
@@ -118,8 +110,9 @@ class PayhousebakController extends BaseController{
                 ->sharedLock()
                 ->whereIn('id',$house_ids)
                 ->where('code','151')
-                ->orderBy('area','desc')
+                ->orderBy('house.area','desc')
                 ->get();
+
             if(blank($houses)){
                 throw new \Exception('当前选择的房源已被占用',404404);
             }
@@ -332,7 +325,7 @@ class PayhousebakController extends BaseController{
             $itemctrl=Itemctrl::sharedLock()
                 ->where([
                     ['item_id',$item_id],
-                    ['cate_id',3],
+                    ['cate_id',1],
                     ['start_at','<=',date('Y-m-d H:i:s')],
                     ['end_at','>=',date('Y-m-d H:i:s')],
                 ])
@@ -399,8 +392,8 @@ class PayhousebakController extends BaseController{
             $msg = '选房成功';
             $sdata = $payhousebak;
             $edata = null;
-            $url = route('h_payhousebak');;
-            $view='household.payhousebak.index';
+            $url = route('h_itemhouse');
+            $view=null;
             DB::commit();
         }catch (\Exception $exception){
             $code = 'error';
@@ -505,7 +498,7 @@ class PayhousebakController extends BaseController{
             $url=null;
             $view='household.error';
         }
-        $result=['code'=>$code,'message'=>$exception->getMessage(),'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
 
         if($request->ajax()){
             return response()->json($result);

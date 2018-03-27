@@ -384,7 +384,7 @@ class ItemcompanyController extends BaseitemController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '修改失败';
                 $sdata = null;
-                $edata = $itemcompany;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
@@ -394,4 +394,87 @@ class ItemcompanyController extends BaseitemController
         }
     }
 
+    /* ========== 评估委托书 ========== */
+    public function pic(Request $request){
+        $id =$request->input('id');
+        if($request->isMethod('get')){
+            try{
+                if(!$id){
+                    throw new \Exception('请先选择数据',404404);
+                }
+                /* ********** 当前数据 ********** */
+                $itemcompany=Itemcompany::with([
+                    'company'=>function($query){
+                        $query->select(['id','name']);
+                    }])
+                    ->sharedLock()
+                    ->find($id);
+                if(blank($itemcompany)){
+                    throw new \Exception('数据不存在',404404);
+                }
+
+                $code = 'success';
+                $msg = '请求成功';
+                $sdata = [
+                    'item_id'=>$this->item_id,
+                    'itemcompany'=>$itemcompany,
+                ];
+                $edata = null;
+                $url = null;
+
+                $view='gov.itemcompany.pic';
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ++++++++++ 保存 ++++++++++ */
+        else {
+            DB::beginTransaction();
+            try {
+                if(!$id){
+                    throw new \Exception('错误操作',404404);
+                }
+                if(blank($request->input('picture'))){
+                    throw new \Exception('请上传评估委托书',404404);
+                }
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $itemcompany=Itemcompany::lockForUpdate()->find($id);
+                if(blank($itemcompany)){
+                    throw new \Exception('数据不存在',404404);
+                }
+                $itemcompany->fill($request->input());
+                $itemcompany->save();
+
+                $code = 'success';
+                $msg = '保存成功';
+                $sdata = $itemcompany;
+                $edata = null;
+                $url = route('g_itemcompany_info',['id'=>$id,'item'=>$this->item_id]);
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '保存失败';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
 }

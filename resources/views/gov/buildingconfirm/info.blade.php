@@ -458,19 +458,19 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="profile-info-row">
-                                                            <div class="profile-info-name"> 批准用途： </div>
-                                                            <div class="profile-info-value">
-                                                                <span class="editable editable-click">{{$infos->buildinguse->name}}</span>
-                                                            </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 批准用途： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$infos->defbuildinguse->name}}</span>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="profile-info-row">
-                                                            <div class="profile-info-name"> 实际用途： </div>
-                                                            <div class="profile-info-value">
-                                                                <span class="editable editable-click">{{$infos->buildinguses->name}}</span>
-                                                            </div>
+                                                    <div class="profile-info-row">
+                                                        <div class="profile-info-name"> 实际用途： </div>
+                                                        <div class="profile-info-value">
+                                                            <span class="editable editable-click">{{$infos->realbuildinguse->name}}</span>
                                                         </div>
+                                                    </div>
 
                                                         <div class="profile-info-row">
                                                             <div class="profile-info-name"> 户型名称： </div>
@@ -660,25 +660,25 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 批准用途： </div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click">{{$edata['estatebuildings'][$k]->buildinguse->name}}</span>
-                                                                    @if($infos->buildinguse->name != $edata['estatebuildings'][$k]->buildinguse->name)
-                                                                        <i class="red fa fa-times fa-2x"></i>
-                                                                    @endif
-                                                                </div>
+                                                        <div class="profile-info-row">
+                                                            <div class="profile-info-name"> 批准用途： </div>
+                                                            <div class="profile-info-value">
+                                                                <span class="editable editable-click">{{$edata['estatebuildings'][$k]->defbuildinguse->name}}</span>
+                                                                @if($infos->defbuildinguse->name != $edata['estatebuildings'][$k]->defbuildinguse->name)
+                                                                    <i class="red fa fa-times fa-2x"></i>
+                                                                @endif
                                                             </div>
+                                                        </div>
 
-                                                            <div class="profile-info-row">
-                                                                <div class="profile-info-name"> 实际用途： </div>
-                                                                <div class="profile-info-value">
-                                                                    <span class="editable editable-click">{{$edata['estatebuildings'][$k]->buildinguses->name}}</span>
-                                                                    @if($infos->buildinguses->name != $edata['estatebuildings'][$k]->buildinguses->name)
-                                                                        <i class="red fa fa-times fa-2x"></i>
-                                                                    @endif
-                                                                </div>
+                                                        <div class="profile-info-row">
+                                                            <div class="profile-info-name"> 实际用途： </div>
+                                                            <div class="profile-info-value">
+                                                                <span class="editable editable-click">{{$edata['estatebuildings'][$k]->realbuildinguse->name}}</span>
+                                                                @if($infos->realbuildinguse->name != $edata['estatebuildings'][$k]->realbuildinguse->name)
+                                                                    <i class="red fa fa-times fa-2x"></i>
+                                                                @endif
                                                             </div>
+                                                        </div>
 
                                                             <div class="profile-info-row">
                                                                 <div class="profile-info-name"> 户型名称： </div>

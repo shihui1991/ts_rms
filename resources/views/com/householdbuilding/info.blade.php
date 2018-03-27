@@ -99,14 +99,14 @@
         <div class="profile-info-row">
             <div class="profile-info-name"> 批准用途： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->buildinguse->name}}</span>
+                <span class="editable editable-click">{{$sdata->defbuildinguse->name}}</span>
             </div>
         </div>
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 实际用途： </div>
             <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->buildinguses->name}}</span>
+                <span class="editable editable-click">{{$sdata->realbuildinguse->name}}</span>
             </div>
         </div>
 

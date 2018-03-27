@@ -179,11 +179,6 @@
         </div>
     </div>
 
-    <div class="well well-sm">
-        <a href="" class="btn">
-            补偿明细
-        </a>
-    </div>
 
     <div class="tabbable">
         <ul class="nav nav-tabs padding-12 tab-color-blue background-blue">
@@ -380,6 +375,14 @@
             </div>
         </div>
     </div>
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-5 col-md-7">
+            <button class="btn btn-success" type="button" onclick="confirmPay()">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                确认签约
+            </button>
+        </div>
+    </div>
 
 @endsection
 
@@ -404,6 +407,28 @@
             ,initialState :"collapsed"//默认打开所有节点
             ,stringCollapse:'关闭'
             ,stringExpand:'展开'});
+
+        function confirmPay() {
+            var data = null;
+            ajaxAct('{{route('h_payhouse_add')}}', data, 'post');
+            console.log(ajaxResp);
+            if (ajaxResp.code == 'success') {
+                toastr.success(ajaxResp.message);
+                if(ajaxResp.url){
+                    setTimeout(function () {
+                        location.href=ajaxResp.url;
+                    },1000);
+                }else{
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            } else {
+                toastr.error(ajaxResp.message);
+            }
+            return false;
+        }
+
     </script>
 
 @endsection
