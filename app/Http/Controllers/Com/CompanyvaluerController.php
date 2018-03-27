@@ -17,6 +17,17 @@ class CompanyvaluerController extends BaseauthController
     public function __construct()
     {
         parent::__construct();
+        $this->middleware(function ($request,$next){
+            if(session('com_user.isAdmin')==0){
+                $result=['code'=>'error','message'=>'您没有操作权限','sdata'=>null,'edata'=>null,'url'=>null];
+                if(request()->ajax()){
+                    return response()->json($result);
+                }else{
+                    return redirect()->route('g_error')->with($result);
+                }
+            }
+            return $next($request);
+        });
     }
 
     /* ========== 首页 ========== */
