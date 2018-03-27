@@ -14,6 +14,8 @@ use App\Http\Model\Compublic;
 use App\Http\Model\Compublicdetail;
 use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
+use App\Http\Model\Filecate;
+use App\Http\Model\Filetable;
 use App\Http\Model\Household;
 use App\Http\Model\Householdassets;
 use App\Http\Model\Itemland;
@@ -154,6 +156,8 @@ class ComassessController extends BaseitemController
       $company_id = session('com_user.company_id');
       if($request->isMethod('get')){
           /*----------- 资产房产公共数据 ---------------*/
+          $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+          $data['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
           $data['item_id'] = $item_id;
           $data['item'] = $item;
           $data['type'] = $type;
@@ -612,6 +616,9 @@ class ComassessController extends BaseitemController
                     ->where('household_id',$household_id)
                     ->first();
                 $data['valuer'] = Companyvaluer::where('company_id',$company_id)->where('valid_at','>=',date('Y-m-d'))->get()?:[];
+                $file_table_id=Filetable::where('name','com_assess_estate')->sharedLock()->value('id');
+                $data['filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
+
                 $code = 'success';
                 $msg = '请求成功';
                 $sdata = $data;
