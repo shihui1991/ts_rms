@@ -190,7 +190,7 @@ Route::any('/buildingrelated','HouseholddetailController@buildingrelated')->name
 Route::any('/buildingrelated_com','HouseholddetailController@buildingrelated_com')->name('g_buildingrelated_com');
 Route::any('/relatedcom_info','HouseholddetailController@relatedcom_info')->name('g_relatedcom_info');
 Route::any('/buildingconfirm_info','HouseholddetailController@buildingconfirm_info')->name('g_buildingconfirm_info');
-Route::any('/buildingconfirm_edit','HouseholddetailController@buildingconfirm_edit')->name('g_buildingconfirm_edit');
+Route::any('/edit_status','HouseholddetailController@edit_status')->name('g_edit_status');
 /*---------- 项目-公共附属物确认 ----------*/
 Route::any('/landiist','ItempublicController@landiist')->name('g_public_landiist');
 Route::any('/publiclist','ItempublicController@publiclist')->name('g_publiclist');

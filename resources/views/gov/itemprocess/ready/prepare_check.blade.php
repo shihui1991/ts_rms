@@ -7,12 +7,12 @@
 
     <div class="widget-box widget-color-red">
         <div class="widget-header">
-            <h4 class="widget-title lighter smaller">初步预算审查意见</h4>
+            <h4 class="widget-title lighter smaller">项目筹备审查意见</h4>
         </div>
 
         <div class="widget-body">
             <div class="widget-main padding-8">
-                <form class="form-horizontal" role="form" action="{{route('g_ready_init_check',['item'=>$sdata['item']->id])}}" method="post">
+                <form class="form-horizontal" role="form" action="{{route('g_ready_prepare_check',['item'=>$sdata['item']->id])}}" method="post">
                     {{csrf_field()}}
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="code">审查结果：</label>

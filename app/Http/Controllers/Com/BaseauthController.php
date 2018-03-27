@@ -22,19 +22,37 @@ class BaseauthController extends BaseController
                 $cur_pids=session('menu.cur_pids');
                 $top_id=array_last($cur_pids);
 
-                $menus=Menu::with(['childs'=>function($query){
-                    $query->where('display',1)->orderBy('sort','asc');
-                }])
-                    ->withCount(['childs'=>function($query){
-                        $query->where('display',1);
+                if(session('com_user.isAdmin')==1){
+                    $menus=Menu::with(['childs'=>function($query){
+                        $query->where('display',1)->orderBy('sort','asc');
                     }])
-                    ->sharedLock()
-                    ->where([
-                        ['parent_id',$top_id],
-                        ['display',1],
-                    ])
-                    ->orderBy('sort','asc')
-                    ->get();
+                        ->withCount(['childs'=>function($query){
+                            $query->where('display',1);
+                        }])
+                        ->sharedLock()
+                        ->where([
+                            ['parent_id',$top_id],
+                            ['display',1],
+                        ])
+                        ->orderBy('sort','asc')
+                        ->get();
+                }else{
+                    $menus=Menu::with(['childs'=>function($query){
+                        $query->where('display',1)->orderBy('sort','asc');
+                    }])
+                        ->withCount(['childs'=>function($query){
+                            $query->where('display',1);
+                        }])
+                        ->sharedLock()
+                        ->where([
+                            ['parent_id',$top_id],
+                            ['id','<>',332],
+                            ['id','<>',333],
+                            ['display',1],
+                        ])
+                        ->orderBy('sort','asc')
+                        ->get();
+                }
                 $nav_menus=$this->makeMenu($menus,session('menu.cur_menu.id'),$cur_pids,1,$top_id);
 
                 view()->share(['nav_menus'=>$nav_menus]);

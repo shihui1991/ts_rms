@@ -34,20 +34,40 @@ class BaseitemController extends BaseController
             $this->item=Item::sharedLock()->find($item_id);
 
             if(!$request->ajax()){
-                $menus=Menu::with(['childs'=>function($query){
-                    $query->where('display',1)->orderBy('sort','asc');
-                }])
-                    ->withCount(['childs'=>function($query){
-                        $query->where('display',1);
+                /*===========资产评估机构菜单与房产评估机构菜单============*/
+                if(session('com_user.type')==1){
+                    $menus=Menu::with(['childs'=>function($query){
+                        $query->where('display',1)->orderBy('sort','asc');
                     }])
-                    ->sharedLock()
-                    ->where([
-                        ['parent_id',265],
-                        ['id','<>',265],
-                        ['display',1],
-                    ])
-                    ->orderBy('sort','asc')
-                    ->get();
+                        ->withCount(['childs'=>function($query){
+                            $query->where('display',1);
+                        }])
+                        ->sharedLock()
+                        ->where([
+                            ['parent_id',265],
+                            ['id','<>',265],
+                            ['id','<>',269],
+                            ['display',1],
+                        ])
+                        ->orderBy('sort','asc')
+                        ->get();
+                }else{
+                    $menus=Menu::with(['childs'=>function($query){
+                        $query->where('display',1)->orderBy('sort','asc');
+                    }])
+                        ->withCount(['childs'=>function($query){
+                            $query->where('display',1);
+                        }])
+                        ->sharedLock()
+                        ->where([
+                            ['parent_id',265],
+                            ['id','<>',265],
+                            ['display',1],
+                        ])
+                        ->orderBy('sort','asc')
+                        ->get();
+                }
+
 
                 $nav_menus=$this->makeMenu2($menus,session('menu.cur_menu.id'),session('menu.cur_pids'),1,265,$item_id);
 

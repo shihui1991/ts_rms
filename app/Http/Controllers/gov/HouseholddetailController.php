@@ -652,7 +652,6 @@ class HouseholddetailController extends BaseitemController
                 $url = route('g_buildingrelated',['item'=>$item_id,'household_id'=>$household_id]);
                 DB::commit();
             }catch (\Exception $exception){
-                dd($exception->getMessage());
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'关联失败';
                 $sdata=null;
@@ -710,7 +709,9 @@ class HouseholddetailController extends BaseitemController
 
     /* ========== 被征收户房产详情 ========== */
     public function buildingconfirm_info(Request $request){
+
         $id=$request->input('id');
+        $household_id=$request->input('household_id');
         if(blank($id)){
             $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -721,8 +722,8 @@ class HouseholddetailController extends BaseitemController
         }
         $item_id=$this->item_id;
         $item=$this->item;
-
         /* ********** 当前数据 ********** */
+        $data['detail_id'] = $id;
         $data['item_id'] = $item_id;
         $data['item'] = $item;
         $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
@@ -740,6 +741,9 @@ class HouseholddetailController extends BaseitemController
             },
             'layout'=>function($query){
                 $query->select(['id','name']);
+            },
+            'household'=>function($query){
+                $query->select(['id','code']);
             }])
             ->where('household_id',$id)
             ->first();
@@ -825,5 +829,47 @@ class HouseholddetailController extends BaseitemController
             return view($view)->with($result);
         }
     }
+
+
+    /* ========== 被征收户房产确权状态修改 ========== */
+    public function edit_status(Request $request){
+        $item_id =$this->item_id;
+        $id = $request->input('gov_id');
+        DB::beginTransaction();
+        try{
+            /* ********** 锁定数据 ********** */
+            $household = Household::LockforUpdate()->find($id);
+            if(blank($household)){
+                throw new \Exception('没有符合条件的数据',404404);
+            }
+
+            /* ********** 修改 ********** */
+            $household->code = 62;
+            $household->save();
+            if(blank($household)){
+                throw new \Exception('数据异常,确权失败!',404404);
+            }
+
+            $this->household_status($id);
+
+            $code = 'success';
+            $msg = '关联成功';
+            $sdata = $household;
+            $edata = null;
+            $url = route('g_buildingconfirm_info',['id'=>$request->input('detail_id'),'item'=>$item_id,'household_id'=>$id]);
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'确权失败';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
 
 }

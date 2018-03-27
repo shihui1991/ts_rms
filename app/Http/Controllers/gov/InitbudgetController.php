@@ -79,12 +79,10 @@ class InitbudgetController extends BaseitemController
                 $result=$this->hasNotice();
                 $process=$result['process'];
                 $worknotice=$result['worknotice'];
-                $worknotice->code='1';
-                $worknotice->save();
 
                 $item->schedule_id=$worknotice->schedule_id;
                 $item->process_id=$worknotice->process_id;
-                $item->code=$worknotice->code;
+                $item->code='1';
                 $item->save();
 
                 $code='success';
@@ -216,7 +214,7 @@ class InitbudgetController extends BaseitemController
                         'parent_id'=>$user->role->parent_id,
                         'role_id'=>$user->role_id,
                         'user_id'=>$user->user_id,
-                        'url'=>route('g_ready_init_check',['item'=>$this->item->id]),
+                        'url'=>route('g_ready_init_check',['item'=>$this->item->id],false),
                         'code'=>'20',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -417,7 +415,7 @@ class InitbudgetController extends BaseitemController
                             'parent_id'=>$user->role->parent_id,
                             'role_id'=>$user->role_id,
                             'user_id'=>$user->user_id,
-                            'url'=>route('g_ready_init_check',['item'=>$this->item->id]),
+                            'url'=>route('g_ready_init_check',['item'=>$this->item->id],false),
                             'code'=>'20',
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),

@@ -44,7 +44,7 @@ class IndexController extends Controller
         DB::beginTransaction();
         $user=Companyuser::select(['id','name','username','password','secret','company_id'])
             ->with(['company'=>function($query){
-                $query->select(['id','code','type']);
+                $query->select(['id','code','type','user_id']);
             }])
             ->where('username',$request->input('username'))
             ->sharedLock()
@@ -67,12 +67,19 @@ class IndexController extends Controller
         $user->save();
 
         /* ********** 生成session ********** */
+        /*是否为机构管理操作员*/
+        if($user->company->user_id==$user->id){
+            $isAdmin = 1;
+        }else{
+            $isAdmin = 0;
+        }
         session(['com_user'=>[
             'user_id'=>$user->id,
             'name'=>$user->name,
             'company_id'=>$user->company_id,
             'type'=>$user->company->getOriginal('type'),
-            'secret'=>$user->secret
+            'secret'=>$user->secret,
+            'isAdmin'=>$isAdmin
         ]]);
 
         return response()->json(['code'=>'success','message'=>'登录成功','sdata'=>session('com_user'),'edata'=>null,'url'=>route('c_home')]);

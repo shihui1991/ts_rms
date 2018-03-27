@@ -149,6 +149,9 @@ class HouseholdbuildingdealController extends BaseitemController
                 },
                 'landlayout'=>function($query){
                     $query->select(['id','name','area']);
+                },
+                'state'=>function($query){
+                    $query->select(['id','code','name']);
                 }])
                 ->where($where)
                 ->where('code','<>',90)
@@ -212,12 +215,15 @@ class HouseholdbuildingdealController extends BaseitemController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据 ++++++++++ */
-                $householdbuilding = Householdbuilding::lockforupdate()->find($id);
+                $householdbuilding = Householdbuilding::lockForUpdate()->find($id);
                 if(blank($householdbuilding)){
-                    throw new \Exception('数据异常,认定失败！',404404);
+                    throw new \Exception('数据不存在！',404404);
                 }
                 $householdbuilding->code = $code;
                 $householdbuilding->save();
+                if(blank($householdbuilding)){
+                    throw new \Exception('数据异常,认定失败！',404404);
+                }
 
                 $code = 'success';
                 $msg = '认定成功';

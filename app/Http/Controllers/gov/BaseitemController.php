@@ -6,11 +6,19 @@
 */
 namespace App\Http\Controllers\gov;
 
+use App\Http\Model\Household;
+use App\Http\Model\Householdassets;
+use App\Http\Model\Householdbuilding;
+use App\Http\Model\Householdbuildingarea;
+use App\Http\Model\Householdbuildingdeal;
+use App\Http\Model\Householddetail;
+use App\Http\Model\Householdright;
 use App\Http\Model\Item;
 use App\Http\Model\Menu;
 use App\Http\Model\Process;
 use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BaseitemController extends BaseController
 {
@@ -136,5 +144,87 @@ class BaseitemController extends BaseController
         }
 
         return ['process'=>$process,'worknotice'=>$worknotice];
+    }
+
+
+    /* ++++++++++ [确权确户状态检测] ++++++++++ */
+    public function household_status($household_id=0){
+        if(!is_numeric($household_id)){
+            return false;
+        }
+        /*----------- 检测被征户状态 ------------*/
+        $householddetail = Householddetail::with([
+            'household'=>function($query){
+                $query->select(['id','code']);
+            }])
+            ->sharedLock()
+            ->where('item_id',$this->item_id)
+            ->where('household_id',$household_id)
+            ->first();
+        if(blank($householddetail)){
+            return false;
+        }
+        /*----------- 检测产权争议 ------------*/
+        if($householddetail->getOriginal('dispute')!=0){
+            $householdright = Householdright::where('item_id',$this->item_id)->where('household_id',$household_id)->count();
+            if($householdright==0){
+                return false;
+            }
+        }
+        /*----------- 检测面积争议 ------------*/
+        if($householddetail->getOriginal('area_dispute')!=0||$householddetail->getOriginal('area_dispute')!=3){
+            if($householddetail->getOriginal('area_dispute')==1||$householddetail->getOriginal('area_dispute')==2||$householddetail->getOriginal('area_dispute')==4){
+                return false;
+            }
+            /*-----有争议[是否已经处理]-----*/
+            if($householddetail->getOriginal('area_dispute')==5){
+                $householdbuildingarea = Householdbuildingarea::where('item_id',$this->item_id)->where('household_id',$household_id)->count();
+                if($householdbuildingarea==0){
+                    return false;
+                }
+            }
+        }
+        /*----------- 检测违建处理 ------------*/
+        $householdbuilding = Householdbuilding::where('item_id',$this->item_id)->where('household_id',$household_id)->distinct()->pluck('id','code');
+        $building_ids = [];
+        foreach($householdbuilding as $k=>$v){
+            /*---房屋未认定或认定非法---*/
+            if($k==91||$k==93){
+                return false;
+            }
+            if($k==94||$k==95){
+                $building_ids[] = $v;
+            }
+        }
+       $building_count = Householdbuildingdeal::where('item_id',$this->item_id)->where('household_id',$household_id)->whereIn('household_building_id',$building_ids)->count();
+        if(count($building_ids)!=$building_count){
+            return false;
+        }
+        /*----------- 检测房产 ------------*/
+        if($householddetail->household->code<62){
+            return false;
+        }
+        /*----------- 检测资产 ------------*/
+        if($householddetail->getOriginal('has_assets')==1){
+             $householdassets = Householdassets::where('item_id',$this->item_id)->where('household_id',$household_id)->pluck('number');
+            $householdassets = $householdassets->toArray();
+            foreach($householdassets as $k=>$v){
+                if(!$v){
+                    return false;
+                }
+            }
+        }
+        /*----------- 修改状态 ------------*/
+        /* ++++++++++ 锁定数据 ++++++++++ */
+        $household =  Household::lockForUpdate()->find($household_id);
+        if(blank($household)){
+            return false;
+        }
+        $household->code = 63;
+        $household->save();
+        if(blank($household)){
+            return false;
+        }
+        return true;
     }
 }
