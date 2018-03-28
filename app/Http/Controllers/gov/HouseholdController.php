@@ -97,7 +97,7 @@ class HouseholdController extends BaseitemController
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$exception;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
