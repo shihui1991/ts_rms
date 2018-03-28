@@ -130,6 +130,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('laydate/laydate.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
