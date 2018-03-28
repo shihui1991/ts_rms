@@ -6,7 +6,7 @@
 */
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Itemobject;
-use App\Http\Model\Object;
+use App\Http\Model\Objects;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -95,7 +95,7 @@ class ItemobjectController extends BaseitemController
         $item_id=$this->item_id;
         $model=new Itemobject();
         if($request->isMethod('get')){
-            $sdata['object'] = Object::select(['id','name'])->get()?:[];
+            $sdata['object'] = Objects::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -221,7 +221,7 @@ class ItemobjectController extends BaseitemController
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
             $itemobject=Itemobject::sharedLock()->find($id);
-            $data['object'] = Object::select(['id','name'])->get()?:[];
+            $data['object'] = Objects::select(['id','name'])->get()?:[];
             DB::commit();
             /* ++++++++++ 数据不存在 ++++++++++ */
             if(blank($itemobject)){

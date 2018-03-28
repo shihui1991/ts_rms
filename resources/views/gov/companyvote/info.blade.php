@@ -104,7 +104,7 @@
                             <tr>
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$vote->household->itemland->address}}</td>
-                                <td>{{$vote->household->itembuilding->building}}栋{{$vote->household->unit}}单元{{$vote->household->floor}}楼{{$vote->household->number}}</td>
+                                <td>{{$vote->household->itembuilding->building}}栋{{$vote->household->unit}}单元{{$vote->household->floor}}楼{{$vote->household->number}}号</td>
                                 <td>{{$vote->created_at}}</td>
                             </tr>
                         @endforeach

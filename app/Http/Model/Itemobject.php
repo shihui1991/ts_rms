@@ -39,7 +39,7 @@ class Itemobject extends Model
     }
     /* ++++++++++ 关联其他补偿事项 ++++++++++ */
     public function object(){
-        return $this->belongsTo('App\Http\Model\Object','object_id','id')->withDefault();
+        return $this->belongsTo('App\Http\Model\Objects','object_id','id')->withDefault();
     }
 
 }

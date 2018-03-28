@@ -29,7 +29,7 @@ class CompanyvoteController extends BaseitemController
         }])
             ->where([
                 ['type',0],
-                ['code',41],
+//                ['code',41],
             ])
             ->orderBy('companyvotes_count','desc')
             ->sharedLock()

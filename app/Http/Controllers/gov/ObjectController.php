@@ -5,7 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
-use App\Http\Model\Object;
+use App\Http\Model\Objects;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -45,7 +45,7 @@ class ObjectController extends BaseauthController
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
 
-        $model=new Object();
+        $model=new Objects();
         if(is_numeric($deleted) && in_array($deleted,[0,1])){
             $infos['deleted']=$deleted;
             if($deleted){
@@ -86,7 +86,7 @@ class ObjectController extends BaseauthController
 
     /* ========== 添加 ========== */
     public function add(Request $request){
-        $model=new Object();
+        $model=new Objects();
         if($request->isMethod('get')){
             $result=['code'=>'success','message'=>'请求成功','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -158,7 +158,7 @@ class ObjectController extends BaseauthController
         }
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $object=Object::withTrashed()
+        $object=Objects::withTrashed()
             ->sharedLock()
             ->find($id);
         DB::commit();
@@ -173,7 +173,7 @@ class ObjectController extends BaseauthController
             $code='success';
             $msg='获取成功';
             $sdata=$object;
-            $edata=new Object();
+            $edata=new Objects();
             $url=null;
 
             $view='gov.object.info';
@@ -200,7 +200,7 @@ class ObjectController extends BaseauthController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $object=Object::withTrashed()
+            $object=Objects::withTrashed()
                 ->sharedLock()
                 ->find($id);
             DB::commit();
@@ -215,7 +215,7 @@ class ObjectController extends BaseauthController
                 $code='success';
                 $msg='获取成功';
                 $sdata=$object;
-                $edata=new Object();
+                $edata=new Objects();
                 $url=null;
 
                 $view='gov.object.edit';
@@ -227,7 +227,7 @@ class ObjectController extends BaseauthController
                 return view($view)->with($result);
             }
         }else{
-            $model=new Object();
+            $model=new Objects();
             /* ********** 表单验证 ********** */
             $rules=[
                 'name'=>'required|unique:object,name,'.$id.',id',
@@ -246,7 +246,7 @@ class ObjectController extends BaseauthController
             DB::beginTransaction();
             try{
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $object=Object::withTrashed()
+                $object=Objects::withTrashed()
                     ->lockForUpdate()
                     ->find($id);
                 if(blank($object)){

@@ -107,6 +107,98 @@ class PactController extends BaseitemController
                     $query->select(['code','name']);
                 }])
                     ->sharedLock()
+                    ->find($pay->household_id);
+                /* ++++++++++ 被征收户 - 详情 ++++++++++ */
+                $household_detail=Householddetail::with(['defbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                },'realbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                    ->sharedLock()
+                    ->where('household_id',$pay->household_id)
+                    ->first();
+                /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
+                $pay_unit=null;
+                if($household->getOriginal('type')){
+                    $pay_unit=Payunit::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$household->id],
+                            ['pay_id',$pay->id],
+                        ])
+                        ->first();
+
+                    $holder_type=2;
+                }else{
+                    $holder_type=1;
+                }
+                $holder=Householdmember::sharedLock()
+                    ->select(['id','item_id','household_id','name','holder','portion','card_num'])
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['holder',$holder_type],
+                    ])
+                    ->orderBy('portion','desc')
+                    ->first();
+
+                $code='success';
+                $msg='请求成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                    'household'=>$household,
+                    'household_detail'=>$household_detail,
+                    'pay_unit'=>$pay_unit,
+                    'holder'=>$holder,
+                ];
+                $edata=null;
+                $url=null;
+
+                $view='gov.pact.first';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ++++++++++ 生成协议 ++++++++++ */
+        else{
+            DB::beginTransaction();
+            try{
+                if(!$pay_id){
+                    throw new \Exception('错误操作',404404);
+                }
+                /* ++++++++++ 兑付汇总 ++++++++++ */
+                $pay=Pay::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$pay_id],
+                    ])
+                    ->first();
+                if(blank($pay)){
+                    throw new \Exception('兑付数据不存在',404404);
+                }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::with(['itemland'=>function($query){
+                    $query->with('adminunit')->select(['id','address']);
+                },'itembuilding'=>function($query){
+                    $query->with('buildingstruct')->select(['id','building']);
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                }])
+                    ->sharedLock()
                     ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
                     ->find($pay->household_id);
                 /* ++++++++++ 被征收户 - 详情 ++++++++++ */
@@ -341,10 +433,6 @@ class PactController extends BaseitemController
             }else{
                 return view($view)->with($result);
             }
-        }
-
-        else{
-
         }
     }
 

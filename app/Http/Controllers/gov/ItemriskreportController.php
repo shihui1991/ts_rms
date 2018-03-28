@@ -1,7 +1,7 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-征收意见稿
+| 项目-风险评估报告
 |--------------------------------------------------------------------------
 */
 namespace  App\Http\Controllers\gov;
@@ -162,7 +162,7 @@ class ItemriskreportController extends BaseitemController
                     throw new \Exception('项目不存在',404404);
                 }
                 /* ++++++++++ 检查项目状态 ++++++++++ */
-                if($item->schedule_id!=4 || $item->process_id!=32 ||  $item->code!='22'){
+                if($item->schedule_id!=4 || $item->process_id!=33 || $item->code!='2'){
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
 

@@ -8,7 +8,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Household;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Itemobject;
-use App\Http\Model\Object;
+use App\Http\Model\Objects;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -99,7 +99,7 @@ class HouseholdobjectController extends BaseitemController
         $model=new Householdobject();
         $household_id = $request->input('household_id');
         if($request->isMethod('get')){
-            $sdata['object'] = Object::select(['id','name'])->get()?:[];
+            $sdata['object'] = Objects::select(['id','name'])->get()?:[];
             $sdata['item_id'] = $item_id;
             $sdata['household_id'] = $household_id;
             $sdata['household'] = Household::select(['id','land_id','building_id'])->where('item_id',$item_id)->where('id',$household_id)->first();
@@ -230,7 +230,7 @@ class HouseholdobjectController extends BaseitemController
             DB::beginTransaction();
             $data['item_id'] = $item_id;
             $data['household_id'] = $household_id;
-            $data['object'] = Object::select(['id','name'])->get()?:[];
+            $data['object'] = Objects::select(['id','name'])->get()?:[];
             $householdobject=Householdobject::with([
                 'object'=>function($query){
                     $query->select(['id','name']);

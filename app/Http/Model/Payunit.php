@@ -27,7 +27,9 @@ class Payunit extends Model
         'pact_id'=>'公房单位补偿协议',
         'total_id'=>'支付总单',
         'calculate'=>'计算公式',
-        'amount'=>'补偿小计',
+        'amount'=>'补偿金额',
+        'portion'=>'公房单位补偿比例',
+        'total'=>'公房单位补偿金额',
         'state'=>'状态',
     ];
 

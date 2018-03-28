@@ -4,7 +4,7 @@
 | 评估公司
 |--------------------------------------------------------------------------
 */
-namespace App\Http\Controllers\Household;
+namespace App\Http\Controllers\household;
 
 use App\Http\Model\Company;
 use Illuminate\Http\Request;

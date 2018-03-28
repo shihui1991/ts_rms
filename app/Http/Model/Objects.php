@@ -8,7 +8,7 @@ namespace App\Http\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Object extends Model
+class Objects extends Model
 {
     use SoftDeletes;
     protected $table='object';
