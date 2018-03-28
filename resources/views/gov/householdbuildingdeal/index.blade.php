@@ -22,7 +22,7 @@
                 <li class="active">
                     <a data-toggle="tab" href="#householdbuildingdeal" aria-expanded="true">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
-                        违建处理
+                        合法性认定
                     </a>
                 </li>
 

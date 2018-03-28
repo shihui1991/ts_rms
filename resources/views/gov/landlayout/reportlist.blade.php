@@ -22,7 +22,7 @@
                 <li class="">
                     <a href="{{route('g_householdbuildingdeal',['item'=>$edata['item_id']])}}">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
-                        违建处理
+                        合法性认定
                     </a>
                 </li>
 
