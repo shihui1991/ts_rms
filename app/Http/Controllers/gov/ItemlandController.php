@@ -9,6 +9,7 @@ use App\Http\Model\Adminunit;
 use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemland;
 use App\Http\Model\Itempublic;
+use App\Http\Model\Itemuser;
 use App\Http\Model\Landlayout;
 use App\Http\Model\Landprop;
 use Illuminate\Http\Request;
@@ -113,31 +114,67 @@ class ItemlandController extends BaseitemController
         $model=new Itemland();
         if($request->isMethod('get')){
             DB::beginTransaction();
-            $landprops=Landprop::with([
-                'landsources'=>function($query){
-                    $query->with(['landstates']);
-                }])
-                ->select(['id','name'])
-                ->sharedLock()
-                ->get();
-            $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
-            DB::commit();
+            try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->schedule_id=3;
+                $item->process_id=25;
+                $item->code='1';
+                $item->save();
 
-            $result=[
-                'code'=>'success',
-                'message'=>'请求成功',
-                'sdata'=>[
+                $landprops=Landprop::with([
+                    'landsources'=>function($query){
+                        $query->with(['landstates']);
+                    }])
+                    ->select(['id','name'])
+                    ->sharedLock()
+                    ->get();
+                $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
+
+                $code = 'success';
+                $msg = '请求成功';
+                $sdata = [
                     'item'=>$this->item,
                     'landprops'=>$landprops,
                     'adminunits'=>$adminunits,
-                ],
-                'edata'=>null,
-                'url'=>null];
+                ];
+                $edata = null;
+                $url = null;
 
+                $view='gov.itemland.add';
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
             }else{
-                return view('gov.itemland.add')->with($result);
+                return view($view)->with($result);
             }
         }
         /* ++++++++++ 保存 ++++++++++ */
@@ -166,6 +203,25 @@ class ItemlandController extends BaseitemController
             /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 /* ++++++++++ 地块是否存在 ++++++++++ */
                 $address = $request->input('address');
                 $itemland = Itemland::where('item_id',$item_id)->where('address',$address)->lockForUpdate()->first();
@@ -284,37 +340,64 @@ class ItemlandController extends BaseitemController
             }
         }
         if ($request->isMethod('get')) {
-            /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $itemland=Itemland::sharedLock()->find($id);
-            $landprops=Landprop::with([
-                'landsources'=>function($query){
-                    $query->with(['landstates']);
-                }])
-                ->select(['id','name'])
-                ->sharedLock()
-                ->get();
-            $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
+            try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
 
-            DB::commit();
-            /* ++++++++++ 数据不存在 ++++++++++ */
-            if(blank($itemland)){
-                $code='warning';
-                $msg='数据不存在';
-                $sdata=null;
-                $edata=null;
-                $url=null;
+                $itemland=Itemland::sharedLock()->find($id);
+                if(blank($itemland)){
+                    throw new \Exception('数据不存在',404404);
+                }
+                $landprops=Landprop::with([
+                    'landsources'=>function($query){
+                        $query->with(['landstates']);
+                    }])
+                    ->select(['id','name'])
+                    ->sharedLock()
+                    ->get();
+                $adminunits=Adminunit::sharedLock()->select(['id','name'])->get();
 
-                $view='gov.error';
-            }else{
-                $code='success';
-                $msg='获取成功';
-                $sdata=['itemland'=>$itemland,'landprops'=>$landprops,'adminunits'=>$adminunits,'item'=>$this->item];
-                $edata=null;
-                $url=null;
+                $code = 'success';
+                $msg = '请求成功';
+                $sdata = [
+                    'item'=>$this->item,
+                    'itemland'=>$itemland,
+                    'landprops'=>$landprops,
+                    'adminunits'=>$adminunits,
+                ];
+                $edata = null;
+                $url = null;
 
                 $view='gov.itemland.edit';
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+
+                $view='gov.error';
             }
+            DB::commit();
+
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             if($request->ajax()){
                 return response()->json($result);
@@ -347,6 +430,25 @@ class ItemlandController extends BaseitemController
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $itemland=Itemland::lockForUpdate()->find($id);
                 if(blank($itemland)){

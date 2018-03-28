@@ -89,7 +89,7 @@ class NewsController extends BaseitemController
                 $sdata=[
                     'item'=>$item,
                 ];
-                $edata=null;
+                $edata=$model;
                 $url=null;
 
                 $view='gov.news.add';
