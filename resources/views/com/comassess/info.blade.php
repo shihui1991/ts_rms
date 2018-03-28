@@ -238,41 +238,45 @@
                                 </div>
                             </div>
                             <div class="space-4"></div>
-                            <div class="widget-body">
-                                <div class="widget-main padding-8">
+                            @if(filled($sdata['item_program']))
+                                <div class="widget-body">
+                                    <div class="widget-main padding-8">
 
-                                    <div class="form-group img-box">
-                                        <label class="col-sm-3 control-label no-padding-right">
-                                            评估报告：<br/>
-                                            <span class="btn btn-xs">
-                                                <span>上传图片</span>
-                                                <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
-                                            </span>
-                                        </label>
-                                        <div class="col-sm-9">
-                                            <ul class="ace-thumbnails clearfix img-content viewer">
-                                                @if($sdata['estate']->picture)
-                                                    @foreach($sdata['estate']->picture as $pic)
-                                                        <li>
-                                                            <div>
-                                                                <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                                                <input type="hidden" name="picture[]" value="{!! $pic !!}">
-                                                                <div class="text">
-                                                                    <div class="inner">
-                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                        <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                        <div class="form-group img-box">
+                                            <label class="col-sm-3 control-label no-padding-right">
+                                                评估报告：<br/>
+                                                <span class="btn btn-xs">
+                                                    <span>上传图片</span>
+                                                    <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
+                                                </span>
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <ul class="ace-thumbnails clearfix img-content viewer">
+                                                    @if($sdata['estate']->picture)
+                                                        @foreach($sdata['estate']->picture as $pic)
+                                                            <li>
+                                                                <div>
+                                                                    <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                                                    <input type="hidden" name="picture[]" value="{!! $pic !!}">
+                                                                    <div class="text">
+                                                                        <div class="inner">
+                                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                            <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </li>
-                                                    @endforeach
-                                                @endif
-                                            </ul>
+                                                            </li>
+                                                        @endforeach
+                                                    @endif
+                                                </ul>
+                                            </div>
                                         </div>
+                                        <div class="space-4 header green"></div>
                                     </div>
-                                    <div class="space-4 header green"></div>
                                 </div>
-                            </div>
+                            @else
+                                <input type="hidden" name="picture[]" value="">
+                            @endif
                             <div class="clearfix form-actions">
                                 <div class="col-md-offset-3 col-md-9">
                                     <button class="btn btn-info" type="button" onclick="sub(this)">
@@ -332,41 +336,45 @@
                                 </div>
                             </div>
                             <div class="space-4"></div>
-                            <div class="widget-body">
-                                <div class="widget-main padding-8">
+                            @if(filled($sdata['item_program']))
+                                <div class="widget-body">
+                                    <div class="widget-main padding-8">
 
-                                    <div class="form-group img-box">
-                                        <label class="col-sm-3 control-label no-padding-right">
-                                            评估报告：<br/>
-                                            <span class="btn btn-xs">
-                                                <span>上传图片</span>
-                                                <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
-                                            </span>
-                                        </label>
-                                        <div class="col-sm-9">
-                                            <ul class="ace-thumbnails clearfix img-content viewer">
-                                                @if($sdata['assets']->picture)
-                                                    @foreach($sdata['assets']->picture as $pic)
-                                                        <li>
-                                                            <div>
-                                                                <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
-                                                                <input type="hidden" name="picture[]" value="{!! $pic !!}">
-                                                                <div class="text">
-                                                                    <div class="inner">
-                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                        <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                        <div class="form-group img-box">
+                                            <label class="col-sm-3 control-label no-padding-right">
+                                                评估报告：<br/>
+                                                <span class="btn btn-xs">
+                                                    <span>上传图片</span>
+                                                    <input type="file" accept="image/*" class="hidden" data-name="picture[]" multiple  onchange="uplfile(this)">
+                                                </span>
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <ul class="ace-thumbnails clearfix img-content viewer">
+                                                    @if($sdata['assets']->picture)
+                                                        @foreach($sdata['assets']->picture as $pic)
+                                                            <li>
+                                                                <div>
+                                                                    <img width="120" height="120" src="{!! $pic !!}" alt="加载失败">
+                                                                    <input type="hidden" name="picture[]" value="{!! $pic !!}">
+                                                                    <div class="text">
+                                                                        <div class="inner">
+                                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                            <a onclick="removeimg(this)"><i class="fa fa-trash"></i></a>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </li>
-                                                    @endforeach
-                                                @endif
-                                            </ul>
+                                                            </li>
+                                                        @endforeach
+                                                    @endif
+                                                </ul>
+                                            </div>
                                         </div>
+                                        <div class="space-4 header green"></div>
                                     </div>
-                                    <div class="space-4 header green"></div>
                                 </div>
-                            </div>
+                            @else
+                                <input type="hidden" name="picture[]" value="">
+                            @endif
                             <div class="clearfix form-actions">
                                 <div class="col-md-offset-3 col-md-9">
                                     <button class="btn btn-info" type="button" onclick="sub(this)">

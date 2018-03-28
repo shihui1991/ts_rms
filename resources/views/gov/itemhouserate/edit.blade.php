@@ -67,6 +67,7 @@
 
 {{-- 插件 --}}
 @section('js')
+    @parent
     <script src="{{asset('js/func.js')}}"></script>
     <script>
 

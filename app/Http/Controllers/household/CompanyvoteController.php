@@ -10,7 +10,7 @@ namespace App\Http\Controllers\household;
 use App\Http\Model\Companyvote;
 use App\Http\Model\Company;
 use App\Http\Model\Household;
-
+use App\Http\Model\Itemctrl;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +43,7 @@ class  CompanyvoteController extends BaseController
         }])
             ->orderBy('companyvotes_count','desc')
             ->sharedLock()
+            ->where('type',0)
             ->offset($per_page*($page-1))
             ->limit($per_page)
             ->get();
@@ -60,6 +61,16 @@ class  CompanyvoteController extends BaseController
             ->sharedLock()
             ->first();
 
+        /* ++++++++++ 选房时间 ++++++++++ */
+        $itemctrl=Itemctrl::sharedLock()
+            ->where([
+                ['item_id',$this->item_id],
+                ['cate_id',1],
+                ['start_at','<=',date('Y-m-d H:i:s')],
+                ['end_at','>=',date('Y-m-d H:i:s')],
+            ])
+            ->first();
+
         DB::commit();
         /* ********** 结果 ********** */
 
@@ -68,7 +79,8 @@ class  CompanyvoteController extends BaseController
             'message'=>'请求成功',
             'sdata'=>[
                 'item'=>$this->item_id,
-                'companyvote'=>$companyvote
+                'companyvote'=>$companyvote,
+                'itemctrl'=>$itemctrl
             ],
             'edata'=>$companys,
             'url'=>null];
