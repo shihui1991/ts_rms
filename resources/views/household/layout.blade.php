@@ -92,7 +92,37 @@
 
 {{-- 插件 --}}
 @section('js')
+    @isset($code)
+        @switch($code)
+            @case('error')
+            <script>
+                toastr.error('{{$message}}');
+            </script>
+            @break
+
+            @case('success')
+            <script>
+                toastr.success('{{$message}}');
+            </script>
+            @break
+
+            @case('info')
+            <script>
+                toastr.info('{{$message}}');
+            </script>
+            @break
+
+            @case('warning')
+            <script>
+                toastr.warning('{{$message}}');
+            </script>
+            @break
+
+        @endswitch
+    @endisset
     <script>
+
+
         // 导航栏 调整
         var nav_li_list = $('ul.nav.nav-list').find('li.active.open');
         if (nav_li_list.length > 0) {
