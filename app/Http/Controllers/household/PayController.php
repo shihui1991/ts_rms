@@ -64,8 +64,9 @@ class PayController extends BaseController{
                 }
 
 
-                $household = Household::sharedLock()
-                    ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'state'])
+                $household = Household::with('state')
+                    ->sharedLock()
+                    ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
                     ->where([
                         ['item_id', $this->item_id],
                         ['id', $household_id]
@@ -73,9 +74,6 @@ class PayController extends BaseController{
                     ->first();
                 if (blank($household)) {
                     throw new \Exception('被征收户不存在', 404404);
-                }
-                if($household->code !='75'){
-                    throw new \Exception('被征收户【'.$household->state->name.'】，不能下达行政征收决定',404404);
                 }
 
                 $household_detail = Householddetail::sharedLock()
@@ -86,7 +84,7 @@ class PayController extends BaseController{
                     ->select(['item_id','household_id','register','has_assets','area_dispute','repay_way','def_use'])
                     ->first();
 
-                if($household_detail->getOriginal('area_dispute')==0){
+                if(!in_array($household_detail->getOriginal('area_dispute'),[0,3])){
                     throw new \Exception('被征收户存在面积争议',404404);
                 }
                 /* ++++++++++ 评估汇总 ++++++++++ */
@@ -110,7 +108,7 @@ class PayController extends BaseController{
                         ['assess_id',$assess->id],
                         ['code','136']
                     ])
-                    ->select(['id', 'item_id', 'household_id', 'assess_id', 'state'])
+                    ->select(['id', 'item_id', 'household_id', 'assess_id', 'code'])
                     ->first();
 
                 if (blank($assess)) {
@@ -118,7 +116,7 @@ class PayController extends BaseController{
                 }
 
                 $estatebuildings = Estatebuilding::with(['householdbuilding' => function ($query) {
-                    $query->select(['id', 'register', 'state', 'dispute']);
+                    $query->select(['id', 'register', 'code', 'dispute']);
                 }])
                     ->where([
                         ['item_id', $this->item_id],
@@ -135,9 +133,8 @@ class PayController extends BaseController{
                             ['item_id', $this->item_id],
                             ['household_id', $household_id],
                             ['assess_id', $assess->id],
-                            ['state', 6],
                         ])
-                        ->select(['id', 'item_id', 'household_id', 'assess_id', 'state'])
+                        ->select(['id', 'item_id', 'household_id', 'assess_id', 'code'])
                         ->first();
                     if (blank($assets)) {
                         throw new \Exception('暂无有效的资产评估数据', 404404);
@@ -154,9 +151,6 @@ class PayController extends BaseController{
                     ->first();
                 if(blank($program)){
                     throw new \Exception('暂无通过审查的正式征收方案数据',404404);
-                }
-                if(strtotime($program->item_end) > strtotime(date('Y-m-d'))){
-                    throw new \Exception('项目征收期限未到，不能下达行政征收决定',404404);
                 }
 
                 /* ++++++++++ 批量赋值 ++++++++++ */
