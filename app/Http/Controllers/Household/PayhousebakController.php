@@ -325,7 +325,7 @@ class PayhousebakController extends BaseController{
             $itemctrl=Itemctrl::sharedLock()
                 ->where([
                     ['item_id',$item_id],
-                    ['cate_id',1],
+                    ['cate_id',3],
                     ['start_at','<=',date('Y-m-d H:i:s')],
                     ['end_at','>=',date('Y-m-d H:i:s')],
                 ])
