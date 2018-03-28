@@ -4,7 +4,7 @@
 | 入围机构
 |--------------------------------------------------------------------------
 */
-namespace App\Http\Controllers\Household;
+namespace App\Http\Controllers\household;
 
 use App\Http\Model\Itemcompany;
 use Illuminate\Http\Request;

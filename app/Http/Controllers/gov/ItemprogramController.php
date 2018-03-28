@@ -189,7 +189,7 @@ class ItemprogramController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $model;
                 $edata = null;
-                $url=route('g_itemprogram_info',['item'=>$this->item_id]);
+                $url=route('g_itemprogram',['item'=>$this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';

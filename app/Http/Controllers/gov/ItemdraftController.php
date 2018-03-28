@@ -218,7 +218,7 @@ class ItemdraftController extends BaseitemController
                 $msg = '添加成功';
                 $sdata = $itemdraft;
                 $edata = null;
-                $url = route('g_itemdarft',['item'=>$this->item_id]);
+                $url = route('g_itemdraft',['item'=>$this->item_id]);
                 DB::commit();
             }catch (\Exception $exception){
                 $code = 'error';

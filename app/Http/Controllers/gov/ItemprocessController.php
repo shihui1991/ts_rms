@@ -4057,10 +4057,6 @@ class ItemprocessController extends BaseitemController
                 if(blank($item)){
                     throw new \Exception('项目不存在',404404);
                 }
-                /* ++++++++++ 检查项目状态 ++++++++++ */
-                if($item->schedule_id<3){
-                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
-                }
                 /* ++++++++++ 检查操作权限 ++++++++++ */
                 $count=Itemuser::sharedLock()
                     ->where([
@@ -5181,7 +5177,7 @@ class ItemprocessController extends BaseitemController
                                     'parent_id'=>$user->role->parent_id,
                                     'role_id'=>$user->role_id,
                                     'user_id'=>$user->user_id,
-                                    'url'=>route('g_program_to_check',['item'=>$this->item->id],false),
+                                    'url'=>route('g_itemprogram',['item'=>$this->item->id],false),
                                     'code'=>'0',
                                     'created_at'=>date('Y-m-d H:i:s'),
                                     'updated_at'=>date('Y-m-d H:i:s'),

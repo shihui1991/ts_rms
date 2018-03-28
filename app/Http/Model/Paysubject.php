@@ -28,7 +28,9 @@ class Paysubject extends Model
         'subject_id'=>'补偿科目',
         'total_id'=>'支付总单',
         'calculate'=>'计算公式',
-        'amount'=>'补偿小计',
+        'amount'=>'补偿金额',
+        'portion'=>'被征收户补偿比例',
+        'total'=>'被征收户补偿金额',
         'code'=>'状态',
     ];
 

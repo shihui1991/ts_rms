@@ -19,6 +19,7 @@ use App\Http\Model\Filetable;
 use App\Http\Model\Household;
 use App\Http\Model\Householdassets;
 use App\Http\Model\Itemland;
+use App\Http\Model\Itemprogram;
 use App\Http\Model\Itempublic;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -309,15 +310,13 @@ class ComassessController extends BaseitemController
         }
           /*------------------- 数据填写验证 -----------------------*/
         $rules=[
-            'valuer_id'=>'required',
-            'picture'=>'required'
+            'valuer_id'=>'required'
         ];
         $messages=[
             'required'=>':attribute 不能为空'
         ];
         $fild_msg = [
-            'valuer_id'=>'评估师',
-            'picture'=>'评估报告'
+            'valuer_id'=>'评估师'
         ];
         $validator = Validator::make($request->all(), $rules, $messages, $fild_msg);
         if ($validator->fails()) {
@@ -407,7 +406,7 @@ class ComassessController extends BaseitemController
                     DB::statement($sql);
                 }
                 /* ++++++++++ 修改房产评估汇总数据 ++++++++++ */
-                $estate = Estate::where('id',$estates->id)->update(['main_total'=>$main_total,'tag_total'=>$tag_total,'code'=>'132','total'=>$total,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                $estate = Estate::where('id',$estates->id)->update(['main_total'=>$main_total,'tag_total'=>$tag_total,'code'=>'132','total'=>$total,'updated_at'=>date('Y-m-d H:i:s')]);
                 if(blank($estate)){
                     throw new \Exception('数据错误', 404404);
                 }
@@ -441,7 +440,7 @@ class ComassessController extends BaseitemController
                 }
             }else{
                 /* ++++++++++ 修改资产评估汇总数据 ++++++++++ */
-                $assetss = Assets::where('id',$assets->id)->update(['total'=>$total,'code'=>132,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                $assetss = Assets::where('id',$assets->id)->update(['total'=>$total,'code'=>132,'updated_at'=>date('Y-m-d H:i:s')]);
                 if(blank($assetss)){
                     throw new \Exception('数据错误', 404404);
                 }
@@ -513,6 +512,7 @@ class ComassessController extends BaseitemController
         $company_id = session('com_user.company_id');
         if($request->isMethod('get')){
             /*----------- 资产房产公共数据 ---------------*/
+            $data['item_program'] = Itemprogram::where('item_id',$item_id)->first();
             $data['item_id'] = $item_id;
             $data['item'] = $item;
             $data['type'] = $type;

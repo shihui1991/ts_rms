@@ -695,7 +695,7 @@ class NewsController extends BaseitemController
                         'role_id'=>$user->role_id,
                         'user_id'=>$user->user_id,
                         'url'=>route('g_itemriskreport',['item'=>$this->item->id],false),
-                        'code'=>'20',
+                        'code'=>'0',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
