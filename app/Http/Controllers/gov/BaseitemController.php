@@ -114,6 +114,8 @@ class BaseitemController extends BaseController
     public function hasNotice(){
         /* ++++++++++ 流程设置 ++++++++++ */
         $process=Process::sharedLock()->where('menu_id',session('menu.cur_menu.id'))->first();
+
+
         /* ++++++++++ 是否有工作推送 ++++++++++ */
         $worknotice=Worknotice::lockForUpdate()
             ->where([
