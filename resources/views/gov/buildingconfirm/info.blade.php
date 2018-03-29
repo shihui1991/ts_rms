@@ -565,7 +565,11 @@
                                                                 <div class="profile-info-value">
                                                                     <span class="editable editable-click">{{$edata['estatebuildings'][$k]->state->name}}</span>
                                                                     @if($infos->state->name != $edata['estatebuildings'][$k]->state->name)
-                                                                        <i class="red fa fa-times fa-2x"></i>
+                                                                        @if($edata['estatebuildings'][$k]->code == 90 or ($infos->code == 93 || $infos->code == 95))
+
+                                                                         @else
+                                                                            <i class="red fa fa-times fa-2x"></i>
+                                                                         @endif
                                                                     @endif
                                                                 </div>
                                                             </div>
