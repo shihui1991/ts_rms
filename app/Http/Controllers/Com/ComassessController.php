@@ -111,8 +111,6 @@ class ComassessController extends BaseitemController
                     ->limit($per_page)
                     ->get();
             }
-
-
             $households=new LengthAwarePaginator($households,$total,$per_page,$page);
             $households->withPath(route('c_comassess'));
             if(blank($households)){
@@ -768,7 +766,7 @@ class ComassessController extends BaseitemController
                         DB::statement($sql);
                     }
                     /* ++++++++++ 修改房产评估汇总数据 ++++++++++ */
-                    $estate = Estate::where('id',$estates->id)->update(['main_total'=>$main_total,'tag_total'=>$tag_total,'total'=>$total,'code'=>'132','picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                    $estate = Estate::where('id',$estates->id)->update(['main_total'=>$main_total,'tag_total'=>$tag_total,'total'=>$total,'code'=>131,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
                     if(blank($estate)){
                         throw new \Exception('数据错误', 404404);
                     }
@@ -777,14 +775,22 @@ class ComassessController extends BaseitemController
                     /*检测是否资产和房产都已评估完成*/
                     if($estates->getOriginal('has_assets')==0){
                         /*已评估完成*/
+                        $estate = Estate::where('id',$estates->id)->update(['code'=>132,'updated_at'=>date('Y-m-d H:i:s')]);
+                        if(blank($estate)){
+                            throw new \Exception('数据错误', 404404);
+                        }
                         $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'code'=>'132','updated_at'=>date('Y-m-d H:i:s')]);
                         if(blank($comassess)){
                             throw new \Exception('数据错误', 404404);
                         }
                     }else{
                         $assets =  Assets::sharedLock()->where('assess_id',$estates->assess_id)->value('code');
-                        if($assets==132){
+                        if($assets==131||$assets==132){
                             /*已评估完成*/
+                            $estate = Estate::where('id',$estates->id)->update(['code'=>132,'updated_at'=>date('Y-m-d H:i:s')]);
+                            if(blank($estate)){
+                                throw new \Exception('数据错误', 404404);
+                            }
                             $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'code'=>'132','updated_at'=>date('Y-m-d H:i:s')]);
                             if(blank($comassess)){
                                 throw new \Exception('数据错误', 404404);
@@ -804,15 +810,19 @@ class ComassessController extends BaseitemController
                     }
                 }else{
                     /* ++++++++++ 修改资产评估汇总数据 ++++++++++ */
-                    $assetss = Assets::where('id',$assets->id)->update(['total'=>$request->input('total'),'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
+                    $assetss = Assets::where('id',$assets->id)->update(['total'=>$request->input('total'),'code'=>131,'picture'=>json_encode($picture),'updated_at'=>date('Y-m-d H:i:s')]);
                     if(blank($assetss)){
                         throw new \Exception('数据错误', 404404);
                     }
                     /* ++++++++++ 修改评估汇总数据 ++++++++++ */
                     /*检测是否资产和房产都已评估完成*/
                     $estate_code =  Estate::sharedLock()->where('assess_id',$assets->assess_id)->value('code');
-                    if($estate_code==132){
+                    if($estate_code==131||$estate_code==132){
                         /*已评估完成*/
+                        $assetss = Assets::where('id',$assets->id)->update(['code'=>132,'updated_at'=>date('Y-m-d H:i:s')]);
+                        if(blank($assetss)){
+                            throw new \Exception('数据错误', 404404);
+                        }
                         $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'132','updated_at'=>date('Y-m-d H:i:s')]);
                         if(blank($comassess)){
                             throw new \Exception('数据错误', 404404);

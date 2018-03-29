@@ -745,7 +745,7 @@ class HouseholddetailController extends BaseitemController
             'household'=>function($query){
                 $query->select(['id','code']);
             }])
-            ->where('household_id',$id)
+            ->where('household_id',$household_id)
             ->first();
         $data['estate']=Estate::with([
             'defbuildinguse'=>function($query){
@@ -779,7 +779,7 @@ class HouseholddetailController extends BaseitemController
                 $query->select(['id','name','area','gov_img']);
             }])
             ->where('item_id',$item_id)
-            ->where('household_id',$id)
+            ->where('household_id',$household_id)
             ->sharedLock()
             ->get();
         $data['estatebuildings'] = Estatebuilding::with([
@@ -802,7 +802,7 @@ class HouseholddetailController extends BaseitemController
                 $query->select(['id','name','area','gov_img']);
             }])
             ->where('item_id',$item_id)
-            ->where('household_id',$id)
+            ->where('household_id',$household_id)
             ->sharedLock()
             ->get();
         DB::commit();
@@ -849,8 +849,32 @@ class HouseholddetailController extends BaseitemController
             if(blank($household)){
                 throw new \Exception('数据异常,确权失败!',404404);
             }
+            /*------------ 检测是否所有的都已经确权 ------------*/
+            $household_code = $this->household_status($id);
+            if($household_code){
+                /*----------- 修改状态 ------------*/
+                /* ++++++++++ 锁定数据 ++++++++++ */
+                $household =  Household::lockForUpdate()->find($id);
+                if(blank($household)){
+                    throw new \Exception('暂无相关数据',404404);
+                }
+                $household->code = 63;
+                $household->save();
+                if(blank($household)){
+                    throw new \Exception('修改失败',404404);
+                }
+                /* ++++++++++ 锁定数据 ++++++++++ */
+                $estate =  Estate::lockForUpdate()->where('item_id',$item_id)->where('household_id',$id)->first();
+                if(blank($estate)){
+                    throw new \Exception('暂无相关数据',404404);
+                }
+                $estate->code = 130;
+                $estate->save();
+                if(blank($estate)){
+                    throw new \Exception('修改失败',404404);
+                }
+            }
 
-            $this->household_status($id);
 
             $code = 'success';
             $msg = '关联成功';

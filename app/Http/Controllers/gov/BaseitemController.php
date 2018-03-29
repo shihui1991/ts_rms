@@ -216,17 +216,6 @@ class BaseitemController extends BaseController
                 }
             }
         }
-        /*----------- 修改状态 ------------*/
-        /* ++++++++++ 锁定数据 ++++++++++ */
-        $household =  Household::lockForUpdate()->find($household_id);
-        if(blank($household)){
-            return false;
-        }
-        $household->code = 63;
-        $household->save();
-        if(blank($household)){
-            return false;
-        }
         return true;
     }
 }
