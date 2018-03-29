@@ -281,7 +281,7 @@ class HouseController extends BaseauthController
                 },
                  'houselayoutimg'=> function ($query) {
                     $query->withTrashed()->select(['id', 'name','picture']);
-              }])
+              },'state'])
             ->sharedLock()
             ->find($id);
         $house['manage_price'] = Housemanageprice::withTrashed()->where('house_id',$id)->first();
