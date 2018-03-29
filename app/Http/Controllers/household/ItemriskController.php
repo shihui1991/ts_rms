@@ -7,8 +7,8 @@
 
 namespace App\Http\Controllers\household;
 
+use App\Http\Model\Assess;
 use App\Http\Model\Itemrisk;
-
 use App\Http\Model\Household;
 use App\Http\Model\Layout;
 use App\Http\Model\Itemtopic;
@@ -45,6 +45,11 @@ class  ItemriskController extends BaseController
             ->where('item_id', $item_id)
             ->sharedLock()
             ->first();
+        $itemtopic=Itemrisktopic::sharedLock()
+            ->where('risk_id',$itemrisk->id)
+            ->where('item_id',$item_id)
+            ->orderBy('topic_id','asc')
+            ->get();
         DB::commit();
 
         /* ++++++++++ 数据不存在 ++++++++++ */
@@ -57,7 +62,10 @@ class  ItemriskController extends BaseController
         } else {
             $code = 'success';
             $msg = '获取成功';
-            $sdata = $itemrisk;
+            $sdata = [
+                'topic'=>$itemtopic,
+                'risk'=>$itemrisk
+                ];
             $edata = null;
             $url = null;
         }
@@ -218,6 +226,7 @@ class  ItemriskController extends BaseController
     {
         $id = $request->input('id');
         $item_id = session('household_user.item_id');
+        $household_id=session('household_user.user_id');
         if (!$id) {
             $result = ['code' => 'error', 'message' => '请先选择数据', 'sdata' => null, 'edata' => null, 'url' => null];
             if ($request->ajax()) {
@@ -239,7 +248,7 @@ class  ItemriskController extends BaseController
                         $query->select(['id', 'building']);
                     }])
                     ->sharedLock()
-                    ->find(session('household_user.user_id'));
+                    ->find($household_id);
                 if (blank($household)){
                     throw new \Exception('被征户不存在', 404404);
                 }

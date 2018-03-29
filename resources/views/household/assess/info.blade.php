@@ -215,6 +215,31 @@
 
 
     </div>
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-4 col-md-7">
+            @if($sdata['assess']->code==133 || $sdata['assess']->code==132)
+            <button class="btn btn-success" type="button" onclick="confirm({{$sdata['assess']->id}},136)">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+               同意该评估
+            </button>
+            &nbsp;      &nbsp;      &nbsp;
+            <button class="btn btn-danger" type="button" onclick="confirm({{$sdata['assess']->id}},135)">
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                反对该评估
+            </button>
+            @elseif($sdata['assess']->code==135)
+                <button class="btn btn-danger" type="button" disabled="true">
+                    <i class="ace-icon fa fa-close bigger-110"></i>
+                    已反对
+                </button>
+            @elseif($sdata['assess']->code==136)
+                <button class="btn btn-success" type="button" disabled="true">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    已同意
+                </button>
+            @endif
+        </div>
+    </div>
 
 @endsection
 
@@ -230,5 +255,26 @@
     @parent
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('laydate/laydate.js')}}"></script>
-
+    <script>
+        function confirm(id,code) {
+            var data = {id:id,code:code};
+            ajaxAct('{{route('h_assess_confirm')}}', data, 'post');
+            console.log(ajaxResp);
+            if (ajaxResp.code == 'success') {
+                toastr.success(ajaxResp.message);
+                if(ajaxResp.url){
+                    setTimeout(function () {
+                        location.href=ajaxResp.url;
+                    },1000);
+                }else{
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            } else {
+                toastr.error(ajaxResp.message);
+            }
+            return false;
+        }
+    </script>
 @endsection

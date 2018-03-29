@@ -7,6 +7,10 @@
 
     <div class="well well-sm">
         <a href="javascript:history.back();" class="btn">返回</a>
+        <a class="btn btn-success" type="button" href="{{route('g_assess_check',['item'=>$sdata['item']->id,'household_id'=>$sdata['assess']->household_id])}}">
+            <i class="ace-icon fa fa-check bigger-110"></i>
+            审查评估报告
+        </a>
     </div>
 
     <div class="widget-container-col ui-sortable">
@@ -205,7 +209,7 @@
 
             @if($sdata['assess']->household->householddetail->getOriginal('has_assets')==1)
             <div id="assets" class="tab-pane">
-                @if(filled($sdata['assess']))
+                @if(filled($sdata['assets']))
                 <div class="profile-user-info profile-user-info-striped">
 
                     <div class="profile-info-row">
