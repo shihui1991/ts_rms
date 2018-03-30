@@ -100,9 +100,10 @@
                             </div>
                         @endif
 
-                        <div class="col-xs-12 col-sm-3" style="min-width: 300px;min-height: 300px;" id="item-risk">
-
-                        </div>
+                        <div class="col-xs-12 col-sm-3" style="min-width: 300px;min-height: 300px;" id="item-risk"></div>
+                        <div class="col-xs-12 col-sm-3" style="min-width: 300px;min-height: 300px;" id="repay_way"></div>
+                        <div class="col-xs-12 col-sm-3" style="min-width: 300px;min-height: 300px;" id="transit_way"></div>
+                        <div class="col-xs-12 col-sm-3" style="min-width: 300px;min-height: 300px;" id="move_way"></div>
                     </div>
                 </div>
             </div>
@@ -132,39 +133,66 @@
             ,wordCount:false
         });
 
-        var item_risk_num=@json($sdata['item_risk_num']);
-        items=[];
-        values=[];
-        $.each(item_risk_num,function (index,info) {
-            items.push(info.agree);
-            values.push({value:info.risk_num,name:info.agree});
-        });
-        echarts.init(document.getElementById('item-risk')).setOption({
-            title:{
-                text:'征收意见稿 - 调查结果'
-                ,subtext:'总户数：{{number_format($sdata['household_num'])}}，当前调查：{{number_format($sdata['number'])}}'
-                ,x:'center'
-            }
-            ,tooltip : {
-                trigger: 'item',
-                formatter: "{b}：<br/>{c} 户 <br/>({d}%)"
-            }
-            ,series : [
-                {
-                    name: null,
-                    type: 'pie',
-                    radius : '55%',
-                    center: ['50%', '60%'],
-                    data:values,
-                    itemStyle: {
-                        emphasis: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+        function showChart(values,text,subtext,chartId,formatter) {
+            echarts.init(document.getElementById(chartId)).setOption({
+                title:{
+                    text:text
+                    ,subtext:subtext
+                    ,x:'center'
+                }
+                ,tooltip : {
+                    trigger: 'item',
+                    formatter: formatter
+                }
+                ,series : [
+                    {
+                        name: null,
+                        type: 'pie',
+                        radius : '55%',
+                        center: ['50%', '60%'],
+                        data:values,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
                         }
                     }
-                }
-            ]
-        });
+                ]
+            });
+        }
+
+        function getData(type,data) {
+            values=[];
+            switch (type){
+                case 'agree':
+                    $.each(data,function (index,info) {
+                        values.push({value:info.risk_num,name:info.agree});
+                    });
+                    break;
+                case 'repay_way':
+                    $.each(data,function (index,info) {
+                        values.push({value:info.risk_num,name:info.repay_way});
+                    });
+                    break;
+                case 'transit_way':
+                    $.each(data,function (index,info) {
+                        values.push({value:info.risk_num,name:info.transit_way});
+                    });
+                    break;
+                case 'move_way':
+                    $.each(data,function (index,info) {
+                        values.push({value:info.risk_num,name:info.move_way});
+                    });
+                    break;
+            }
+
+            return values;
+        }
+        showChart(getData('agree',@json($sdata['item_risk_num'])),'征收意见稿 - 调查结果','总户数：{{number_format($sdata['household_num'])}}，当前调查：{{number_format($sdata['number'])}}','item-risk',"{b}：<br/>{c} 户 <br/>({d}%)");
+        showChart(getData('repay_way',@json($sdata['repay_way'])),'征收意见稿 - 补偿方式','总户数：{{number_format($sdata['household_num'])}}，当前调查：{{number_format($sdata['number'])}}','repay_way',"{b}：<br/>{c} 户 <br/>({d}%)");
+        showChart(getData('transit_way',@json($sdata['transit_way'])),'征收意见稿 - 过渡方式','总户数：{{number_format($sdata['household_num'])}}，当前调查：{{number_format($sdata['number'])}}','transit_way',"{b}：<br/>{c} 户 <br/>({d}%)");
+        showChart(getData('move_way',@json($sdata['move_way'])),'征收意见稿 -  搬迁方式','总户数：{{number_format($sdata['household_num'])}}，当前调查：{{number_format($sdata['number'])}}','move_way',"{b}：<br/>{c} 户 <br/>({d}%)");
     </script>
 @endsection
