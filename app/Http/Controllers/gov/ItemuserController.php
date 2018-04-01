@@ -54,6 +54,7 @@ class ItemuserController extends BaseitemController
                 ->select(['item_id','schedule_id','process_id'])
                 ->distinct();
         }])
+            ->where('item_id',$this->item_id)
             ->select(['item_id','schedule_id'])
             ->distinct()
             ->sharedLock()

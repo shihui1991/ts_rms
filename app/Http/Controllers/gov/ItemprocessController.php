@@ -1609,7 +1609,7 @@ class ItemprocessController extends BaseitemController
                     ['menu_id',$process->menu_id],
                     ['user_id',session('gov_user.user_id')],
                 ])
-                ->whereIn('code',['1'])
+                ->whereIn('code',['0','1'])
                 ->first();
             if(blank($worknotice)){
                 throw new \Exception('您没有执行此操作的权限',404404);
@@ -1740,7 +1740,7 @@ class ItemprocessController extends BaseitemController
                     ['menu_id',$process->menu_id],
                     ['user_id',session('gov_user.user_id')],
                 ])
-                ->whereIn('code',['1'])
+                ->whereIn('code',['0','1'])
                 ->first();
             if(blank($worknotice)){
                 throw new \Exception('您没有执行此操作的权限',404404);
@@ -1871,7 +1871,7 @@ class ItemprocessController extends BaseitemController
                     ['menu_id',$process->menu_id],
                     ['user_id',session('gov_user.user_id')],
                 ])
-                ->whereIn('code',['1'])
+                ->whereIn('code',['0','1'])
                 ->first();
             if(blank($worknotice)){
                 throw new \Exception('您没有执行此操作的权限',404404);
