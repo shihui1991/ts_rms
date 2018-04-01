@@ -7,10 +7,12 @@
 
 namespace App\Http\Controllers\household;
 
+use App\Http\Model\Assess;
 use App\Http\Model\Itemrisk;
-
 use App\Http\Model\Household;
 use App\Http\Model\Layout;
+use App\Http\Model\Itemtopic;
+use App\Http\Model\Itemrisktopic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -43,6 +45,11 @@ class  ItemriskController extends BaseController
             ->where('item_id', $item_id)
             ->sharedLock()
             ->first();
+        $itemtopic=Itemrisktopic::sharedLock()
+            ->where('risk_id',$itemrisk->id)
+            ->where('item_id',$item_id)
+            ->orderBy('topic_id','asc')
+            ->get();
         DB::commit();
 
         /* ++++++++++ 数据不存在 ++++++++++ */
@@ -55,7 +62,10 @@ class  ItemriskController extends BaseController
         } else {
             $code = 'success';
             $msg = '获取成功';
-            $sdata = $itemrisk;
+            $sdata = [
+                'topic'=>$itemtopic,
+                'risk'=>$itemrisk
+                ];
             $edata = null;
             $url = null;
         }
@@ -81,37 +91,52 @@ class  ItemriskController extends BaseController
         if ($request->isMethod('get')) {
 
             DB::beginTransaction();
-            $itemrisk = Itemrisk::with(
-                ['item' => function ($query) {
-                    $query->select(['id', 'name']);
-                }, 'land' => function ($query) {
-                    $query->select(['id', 'address']);
-                }, 'building' => function ($query) {
-                    $query->select(['id', 'building']);
-                }])
-                ->where('household_id', $household_id)
-                ->where('item_id', $item_id)
-                ->sharedLock()
-                ->first();
-            DB::commit();
+            try{
+                $itemrisk = Itemrisk::with(
+                    ['item' => function ($query) {
+                        $query->select(['id', 'name']);
+                    }, 'land' => function ($query) {
+                        $query->select(['id', 'address']);
+                    }, 'building' => function ($query) {
+                        $query->select(['id', 'building']);
+                    }])
+                    ->where('household_id', $household_id)
+                    ->where('item_id', $item_id)
+                    ->sharedLock()
+                    ->first();
+                if (filled($itemrisk)) {
+                    throw new \Exception('社会稳定风险评估不允许重复添加！', 404404);
+                }
 
-            if (filled($itemrisk)) {
-                return response()->json(['code' => 'error', 'message' => '社会稳定风险评估不允许重复添加!', 'sdata' => null, 'edata' => null, 'url' => null]);
+               $itemtopic=Itemtopic::with(['topic' => function ($query) {
+                   $query->select(['id', 'name']);
+                    }])
+                   ->where('item_id', $item_id)
+                   ->orderBy('id','asc')
+                   ->sharedLock()
+                   ->get();
+                if (blank($itemtopic)){
+                    throw new \Exception('暂无风险评估调查自选话题！', 404404);
+                }
+
+                $household = Household::with(
+                    ['item' => function ($query) {
+                        $query->select(['id', 'name']);
+                    }, 'itemland' => function ($query) {
+                        $query->select(['id', 'address']);
+                    }, 'itembuilding' => function ($query) {
+                        $query->select(['id', 'building']);
+                    }])
+                    ->sharedLock()
+                    ->find(session('household_user.user_id'));
+                $household->layout = Layout::pluck('name', 'id');
+                $result = ['code' => 'success', 'message' => '请求成功', 'sdata' =>['household'=>$household,'topic'=>$itemtopic] , 'edata' => new Itemrisk(), 'url' => null];
+                DB::commit();
+            }catch (\Exception $exception){
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
+                $result = ['code' => 'error', 'message' => $msg, 'sdata' => null, 'edata' => null, 'url' => null];
+                DB::rollBack();
             }
-
-            $model = Household::with(
-                ['item' => function ($query) {
-                    $query->select(['id', 'name']);
-                }, 'itemland' => function ($query) {
-                    $query->select(['id', 'address']);
-                }, 'itembuilding' => function ($query) {
-                    $query->select(['id', 'building']);
-                }])
-                ->where('item_id', $item_id)
-                ->sharedLock()
-                ->first();
-            $model->layout = Layout::pluck('name', 'id');
-            $result = ['code' => 'success', 'message' => '请求成功', 'sdata' => $model, 'edata' => new Itemrisk(), 'url' => null];
 
             if ($request->ajax()) {
                 return response()->json($result);
@@ -139,6 +164,7 @@ class  ItemriskController extends BaseController
                 $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
                 return response()->json($result);
             }
+
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
@@ -154,6 +180,26 @@ class  ItemriskController extends BaseController
                 $itemrisk->save();
                 if (blank($itemrisk)) {
                     throw new \Exception('添加失败', 404404);
+                }
+
+                /*自选话题*/
+                foreach ($request->input('topic') as $key=>$value){
+                    $topic_data[]=[
+                        'item_id'=>$item_id,
+                        'risk_id'=>$itemrisk->id,
+                        'topic_id'=>$key,
+                        'answer'=>$value,
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s')
+                    ];
+                }
+                $field=['item_id','risk_id','topic_id','answer','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('item_risk_topic',$field,$topic_data,'updated_at');
+                if(!$sqls){
+                    throw new \Exception('数据错误',404404);
+                }
+                foreach($sqls as $sql){
+                    DB::statement($sql);
                 }
                 $code = 'success';
                 $msg = '添加成功';
@@ -179,6 +225,8 @@ class  ItemriskController extends BaseController
     public function edit(Request $request)
     {
         $id = $request->input('id');
+        $item_id = session('household_user.item_id');
+        $household_id=session('household_user.user_id');
         if (!$id) {
             $result = ['code' => 'error', 'message' => '请先选择数据', 'sdata' => null, 'edata' => null, 'url' => null];
             if ($request->ajax()) {
@@ -190,34 +238,50 @@ class  ItemriskController extends BaseController
         if ($request->isMethod('get')) {
             /* ********** 当前数据 ********** */
             DB::beginTransaction();
-            $data = Itemrisk::with(['item' => function ($query) {
-                $query->select(['id', 'name']);
-            }, 'building' => function ($query) {
-                $query->select(['id', 'building']);
-            }, 'land' => function ($query) {
-                $query->select(['id', 'address']);
-            }])
-                ->sharedLock()
-                ->find($id);
-            $data->layout = Layout::pluck('name', 'id');
-            DB::commit();
+            try{
+                $household = Household::with(
+                    ['item' => function ($query) {
+                        $query->select(['id', 'name']);
+                    }, 'itemland' => function ($query) {
+                        $query->select(['id', 'address']);
+                    }, 'itembuilding' => function ($query) {
+                        $query->select(['id', 'building']);
+                    }])
+                    ->sharedLock()
+                    ->find($household_id);
+                if (blank($household)){
+                    throw new \Exception('被征户不存在', 404404);
+                }
 
-            /* ++++++++++ 数据不存在 ++++++++++ */
-            if (blank($data)) {
-                $code = 'warning';
-                $msg = '数据不存在';
-                $sdata = null;
-                $edata = null;
-                $url = null;
-            } else {
-                $code = 'success';
-                $msg = '获取成功';
-                $sdata = $data;
-                $edata = null;
-                $url = null;
-                $view = 'household.itemrisk.edit';
+                $risk = Itemrisk::with(['item' => function ($query) {
+                    $query->select(['id', 'name']);
+                }, 'building' => function ($query) {
+                    $query->select(['id', 'building']);
+                }, 'land' => function ($query) {
+                    $query->select(['id', 'address']);
+                }])
+                    ->sharedLock()
+                    ->find($id);
+                if (blank($risk)){
+                    throw new \Exception('意见调查不存在', 404404);
+                }
+                $risk->layout = Layout::pluck('name', 'id');
+
+                $itemtopic=Itemrisktopic::sharedLock()
+                    ->where('risk_id',$id)
+                    ->where('item_id',session('household_user.item_id'))
+                    ->orderBy('topic_id','asc')
+                    ->get();
+                $result = ['code' => 'success', 'message' => '请求成功', 'sdata' =>['household'=>$household,'risk'=>$risk,'topic'=>$itemtopic] , 'edata' => new Itemrisk(), 'url' => null];
+                $view='household.itemrisk.edit';
+                DB::commit();
+            }catch (\Exception $exception){
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
+                $result = ['code' => 'error', 'message' => $msg, 'sdata' => null, 'edata' => null, 'url' => null];
+                $view='household.error';
+                DB::rollBack();
             }
-            $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => new Itemrisk(), 'url' => $url];
+
             if ($request->ajax()) {
                 return response()->json($result);
             } else {
@@ -247,6 +311,7 @@ class  ItemriskController extends BaseController
                 if (blank($itemrisk)) {
                     throw new \Exception('指定数据项不存在', 404404);
                 }
+
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $itemrisk->fill($request->all());
                 $itemrisk->editOther($request);
@@ -254,17 +319,39 @@ class  ItemriskController extends BaseController
                 if (blank($itemrisk)) {
                     throw new \Exception('修改失败', 404404);
                 }
+
+                /*自选话题*/
+                Itemrisktopic::where([['item_id',$item_id],['risk_id',$id]])
+                    ->delete();
+                foreach ($request->input('topic') as $key=>$value){
+                    $topic_data[]=[
+                        'item_id'=>$item_id,
+                        'risk_id'=>$itemrisk->id,
+                        'topic_id'=>$key,
+                        'answer'=>$value,
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s')
+                    ];
+                }
+                $field=['item_id','risk_id','topic_id','answer','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('item_risk_topic',$field,$topic_data,'updated_at');
+                if(!$sqls){
+                    throw new \Exception('数据错误',404404);
+                }
+                foreach($sqls as $sql){
+                    DB::statement($sql);
+                }
+
                 $code = 'success';
                 $msg = '修改成功';
                 $sdata = $itemrisk;
                 $edata = null;
                 $url = route('h_itemrisk_info');
-
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
-                $sdata = null;
+                $sdata = $exception;
                 $edata = null;
                 $url = null;
                 DB::rollBack();

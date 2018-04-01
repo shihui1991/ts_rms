@@ -114,6 +114,8 @@ class BaseitemController extends BaseController
     public function hasNotice(){
         /* ++++++++++ 流程设置 ++++++++++ */
         $process=Process::sharedLock()->where('menu_id',session('menu.cur_menu.id'))->first();
+
+
         /* ++++++++++ 是否有工作推送 ++++++++++ */
         $worknotice=Worknotice::lockForUpdate()
             ->where([
@@ -213,17 +215,6 @@ class BaseitemController extends BaseController
                     return false;
                 }
             }
-        }
-        /*----------- 修改状态 ------------*/
-        /* ++++++++++ 锁定数据 ++++++++++ */
-        $household =  Household::lockForUpdate()->find($household_id);
-        if(blank($household)){
-            return false;
-        }
-        $household->code = 63;
-        $household->save();
-        if(blank($household)){
-            return false;
         }
         return true;
     }

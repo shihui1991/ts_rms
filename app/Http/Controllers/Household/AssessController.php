@@ -56,13 +56,13 @@ class AssessController extends BaseController{
             $assess=Assess::sharedLock()
                     ->where([
                         ['item_id', $this->item_id],
-                        ['household_id', $household_id],
-                        ['code', 136],
+                        ['household_id', $household_id]
                     ])
+                    ->whereIn('code',['135','133','136','132'])
                     ->first();
 
             if(blank($assess)){
-                throw new \Exception('评估汇总不存在',404404);
+                throw new \Exception('暂无有效评估汇总',404404);
             }
 
             $estate=Estate::with(['company'=>function($query){
@@ -110,6 +110,54 @@ class AssessController extends BaseController{
         if($request->ajax()){
             return response()->json($result);
         }else {
+            return view($view)->with($result);
+        }
+    }
+
+    public function confirm(Request $request){
+        $id=$request->input('id');
+        $code=$request->input('code');
+        if(!$id || !$code){
+            $result=['code'=>'error','message'=>'错误请求','sdata'=>null,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('household.error')->with($result);
+            }
+        }
+
+        DB::beginTransaction();
+        try{
+            $assess=Assess::sharedLock()
+                ->find($id);
+            if (blank($assess)){
+                throw new \Exception('错误操作',404404);
+            }
+            $assess->code=$code;
+            $assess->save();
+
+            if (blank($assess)) {
+                throw new \Exception('修改失败', 404404);
+            }
+            $code='success';
+            $msg='操作成功';
+            $sdata=null;
+            $edata=null;
+            $url=route('h_assess');
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
+            $sdata=$exception->getMessage();
+            $edata=null;
+            $url=null;
+            $view='household.error';
+        }
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
             return view($view)->with($result);
         }
     }

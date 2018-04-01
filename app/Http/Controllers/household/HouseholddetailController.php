@@ -124,100 +124,91 @@ class  HouseholddetailController extends BaseController
 
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $data['item_id'] = $item_id;
-        $data['household'] = new Household();
-        $data['household_detail'] = Householddetail::with([
-            'defbuildinguse'=>function($query){
-                $query->select(['id','name']);
-            },
-            'realbuildinguse'=>function($query){
-                $query->select(['id','name']);
-            },
-            'layout'=>function($query){
-                $query->select(['id','name']);
-            }])
-            ->where('household_id',$household_id)
-            ->first();
+        try{
+            $data['item_id'] = $item_id;
+            $data['household'] = new Household();
+            $data['household_detail'] = Householddetail::with([
+                'defbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                },
+                'realbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                },
+                'layout'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                ->where('household_id',$household_id)
+                ->first();
 
-        $household=Household::with([
-            'itemland'=>function($query){
-                $query->select(['id','address'])
-                    ->with(['adminunit'=>function($querys){
-                    $querys->select(['name','address','phone','contact_man','contact_tel','infos']);
-                }]);
-            },
-            'itembuilding'=>function($query){
-                $query->select(['id','building']);
-            }])
-            ->sharedLock()
-            ->find($household_id);
-        $data['householdmember']=Householdmember::with([
-            'itemland'=>function($query){
+            $household=Household::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address'])
+                        ->with(['adminunit'=>function($querys){
+                            $querys->select(['name','address','phone','contact_man','contact_tel','infos']);
+                        }]);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                }])
+                ->sharedLock()
+                ->find($household_id);
+            $data['householdmember']=Householdmember::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                },
+                'nation'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                ->where('item_id',$item_id)
+                ->where('household_id',$household_id)
+                ->sharedLock()
+                ->get();
+            $data['householdobject']=Householdobject::with([
+                'itemland'=>function($query){
+                    $query->select(['id','address']);
+                },
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                },
+                'object'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                ->where('item_id',$item_id)
+                ->where('household_id',$household_id)
+                ->sharedLock()
+                ->get();
+            $data['householdbuilding']=Householdbuilding::with(['itemland'=>function($query){
                 $query->select(['id','address']);
             },
-            'itembuilding'=>function($query){
-                $query->select(['id','building']);
-            },
-            'nation'=>function($query){
-                $query->select(['id','name']);
-            }])
-            ->where('item_id',$item_id)
-            ->where('household_id',$household_id)
-            ->sharedLock()
-            ->get();
-        $data['householdobject']=Householdobject::with([
-            'itemland'=>function($query){
-                $query->select(['id','address']);
-            },
-            'itembuilding'=>function($query){
-                $query->select(['id','building']);
-            },
-            'object'=>function($query){
-                $query->select(['id','name']);
-            }])
-            ->where('item_id',$item_id)
-            ->where('household_id',$household_id)
-            ->sharedLock()
-            ->get();
-        $data['householdbuilding']=Householdbuilding::with(['itemland'=>function($query){
-                $query->select(['id','address']);
-            },
-            'itembuilding'=>function($query){
-                $query->select(['id','building']);
-            },
-            'buildingstruct'=>function($query){
-                $query->select(['id','name']);
-            },'state'=>function($query){
-                $query->select(['code','name']);
-            },])
-            ->where('item_id',$item_id)
-            ->where('household_id',$household_id)
-            ->sharedLock()
-            ->get();
-        $data['householdassets']=Householdassets::where('item_id',$item_id)
-            ->where('household_id',$household_id)
-            ->where('number','<>',null)
-            ->sharedLock()
-            ->get();
-
-        DB::commit();
-        /* ++++++++++ 数据不存在 ++++++++++ */
-        if(blank($household)){
-            $code='warning';
-            $msg='数据不存在';
-            $sdata=null;
-            $edata=$data;
-            $url=null;
-        }else{
-            $code='success';
-            $msg='获取成功';
-            $sdata=$household;
-            $edata=$data;
-            $url=null;
-
+                'itembuilding'=>function($query){
+                    $query->select(['id','building']);
+                },
+                'buildingstruct'=>function($query){
+                    $query->select(['id','name']);
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                },])
+                ->where('item_id',$item_id)
+                ->where('household_id',$household_id)
+                ->sharedLock()
+                ->get();
+            $data['householdassets']=Householdassets::where('item_id',$item_id)
+                ->where('household_id',$household_id)
+                ->where('number','<>',null)
+                ->sharedLock()
+                ->get();
+            $result=['code'=>'success','message'=>'获取成功','sdata'=>$household,'edata'=>$data,'url'=>null];
             $view='household.householddetail.info';
+            DB::commit();
+        }catch (\Exception $exception){
+            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
+            $result=['code'=>'warning','message'=>$msg,'sdata'=>null,'edata'=>null,'url'=>null];
+            $view='household.error';
+            DB::rollback();
         }
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
             return response()->json($result);
         }else{

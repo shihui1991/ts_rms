@@ -19,7 +19,7 @@
             <div class="tabbable">
                 <ul class="nav nav-tabs" id="myTab">
                     <li class="active">
-                        <a data-toggle="tab" href="#risk" aria-expanded="true">
+                        <a data-toggle="tab" href="#household" aria-expanded="true">
                             <i class="green ace-icon fa fa-building bigger-120"></i>
                             意见调查
                         </a>
@@ -35,27 +35,19 @@
                 </ul>
 
                 <div class="tab-content">
-                    <div id="risk" class="tab-pane fade active in">
+                    <div id="household" class="tab-pane fade active in">
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right" for="name">项目名称：</label>
                             <div class="col-sm-9">
-                                <input type="text" id="item_name" name="item_name" value="{{$sdata['risk']->item->name}}" class="col-xs-10 col-sm-5" readonly>
+                                <input type="text" id="item_name" name="item_name" value="{{$sdata['household']->item->name}}" class="col-xs-10 col-sm-5" readonly>
                             </div>
                         </div>
                         <div class="space-4"></div>
 
-                        {{--<div class="form-group">--}}
-                            {{--<label class="col-sm-3 control-label no-padding-right" for="land_id">地块：</label>--}}
-                            {{--<div class="col-sm-9">--}}
-                                {{--<input type="text" id="land_name" name="land_name" value="{{$sdata->itemland->address}}" class="col-xs-10 col-sm-5" readonly>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
-                        {{--<div class="space-4"></div>--}}
-
                         <div class="form-group">
-                            <label class="col-sm-3 control-label no-padding-right" for="land_id">被征户地址：</label>
+                            <label class="col-sm-3 control-label no-padding-right" for="address">被征户地址：</label>
                             <div class="col-sm-9">
-                                <input type="text" id="building_name" name="building_name" value=" {{$sdata['risk']->itemland->address}}{{$sdata['risk']->itembuilding->building}}栋{{$sdata['risk']->unit}}单元{{$sdata['risk']->floor}}楼{{$sdata['risk']->number}}号" class="col-xs-10 col-sm-5" readonly>
+                                <input type="text" id="address" name="address" value=" {{$sdata['household']->itemland->address}}{{$sdata['household']->itembuilding->building}}栋{{$sdata['household']->unit}}单元{{$sdata['household']->floor}}楼{{$sdata['household']->number}}号" class="col-xs-10 col-sm-5" readonly>
                             </div>
                         </div>
                         <div class="space-4"></div>
@@ -130,7 +122,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="layout_id">房源户型：</label>
                             <div class="col-sm-9 radio">
                                 <select name="layout_id" id="layout_id" class="col-xs-10 col-sm-5">
-                                    @foreach($sdata['risk']->layout as $key => $value)
+                                    @foreach($sdata['household']->layout as $key => $value)
                                         <option value="{{$key}}">{{$value}}</option>
                                     @endforeach
                                 </select>
@@ -198,22 +190,18 @@
 
                     </div>
 
-                    <div id="topic" class="tab-pane fade">
-                        <div class="form-group">
+                    <div id="topic" class="tab-pane fade" style="">
                         @foreach($sdata['topic'] as $key=>$value)
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="business">{{$value['topic']['name']}}：</label>
-                                    <div class="col-sm-9">
-                                        <textarea class="col-xs-12 col-sm-5" name="topic[{{$value['topic']['id']}}]" required>
+                            <div class="space-4"></div>
+                       <div >
+                           <label>{{$value['topic']['name']}}：</label>
+                           <textarea class="form-control" placeholder="请输入你的看法" name="topic[{{$value['topic']['id']}}]" required>
 
-                                        </textarea>
-
-                                    </div>
-                                </div>
-                                <div class="space-4"></div>
+                           </textarea>
+                       </div>
+                            <div class="space-4"></div>
+                           <hr>
                         @endforeach
-                        </div>
-                        <div class="space-4"></div>
                     </div>
 
                 </div>

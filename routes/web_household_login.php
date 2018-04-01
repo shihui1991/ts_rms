@@ -43,6 +43,7 @@ Route::any('/paysubject_info','PaysubjectController@info')->name('h_paysubject_i
 
 /*---------- 评估报告 ----------*/
 Route::any('/assess_info','AssessController@info')->name('h_assess');
+Route::any('/assess_confirm','AssessController@confirm')->name('h_assess_confirm');
 
 
 /*个人中心*/
