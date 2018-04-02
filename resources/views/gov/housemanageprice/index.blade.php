@@ -13,15 +13,15 @@
     </div>
     <div class="well well-sm">当前房源:
         {{$sdata['house_info']->housecommunity->name?'【'.$sdata['house_info']->housecommunity->name.'】':''}}
-        {{$sdata['house_info']->unit?$sdata['house_info']->unit.'单元':''}}
         {{$sdata['house_info']->building?$sdata['house_info']->building.'栋':''}}
+        {{$sdata['house_info']->unit?$sdata['house_info']->unit.'单元':''}}
         {{$sdata['house_info']->floor?$sdata['house_info']->floor.'楼':''}}
         {{$sdata['house_info']->number?$sdata['house_info']->number.'号':''}}
     </div>
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>序号</th>
             <th>开始时间</th>
             <th>结束时间</th>
             <th>月管理费(元/月)</th>
@@ -32,7 +32,7 @@
             @if($code=='success')
                 @foreach($sdata['housemanageprice'] as $infos)
                     <tr>
-                        <td>{{$infos->id}}</td>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$infos->start_at}}</td>
                         <td>{{$infos->end_at}}</td>
                         <td>{{$infos->manage_price}}</td>
