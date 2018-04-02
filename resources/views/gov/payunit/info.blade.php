@@ -73,8 +73,8 @@
                                     <div class="profile-info-name"> 补偿总额： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">
-                                            <strong>{{number_format($sdata['total']->total,2)}}</strong>
-                                            人民币（大写）{{bigRMB($sdata['total']->total)}}
+                                            <strong>{{number_format($sdata['total']->unit_total,2)}}</strong>
+                                            人民币（大写）{{bigRMB($sdata['total']->unit_total)}}
                                         </span>
                                     </div>
                                 </div>
@@ -106,7 +106,9 @@
                         <th>序号</th>
                         <th>被征收户</th>
                         <th>计算公式</th>
-                        <th>补偿小计</th>
+                        <th>补偿金额</th>
+                        <th>公房单位补偿比例（%）</th>
+                        <th>公房单位补偿金额</th>
                         <th>状态</th>
                     </tr>
                     </thead>
@@ -118,6 +120,8 @@
                                 <td>{{$pay_unit->itemland->address}}{{$pay_unit->household->itembuilding->building}}栋{{$pay_unit->household->unit}}单元{{$pay_unit->household->floor}}楼{{$pay_unit->household->number}}号</td>
                                 <td>{{$pay_unit->calculate}}</td>
                                 <td>{{number_format($pay_unit->amount,2)}}</td>
+                                <td>{{number_format($pay_unit->portion,2)}}</td>
+                                <td>{{number_format($pay_unit->total,2)}}</td>
                                 <td>{{$pay_unit->state->name}}</td>
                             </tr>
                         @endforeach
@@ -158,7 +162,7 @@
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$pact->pactcate->name}}</td>
                                 <td>{{$pact->sign_at}}</td>
-                                <td>{{number_format($pact->payunits->sum('amount'),2)}}</td>
+                                <td>{{number_format($pact->payunits->sum('total'),2)}}</td>
                                 <td>{{$pact->state->name}} | {{$pact->status}}</td>
                             </tr>
                         @endforeach
