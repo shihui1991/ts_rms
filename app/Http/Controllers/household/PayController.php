@@ -501,7 +501,7 @@ class PayController extends BaseController{
             }catch (\Exception $exception){
                 DB::rollback();
                 $code = 'error';
-                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '请求失败';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
                 $sdata = null;
                 $edata = null;
                 $url = null;
