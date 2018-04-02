@@ -117,21 +117,25 @@ Route::any('/itemland','ItemlandController@index')->name('g_itemland');
 Route::any('/itemland_add','ItemlandController@add')->name('g_itemland_add');
 Route::get('/itemland_info','ItemlandController@info')->name('g_itemland_info');
 Route::any('/itemland_edit','ItemlandController@edit')->name('g_itemland_edit');
+Route::any('/itemland_del','ItemlandController@del')->name('g_itemland_del');
 /*---------- 项目-地块楼栋 ----------*/
 Route::any('/itembuilding','ItembuildingController@index')->name('g_itembuilding');
 Route::any('/itembuilding_add','ItembuildingController@add')->name('g_itembuilding_add');
 Route::get('/itembuilding_info','ItembuildingController@info')->name('g_itembuilding_info');
 Route::any('/itembuilding_edit','ItembuildingController@edit')->name('g_itembuilding_edit');
+Route::any('/itembuilding_del','ItembuildingController@del')->name('g_itembuilding_del');
 /*---------- 项目-公共附属物 ----------*/
 Route::any('/itempublic','ItempublicController@index')->name('g_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');
+Route::any('/itempublic_del','ItempublicController@del')->name('g_itempublic_del');
 /*---------- 项目-地块户型 ----------*/
 Route::any('/landlayout','LandlayoutController@index')->name('g_landlayout');
 Route::any('/landlayout_add','LandlayoutController@add')->name('g_landlayout_add');
 Route::get('/landlayout_info','LandlayoutController@info')->name('g_landlayout_info');
 Route::any('/landlayout_edit','LandlayoutController@edit')->name('g_landlayout_edit');
+Route::any('/landlayout_del','LandlayoutController@del')->name('g_landlayout_del');
 
 /*---------- 项目-被征收户账号 ----------*/
 Route::any('/household','HouseholdController@index')->name('g_household');

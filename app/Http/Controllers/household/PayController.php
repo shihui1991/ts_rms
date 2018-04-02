@@ -6,6 +6,7 @@
 */
 namespace App\Http\Controllers\household;
 
+use App\Http\Model\Itemreward;
 use App\Http\Model\Itemrisk;
 use App\Http\Model\Item;
 use App\Http\Model\Assess;
@@ -63,7 +64,6 @@ class PayController extends BaseController{
                     throw new \Exception('暂无社会稳定风险评估', 404404);
                 }
 
-
                 $household = Household::with('state')
                     ->sharedLock()
                     ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
@@ -111,12 +111,8 @@ class PayController extends BaseController{
                     ->select(['id', 'item_id', 'household_id', 'assess_id', 'code'])
                     ->first();
 
-                if (blank($assess)) {
-                    throw new \Exception('暂无有效的房产评估数据', 404404);
-                }
-
                 $estatebuildings = Estatebuilding::with(['householdbuilding' => function ($query) {
-                    $query->select(['id', 'register', 'code', 'dispute']);
+                    $query->select(['id', 'code']);
                 }])
                     ->where([
                         ['item_id', $this->item_id],
@@ -126,6 +122,9 @@ class PayController extends BaseController{
                     ])
                     ->sharedLock()
                     ->get();
+                if (blank($estate) || blank($estatebuildings)) {
+                    throw new \Exception('暂无有效的房产评估数据', 404404);
+                }
 
                 if ($household_detail->getOriginal('has_assets')) {
                     $assets = Assets::sharedLock()
@@ -167,6 +166,7 @@ class PayController extends BaseController{
                 if (blank($pay)) {
                     throw new \Exception('保存失败', 404404);
                 }
+
                 $subject_data = [];
                 /* ++++++++++ 合法房屋及附属物、合法临建、违建自行拆除补助 ++++++++++ */
                 $building_data = [];
@@ -234,6 +234,58 @@ class PayController extends BaseController{
                 foreach($sqls as $sql){
                     DB::statement($sql);
                 }
+
+
+                /* ++++++++++ 签约奖励 ++++++++++ */
+                $item_reward=Itemreward::sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where([
+                        ['start_at','<=',date('Y-m-d')],
+                        ['end_at','>=',date('Y-m-d')],
+                    ])
+                    ->first();
+                $reward_total=0;
+                if(filled($item_reward)){
+                    /*签约奖励计算*/
+                    /*住宅*/
+                    $household->getOriginal('type')? $reward_portion=100: $reward_portion=$program->portion_holder;
+                    if($household_detail->def_use==1){
+                        $reward_subject_id=11;
+                        $reward_amount=$item_reward->price*$legal_area;
+                        if(!$pay->repay_way){
+                            $reward_amount+=$program->reward_house*$legal_area;
+                        }
+                    }
+                    /*非住宅*/
+                    else{
+                        $reward_subject_id=12;
+                        $reward_amount=$amount*$item_reward->portion/100;
+                        if(!$pay->repay_way){
+                            $reward_amount+=$amount*$program->reward_other/100;
+                        }
+                    }
+                    $reward_total=$reward_amount*$reward_portion/100;
+                    /*签约奖励科目*/
+                    $subject_data[]=[
+                        'item_id'=>$this->item_id,
+                        'household_id'=>$household_id,
+                        'land_id'=>$household->land_id,
+                        'building_id'=>$household->building_id,
+                        'pay_id'=>$pay->id,
+                        'pact_id'=>0,
+                        'subject_id'=>$reward_subject_id,
+                        'total_id'=>0,
+                        'calculate'=>null,
+                        'amount'=>$reward_amount,
+                        'portion'=>$reward_portion,
+                        'total'=>$reward_total,
+                        'code'=>'110',
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
+                }
+
+
                 /* ++++++++++ 合法房屋及附属物 ++++++++++ */
                 if ($register_total) {
                     $subject_data[] = [
@@ -486,7 +538,7 @@ class PayController extends BaseController{
                     DB::statement($sql);
                 }
 
-                $pay->total=$register_total+$legal_total+$destroy_total+$public_total+$object_total+$assess->assets;
+                $pay->total=$register_total+$legal_total+$destroy_total+$public_total+$object_total+$assess->assets+$reward_total;
                 $pay->save();
                 $model=Pay::with(['itemland' => function ($query) {
                     $query->select(['id', 'address']);
@@ -499,6 +551,7 @@ class PayController extends BaseController{
                 DB::commit();
 
             }catch (\Exception $exception){
+                dd($exception);
                 DB::rollback();
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
@@ -610,7 +663,6 @@ class PayController extends BaseController{
                         ['pay_id',$model->id],
                     ])
                     ->get();
-
                 $code='success';
                 $msg='请求成功';
                 $sdata=[
@@ -651,6 +703,7 @@ class PayController extends BaseController{
     public function edit(Request $request){
         $pay_id=$request->input('id');
         $this->item_id=session('household_user.item_id');
+        $household_id=session('household_user.user_id');
         if(!$pay_id){
             $result=['code'=>'error','message'=>'请选择兑付数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -673,7 +726,7 @@ class PayController extends BaseController{
                 $household=Household::sharedLock()
                     ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
                     ->find($pay->household_id);
-                if(!in_array($household->code,['69','75'])){
+                if(!in_array($household->code,['67','69','75'])){
                     throw new \Exception('被征收户【'.$household->state->name.'】，不能修改',404404);
                 }
                 $code='success';
@@ -723,6 +776,8 @@ class PayController extends BaseController{
                 /* ++++++++++ 兑付汇总 ++++++++++ */
                 $pay=Pay::lockForUpdate()
                     ->find($pay_id);
+
+
                 if(blank($pay)){
                     throw new \Exception('兑付数据不存在',404404);
                 }
@@ -730,15 +785,196 @@ class PayController extends BaseController{
                 $household=Household::sharedLock()
                     ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
                     ->find($pay->household_id);
-                if(!in_array($household->code,['68','75'])){
+                if(!in_array($household->code,['67','68','75'])){
                     throw new \Exception('被征收户【'.$household->state->name.'】，不能修改',404404);
                 }
 
+                $household = Household::with('state')
+                    ->sharedLock()
+                    ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
+                    ->where([
+                        ['item_id', $this->item_id],
+                        ['id', $household_id]
+                    ])
+                    ->first();
+                if (blank($household)) {
+                    throw new \Exception('被征收户不存在', 404404);
+                }
+
+                $household_detail = Householddetail::sharedLock()
+                    ->where([
+                        ['item_id', $this->item_id],
+                        ['household_id', $household_id],
+                    ])
+                    ->select(['item_id','household_id','register','has_assets','area_dispute','repay_way','def_use'])
+                    ->first();
+
+                if(!in_array($household_detail->getOriginal('area_dispute'),[0,3])){
+                    throw new \Exception('被征收户存在面积争议',404404);
+                }
+                /* ++++++++++ 评估汇总 ++++++++++ */
+                $assess = Assess::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household_id],
+                        ['code','136']
+                    ])
+                    ->first();
+
+                if (blank($assess)) {
+                    throw new \Exception('暂无有效的评估数据', 404404);
+                }
+
+                /* ++++++++++ 房产评估 ++++++++++ */
+                $estate = Estate::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household_id],
+                        ['assess_id',$assess->id],
+                        ['code','136']
+                    ])
+                    ->select(['id', 'item_id', 'household_id', 'assess_id', 'code'])
+                    ->first();
+
+                $estatebuildings = Estatebuilding::with(['householdbuilding' => function ($query) {
+                    $query->select(['id', 'code']);
+                }])
+                    ->where([
+                        ['item_id', $this->item_id],
+                        ['household_id', $household_id],
+                        ['assess_id', $assess->id],
+                        ['estate_id', $estate->id],
+                    ])
+                    ->sharedLock()
+                    ->get();
+                if (blank($estate) || blank($estatebuildings)) {
+                    throw new \Exception('暂无有效的房产评估数据', 404404);
+                }
+
+                if ($household_detail->getOriginal('has_assets')) {
+                    $assets = Assets::sharedLock()
+                        ->where([
+                            ['item_id', $this->item_id],
+                            ['household_id', $household_id],
+                            ['assess_id', $assess->id],
+                        ])
+                        ->select(['id', 'item_id', 'household_id', 'assess_id', 'code'])
+                        ->first();
+                    if (blank($assets)) {
+                        throw new \Exception('暂无有效的资产评估数据', 404404);
+                    }
+                }
+
+                /* ++++++++++ 正式方案 ++++++++++ */
+                $program=Itemprogram::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['code','22'],
+                    ])
+                    ->select(['id','item_id','code','item_end','portion_holder'])
+                    ->first();
+                if(blank($program)){
+                    throw new \Exception('暂无通过审查的正式征收方案数据',404404);
+                }
                 $pay->fill($request->input());
                 $pay->save();
                 if(blank($pay)){
                     throw new \Exception('保存失败',404404);
                 }
+                /* ++++++++++ 合法房屋及附属物、合法临建、违建自行拆除补助 ++++++++++ */
+                $register_total=0;  // 合法房屋及附属物 评估总额
+                $legal_total=0; // 合法临建 评估总额
+                $destroy_total=0; // 违建自行拆除补助 评估总额
+                $legal_area=0; // 合法面积
+                foreach ($estatebuildings as $building) {
+                    if(in_array($building->code,['91','93'])){
+                        throw new \Exception('存在合法性争议的房屋',404404);
+                    }
+                    switch ($building->code){
+                        case '92':
+                            $price=$building->price;
+                            $amount=$building->amount;
+                            $legal_total +=$amount;
+                            $legal_area += $building->real_outer;
+                            break;
+                        case '94':
+                            $price=$building->householdbuilding->buildingdeal->price;
+                            $amount=$building->householdbuilding->buildingdeal->amount;
+                            $destroy_total +=$amount;
+                            break;
+                        case '95':
+                            $price=$building->price;
+                            $amount=$building->amount;
+                            $legal_total +=$amount;
+                            $legal_area += $building->real_outer;
+                            break;
+                        default:
+                            $price=$building->price;
+                            $amount=$building->amount;
+                            $register_total +=$amount;
+                            $legal_area += $building->real_outer;
+                    }
+                }
+
+                /* ++++++++++ 签约奖励 ++++++++++ */
+                $item_reward=Itemreward::sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where([
+                        ['start_at','<=',time()],
+                        ['end_at','>=',time()],
+                    ])
+                    ->first();
+                $reward_total=0;
+                $pay_subject=Paysubject::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household_id],
+                    ])
+                    ->whereIn('subject_id',[11,12])
+                    ->first();
+                $old_reward=$pay_subject->total;
+                if(filled($item_reward)){
+                    /*签约奖励计算*/
+                    /*住宅*/
+                    $household->getOriginal('type')? $reward_portion=100: $reward_portion=$program->portion_holder;
+                    if($household_detail->def_use==1){
+                        $reward_subject_id=11;
+                        $reward_amount=$item_reward->price*$legal_area;
+                        if(!$pay->repay_way){
+                            $reward_amount+=$program->reward_house*$legal_area;
+                        }
+                    }
+                    /*非住宅*/
+                    else{
+                        $reward_subject_id=12;
+                        $reward_amount=$amount*$item_reward->portion/100;
+                        if(!$pay->repay_way){
+                            $reward_amount+=$amount*$program->reward_other/100;
+                        }
+                    }
+                    $reward_total=$reward_amount*$reward_portion/100;
+
+                    $pay_subject->subject_id=$reward_subject_id;
+                    $pay_subject->amount=$reward_amount;
+                    $pay_subject->portion=$reward_portion;
+                    $pay_subject->total=$reward_total;
+                    $pay_subject->save();
+                    if(blank($pay_subject)){
+                        throw new \Exception('保存失败!',404404);
+                    }
+                }else{
+                    Paysubject::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household_id],
+                    ])
+                    ->whereIn('code',[11,12])
+                    ->delete();
+                }
+                $old_total=$pay->total;
+
+                $pay->total=$old_total-$old_reward+$reward_total;
+                $pay->save();
 
                 $code='success';
                 $msg='保存成功';

@@ -90,6 +90,7 @@
             var del_id = $('#del_id').val();
             if(!del_id){
                 toastr.error('请选择要删除的数据！');
+                return false;
             }
             ajaxAct('{{route('g_housecommunity_del')}}',{ id:del_id},'post');
             if(ajaxResp.code=='success'){
@@ -105,15 +106,6 @@
                 }
             }else{
                 toastr.error(ajaxResp.message);
-                if(ajaxResp.url){
-                    setTimeout(function () {
-                        location.href=ajaxResp.url;
-                    },1000);
-                }else{
-                    setTimeout(function () {
-                        location.reload();
-                    },1000);
-                }
             }
             return false;
         });
