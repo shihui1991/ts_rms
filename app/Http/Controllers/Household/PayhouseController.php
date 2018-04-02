@@ -283,7 +283,7 @@ class PayhouseController extends BaseController
             $field = ['item_id', 'household_id', 'land_id', 'building_id', 'house_id', 'area', 'market', 'price', 'amount', 'amount_plus', 'total', 'created_at', 'updated_at'];
             $sqls = batch_update_or_insert_sql('pay_house', $field, $house_data, 'updated_at');
             if (!$sqls) {
-                throw new \Exception('保存失败1', 404404);
+                throw new \Exception('保存失败', 404404);
             }
             foreach ($sqls as $sql) {
                 DB::statement($sql);

@@ -6,6 +6,7 @@
 */
 namespace  App\Http\Controllers\gov;
 use App\Http\Model\Itemrisk;
+use App\Http\Model\Itemrisktopic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -116,6 +117,11 @@ class  ItemriskController extends BaseitemController{
             }])
             ->sharedLock()
             ->find($id);
+        $itemrisk['topic']=Itemrisktopic::sharedLock()
+            ->where('risk_id',$itemrisk->id)
+            ->where('item_id',$this->item_id)
+            ->orderBy('topic_id','asc')
+            ->get();
         DB::commit();
 
         /* ++++++++++ 数据不存在 ++++++++++ */

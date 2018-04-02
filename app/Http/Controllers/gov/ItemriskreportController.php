@@ -48,18 +48,43 @@ class ItemriskreportController extends BaseitemController
             $number=$item_risk_num->sum('risk_num');
             $household_num=Household::sharedLock()->where('item_id',$this->item_id)->count();
 
+            /*补偿方式*/
+            $repay_way=Itemrisk::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->select([DB::raw('COUNT(`household_id`) AS `risk_num`'),'repay_way'])
+                ->groupBy('repay_way')
+                ->get();
+
+            /*过渡方式*/
+            $transit_way=Itemrisk::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->select([DB::raw('COUNT(`household_id`) AS `risk_num`'),'transit_way'])
+                ->groupBy('transit_way')
+                ->get();
+
+            /*搬迁方式*/
+            $move_way=Itemrisk::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->select([DB::raw('COUNT(`household_id`) AS `risk_num`'),'move_way'])
+                ->groupBy('move_way')
+                ->get();
+
             $code='success';
             $msg='查询成功';
         }catch(\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
         }
+
         $sdata=[
             'item_id'=>$this->item_id,
             'itemriskreport'=>$itemriskreport,
             'item_risk_num'=>$item_risk_num,
             'number'=>$number,
             'household_num'=>$household_num,
+            'repay_way'=>$repay_way,
+            'transit_way'=>$transit_way,
+            'move_way'=>$move_way,
         ];
         $edata=null;
         $url=null;

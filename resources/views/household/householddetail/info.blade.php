@@ -143,12 +143,12 @@
                                     </div>
                                 </div>
 
-                                <div class="profile-info-row">
+                              {{--  <div class="profile-info-row">
                                     <div class="profile-info-name"> 登记套内面积：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$edata['household_detail']->reg_inner}}</span>
                                     </div>
-                                </div>
+                                </div>--}}
 
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 登记建筑面积：</div>
