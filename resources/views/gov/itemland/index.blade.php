@@ -15,7 +15,7 @@
                             <div class="widget-header">
                                 <h5 class="widget-title bigger lighter">{{$infos->address}}</h5>
                                 <div class="widget-toolbar" >
-                                    <a href=""  data-target="#myModal" data-toggle="modal" class="orange2">
+                                    <a href=""  data-target="#myModal" onclick="del_data({{$infos->id}})" data-toggle="modal" class="orange2">
                                         <i class="fa fa-trash-o fa-lg"></i>
                                         删除
                                     </a>
