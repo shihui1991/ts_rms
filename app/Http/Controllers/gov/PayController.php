@@ -253,7 +253,7 @@ class PayController extends BaseitemController
                         ['item_id',$this->item_id],
                         ['code','22'],
                     ])
-                    ->select(['id','item_id','code','item_end','portion_holder'])
+                    ->select(['id','item_id','code','item_end','portion_holder','portion_renter'])
                     ->first();
                 if(blank($program)){
                     throw new \Exception('暂无通过审查的正式征收方案数据',404404);
@@ -281,7 +281,8 @@ class PayController extends BaseitemController
                 $register_total=0;  // 合法房屋及附属物 评估总额
                 $legal_total=0; // 合法临建 评估总额
                 $destroy_total=0; // 违建自行拆除补助 评估总额
-                $legal_area=0; // 合法面积
+                $register_area=0; // 合法房屋面积
+                $unit_data=[]; // 公房单位补偿数据
                 foreach($estatebuildings as $building){
                     if(in_array($building->code,['91','93'])){
                         throw new \Exception('存在合法性争议的房屋',404404);
@@ -292,7 +293,6 @@ class PayController extends BaseitemController
                             $price=$building->price;
                             $amount=$building->amount;
                             $legal_total +=$amount;
-                            $legal_area += $building->real_outer;
                             break;
                         case '94':
                             $price=$building->householdbuilding->buildingdeal->price;
@@ -303,13 +303,12 @@ class PayController extends BaseitemController
                             $price=$building->price;
                             $amount=$building->amount;
                             $legal_total +=$amount;
-                            $legal_area += $building->real_outer;
                             break;
                         default:
                             $price=$building->price;
                             $amount=$building->amount;
                             $register_total +=$amount;
-                            $legal_area += $building->real_outer;
+                            $register_area += $building->real_outer;
                     }
                     $building_data[]=[
                         'item_id'=>$this->item_id,
@@ -344,6 +343,32 @@ class PayController extends BaseitemController
                 }
                 /* ++++++++++ 合法房屋及附属物 ++++++++++ */
                 if($register_total){
+                    $portion=100;
+                    $total=$register_total;
+                    // 公房
+                    if($household->getOriginal('type')){
+                        $portion=$program->portion_renter;
+                        $total *= $program->portion_renter/100;
+
+                        $unit_total=$register_total*$program->portion_holder/100;
+                        $unit_data[]=[
+                            'item_id'=>$this->item_id,
+                            'household_id'=>$household_id,
+                            'land_id'=>$household->land_id,
+                            'unit_id'=>$household->itemland->admin_unit_id,
+                            'pay_id'=>$pay->id,
+                            'subject_id'=>1,
+                            'pact_id'=>0,
+                            'total_id'=>0,
+                            'calculate'=>number_format($register_total,2).' × '.$program->portion_holder.'% = '.number_format($unit_total,2),
+                            'amount'=>$register_total,
+                            'portion'=>$program->portion_holder,
+                            'total'=>$unit_total,
+                            'code'=>'110',
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                    }
                     $subject_data[]=[
                         'item_id'=>$this->item_id,
                         'household_id'=>$household_id,
@@ -355,6 +380,8 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$register_total,
+                        'portion'=>$portion,
+                        'total'=>$total,
                         'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -373,6 +400,8 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$legal_total,
+                        'portion'=>100,
+                        'total'=>$legal_total,
                         'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -391,6 +420,8 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$destroy_total,
+                        'portion'=>100,
+                        'total'=>$destroy_total,
                         'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -409,6 +440,8 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$assess->assets,
+                        'portion'=>100,
+                        'total'=>$assess->assets,
                         'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -487,6 +520,32 @@ class PayController extends BaseitemController
                     }
                 }
                 if($public_total){
+                    $portion=100;
+                    $total=$public_total;
+                    // 公房
+                    if($household->getOriginal('type')){
+                        $portion=$program->portion_renter;
+                        $total *= $program->portion_renter/100;
+
+                        $unit_total=$public_total*$program->portion_holder/100;
+                        $unit_data[]=[
+                            'item_id'=>$this->item_id,
+                            'household_id'=>$household_id,
+                            'land_id'=>$household->land_id,
+                            'unit_id'=>$household->itemland->admin_unit_id,
+                            'pay_id'=>$pay->id,
+                            'subject_id'=>4,
+                            'pact_id'=>0,
+                            'total_id'=>0,
+                            'calculate'=>number_format($public_total,2).' × '.$program->portion_holder.'% = '.number_format($unit_total,2),
+                            'amount'=>$public_total,
+                            'portion'=>$program->portion_holder,
+                            'total'=>$unit_total,
+                            'code'=>'110',
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                    }
                     $subject_data[]=[
                         'item_id'=>$this->item_id,
                         'household_id'=>$household_id,
@@ -498,25 +557,16 @@ class PayController extends BaseitemController
                         'total_id'=>0,
                         'calculate'=>null,
                         'amount'=>$public_total,
+                        'portion'=>$portion,
+                        'total'=>$total,
                         'code'=>'110',
                         'created_at'=>date('Y-m-d H:i:s'),
                         'updated_at'=>date('Y-m-d H:i:s'),
                     ];
                 }
                 /* ++++++++++ 公房单位补偿 ++++++++++ */
-                if($household->getOriginal('type')){
-                    $pay_unit=new Payunit();
-                    $pay_unit->item_id=$this->item_id;
-                    $pay_unit->household_id=$household_id;
-                    $pay_unit->land_id=$household->land_id;
-                    $pay_unit->unit_id=$household->itemland->admin_unit_id;
-                    $pay_unit->pay_id=$pay->id;
-                    $pay_unit->pact_id=0;
-                    $pay_unit->total_id=0;
-                    $pay_unit->calculate=number_format($register_total,2).' × '.$program->portion_holder.'% = '.number_format($register_total*($program->portion_holder/100),2);
-                    $pay_unit->amount=$register_total*($program->portion_holder/100);
-                    $pay_unit->code='110';
-                    $pay_unit->save();
+                if(filled($unit_data)){
+                    Payunit::insert($unit_data);
                 }
 
                 /* ++++++++++ 其他补偿事项 ++++++++++ */
@@ -576,6 +626,8 @@ class PayController extends BaseitemController
                             'total_id'=>0,
                             'calculate'=>null,
                             'amount'=>$object_total,
+                            'portion'=>100,
+                            'total'=>$object_total,
                             'code'=>'110',
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),
@@ -584,7 +636,7 @@ class PayController extends BaseitemController
                 }
 
                 /* ++++++++++ 补偿科目 ++++++++++ */
-                $field=['item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','code','created_at','updated_at'];
+                $field=['item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','portion','total','code','created_at','updated_at'];
                 $sqls=batch_update_or_insert_sql('pay_subject',$field,$subject_data,'updated_at');
                 if(!$sqls){
                     throw new \Exception('数据错误',404404);
@@ -667,16 +719,7 @@ class PayController extends BaseitemController
                 ])
                 ->get();
             /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
-            $pay_unit=null;
             if($household->getOriginal('type')){
-                $pay_unit=Payunit::sharedLock()
-                    ->where([
-                        ['item_id',$this->item_id],
-                        ['household_id',$household->id],
-                        ['pay_id',$pay_id],
-                    ])
-                    ->first();
-
                 $holder_type=2;
             }else{
                 $holder_type=1;
@@ -739,7 +782,6 @@ class PayController extends BaseitemController
                 'household'=>$household,
                 'household_detail'=>$household_detail,
                 'subjects'=>$subjects,
-                'pay_unit'=>$pay_unit,
                 'holder'=>$holder,
                 'payhouses'=>$payhouses,
                 'paytransits'=>$paytransits,

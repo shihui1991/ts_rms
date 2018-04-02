@@ -23,7 +23,7 @@
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="infos"> 补偿说明： </label>
-            <div class="col-sm-9 radio">
+            <div class="col-sm-9 ">
                 <textarea id="infos" readonly class="col-xs-10 col-sm-5">{{$sdata['pay_subject']->itemsubject->infos}}</textarea>
             </div>
         </div>
@@ -31,7 +31,7 @@
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="calculate"> 补偿计算公式： </label>
-            <div class="col-sm-9 radio">
+            <div class="col-sm-9 ">
                 <textarea name="calculate" id="calculate" class="col-xs-10 col-sm-5">{{$sdata['pay_subject']->calculate}}</textarea>
             </div>
         </div>
@@ -39,7 +39,7 @@
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="amount"> 补偿小计： </label>
-            <div class="col-sm-9 radio">
+            <div class="col-sm-9 ">
                 <input type="number" min="0" step="0.01" name="amount" id="amount" class="col-xs-10 col-sm-5" value="{{$sdata['pay_subject']->amount}}">
             </div>
         </div>

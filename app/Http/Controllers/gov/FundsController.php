@@ -16,6 +16,7 @@ use App\Http\Model\Itemuser;
 use App\Http\Model\Pact;
 use App\Http\Model\Pay;
 use App\Http\Model\Payhouse;
+use App\Http\Model\Paysubject;
 use App\Http\Model\Payunit;
 use App\Http\Model\Payunitpact;
 use Illuminate\Http\Request;
@@ -342,16 +343,7 @@ class FundsController extends BaseitemController
                 ])
                 ->get();
             /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
-            $pay_unit=null;
             if($pay_household->household->getOriginal('type')){
-                $pay_unit=Payunit::sharedLock()
-                    ->where([
-                        ['item_id',$this->item_id],
-                        ['household_id',$pay_household->household_id],
-                        ['pay_id',$pay_id],
-                    ])
-                    ->first();
-
                 $holder_type=2;
             }else{
                 $holder_type=1;
@@ -365,6 +357,14 @@ class FundsController extends BaseitemController
                 ])
                 ->orderBy('portion','desc')
                 ->first();
+            /* ++++++++++ 被征收户补偿总额 ++++++++++ */
+            $household_total=Paysubject::sharedLock()
+                ->where([
+                    ['item_id',$pay_household->item_id],
+                    ['household_id',$pay_household->household_id],
+                    ['pay_id',$pay_id],
+                ])
+                ->sum('total');
             /* ++++++++++ 产权调换房 ++++++++++ */
             $pay_house_total=Payhouse::sharedLock()
                 ->where([
@@ -377,9 +377,9 @@ class FundsController extends BaseitemController
             $sdata=[
                 'item'=>$this->item,
                 'pay_household'=>$pay_household,
+                'household_total'=>$household_total,
                 'pacts'=>$pacts,
                 'funds_totals'=>$funds_totals,
-                'pay_unit'=>$pay_unit,
                 'holder'=>$holder,
                 'pay_house_total'=>$pay_house_total,
             ];
@@ -434,24 +434,12 @@ class FundsController extends BaseitemController
                 throw new \Exception('当前协议正在处理中，请勿重复操作',404404);
             }
             /* ++++++++++ 协议兑付科目金额 ++++++++++ */
-            $pact_total=$pact->paysubjects->sum('amount');
+            $pact_total=$pact->paysubjects->sum('total');
             /* ++++++++++ 协议类型 ++++++++++ */
             switch ($pact->cate_id){
                 // 补偿协议
                 case 1:
                     $funds_cate=3; // 默认为货币补偿款
-                    /* ++++++++++ 公房 ++++++++++ */
-                    if($pact->household->getOriginal('type')==1){
-                        /* ++++++++++ 公房单位 ++++++++++ */
-                        $pay_unit=Payunit::sharedLock()
-                            ->where([
-                                ['item_id',$this->item_id],
-                                ['household_id',$pact->household_id],
-                                ['pay_id',$pact->pay_id],
-                            ])
-                            ->first();
-                        $pact_total -= $pay_unit->amount;
-                    }
                     /* ++++++++++ 产权调换 ++++++++++ */
                     if($pact->pay->getOriginal('repay_way')==1){
                         /* ++++++++++ 产权调换房价 ++++++++++ */
@@ -682,7 +670,7 @@ class FundsController extends BaseitemController
                 ->sharedLock()
                 ->where('item_id',$this->item_id)
                 ->distinct()
-                ->select(['unit_id',DB::raw('SUM(`amount`) AS `total`')])
+                ->select(['unit_id',DB::raw('SUM(`total`) AS `unit_total`')])
                 ->groupBy('unit_id')
                 ->get();
 
@@ -726,7 +714,7 @@ class FundsController extends BaseitemController
                     ['item_id',$this->item_id],
                     ['unit_id',$unit_id]
                 ])
-                ->select(DB::raw('COUNT(*) AS `count`,SUM(`amount`) AS `total`'))
+                ->select(DB::raw('COUNT(*) AS `count`,SUM(`total`) AS `unit_total`'))
                 ->fisrt();
             if(blank($total)){
                 throw new \Exception('没有【'.$admin_unit->name.'】的补偿数据',404404);
@@ -738,7 +726,7 @@ class FundsController extends BaseitemController
                         $query->select(['id','address']);
                     },'itembuilding'=>function($query){
                         $query->select(['id','building']);
-                    },'state'])
+                    },'state','subject'])
                         ->select(['id','land_id','building_id','unit','floor','number','type','code']);
                 },'state']);
             }])
@@ -818,7 +806,7 @@ class FundsController extends BaseitemController
                 throw new \Exception('当前协议正在处理中，请勿重复操作',404404);
             }
             /* ++++++++++ 协议兑付金额 ++++++++++ */
-            $pact_total=$unit_pact->payunits->sum('amount');
+            $pact_total=$unit_pact->payunits->sum('total');
             /* ++++++++++ 生成总单 ++++++++++ */
             $funds_total=new Fundstotal();
             $funds_total->item_id=$this->item_id;

@@ -94,14 +94,9 @@
                                             @if($sdata['pay_household']->household->getOriginal('type'))
                                                 <br>
                                                 其中：
-                                                <br>
-                                                【{{$sdata['pay_household']->itemland->adminunit->name}}（公房单位）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay_unit']->amount)}}
-                                                <br>
                                                 【{{$sdata['holder']->name}}（承租人）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay_household']->total-$sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay_household']->total-$sdata['pay_unit']->amount)}}
+                                                <strong>{{number_format($sdata['household_total'],2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['household_total'])}}
                                             @endif
                                            
                                         </span>
@@ -131,7 +126,7 @@
             <div class="widget-main padding-8 row">
                 @if(filled($sdata['pacts']))
                     @foreach($sdata['pacts'] as $pact)
-                        @php $total=$pact->paysubjects->sum('amount'); @endphp
+                        @php $total=$pact->paysubjects->sum('total'); @endphp
                         <div class="col-xs-6 col-sm-6 pricing-box">
                             <div class="widget-box widget-color-red3">
                                 <div class="widget-header">
@@ -159,9 +154,6 @@
                                                 <div class="profile-info-value">
                                                     <span class="editable editable-click">
                                                         @if($pact->cate_id==1)
-                                                            @if($sdata['pay_household']->household->getOriginal('type'))
-                                                                @php $total -= $sdata['pay_unit']->amount; @endphp
-                                                            @endif
                                                             @if($sdata['pay_household']->gerOriginal('repay_way')==1)
                                                                 @php $total -= $sdata['pay_house_total']; @endphp
                                                             @endif
@@ -181,7 +173,9 @@
                                                 <th>序号</th>
                                                 <th>名称</th>
                                                 <th>计算公式</th>
-                                                <th>金额</th>
+                                                <th>补偿金额</th>
+                                                <th>被征收户补偿比例（%）</th>
+                                                <th>被征收户补偿金额</th>
                                                 <th>状态</th>
                                             </tr>
                                             </thead>
@@ -189,12 +183,14 @@
                                             @if(filled($pact->paysubjects))
                                                 @php $total=0; @endphp
                                                 @foreach($pact->paysubjects as $paysubject)
-                                                    @php $total += $paysubject->amount; @endphp
+                                                    @php $total += $paysubject->total; @endphp
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
                                                         <td>{{$paysubject->subject->name}}</td>
                                                         <td>{{$paysubject->calculate}}</td>
                                                         <td>{{number_format($paysubject->amount,2)}}</td>
+                                                        <td>{{number_format($paysubject->portion,2)}}</td>
+                                                        <td>{{number_format($paysubject->total,2)}}</td>
                                                         <td>{{$paysubject->state->name}}</td>
                                                     </tr>
                                                 @endforeach
@@ -205,10 +201,7 @@
                                                 <tr>
                                                     <th>注：</th>
                                                     <th colspan="4">
-                                                        @if($sdata['pay_household']->household->getOriginal('type'))
-                                                            @php $total -= $sdata['pay_unit']->amount; @endphp
-                                                            承租人所得：{{number_format($total,2)}}
-                                                        @endif
+                                                        被征收户所得：{{number_format($total,2)}}
                                                         @if($sdata['pay_household']->gerOriginal('repay_way')==1)
                                                             ，产权调换房总价：{{number_format($sdata['pay_house_total'],2)}}，产权调换后结余：
                                                             {{number_format($total-$sdata['pay_house_total'],2)}}

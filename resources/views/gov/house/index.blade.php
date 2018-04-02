@@ -9,7 +9,7 @@
         <a href="{{route('g_house_add')}}" class="btn">添加房源</a>
     </div>
 
-    <table class="table table-hover table-bordered treetable" id="tree-dept">
+    <table class="table table-hover table-bordered">
         <thead>
         <tr>
             <th>房源序号</th>

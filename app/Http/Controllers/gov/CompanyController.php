@@ -8,6 +8,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Company;
 use App\Http\Model\Companyuser;
 use App\Http\Model\Companyvaluer;
+use App\Http\Model\Itemcompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -51,11 +52,9 @@ class CompanyController extends BaseauthController
         $model=new Company();
         if(is_numeric($deleted) && in_array($deleted,[0,1])){
             $infos['deleted']=$deleted;
-            if($deleted){
+            if($deleted==0){
                 $model=$model->onlyTrashed();
             }
-        }else{
-            $model=$model->withTrashed();
         }
         /* ********** 查询 ********** */
         DB::beginTransaction();
@@ -347,6 +346,120 @@ class CompanyController extends BaseauthController
                 DB::rollBack();
             }
             /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+    }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            $itemcompany = Itemcompany::where('company_id',$ids)->count();
+            if($itemcompany!=0){
+                throw new \Exception('该评估机构正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------评估机构----------*/
+            $company = Company::where('id',$ids)->delete();
+            if(!$company){
+                throw new \Exception('删除失败',404404);
+            }
+            /*---------评估机构-操作员----------*/
+            $companyuser = Companyuser::where('company_id',$ids)->pluck('id');
+            if(filled($companyuser)){
+                $companyuser = Companyuser::where('company_id',$ids)->delete();
+                if(!$companyuser){
+                    throw new \Exception('删除失败',404404);
+                }
+            }
+            /*---------评估机构-评估师----------*/
+            $companyvaluer = Companyvaluer::where('company_id',$ids)->pluck('id');
+            if(filled($companyvaluer)){
+                $companyvaluer = Companyvaluer::where('company_id',$ids)->delete();
+                if(!$companyvaluer){
+                    throw new \Exception('删除失败',404404);
+                }
+            }
+
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$companyvaluer;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
+    /* ========== 机构审核 ========== */
+    public function status(Request $request){
+        $id = $request->input('id');
+        if($request->isMethod('get')){
+            $sdata['id'] = $id;
+            $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('gov.company.status')->with($result);
+            }
+        }else{
+            $code = $request->input('code');
+            if(!in_array($code,[41,42,43])){
+                $result=['code'=>'error','message'=>'数据异常,审查失败!','sdata'=>null,'edata'=>null,'url'=>null];
+                if($request->ajax()){
+                    return response()->json($result);
+                }else {
+                    return view('gov.error')->with($result);
+                }
+            }
+            DB::beginTransaction();
+            try{
+
+                $itemcompany = Itemcompany::where('company_id',$id)->count();
+                if($itemcompany!=0){
+                    throw new \Exception('该评估机构正在被使用,暂时不能审核！',404404);
+                }
+                /* ++++++++++ 锁定数据 ++++++++++ */
+                $company = Company::lockForUpdate()->find($id);
+                if(blank($company)){
+                    throw new \Exception('数据不存在！',404404);
+                }
+                $company->code = $code;
+                $company->save();
+                if(blank($company)){
+                    throw new \Exception('数据异常,审查失败！',404404);
+                }
+
+                $code = 'success';
+                $msg = '审查成功';
+                $sdata = $company;
+                $edata = null;
+                $url = route('g_company_info',['id'=>$id]);
+                DB::commit();
+            }catch(\Exception $exception){
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常，请稍后重试！';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }

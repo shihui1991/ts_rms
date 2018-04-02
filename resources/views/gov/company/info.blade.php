@@ -6,7 +6,7 @@
 @section('content')
 
     <p>
-        <a class="btn" href="javascript:history.back()">
+        <a class="btn" href="{{route('g_company')}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
@@ -14,6 +14,11 @@
         <a class="btn" href="{{route('g_company_edit',['id'=>$sdata->id])}}">
             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
             修改评估机构信息
+        </a>
+
+        <a class="btn" href="{{route('g_company_status',['id'=>$sdata->id])}}">
+            <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
+            开始审查
         </a>
     </p>
 

@@ -59,6 +59,9 @@ class Payunit extends Model
     public function pay(){
         return $this->belongsTo('App\Http\Model\Pay','pay_id','id')->withDefault();
     }
+    public function subject(){
+        return $this->belongsTo('App\Http\Model\Subject','subject_id','id')->withDefault();
+    }
     public function unitpact(){
         return $this->belongsTo('App\Http\Model\Payunitpact','pact_id','id')->withDefault();
     }
