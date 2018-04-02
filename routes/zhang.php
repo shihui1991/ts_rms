@@ -102,6 +102,8 @@ Route::any('/company','CompanyController@index')->name('g_company');
 Route::any('/company_add','CompanyController@add')->name('g_company_add');
 Route::get('/company_info','CompanyController@info')->name('g_company_info');
 Route::any('/company_edit','CompanyController@edit')->name('g_company_edit');
+Route::any('/company_del','CompanyController@del')->name('g_company_del');
+Route::any('/company_status','CompanyController@status')->name('g_company_status');
 /*---------- 评估机构(操作员) ----------*/
 Route::get('/companyuser','CompanyuserController@index')->name('g_companyuser');
 Route::get('/companyuser_info','CompanyuserController@info')->name('g_companyuser_info');
