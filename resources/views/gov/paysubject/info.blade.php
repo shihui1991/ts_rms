@@ -47,6 +47,30 @@
             </div>
         </div>
 
+        @if($sdata['pay_subject']->household->getOriginal('type'))
+
+            <div class="profile-info-row">
+                <div class="profile-info-name"> 被征收户补偿比例： </div>
+                <div class="profile-info-value">
+                <span class="editable editable-click">
+                    <strong>{{number_format($sdata['pay_subject']->portion,2)}}</strong> %
+                </span>
+                </div>
+            </div>
+
+            <div class="profile-info-row">
+                <div class="profile-info-name"> 被征收户补偿金额： </div>
+                <div class="profile-info-value">
+                <span class="editable editable-click">
+                    <strong>{{number_format($sdata['pay_subject']->total,2)}}</strong>
+                    人民币（大写）：
+                    {{bigRMB($sdata['pay_subject']->total)}}
+                </span>
+                </div>
+            </div>
+
+        @endif
+
         <div class="profile-info-row">
             <div class="profile-info-name"> 状态： </div>
             <div class="profile-info-value">

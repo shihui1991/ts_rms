@@ -30,7 +30,7 @@ class PayunitController extends BaseitemController
                 ->sharedLock()
                 ->where('item_id',$this->item_id)
                 ->distinct()
-                ->select(['unit_id',DB::raw('SUM(`amount`) AS `total`')])
+                ->select(['unit_id',DB::raw('SUM(`total`) AS `unit_total`')])
                 ->groupBy('unit_id')
                 ->get();
 
@@ -74,7 +74,7 @@ class PayunitController extends BaseitemController
                     ['item_id',$this->item_id],
                     ['unit_id',$unit_id]
                 ])
-                ->select(DB::raw('COUNT(*) AS `count`,SUM(`amount`) AS `total`'))
+                ->select(DB::raw('COUNT(*) AS `count`,SUM(`total`) AS `unit_total`'))
                 ->fisrt();
             if(blank($total)){
                 throw new \Exception('没有【'.$admin_unit->name.'】的补偿数据',404404);
@@ -97,7 +97,7 @@ class PayunitController extends BaseitemController
                     $query->select(['id','building']);
                 }])
                     ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code']);
-            },'state'])
+            },'subject','state'])
                 ->where([
                     ['item_id',$this->item_id],
                     ['unit_id',$unit_id],
@@ -105,6 +105,8 @@ class PayunitController extends BaseitemController
                 ->sharedLock()
                 ->offset($per_page*($page-1))
                 ->limit($per_page)
+                ->orderBy('household_id','asc')
+                ->orderBy('subject_id','asc')
                 ->get();
 
             $pay_units=new LengthAwarePaginator($pay_units,$total->count,$per_page,$page);

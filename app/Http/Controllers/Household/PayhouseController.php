@@ -135,7 +135,7 @@ class PayhouseController extends BaseController
                     ['pay_id', $pay->id],
                 ])
                 ->whereIn('subject_id', [1, 2, 4, 11, 12])
-                ->sum('amount');
+                ->sum('total');
             if ($household->getOriginal('type') == 1) { // 公房
                 $pay_unit = Payunit::sharedLock()
                     ->where([

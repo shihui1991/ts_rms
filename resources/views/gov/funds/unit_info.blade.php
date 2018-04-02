@@ -73,8 +73,8 @@
                                     <div class="profile-info-name"> 补偿总额： </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">
-                                            <strong>{{number_format($sdata['total']->total,2)}}</strong>
-                                            人民币（大写）{{bigRMB($sdata['total']->total)}}
+                                            <strong>{{number_format($sdata['total']->unit_total,2)}}</strong>
+                                            人民币（大写）{{bigRMB($sdata['total']->unit_total)}}
                                         </span>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@
                                                 <div class="profile-info-name"> 协议金额： </div>
                                                 <div class="profile-info-value">
                                                     <span class="editable editable-click">
-                                                        {{number_format($pact->payunits->sum('amount'),2)}}
+                                                        {{number_format($pact->payunits->sum('total'),2)}}
                                                     </span>
                                                 </div>
                                             </div>
@@ -141,8 +141,11 @@
                                             <tr>
                                                 <th>序号</th>
                                                 <th>被征收户</th>
+                                                <th>补偿科目</th>
                                                 <th>计算公式</th>
-                                                <th>金额</th>
+                                                <th>补偿金额</th>
+                                                <th>公房单位补偿比例（%）</th>
+                                                <th>公房单位补偿金额</th>
                                                 <th>状态</th>
                                             </tr>
                                             </thead>
@@ -154,8 +157,11 @@
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
                                                         <td>{{$payunit->household->itemland->address}}{{$payunit->household->itembuilding->building}}栋{{$payunit->household->unit}}单元{{$payunit->household->floor}}楼{{$payunit->household->number}}号</td>
+                                                        <td>{{$payunit->subject->name}}</td>
                                                         <td>{{$payunit->calculate}}</td>
                                                         <td>{{number_format($payunit->amount,2)}}</td>
+                                                        <td>{{number_format($payunit->portion,2)}}</td>
+                                                        <td>{{number_format($payunit->total,2)}}</td>
                                                         <td>{{$payunit->state->name}}</td>
                                                     </tr>
                                                 @endforeach

@@ -118,13 +118,9 @@
                                                 <br>
                                                 其中：
                                                 <br>
-                                                【{{$sdata['household']->itemland->adminunit->name}}（公房单位）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay_unit']->amount)}}
-                                                <br>
                                                 【{{$sdata['holder']->name}}（承租人）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay']->total-$sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay']->total-$sdata['pay_unit']->amount)}}
+                                                <strong>{{number_format($sdata['household_total'],2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['household_total'])}}
                                             @endif
 
                                         </span>
@@ -227,7 +223,7 @@
                                             产权调换后结余补偿款：
                                             <span id="last_total">
                                                 @if($sdata['household']->getOriginal('type'))
-                                                    {{number_format($sdata['pay']->total-$sdata['pay_unit']->amount,2)}}
+                                                    {{number_format($sdata['household_total'],2)}}
                                                 @else
                                                     {{number_format($sdata['pay']->total,2)}}
                                                 @endif
@@ -283,7 +279,7 @@
                     choose_houses.push(house_temp);
                     choose_house_ids.push(house_id);
                     var transit='';
-                    if(house_temp.is_transit=='可作临时周转' && {{$sdata['pay']->getOriginal('transit_way')}} == 1){
+                    if({{$sdata['pay']->getOriginal('transit_way')}} == 1 && house_temp.is_transit=='可作临时周转'){
                         transit='<label class="btn btn-white btn-bold"><input type="checkbox" name="transits[]" value="'+house_temp.id+'">&nbsp;选择作为临时周转房</label>';
                     }
 
