@@ -9,33 +9,37 @@
         <a href="{{route('g_company_add',['type'=>1])}}" class="btn">添加资产评估机构</a>
     </div>
 
-    <div class="row">
-        <div class="col-sm-6">
-            <div class="widget-box widget-color-blue2">
-                <div class="widget-header">
-                    <h4 class="widget-title lighter smaller">房产评估机构：</h4>
-                </div>
-                <div class="widget-body">
-                    <div class="widget-main padding-8">
+    <div id="accordion" class="accordion-style1 panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                        <i class="ace-icon fa fa-angle-down bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
+                        &nbsp;房产评估机构
+                    </a>
+                </h4>
+            </div>
 
-                        <table class="table table-hover table-bordered">
-                            <thead>
-                            <tr>
-                                <th>机构名称</th>
-                                <th>地址</th>
-                                <th>电话</th>
-                                <th>传真</th>
-                                <th>联系人</th>
-                                <th>手机号</th>
-                                <th>状态</th>
-                                <th>描述</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if($code=='success')
-                                @foreach($sdata as $infos)
-                                    @if($infos->getOriginal('type')==0)
+            <div class="panel-collapse collapse in" id="collapseOne">
+                <div class="panel-body">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>机构名称</th>
+                            <th>地址</th>
+                            <th>电话</th>
+                            <th>传真</th>
+                            <th>联系人</th>
+                            <th>手机号</th>
+                            <th>状态</th>
+                            <th>描述</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if($code=='success')
+                            @foreach($sdata as $infos)
+                                @if($infos->getOriginal('type')==0)
                                     <tr>
                                         <td>【房产】{{$infos->name}}</td>
                                         <td>{{$infos->address}}</td>
@@ -52,47 +56,50 @@
                                             <a class="btn btn-sm" data-toggle="modal" onclick="del_data({{$infos->id}})" data-target="#myModal">删除</a>
                                         </td>
                                     </tr>
-                                    @endif
-                                @endforeach
-                            @endif
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecount'] }} @else 0 @endif 条数据</div>
-                            </div>
+                                @endif
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecount'] }} @else 0 @endif 条数据</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
-            <div class="widget-box widget-color-green2">
-                <div class="widget-header">
-                    <h4 class="widget-title lighter smaller">资产评估机构：</h4>
-                </div>
-                <div class="widget-body">
-                    <div class="widget-main padding-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                        <i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
+                        &nbsp;资产评估机构
+                    </a>
+                </h4>
+            </div>
 
-                        <table class="table table-hover table-bordered">
-                            <thead>
-                            <tr>
-                                <th>机构名称</th>
-                                <th>地址</th>
-                                <th>电话</th>
-                                <th>传真</th>
-                                <th>联系人</th>
-                                <th>手机号</th>
-                                <th>状态</th>
-                                <th>描述</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if($code=='success')
-                                @foreach($sdata as $infos)
-                                    @if($infos->getOriginal('type')==1)
+            <div class="panel-collapse collapse" id="collapseTwo">
+                <div class="panel-body">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>机构名称</th>
+                            <th>地址</th>
+                            <th>电话</th>
+                            <th>传真</th>
+                            <th>联系人</th>
+                            <th>手机号</th>
+                            <th>状态</th>
+                            <th>描述</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if($code=='success')
+                            @foreach($sdata as $infos)
+                                @if($infos->getOriginal('type')==1)
                                     <tr>
                                         <td>【资产】{{$infos->name}}</td>
                                         <td>{{$infos->address}}</td>
@@ -109,46 +116,42 @@
                                             <a class="btn btn-sm" data-toggle="modal" onclick="del_data({{$infos->id}})" data-target="#myModal">删除</a>
                                         </td>
                                     </tr>
-                                    @endif
-                                @endforeach
-                            @endif
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecounts'] }} @else 0 @endif 条数据</div>
-                            </div>
+                                @endif
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $edata['typecounts'] }} @else 0 @endif 条数据</div>
                         </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{--删除确认弹窗--}}
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h4 class="modal-title" id="myModalLabel">删除确认</h4>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" id="del_id" value="">
-                        你确定要删除本条数据吗？
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary del_ok">确定</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
+    {{--删除确认弹窗--}}
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">删除确认</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="del_id" value="">
+                    你确定要删除本条数据吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary del_ok">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 
