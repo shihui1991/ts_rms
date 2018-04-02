@@ -636,7 +636,7 @@ class PayController extends BaseitemController
                 }
 
                 /* ++++++++++ 补偿科目 ++++++++++ */
-                $field=['item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','code','created_at','updated_at'];
+                $field=['item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','portion','total','code','created_at','updated_at'];
                 $sqls=batch_update_or_insert_sql('pay_subject',$field,$subject_data,'updated_at');
                 if(!$sqls){
                     throw new \Exception('数据错误',404404);

@@ -128,8 +128,7 @@ class PaysubjectController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'subject_id' => 'required',
-                'calculate' => 'required',
-                'amount' => 'required|numeric|min:0.01',
+                'amount' => 'nullable|numeric|min:0.01',
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
@@ -205,7 +204,7 @@ class PaysubjectController extends BaseitemController
                         ['pay_id',$pay->id],
                     ])
                     ->select([DB::raw('SUM(`real_outer`) AS `legal_area`,SUM(`amount`) AS `legal_total`')])
-                    ->whereIn('code',['90','92','95'])
+                    ->whereIn('code',['90'])
                     ->first();
 
                 $pay_subject=$model;
@@ -218,6 +217,8 @@ class PaysubjectController extends BaseitemController
                 $pay_subject->pay_id=$pay->id;
                 $pay_subject->pact_id=0;
                 $pay_subject->total_id=0;
+                $pay_subject->portion=100;
+                $pay_subject->total=$pay_subject->amount;
                 $pay_subject->code='110';
 
                 $subject_data=[];
@@ -247,6 +248,12 @@ class PaysubjectController extends BaseitemController
 
                             $pay_subject->calculate=number_format($legal->legal_area,2).' × '.number_format($move_price,2).' × '.$move_times.' = '.number_format($move_total,2);
                             $pay_subject->amount=$move_total;
+                            $pay_subject->total=$move_total;
+                            // 公房，按比例补偿
+                            if($household->getOriginal('type')){
+                                $pay_subject->portion=$program->portion_renter;
+                                $pay_subject->total=$move_total*$program->portion_renter/100;
+                            }
                         }
                         else{
                             throw new \Exception('选择由政府协助搬迁的，不发放搬迁补助',404404);
@@ -255,7 +262,11 @@ class PaysubjectController extends BaseitemController
 
                     /* ++++++++++ 签约奖励（住宅） ++++++++++ */
                     case 11:
-                        if(strtotime($program->item_end) < strtotime(date('Y-m-d'))){
+                        $sign_at=$request->input('sign_at');
+                        if(!$sign_at){
+                            throw new \Exception('请输入签约时间',404404);
+                        }
+                        if(strtotime($program->item_end) < strtotime($sign_at)){
                             throw new \Exception('已过项目征收期限，不能发放签约奖励',404404);
                         }
                         if($household_detail->def_use!=1){
@@ -279,11 +290,21 @@ class PaysubjectController extends BaseitemController
                             $pay_subject->calculate=number_format($legal->legal_area,2).' × '.number_format(($item_reward->price),2).' = '.number_format($reward_total,2);
                         }
                         $pay_subject->amount=$reward_total;
+                        $pay_subject->total=$reward_total;
+                        // 公房，按比例补偿
+                        if($household->getOriginal('type')){
+                            $pay_subject->portion=$program->portion_renter;
+                            $pay_subject->total=$reward_total*$program->portion_renter/100;
+                        }
                         break;
 
                     /* ++++++++++ 签约奖励（非住宅） ++++++++++ */
                     case 12:
-                        if(strtotime($program->item_end) < strtotime(date('Y-m-d'))){
+                        $sign_at=$request->input('sign_at');
+                        if(!$sign_at){
+                            throw new \Exception('请输入签约时间',404404);
+                        }
+                        if(strtotime($program->item_end) < strtotime($sign_at)){
                             throw new \Exception('已过项目征收期限，不能发放签约奖励',404404);
                         }
                         if($household_detail->def_use==1){
@@ -308,10 +329,21 @@ class PaysubjectController extends BaseitemController
                             $pay_subject->calculate=number_format(($legal->legal_total),2).' × '.($item_reward->portion).'% = '.number_format($reward_total,2);
                         }
                         $pay_subject->amount=$reward_total;
+                        $pay_subject->amount=$reward_total;
+                        $pay_subject->total=$reward_total;
+                        // 公房，按比例补偿
+                        if($household->getOriginal('type')){
+                            $pay_subject->portion=$program->portion_renter;
+                            $pay_subject->total=$reward_total*$program->portion_renter/100;
+                        }
                         break;
 
                     /* ++++++++++ 临时安置费 ++++++++++ */
                     case 13:
+                        $transit_at=$request->input('transit_at');
+                        if(!$transit_at){
+                            throw new \Exception('请输入临时安置时间',404404);
+                        }
                         if($pay->getOriginal('repay_way')==0){
                             throw new \Exception('选择货币补偿的不发放临时安置费',404404);
                         }
@@ -336,11 +368,10 @@ class PaysubjectController extends BaseitemController
                         /* ++++++++++ 临时安置时长 ++++++++++ */
                         $transit_times=$real_count?$program->transit_real:$program->transit_future;
                         $transit_end=date('Y-m',strtotime($program->item_end.' +'.$transit_times.' month'));
-                        $now=date('Y-m');
-                        if($now>=$transit_end){
+                        if($transit_at>=$transit_end){
                             throw new \Exception('当前时间已超过临时安置时限',404404);
                         }
-                        $diff_time=date_diff(date_create($now),date_create($transit_end));
+                        $diff_time=date_diff(date_create($transit_at),date_create($transit_end));
                         $transit_times = $diff_time->format('%m');
                         /* ++++++++++ 临时安置单价 ++++++++++ */
                         if($household_detail->def_use==1){
@@ -359,6 +390,12 @@ class PaysubjectController extends BaseitemController
                             $pay_subject->calculate=number_format($program->transit_base,2).' × '.$transit_times.' = '.number_format($transit_total,2);
                         }
                         $pay_subject->amount=$transit_total;
+                        $pay_subject->total=$transit_total;
+                        // 公房，按比例补偿
+                        if($household->getOriginal('type')){
+                            $pay_subject->portion=$program->portion_renter;
+                            $pay_subject->total=$transit_total*$program->portion_renter/100;
+                        }
 
                         if($transit_total){
                             /* ++++++++++ 临时安置费特殊人群优惠补助 ++++++++++ */
@@ -398,13 +435,13 @@ class PaysubjectController extends BaseitemController
                                                 'member_crowd_id' => $member_crowd_id,
                                                 'crowd_cate_id' => $itemcrowd->crowd_cate_id,
                                                 'crowd_id' => $itemcrowd->crowd_id,
-                                                'transit' => $pay_subject->amount,
+                                                'transit' => $pay_subject->total,
                                                 'rate' => $itemcrowd->rate,
-                                                'amount' => $itemcrowd->rate /100 * $pay_subject->amount,
+                                                'amount' => $itemcrowd->rate /100 * $pay_subject->total,
                                                 'created_at' => date('Y-m-d H:i:s'),
                                                 'updated_at' => date('Y-m-d H:i:s'),
                                             ];
-                                            $crowd_total += $itemcrowd->rate /100 * $pay_subject->amount;
+                                            $crowd_total += $itemcrowd->rate /100 * $pay_subject->total;
                                             break;
                                         }
                                     }
@@ -429,6 +466,8 @@ class PaysubjectController extends BaseitemController
                                     'total_id'=>0,
                                     'calculate'=>null,
                                     'amount'=>$crowd_total,
+                                    'portion'=>100,
+                                    'total'=>$crowd_total,
                                     'code'=>'110',
                                     'created_at'=>date('Y-m-d H:i:s'),
                                     'updated_at'=>date('Y-m-d H:i:s'),
@@ -442,6 +481,7 @@ class PaysubjectController extends BaseitemController
                     case 15:
                         $pay_subject->calculate=null;
                         $pay_subject->amount=$program->reward_move;
+                        $pay_subject->total=$pay_subject->amount;
                         break;
 
                     /* ++++++++++ 房屋状况与登记相符的奖励 ++++++++++ */
@@ -449,6 +489,8 @@ class PaysubjectController extends BaseitemController
                         $reward_move=$legal->legal_area*$program->reward_real;
                         $pay_subject->calculate=number_format($legal->legal_area,2).' × '.number_format($program->reward_real,2).' = '.number_format($reward_move,2);
                         $pay_subject->amount=$reward_move;
+                        $pay_subject->portion=$program->portion_renter;
+                        $pay_subject->total=$pay_subject->amount*$program->portion_renter/100;
                         break;
 
                     /* ++++++++++ 超期临时安置费 ++++++++++ */
@@ -483,6 +525,8 @@ class PaysubjectController extends BaseitemController
                         }
 
                         if($pay_subject->amount){
+                            $pay_subject->portion=$program->portion_renter;
+                            $pay_subject->total=$pay_subject->amount*$program->portion_renter/100;
                             /* ++++++++++ 超期临时安置费特殊人群优惠补助 ++++++++++ */
                             $member_crowd_ids=Householdmembercrowd::sharedLock()
                                 ->where([
@@ -520,13 +564,13 @@ class PaysubjectController extends BaseitemController
                                                 'member_crowd_id' => $member_crowd_id,
                                                 'crowd_cate_id' => $itemcrowd->crowd_cate_id,
                                                 'crowd_id' => $itemcrowd->crowd_id,
-                                                'transit' => $pay_subject->amount,
+                                                'transit' => $pay_subject->total,
                                                 'rate' => $itemcrowd->rate,
-                                                'amount' => $itemcrowd->rate /100 * $pay_subject->amount,
+                                                'amount' => $itemcrowd->rate /100 * $pay_subject->total,
                                                 'created_at' => date('Y-m-d H:i:s'),
                                                 'updated_at' => date('Y-m-d H:i:s'),
                                             ];
-                                            $crowd_total += $itemcrowd->rate /100 * $pay_subject->amount;
+                                            $crowd_total += $itemcrowd->rate /100 * $pay_subject->total;
                                             break;
                                         }
                                     }
@@ -551,11 +595,15 @@ class PaysubjectController extends BaseitemController
                                     'total_id'=>0,
                                     'calculate'=>null,
                                     'amount'=>$crowd_total,
+                                    'portion'=>100,
+                                    'total'=>$crowd_total,
                                     'code'=>'110',
                                     'created_at'=>date('Y-m-d H:i:s'),
                                     'updated_at'=>date('Y-m-d H:i:s'),
                                 ];
                             }
+                        }else{
+                            throw new \Exception('请输入超期临时安置费',404404);
                         }
 
                         break;
@@ -873,6 +921,7 @@ class PaysubjectController extends BaseitemController
                     throw new \Exception('数据不存在',404404);
                 }
                 $pay_subject->fill($request->input());
+                $pay_subject->total=$pay_subject->amount;
                 $pay_subject->save();
 
                 $code='success';
@@ -969,6 +1018,7 @@ class PaysubjectController extends BaseitemController
             $del_ids=[];
             $subject_data=[];
             foreach ($pay_subjects as $subject){
+                $portion=100;
                 switch ($subject->subject_id){
                     /* ++++++++++ 签约奖励（住宅） ++++++++++ */
                     case 11:
@@ -992,6 +1042,12 @@ class PaysubjectController extends BaseitemController
                                 $reward_total=$legal->legal_area * $item_reward->price;
                                 $calculate=number_format($legal->legal_area,2).' × '.number_format(($item_reward->price),2).' = '.number_format($reward_total,2);
                             }
+                            $total=$reward_total;
+                            // 公房，按比例补偿
+                            if($household->getOriginal('type')){
+                                $portion=$program->portion_renter;
+                                $total=$reward_total*$program->portion_renter/100;
+                            }
                             $subject_data[]=[
                                 'id'=>$subject->id,
                                 'item_id'=>$subject->item_id,
@@ -1004,6 +1060,8 @@ class PaysubjectController extends BaseitemController
                                 'total_id'=>0,
                                 'calculate'=>$calculate,
                                 'amount'=>$reward_total,
+                                'portion'=>$portion,
+                                'total'=>$total,
                                 'code'=>'110',
                                 'created_at'=>date('Y-m-d H:i:s'),
                                 'updated_at'=>date('Y-m-d H:i:s'),
@@ -1034,6 +1092,12 @@ class PaysubjectController extends BaseitemController
                                 $reward_total=($legal->legal_total) * ($item_reward->portion)/100;
                                 $calculate=number_format(($legal->legal_total),2).' × '.($item_reward->portion).'% = '.number_format($reward_total,2);
                             }
+                            $total=$reward_total;
+                            // 公房，按比例补偿
+                            if($household->getOriginal('type')){
+                                $portion=$program->portion_renter;
+                                $total=$reward_total*$program->portion_renter/100;
+                            }
                             $subject_data[]=[
                                 'id'=>$subject->id,
                                 'item_id'=>$subject->item_id,
@@ -1046,6 +1110,8 @@ class PaysubjectController extends BaseitemController
                                 'total_id'=>0,
                                 'calculate'=>$calculate,
                                 'amount'=>$reward_total,
+                                'portion'=>$portion,
+                                'total'=>$total,
                                 'code'=>'110',
                                 'created_at'=>date('Y-m-d H:i:s'),
                                 'updated_at'=>date('Y-m-d H:i:s'),
@@ -1102,6 +1168,12 @@ class PaysubjectController extends BaseitemController
                                         $transit_total=$program->transit_base * $transit_times;
                                         $calculate=number_format($program->transit_base,2).' × '.$transit_times.' = '.number_format($transit_total,2);
                                     }
+                                    $total=$transit_total;
+                                    // 公房，按比例补偿
+                                    if($household->getOriginal('type')){
+                                        $portion=$program->portion_renter;
+                                        $total=$transit_total*$program->portion_renter/100;
+                                    }
                                     $subject_data[]=[
                                         'id'=>$subject->id,
                                         'item_id'=>$subject->item_id,
@@ -1114,6 +1186,8 @@ class PaysubjectController extends BaseitemController
                                         'total_id'=>0,
                                         'calculate'=>$calculate,
                                         'amount'=>$transit_total,
+                                        'portion'=>$portion,
+                                        'total'=>$total,
                                         'code'=>'110',
                                         'created_at'=>date('Y-m-d H:i:s'),
                                         'updated_at'=>date('Y-m-d H:i:s'),
@@ -1156,13 +1230,13 @@ class PaysubjectController extends BaseitemController
                                                             'member_crowd_id' => $member_crowd_id,
                                                             'crowd_cate_id' => $itemcrowd->crowd_cate_id,
                                                             'crowd_id' => $itemcrowd->crowd_id,
-                                                            'transit' =>$transit_total,
+                                                            'transit' =>$total,
                                                             'rate' => $itemcrowd->rate,
-                                                            'amount' => $itemcrowd->rate /100 * $transit_total,
+                                                            'amount' => $itemcrowd->rate /100 * $total,
                                                             'created_at' => date('Y-m-d H:i:s'),
                                                             'updated_at' => date('Y-m-d H:i:s'),
                                                         ];
-                                                        $crowd_total += $itemcrowd->rate /100 * $transit_total;
+                                                        $crowd_total += $itemcrowd->rate /100 * $total;
                                                         break;
                                                     }
                                                 }
@@ -1196,6 +1270,8 @@ class PaysubjectController extends BaseitemController
                                                 'total_id'=>0,
                                                 'calculate'=>null,
                                                 'amount'=>$crowd_total,
+                                                'portion'=>100,
+                                                'total'=>$crowd_total,
                                                 'code'=>'110',
                                                 'created_at'=>date('Y-m-d H:i:s'),
                                                 'updated_at'=>date('Y-m-d H:i:s'),
@@ -1235,8 +1311,8 @@ class PaysubjectController extends BaseitemController
             }
 
             if(filled($subject_data)){
-                $field=['id','item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','code','created_at','updated_at'];
-                $sqls=batch_update_or_insert_sql('pay_subject',$field,$subject_data,['calculate','amount','updated_at']);
+                $field=['id','item_id','household_id','land_id','building_id','pay_id','pact_id','subject_id','total_id','calculate','amount','portion','total','code','created_at','updated_at'];
+                $sqls=batch_update_or_insert_sql('pay_subject',$field,$subject_data,['calculate','amount','portion','total','updated_at']);
                 if(!$sqls){
                     throw new \Exception('数据错误',404404);
                 }
