@@ -719,15 +719,15 @@ class PayController extends BaseitemController
                 ])
                 ->get();
             /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
-            $pay_unit=null;
+            $pay_unit_total=0;
             if($household->getOriginal('type')){
-                $pay_unit=Payunit::sharedLock()
+                $pay_unit_total=Payunit::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
                         ['household_id',$household->id],
                         ['pay_id',$pay_id],
                     ])
-                    ->first();
+                    ->sum('total');
 
                 $holder_type=2;
             }else{
@@ -791,7 +791,7 @@ class PayController extends BaseitemController
                 'household'=>$household,
                 'household_detail'=>$household_detail,
                 'subjects'=>$subjects,
-                'pay_unit'=>$pay_unit,
+                'pay_unit_total'=>$pay_unit_total,
                 'holder'=>$holder,
                 'payhouses'=>$payhouses,
                 'paytransits'=>$paytransits,

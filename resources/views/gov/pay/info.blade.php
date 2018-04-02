@@ -160,12 +160,12 @@
                                                 其中：
                                                 <br>
                                                 【{{$sdata['household']->itemland->adminunit->name}}（公房单位）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay_unit']->amount)}}
+                                                <strong>{{number_format($sdata['pay_unit_total'],2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['pay_unit_total'])}}
                                                 <br>
                                                 【{{$sdata['holder']->name}}（承租人）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay']->total-$sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay']->total-$sdata['pay_unit']->amount)}}
+                                                <strong>{{number_format($sdata['pay']->total-$sdata['pay_unit_total'],2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['pay']->total-$sdata['pay_unit_total'])}}
                                             @endif
                                            
                                         </span>
@@ -240,7 +240,9 @@
                         <th>序号</th>
                         <th>名称</th>
                         <th>计算公式</th>
-                        <th>补偿小计</th>
+                        <th>补偿总额</th>
+                        <th>被征收户补偿比例（%）</th>
+                        <th>被征收户补偿金额</th>
                         <th>状态</th>
                         <th>操作</th>
                     </tr>
@@ -253,6 +255,8 @@
                                 <td>{{$subject->subject->name}}</td>
                                 <td>{{$subject->calculate}}</td>
                                 <td>{{number_format($subject->amount,2)}}</td>
+                                <td>{{number_format($subject->portion,2)}}</td>
+                                <td>{{number_format($subject->total,2)}}</td>
                                 <td>{{$subject->state->name}}</td>
                                 <td>
                                     <div class="btn-group">
