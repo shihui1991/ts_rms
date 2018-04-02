@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\House;
 use App\Http\Model\Housecompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,11 +49,9 @@ class HousecompanyController extends BaseauthController
         $model=new Housecompany();
         if(is_numeric($deleted) && in_array($deleted,[0,1])){
             $infos['deleted']=$deleted;
-            if($deleted){
+            if($deleted==0){
                 $model=$model->onlyTrashed();
             }
-        }else{
-            $model=$model->withTrashed();
         }
         /* ********** 查询 ********** */
         DB::beginTransaction();
@@ -77,7 +76,7 @@ class HousecompanyController extends BaseauthController
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+            if($request->ajax()){
             return response()->json($result);
         }else {
             return view('gov.housecompany.index')->with($result);
@@ -279,5 +278,43 @@ class HousecompanyController extends BaseauthController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            $housecompany_state = House::where('company_id',$ids)->count();
+            if($housecompany_state){
+                throw new \Exception('本条数据正在被房源使用,暂时不能被删除！',404404);
+            }
+
+            $housecompany = Housecompany::where('id',$ids)->delete();
+            if(!$housecompany){
+                throw new \Exception('删除失败',404404);
+            }
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$housecompany;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
     }
 }
