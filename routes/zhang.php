@@ -66,21 +66,25 @@ Route::get('/housecompany','HousecompanyController@index')->name('g_housecompany
 Route::any('/housecompany_add','HousecompanyController@add')->name('g_housecompany_add');
 Route::get('/housecompany_info','HousecompanyController@info')->name('g_housecompany_info');
 Route::any('/housecompany_edit','HousecompanyController@edit')->name('g_housecompany_edit');
+Route::any('/housecompany_del','HousecompanyController@del')->name('g_housecompany_del');
 /*---------- 房源社区 ----------*/
 Route::any('/housecommunity','HousecommunityController@index')->name('g_housecommunity');
 Route::any('/housecommunity_add','HousecommunityController@add')->name('g_housecommunity_add');
 Route::get('/housecommunity_info','HousecommunityController@info')->name('g_housecommunity_info');
 Route::any('/housecommunity_edit','HousecommunityController@edit')->name('g_housecommunity_edit');
+Route::any('/housecommunity_del','HousecommunityController@del')->name('g_housecommunity_del');
 /*---------- 房源户型图 ----------*/
 Route::any('/houselayoutimg','HouselayoutimgController@index')->name('g_houselayoutimg');
 Route::any('/houselayoutimg_add','HouselayoutimgController@add')->name('g_houselayoutimg_add');
 Route::get('/houselayoutimg_info','HouselayoutimgController@info')->name('g_houselayoutimg_info');
 Route::any('/houselayoutimg_edit','HouselayoutimgController@edit')->name('g_houselayoutimg_edit');
+Route::any('/houselayoutimg_del','HouselayoutimgController@del')->name('g_houselayoutimg_del');
 /*---------- 房源 ----------*/
 Route::any('/house','HouseController@index')->name('g_house');
 Route::any('/house_add','HouseController@add')->name('g_house_add');
 Route::get('/house_info','HouseController@info')->name('g_house_info');
 Route::any('/house_edit','HouseController@edit')->name('g_house_edit');
+Route::any('/house_del','HouseController@del')->name('g_house_del');
 /*---------- 房源-评估单价 ----------*/
 Route::any('/houseprice','HousepriceController@index')->name('g_houseprice');
 Route::any('/houseprice_add','HousepriceController@add')->name('g_houseprice_add');

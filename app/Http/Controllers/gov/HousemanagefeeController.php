@@ -35,8 +35,8 @@ class HousemanagefeeController extends BaseauthController
                     ->select(['id','company_id','community_id','layout_id','building','unit','floor','number','area']);
             }])
                 ->sharedLock()
-                ->orderBy('manage_at','asc')
                 ->orderBy('house_id','asc')
+                ->orderBy('manage_at','asc')
                 ->paginate();
 
             $code='success';
