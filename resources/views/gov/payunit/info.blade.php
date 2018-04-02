@@ -105,6 +105,7 @@
                     <tr>
                         <th>序号</th>
                         <th>被征收户</th>
+                        <th>补偿科目</th>
                         <th>计算公式</th>
                         <th>补偿金额</th>
                         <th>公房单位补偿比例（%）</th>
@@ -118,6 +119,7 @@
                             <tr>
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$pay_unit->itemland->address}}{{$pay_unit->household->itembuilding->building}}栋{{$pay_unit->household->unit}}单元{{$pay_unit->household->floor}}楼{{$pay_unit->household->number}}号</td>
+                                <td>{{$pay_unit->subject->name}}</td>
                                 <td>{{$pay_unit->calculate}}</td>
                                 <td>{{number_format($pay_unit->amount,2)}}</td>
                                 <td>{{number_format($pay_unit->portion,2)}}</td>
