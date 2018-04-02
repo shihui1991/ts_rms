@@ -118,13 +118,9 @@
                                                 <br>
                                                 其中：
                                                 <br>
-                                                【{{$sdata['household']->itemland->adminunit->name}}（公房单位）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay_unit_total'],2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay_unit_total'])}}
-                                                <br>
                                                 【{{$sdata['holder']->name}}（承租人）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay']->total-$sdata['pay_unit_total'],2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay']->total-$sdata['pay_unit_total'])}}
+                                                <strong>{{number_format($sdata['household_total'],2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['household_total'])}}
                                             @endif
 
                                         </span>
@@ -227,7 +223,7 @@
                                             产权调换后结余补偿款：
                                             <span id="last_total">
                                                 @if($sdata['household']->getOriginal('type'))
-                                                    {{number_format($sdata['pay']->total-$sdata['pay_unit_total'],2)}}
+                                                    {{number_format($sdata['household_total'],2)}}
                                                 @else
                                                     {{number_format($sdata['pay']->total,2)}}
                                                 @endif

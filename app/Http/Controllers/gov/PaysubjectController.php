@@ -525,8 +525,13 @@ class PaysubjectController extends BaseitemController
                         }
 
                         if($pay_subject->amount){
-                            $pay_subject->portion=$program->portion_renter;
-                            $pay_subject->total=$pay_subject->amount*$program->portion_renter/100;
+                            $pay_subject->total=$pay_subject->amount;
+                            // 公房，按比例补偿
+                            if($household->getOriginal('type')){
+                                $pay_subject->portion=$program->portion_renter;
+                                $pay_subject->total=$pay_subject->amount*$program->portion_renter/100;
+                            }
+
                             /* ++++++++++ 超期临时安置费特殊人群优惠补助 ++++++++++ */
                             $member_crowd_ids=Householdmembercrowd::sharedLock()
                                 ->where([
