@@ -95,15 +95,15 @@ class PayhouseController extends BaseitemController
                     throw new \Exception('已有选房数据，请进入修改页面',404404);
                 }
                 /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
-                $pay_unit=null;
+                $pay_unit_total=0;
                 if($household->getOriginal('type')){
-                    $pay_unit=Payunit::sharedLock()
+                    $pay_unit_total=Payunit::sharedLock()
                         ->where([
                             ['item_id',$this->item_id],
                             ['household_id',$household->id],
                             ['pay_id',$pay_id],
                         ])
-                        ->first();
+                        ->sum('total');
 
                     $holder_type=2;
                 }else{
@@ -126,10 +126,7 @@ class PayhouseController extends BaseitemController
                         ['pay_id',$pay->id],
                     ])
                     ->whereIn('subject_id',[1,2,4,11,12])
-                    ->sum('amount');
-                if($household->getOriginal('type')==1){ // 公房
-                    $resettle_total -= $pay_unit->amount;
-                }
+                    ->sum('total');
 
                 /* ++++++++++ 项目房源 ++++++++++ */
                 $item_house_ids=Itemhouse::sharedLock()
@@ -163,7 +160,7 @@ class PayhouseController extends BaseitemController
                 $sdata=[
                     'item'=>$this->item,
                     'household'=>$household,
-                    'pay_unit'=>$pay_unit,
+                    'pay_unit_total'=>$pay_unit_total,
                     'holder'=>$holder,
                     'pay'=>$pay,
                     'resettle_total'=>$resettle_total,
@@ -221,6 +218,9 @@ class PayhouseController extends BaseitemController
                 if($pay->getOriginal('transit_way')){
                     if(blank($transits)){
                         throw new \Exception('请选择临时周转房源',404404);
+                    }
+                    if(count($transits)>1){
+                        throw new \Exception('只能选择一套临时周转房',404404);
                     }
                     $house_ids=array_diff($house_ids,$transits);
                 }
@@ -289,17 +289,7 @@ class PayhouseController extends BaseitemController
                         ['pay_id',$pay->id],
                     ])
                     ->whereIn('subject_id',[1,2,4,11,12])
-                    ->sum('amount');
-                if($household->getOriginal('type')==1){ // 公房
-                    $pay_unit=Payunit::sharedLock()
-                        ->where([
-                            ['item_id',$this->item_id],
-                            ['household_id',$household->id],
-                            ['pay_id',$pay_id],
-                        ])
-                        ->first();
-                    $resettle_total -= $pay_unit->amount;
-                }
+                    ->sum('total');
 
                 $last_total=$resettle_total; // 产权调换后结余补偿款
                 $plus_area=0; // 上浮累计面积
@@ -600,17 +590,16 @@ class PayhouseController extends BaseitemController
                     ['pay_id',$pay->id],
                 ])
                 ->whereIn('subject_id',[1,2,4,11,12])
-                ->sum('amount');
+                ->sum('total');
             if($household->getOriginal('type')==1){ // 公房
-                $pay_unit=Payunit::sharedLock()
+                $pay_unit_total=Payunit::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
                         ['household_id',$household->id],
                         ['pay_id',$pay_id],
                     ])
-                    ->first();
-                $total -= $pay_unit->amount;
-                $resettle_total -= $pay_unit->amount;
+                    ->sum('total');
+                $total -= $pay_unit_total;
             }
 
             $end_total=$total;
