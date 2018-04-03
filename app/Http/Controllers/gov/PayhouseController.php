@@ -365,6 +365,7 @@ class PayhouseController extends BaseitemController
                                         'rate'=>$rate->rate,
                                         'agio'=>$house->itemhouseprice->market - $house->itemhouseprice->price,
                                         'amount'=>$amount,
+                                        'house_type'=>2,
                                         'created_at'=>date('Y-m-d H:i:s'),
                                         'updated_at'=>date('Y-m-d H:i:s'),
                                     ];
@@ -390,6 +391,7 @@ class PayhouseController extends BaseitemController
                                     'rate'=>$rate->rate,
                                     'agio'=>$house->itemhouseprice->market - $house->itemhouseprice->price,
                                     'amount'=>$amount,
+                                    'house_type'=>2,
                                     'created_at'=>date('Y-m-d H:i:s'),
                                     'updated_at'=>date('Y-m-d H:i:s'),
                                 ];
@@ -408,6 +410,7 @@ class PayhouseController extends BaseitemController
                         'market'=>$house->itemhouseprice->market,
                         'price'=>$house->itemhouseprice->price,
                         'amount'=>$house_amount,
+                        'house_type'=>2,
                         'amount_plus'=>$plus_toal,
                         'total'=>$house_amount + $plus_toal,
                         'created_at'=>date('Y-m-d H:i:s'),

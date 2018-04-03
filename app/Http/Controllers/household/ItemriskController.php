@@ -8,6 +8,7 @@
 namespace App\Http\Controllers\household;
 
 use App\Http\Model\Assess;
+use App\Http\Model\Itemhouse;
 use App\Http\Model\Itemrisk;
 use App\Http\Model\Household;
 use App\Http\Model\Layout;
@@ -168,6 +169,11 @@ class  ItemriskController extends BaseController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+
+                if($request->input('repay_way') ==0 && $request->input('transit_way')!=0){
+                    throw new \Exception('选择货币补偿只能选择货币过渡',404404);
+                }
+
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $itemrisk = $model;
                 $itemrisk->fill($request->all());
@@ -201,6 +207,15 @@ class  ItemriskController extends BaseController
                 foreach($sqls as $sql){
                     DB::statement($sql);
                 }
+
+                $household = Household::sharedLock()
+                    ->find(session('household_user.user_id'));
+                $household->code=67;
+                $household->save();
+                if(blank($household)){
+                    throw new \Exception('保存失败!',404404);
+                }
+
                 $code = 'success';
                 $msg = '添加成功';
                 $sdata = $itemrisk;
@@ -312,6 +327,10 @@ class  ItemriskController extends BaseController
                     throw new \Exception('指定数据项不存在', 404404);
                 }
 
+                if($request->input('repay_way') ==0 && $request->input('transit_way')!=0){
+                    throw new \Exception('选择货币补偿只能选择货币过渡',404404);
+                }
+
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $itemrisk->fill($request->all());
                 $itemrisk->editOther($request);
@@ -341,6 +360,12 @@ class  ItemriskController extends BaseController
                 foreach($sqls as $sql){
                     DB::statement($sql);
                 }
+
+                $item_household=Household::sharedLock()
+                                ->find($household_id);
+                $item_household->code=67;
+                $item_household->save();
+
 
                 $code = 'success';
                 $msg = '修改成功';

@@ -69,11 +69,14 @@
                                         </tbody>
                                         <tfoot>
                                         <tr>
-                                            <th colspan="3">可调换安置房的补偿总额：{{number_format($sdata['resettle_total'],2)}} 元</th>
-                                            <th colspan="3">上浮面积：<span id="plus_area">{{$sdata['plus_area']}}</span> ㎡</th>
+                                            <th colspan="3">可调换安置房的补偿总额：{{number_format($sdata['resettle_total'],2)}}元
+                                            </th>
+                                            <th colspan="3">上浮面积：<span id="plus_area">{{$sdata['plus_area']}}</span> ㎡
+                                            </th>
                                             <th colspan="7">
                                                 产权调换后结余补偿款：
-                                                <span id="last_total">{{number_format($sdata['last_total'],2)}}</span> 元（负数则表示被征收户需补交上浮房款）
+                                                <span id="last_total">{{number_format($sdata['last_total'],2)}}</span>
+                                                元（负数则表示被征收户需补交上浮房款）
                                             </th>
                                         </tr>
                                         </tfoot>
@@ -83,34 +86,22 @@
                         </div>
                     </div>
                 </div>
-            @else
-                <div class="alert alert-warning">
-                    <button type="button" class="close" data-dismiss="alert">
-                        <i class="ace-icon fa fa-times"></i>
-                    </button>
-                    <strong>
-                        <i class="ace-icon fa fa-exclamation-circle"></i>
-                    </strong>
-                    <strong class="resp-error">暂未选择安置房</strong>
-
-                    <br>
-                </div>
             @endif
 
-                <div class="col-xs-12 col-sm-12">
+            <div class="col-xs-12 col-sm-12">
 
-                    <div class="widget-container-col ui-sortable">
-                        <div class="widget-box ui-sortable-handle">
-                            <div class="widget-header">
-                                <h5 class="widget-title">临时周转房</h5>
+                <div class="widget-container-col ui-sortable">
+                    <div class="widget-box ui-sortable-handle">
+                        <div class="widget-header">
+                            <h5 class="widget-title">临时周转房</h5>
 
-                                <div class="widget-toolbar">
-                                    <a href="#" data-action="collapse">
-                                        <i class="ace-icon fa fa-chevron-up"></i>
-                                    </a>
-                                </div>
+                            <div class="widget-toolbar">
+                                <a href="#" data-action="collapse">
+                                    <i class="ace-icon fa fa-chevron-up"></i>
+                                </a>
                             </div>
-                            @if(filled($sdata['transit_house']))
+                        </div>
+                        @if(filled($sdata['transit_house']))
                             <div class="widget-body">
                                 <div class="widget-main">
 
@@ -152,37 +143,12 @@
 
                                 </div>
                             </div>
-                            @else
-                                <div class="alert alert-warning">
-                                    <button type="button" class="close" data-dismiss="alert">
-                                        <i class="ace-icon fa fa-times"></i>
-                                    </button>
-                                    <strong>
-                                        <i class="ace-icon fa fa-exclamation-circle"></i>
-                                    </strong>
-                                    <strong class="resp-error">暂未选择临时周转房</strong>
-
-                                    <br>
-                                </div>
-                            @endif
-                        </div>
+                        @endif
                     </div>
-
                 </div>
-
+            </div>
         </div>
-    @else
-        <div class="alert alert-warning">
-            <button type="button" class="close" data-dismiss="alert">
-                <i class="ace-icon fa fa-times"></i>
-            </button>
-            <strong>
-                <i class="ace-icon fa fa-exclamation-circle"></i>
-            </strong>
-            <strong class="resp-error">{{$message}}</strong>
 
-            <br>
-        </div>
     @endif
     <h3 class="header smaller red">所有选房</h3>
     @if(filled($sdata['allhouse']))
@@ -256,18 +222,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    @else
-        <div class="alert alert-warning">
-            <button type="button" class="close" data-dismiss="alert">
-                <i class="ace-icon fa fa-times"></i>
-            </button>
-            <strong>
-                <i class="ace-icon fa fa-exclamation-circle"></i>
-            </strong>
-            <strong class="resp-error">{{$message}}</strong>
-
-            <br>
         </div>
     @endif
 @endsection
