@@ -41,6 +41,7 @@ Route::any('/household_edit','HouseholdController@edit')->name('c_household_edit
 Route::any('/household_buildingadd','HouseholdController@buildingadd')->name('c_household_buildingadd');
 Route::any('/household_buildinginfo','HouseholdController@buildinginfo')->name('c_household_buildinginfo');
 Route::any('/household_buildingedit','HouseholdController@buildingedit')->name('c_household_buildingedit');
+Route::any('/household_buildingdel','HouseholdController@buildingdel')->name('c_household_buildingdel');
 
 /*---------- 评估[房产][资产] ----------*/
 Route::get('/comassess','ComassessController@index')->name('c_comassess');
@@ -56,11 +57,13 @@ Route::get('/companyuser','CompanyuserController@index')->name('c_companyuser');
 Route::any('/companyuser_add','CompanyuserController@add')->name('c_companyuser_add');
 Route::any('/companyuser_info','CompanyuserController@info')->name('c_companyuser_info');
 Route::any('/companyuser_edit','CompanyuserController@edit')->name('c_companyuser_edit');
+Route::any('/companyuser_del','CompanyuserController@del')->name('c_companyuser_del');
 /*---------- 评估师 ----------*/
 Route::get('/companyvaluer','CompanyvaluerController@index')->name('c_companyvaluer');
 Route::any('/companyvaluer_add','CompanyvaluerController@add')->name('c_companyvaluer_add');
 Route::any('/companyvaluer_info','CompanyvaluerController@info')->name('c_companyvaluer_info');
 Route::any('/companyvaluer_edit','CompanyvaluerController@edit')->name('c_companyvaluer_edit');
+Route::any('/companyvaluer_del','CompanyvaluerController@del')->name('c_companyvaluer_del');
 /*============================================ 【设置】 ================================================*/
 /*---------- 个人中心 ----------*/
 Route::get('/userself','UserselfController@index')->name('c_userself'); // 个人信息

@@ -60,7 +60,7 @@ class ComassessController extends BaseitemController
                     ->leftJoin('com_assess_estate as c', 'h.id', '=', 'c.household_id')
                     ->where('item_company_household.item_id',$item_id)
                     ->where('item_company_household.company_id',$company_id)
-                    ->whereBetween('c.code',[130,132])
+                    ->whereBetween('c.code',[130,136])
                     ->where('c.has_assets',1)
                     ->count();
                 $households = Companyhousehold::with([
@@ -73,10 +73,10 @@ class ComassessController extends BaseitemController
                                 $query->select(['id', 'building']);
                             },
                             'estates'=>function($query){
-                                $query->whereBetween('code',[130,132])->select(['id','household_id','code','has_assets']);
+                                $query->whereBetween('code',[130,136])->select(['id','household_id','code','has_assets']);
                             },
                             'assets'=>function($query){
-                                $query->whereBetween('code',[130,132])->select(['id','household_id','code']);
+                                $query->whereBetween('code',[130,136])->select(['id','household_id','code']);
                             }
                         ]);
                     }])
@@ -90,7 +90,7 @@ class ComassessController extends BaseitemController
                     ->leftJoin('com_assess_estate as c', 'h.id', '=', 'c.household_id')
                     ->where('item_company_household.item_id',$item_id)
                     ->where('item_company_household.company_id',$company_id)
-                    ->whereBetween('c.code',[130,132])
+                    ->whereBetween('c.code',[130,136])
                     ->count();
                 $households = Companyhousehold::with([
                     'household'=>function($querys){
@@ -102,7 +102,7 @@ class ComassessController extends BaseitemController
                                 $query->select(['id', 'building']);
                             },
                             'estates'=>function($query){
-                                $query->whereBetween('code',[130,132])->select(['id','household_id','code','has_assets']);
+                                $query->whereBetween('code',[130,136])->select(['id','household_id','code','has_assets']);
                             }
                         ]);
                     }])
@@ -129,6 +129,7 @@ class ComassessController extends BaseitemController
             $url=null;
         }
         DB::commit();
+        dd($households);
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
