@@ -25,7 +25,7 @@
         @endif
 
         <a href="{{route('g_pact_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id,'cate'=>1])}}" class="btn">
-            补偿安置协议
+            生成补偿安置协议
         </a>
     </div>
 
@@ -303,7 +303,7 @@
 
                                 @if(filled($house->housepluses))
                                     <tr data-tt-id="house-plus-{{$loop->index}}" data-tt-parent-id="house-{{$house->house_id}}">
-                                        <td>上浮房款：</td>
+                                        <th>上浮房款：</th>
                                         <td colspan="8">
                                             <table class="table table-hover table-bordered">
                                                 <thead>
@@ -381,6 +381,7 @@
                         <th>类别</th>
                         <th>签约时间</th>
                         <th>状态</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -391,6 +392,15 @@
                                 <td>{{$pact->pactcate->name}}</td>
                                 <td>{{$pact->sign_at}}</td>
                                 <td>{{$pact->state->name}} | {{$pact->status}}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a data-url="{{route('g_pact_info',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" class="btn btn-sm btn-info" onclick="layerWin(this)">查看内容</a>
+                                        @if(in_array($pact->code,['170','174']))
+                                        <a data-url="{{route('g_pact_reset_pact',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" class="btn btn-sm btn-danger" onclick="btnAct(this)">重新生成</a>
+                                        @endif
+                                    </div>
+
+                                </td>
                             </tr>
                         @endforeach
                     @endif
@@ -415,6 +425,7 @@
     @parent
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('treetable/jquery.treetable.js')}}"></script>
+    <script src="{{asset('layer/layer.js')}}"></script>
 
     <script>
         $('.img-content').viewer();
@@ -423,6 +434,18 @@
             ,initialState :"collapsed"//默认打开所有节点
             ,stringCollapse:'关闭'
             ,stringExpand:'展开'});
+
+        function layerWin(obj) {
+            var that=$(obj);
+            var lay=layer.open({
+                type: 2
+                ,skin:'layui-layer-lan'
+                ,title:'协议详情'
+                ,maxmin:true
+                ,content: that.data('url')
+            });
+            layer.full(lay);
+        }
     </script>
 
 @endsection

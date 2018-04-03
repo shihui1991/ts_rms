@@ -15,7 +15,9 @@ class Pact extends Model
     protected $primaryKey='id';
     protected $fillable=['content','sign_at','sign','state'];
     protected $dates=['created_at','updated_at','deleted_at'];
-    protected $casts = [];
+    protected $casts = [
+        'content'=>'array',
+    ];
 
     /* ++++++++++ 数据字段注释 ++++++++++ */
     public $columns=[

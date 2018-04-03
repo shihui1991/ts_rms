@@ -98,7 +98,9 @@ Route::any('/payhouse_add','PayhouseController@add')->name('g_payhouse_add'); //
 Route::any('/payhouse_cal','PayhouseController@calculate')->name('g_payhouse_cal'); //选房计算
 
 Route::any('/pact','PactController@index')->name('g_pact'); //协议
-Route::any('/pact_add','PactController@add')->name('g_pact_add'); //被征收户 - 补偿安置协议
+Route::any('/pact_add','PactController@add')->name('g_pact_add'); //被征收户 - 生成补偿安置协议
+Route::any('/pact_reset_pact','PactController@reset_pact')->name('g_pact_reset_pact'); //被征收户 - 补偿安置协议 - 重新生成
+Route::any('/pact_info','PactController@info')->name('g_pact_info'); //协议详情
 
 /*---------- 腾空搬迁 ----------*/
 Route::any('/move','MoveController@index')->name('g_move'); //腾空搬迁
