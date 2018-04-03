@@ -442,7 +442,7 @@ class PaysubjectController extends BaseitemController
                                                 'updated_at' => date('Y-m-d H:i:s'),
                                             ];
                                             $crowd_total += $itemcrowd->rate /100 * $pay_subject->total;
-                                            break;
+                                            if($itemcrowd->crowd_cate_id==1) break;
                                         }
                                     }
                                 }
@@ -576,7 +576,7 @@ class PaysubjectController extends BaseitemController
                                                 'updated_at' => date('Y-m-d H:i:s'),
                                             ];
                                             $crowd_total += $itemcrowd->rate /100 * $pay_subject->total;
-                                            break;
+                                            if($itemcrowd->crowd_cate_id==1) break;
                                         }
                                     }
                                 }
@@ -1242,7 +1242,7 @@ class PaysubjectController extends BaseitemController
                                                             'updated_at' => date('Y-m-d H:i:s'),
                                                         ];
                                                         $crowd_total += $itemcrowd->rate /100 * $total;
-                                                        break;
+                                                        if($itemcrowd->crowd_cate_id==1) break;
                                                     }
                                                 }
                                             }

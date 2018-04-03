@@ -9,6 +9,7 @@ use App\Http\Model\Crowd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CrowdController extends BaseauthController
 {
@@ -89,7 +90,9 @@ class CrowdController extends BaseauthController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'parent_id' => 'required',
-                'name' => 'required|unique:crowd'
+                'name' => ['required',Rule::unique('crowd')->where(function($query){
+                    $query->where('parent_id',request()->input('parent_id'));
+                })]
             ];
             $messages = [
                 'required' => ':attribute 为必须项',
@@ -223,7 +226,9 @@ class CrowdController extends BaseauthController
             $model=new Crowd();
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:crowd,name,'.$id.',id'
+                'name' => ['required',Rule::unique('crowd')->where(function($query) use ($id){
+                    $query->where('parent_id',request()->input('parent_id'))->where('id','<>',$id);
+                })]
             ];
             $messages=[
                 'required'=>':attribute 为必须项',
