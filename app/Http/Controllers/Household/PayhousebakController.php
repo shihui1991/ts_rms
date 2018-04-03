@@ -63,6 +63,8 @@ class PayhousebakController extends BaseController{
                 throw new \Exception('错误操作',404404);
             }
 
+
+            $transit_house=null;
             /*判断是否通过临时周转房过渡*/
             if($pay->getOriginal('transit_way')==1){
                 $transit_house=Payhousebak::with(['house'=>function($query){
@@ -84,12 +86,8 @@ class PayhousebakController extends BaseController{
                     ])
                     ->sharedLock()
                     ->get();
-               /* if (blank($transit_house)){
-                    throw new \Exception('暂未选择临时周转房', 404404);
-                }*/
             }
 
-            $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1],['deleted_at',null]])->pluck('house_id')->toArray();
             /* ++++++++++ 被征收户 ++++++++++ */
             $household=Household::sharedLock()
                 ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
@@ -98,7 +96,7 @@ class PayhousebakController extends BaseController{
                 throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
             }
 
-
+            $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1]])->pluck('house_id')->toArray();
 
             /* ++++++++++ 产权调换房 ++++++++++ */
             $houses=House::with(['housecommunity','layout','itemhouseprice'=>function($query){
@@ -116,6 +114,7 @@ class PayhousebakController extends BaseController{
             if(blank($houses)){
                 throw new \Exception('当前选择的房源已被占用',404404);
             }
+
             $houses=$houses->sortByDesc(function($house,$key){
                 return $house->itemhouseprice->price;
             });
@@ -133,17 +132,6 @@ class PayhousebakController extends BaseController{
                 ->whereIn('subject_id',[1,2,4,11,12])
                 ->sum('total');
 
-            if($household->getOriginal('type')==1){ // 公房
-                $pay_unit=Payunit::sharedLock()
-                    ->where([
-                        ['item_id',$this->item_id],
-                        ['household_id',$household->id],
-                        ['pay_id',$pay->id],
-                    ])
-                    ->first();
-                $total -= $pay_unit->amount;
-                $resettle_total -= $pay_unit->amount;
-            }
             $end_total=$total;
             $last_total=$resettle_total; // 产权调换后结余补偿款
             $plus_area=0; // 上浮累计面积
@@ -193,6 +181,11 @@ class PayhousebakController extends BaseController{
                                 $plus_toal += $amount;
 
                                 $plus_data=[
+                                    'item_id'=>$pay->item_id,
+                                    'household_id'=>$pay->household_id,
+                                    'land_id'=>$pay->land_id,
+                                    'building_id'=>$pay->building_id,
+                                    'house_id'=>$house->id,
                                     'start'=>$rate->start_area,
                                     'end'=>$rate->end_area,
                                     'area'=>$last_area,
@@ -201,6 +194,8 @@ class PayhousebakController extends BaseController{
                                     'rate'=>$rate->rate,
                                     'agio'=>$house->itemhouseprice->market - $house->itemhouseprice->price,
                                     'amount'=>$amount,
+                                    'created_at'=>date('Y-m-d H:i:s'),
+                                    'updated_at'=>date('Y-m-d H:i:s'),
                                 ];
                                 break;
                             }
@@ -213,6 +208,11 @@ class PayhousebakController extends BaseController{
                                 $plus_toal += $amount;
 
                                 $plus_data=[
+                                    'item_id'=>$pay->item_id,
+                                    'household_id'=>$pay->household_id,
+                                    'land_id'=>$pay->land_id,
+                                    'building_id'=>$pay->building_id,
+                                    'house_id'=>$house->id,
                                     'start'=>$rate->start_area,
                                     'end'=>$rate->end_area,
                                     'area'=>$up_area,
@@ -221,6 +221,8 @@ class PayhousebakController extends BaseController{
                                     'rate'=>$rate->rate,
                                     'agio'=>$house->itemhouseprice->market - $house->itemhouseprice->price,
                                     'amount'=>$amount,
+                                    'created_at'=>date('Y-m-d H:i:s'),
+                                    'updated_at'=>date('Y-m-d H:i:s'),
                                 ];
                             }
                         }
@@ -231,6 +233,11 @@ class PayhousebakController extends BaseController{
                             $plus_toal += $amount;
 
                             $plus_data=[
+                                'item_id'=>$pay->item_id,
+                                'household_id'=>$pay->household_id,
+                                'land_id'=>$pay->land_id,
+                                'building_id'=>$pay->building_id,
+                                'house_id'=>$house->id,
                                 'start'=>$rate->start_area,
                                 'end'=>$rate->end_area,
                                 'area'=>$last_area,
@@ -239,6 +246,8 @@ class PayhousebakController extends BaseController{
                                 'rate'=>$rate->rate,
                                 'agio'=>$house->itemhouseprice->market - $house->itemhouseprice->price,
                                 'amount'=>$amount,
+                                'created_at'=>date('Y-m-d H:i:s'),
+                                'updated_at'=>date('Y-m-d H:i:s'),
                             ];
                             break;
                         }
@@ -252,6 +261,22 @@ class PayhousebakController extends BaseController{
                 $resettles[]=$house;
                 $resettle_ids[]=$house->id;
                 $end_total -= $house->total;
+
+                $house_data[]=[
+                    'item_id'=>$pay->item_id,
+                    'household_id'=>$pay->household_id,
+                    'land_id'=>$pay->land_id,
+                    'building_id'=>$pay->building_id,
+                    'house_id'=>$house->id,
+                    'area'=>$house->area,
+                    'market'=>$house->itemhouseprice->market,
+                    'price'=>$house->itemhouseprice->price,
+                    'amount'=>$house_amount,
+                    'amount_plus'=>$plus_toal,
+                    'total'=>$house_amount + $plus_toal,
+                    'created_at'=>date('Y-m-d H:i:s'),
+                    'updated_at'=>date('Y-m-d H:i:s'),
+                ];
 
                 // 上浮累计面积 超过限制
                 if($plus_area>=30){
@@ -269,18 +294,20 @@ class PayhousebakController extends BaseController{
                 'resettle_total'=>$resettle_total,
                 'last_total'=>$end_total,
                 'plus_area'=>$plus_area,
-                'transit_house'=>$transit_house,
+                'transit_house'=>$transit_house
             ];
             $edata=$fails;
             $url=null;
+            DB::commit();
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=null;
+            $sdata=$exception;
             $edata=null;
             $url=null;
+            DB::rollBack();
         }
-        DB::commit();
+
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
@@ -365,6 +392,19 @@ class PayhousebakController extends BaseController{
                 throw new \Exception('当前选择的房源已被占用',404404);
             }
 
+            if($request->input('house_type')==2){
+                $payhousebak_transit=Payhousebak::sharedLock()
+                    ->where([
+                        ['house_type',2],
+                        ['item_id',$this->item_id],
+                        ['household_id',$household_id]
+                    ])
+                    ->first();
+                if (filled($payhousebak_transit)){
+                    throw new \Exception('只能选择一套临时周转房', 404404);
+                }
+            }
+
             $payhousebak=Payhousebak::where([
                 ['household_id',$household_id],
                 ['item_id',$item_id],
@@ -378,12 +418,29 @@ class PayhousebakController extends BaseController{
             $payhousebak=new Payhousebak();
 //            $payhousebak->fill($request->all());
 
+            $house=House::sharedLock()
+                    ->with(['itemhouseprice'=>function($query){
+                        $query->where([
+                            ['start_at','<=',$this->item->created_at],
+                            ['end_at','>=',$this->item->created_at],
+                        ]);
+                    }])
+                    ->find($request->input('house_id'));
+
+            if (blank($house)){
+                throw new \Exception('暂无该房源', 404404);
+            }
+
             $payhousebak->item_id=$item_id;
             $payhousebak->house_id=$request->input('house_id');
             $payhousebak->house_type=$request->input('house_type');
             $payhousebak->household_id=$household_id;
             $payhousebak->land_id=session('household_user.land_id');
             $payhousebak->building_id=session('household_user.building_id');
+            $payhousebak->area=$house->area;
+            $payhousebak->market=$house->itemhouseprice->market;
+            $payhousebak->price=$house->itemhouseprice->price;
+            $payhousebak->area=$house->area;
             $payhousebak->save();
             if (blank($payhousebak)) {
                 throw new \Exception('该房源不存在', 404404);
@@ -398,7 +455,7 @@ class PayhousebakController extends BaseController{
         }catch (\Exception $exception){
             $code = 'error';
             $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
-            $sdata = null;
+            $sdata = $exception;
             $edata = null;
             $url = null;
             $view='household.error';

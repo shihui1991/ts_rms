@@ -266,10 +266,10 @@
                         @if(filled($sdata['payhouses']))
                             @foreach($sdata['payhouses'] as $house)
                                 <tr data-tt-id="house-{{$house->house_id}}" data-tt-parent-id="house">
-                                    <td>{{$house->house->housecommunity->name}} {{$house->house->building}}栋{{$house->house->unit}}单元{{$house->house->floor}}楼{{$house->house->number}}@if(is_numeric($house->house->number))号@endif</td>
-                                    <td>{{$house->house->layout->name}}</td>
-                                    <td>{{$house->house->is_real}}</td>
+                                    <td>{{$house->housecommunity->name}} {{$house->building}}栋{{$house->unit}}单元{{$house->floor}}楼{{$house->number}}@if(is_numeric($house->number))号@endif</td>
+                                    <td>{{$house->layout->name}}</td>
                                     <td>{{number_format($house->area,2)}}</td>
+                                    <td>{{$house->is_real}}</td>
                                     <td>{{number_format($house->market,2)}}</td>
                                     <td>{{number_format($house->price,2)}}</td>
                                     <td>{{number_format($house->amount,2)}}</td>
@@ -295,12 +295,12 @@
                                                 <tbody>
                                                 @foreach($house->housepluses as $houseplus)
                                                     <tr>
-                                                        <td>{{number_format($houseplus->start,2)}}</td>
-                                                        <td>{{number_format($houseplus->end,2)}}</td>
-                                                        <td>{{number_format($houseplus->area,2)}}</td>
-                                                        <td>{{number_format($houseplus->rate,2)}}</td>
-                                                        <td>{{number_format($houseplus->agio,2)}}</td>
-                                                        <td>{{number_format($houseplus->amount,2)}}</td>
+                                                        <td>{{number_format($houseplus['start'],2)}}</td>
+                                                        <td>{{number_format($houseplus['end'],2)}}</td>
+                                                        <td>{{number_format($houseplus['area'],2)}}</td>
+                                                        <td>{{number_format($houseplus['rate'],2)}}</td>
+                                                        <td>{{number_format($houseplus['agio'],2)}}</td>
+                                                        <td>{{number_format($houseplus['amount'],2)}}</td>
                                                     </tr>
                                                 @endforeach
                                                 </tbody>
@@ -377,10 +377,22 @@
     </div>
     <div class="clearfix form-actions">
         <div class="col-md-offset-5 col-md-7">
+            @if($sdata['household']->code==68)
             <button class="btn btn-success" type="button" onclick="confirmPay()">
                 <i class="ace-icon fa fa-check bigger-110"></i>
-                确认签约
+                请求签约
             </button>
+                @elseif($sdata['household']->code==69 && blank($sdata['pacts']))
+                <button class="btn btn-success" type="button" onclick="" readonly="">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    签约中
+                </button>
+            @elseif($sdata['household']->code==69 && filled($sdata['pacts']))
+                <button class="btn btn-success" type="button" onclick="" readonly="">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    确认签约
+                </button>
+            @endif
         </div>
     </div>
 

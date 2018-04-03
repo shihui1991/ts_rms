@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\com;
+use App\Http\Model\Comassessvaluer;
 use App\Http\Model\Company;
 use App\Http\Model\Companyvaluer;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class CompanyvaluerController extends BaseauthController
                 if(request()->ajax()){
                     return response()->json($result);
                 }else{
-                    return redirect()->route('g_error')->with($result);
+                    return redirect()->route('c_error')->with($result);
                 }
             }
             return $next($request);
@@ -69,8 +70,6 @@ class CompanyvaluerController extends BaseauthController
             if($deleted){
                 $model=$model->onlyTrashed();
             }
-        }else{
-            $model=$model->withTrashed();
         }
         /* ********** 查询 ********** */
         DB::beginTransaction();
@@ -317,4 +316,48 @@ class CompanyvaluerController extends BaseauthController
             return response()->json($result);
         }
     }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            if($ids==session('com_user.user_id')){
+                throw new \Exception('当前账号正在使用，暂不能被删除！',404404);
+            }
+
+            $comassessvaluer = Comassessvaluer::where('valuer_id',$ids)->count();
+            if($comassessvaluer!=0){
+                throw new \Exception('当前账号存在相关数据，暂不能被删除！',404404);
+            }
+            /*---------删除评估师----------*/
+            $companyvaluer = Companyvaluer::where('id',$ids)->delete();
+            if(!$companyvaluer){
+                throw new \Exception('删除失败',404404);
+            }
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$companyvaluer;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
 }

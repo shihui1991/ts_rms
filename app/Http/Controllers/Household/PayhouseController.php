@@ -34,8 +34,6 @@ class PayhouseController extends BaseController
     /* ========== 开始选房 ========== */
     public function add(Request $request)
     {
-
-
         $household_id = session('household_user.user_id');
         $this->item_id = session('household_user.item_id');
         $this->item=Item::find($this->item_id);
