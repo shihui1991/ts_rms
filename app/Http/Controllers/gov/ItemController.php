@@ -186,19 +186,19 @@ class ItemController extends BaseController
 
             DB::beginTransaction();
             try{
-                $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
-                $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
-                $rules=[];
-                $messages=[];
-                foreach ($file_cates as $file_cate){
-                    $name='picture.'.$file_cate->filename;
-                    $rules[$name]='required';
-                    $messages[$name.'.required']='必须上传【'.$file_cate->name.'】';
-                }
-                $validator = Validator::make($request->all(),$rules,$messages);
-                if($validator->fails()){
-                    throw new \Exception($validator->errors()->first(),404404);
-                }
+//                $file_table_id=Filetable::where('name','item')->sharedLock()->value('id');
+//                $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
+//                $rules=[];
+//                $messages=[];
+//                foreach ($file_cates as $file_cate){
+//                    $name='picture.'.$file_cate->filename;
+//                    $rules[$name]='required';
+//                    $messages[$name.'.required']='必须上传【'.$file_cate->name.'】';
+//                }
+//                $validator = Validator::make($request->all(),$rules,$messages);
+//                if($validator->fails()){
+//                    throw new \Exception($validator->errors()->first(),404404);
+//                }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $item=$model;
                 $item->fill($request->input());

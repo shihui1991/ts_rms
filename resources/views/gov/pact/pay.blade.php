@@ -14,7 +14,7 @@
 
 <body style="position: relative;">
 <!--2480*3508-->
-<div id="one-a4" style="width: 1000px;height: 1500px;margin: auto;text-align: center;">
+<div id="one-a4" style="width: 1000px;margin: auto;text-align: center;">
     <h2>{{$item->name}} 房屋征收补偿款兑付到户表</h2>
     <div class="title" style="width: 1000px;display: inline-block;height: auto;margin-top: 20px;">
         <p style="float: left;">泰州区房屋征收补偿管理局</p>
@@ -43,8 +43,8 @@
                     <td>面积（㎡）</td>
                     <td>评估单价（元/㎡）</td>
                     <td>评估总价（元）</td>
-                    <td>补偿金额 @if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
-                    <td>补偿小计（元）</td>
+                    <td>补偿金额（元）</td>
+                    <td>补偿小计 @if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
                     @foreach($register_buildings as $register_building)
                         <tr>
                             <td>{{$register_building->realuse->name}}</td>
@@ -61,12 +61,8 @@
                             </td>
                             @if($loop->iteration==1)
                             <td rowspan="{{$register_buildings->count()}}">
-                                @php $register_sum=$register_buildings->sum('amount');$house_amount+=$register_sum; @endphp
-                                @if($household->getOriginal('type')==1)
-                                    {{number_format($register_sum*$program->portion_renter/100,2)}}
-                                @else
-                                    {{number_format($register_sum,2)}}
-                                @endif
+                                @php $register_sum=$subject->total;$house_amount+=$register_sum; @endphp
+                                {{number_format($subject->total,2)}}
                             </td>
                             @endif
                         </tr>
@@ -94,8 +90,8 @@
                             <td>{{number_format($legal_building->amount,2)}}</td>
                             @if($loop->iteration==1)
                                 <td rowspan="{{$legal_buildings->count()}}" colspan="2">
-                                    @php $legal_sum=$legal_buildings->sum('amount'); $house_amount+=$legal_sum;@endphp
-                                    {{number_format($legal_sum,2)}}
+                                    @php $legal_sum=$subject->total; $house_amount+=$legal_sum;@endphp
+                                    {{number_format($subject->total,2)}}
                                 </td>
                             @endif
                         </tr>
@@ -123,8 +119,8 @@
                             <td>{{number_format($destroy_building->amount,2)}}</td>
                             @if($loop->iteration==1)
                                 <td rowspan="{{$destroy_buildings->count()}}" colspan="2">
-                                    @php $destroy_sum=$destroy_buildings->sum('amount'); @endphp
-                                    {{number_format($destroy_sum,2)}}
+                                    @php $destroy_sum=$subject->total; @endphp
+                                    {{number_format($subject->total,2)}}
                                 </td>
                             @endif
                         </tr>
@@ -154,8 +150,8 @@
                             <td>{{number_format($public_building->avg,2)}}</td>
                             @if($loop->iteration==1)
                                 <td rowspan="{{$public_buildings->count()}}">
-                                    @php $public_sum=$public_buildings->sum('avg'); $house_amount+=$public_sum;@endphp
-                                    {{number_format($public_sum,2)}}
+                                    @php $public_sum=$subject->total; $house_amount+=$public_sum;@endphp
+                                    {{number_format($subject->total,2)}}
                                 </td>
                             @endif
                         </tr>
@@ -183,8 +179,8 @@
                             <td>{{number_format($pay_object->amount,2)}}</td>
                             @if($loop->iteration==1)
                                 <td rowspan="{{$pay_objects->count()}}" colspan="2">
-                                    @php $object_sum=$pay_objects->sum('amount'); @endphp
-                                    {{number_format($public_sum,2)}}
+                                    @php $object_sum=$subject->total; @endphp
+                                    {{number_format($subject->total,2)}}
                                 </td>
                             @endif
                         </tr>
@@ -197,7 +193,7 @@
                     <tr class="one-big-title">
                         <td>{{$loop->iteration}}.{{$subject->subject->name}}</td>
                         <td colspan="2">补偿金额（元）</td>
-                        <td colspan="5">{{number_format($subject->amount,2)}}</td>
+                        <td colspan="5">{{number_format($subject->total,2)}}</td>
                     </tr>
                     @break
 
@@ -205,9 +201,9 @@
                     <tr class="one-big-title">
                         <td>{{$loop->iteration}}.{{$subject->subject->name}}</td>
                         <td>经营类别</td>
-                        <td colspan="2">{{$household_detail->business}}</td>
+                        <td colspan="2">{{$business_type}}</td>
                         <td colspan="2">补偿金额（元）</td>
-                        <td colspan="2">{{number_format($subject->amount,2)}}</td>
+                        <td colspan="2">{{number_format($subject->total,2)}}</td>
                     </tr>
                     @break
 
@@ -220,14 +216,14 @@
                         <td>补助单价（元/㎡）</td>
                         <td>补助次数</td>
                         <td>补助金额（元）</td>
-                        <td colspan="2">补助小计（元）</td>
+                        <td colspan="2">补助小计@if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
                     </tr>
                     <tr>
                         <td>{{number_format($legal_area,2)}}</td>
                         <td>{{number_format($move_price,2)}}</td>
                         <td>{{$move_times}}</td>
                         <td>{{number_format($subject->amount,2)}}</td>
-                        <td colspan="2">{{number_format($subject->amount,2)}}</td>
+                        <td colspan="2">{{number_format($subject->total,2)}}</td>
                     </tr>
                     @break
 
@@ -236,32 +232,36 @@
                         <td rowspan="2">
                             {{$loop->iteration}}.{{$subject->subject->name}}
                         </td>
-                        <td colspan="2">合法面积（㎡）</td>
-                        <td colspan="3">奖励单价（元/㎡）</td>
+                        <td colspan="1">合法面积（㎡）</td>
+                        <td colspan="1">奖励单价（元/㎡）</td>
                         <td colspan="2">奖励金额（元）</td>
+                        <td colspan="3">奖励小计@if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
                     </tr>
                     <tr>
-                        <td colspan="2">{{number_format($legal_area,2)}}</td>
-                        <td colspan="3">{{number_format($reward_price,2)}}</td>
+                        <td colspan="1">{{number_format($legal_area,2)}}</td>
+                        <td colspan="1">{{number_format($reward_price,2)}}</td>
                         <td colspan="2">{{number_format($subject->amount,2)}}</td>
+                        <td colspan="3">{{number_format($subject->total,2)}}</td>
                     </tr>
-                    @php $house_amount+=$subject->amount; @endphp
+                    @php $house_amount+=$subject->total; @endphp
                     @break
                     @case(12)
                     <tr class="one-big-title">
                         <td rowspan="2">
                             {{$loop->iteration}}.{{$subject->subject->name}}
                         </td>
-                        <td colspan="3">合法房屋补偿总价</td>
+                        <td colspan="2">合法房屋补偿总价</td>
                         <td>奖励比例（%）</td>
-                        <td colspan="3">奖励金额（元）</td>
+                        <td colspan="2">奖励金额（元）</td>
+                        <td colspan="2">奖励小计@if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
                     </tr>
                     <tr>
-                        <td colspan="3">{{number_format($legal_amount,2)}}</td>
+                        <td colspan="2">{{number_format($legal_amount,2)}}</td>
                         <td>{{number_format($reward_rate,2)}}</td>
-                        <td colspan="3">{{number_format($subject->amount,2)}}</td>
+                        <td colspan="2">{{number_format($subject->amount,2)}}</td>
+                        <td colspan="2">{{number_format($subject->total,2)}}</td>
                     </tr>
-                    @php $house_amount+=$subject->amount; @endphp
+                    @php $house_amount+=$subject->total; @endphp
                     @break
                 @endswitch
                 
@@ -270,10 +270,7 @@
             <tr class="one-big-title">
                 <td colspan="2">以上补偿总价（元）</td>
                 <td colspan="2">
-                    @php $pay_total=$pay_subjects->sum('amount'); @endphp
-                    @if($household->getOriginal('type')==1)
-                        @php $pay_total -=$pay_unit->amount; @endphp
-                    @endif
+                    @php $pay_total=$pay_subjects->sum('total'); @endphp
                     {{number_format($pay_total,2)}}
                 </td>
                 <td colspan="4">大写：{{bigRMB($pay_total)}}</td>
@@ -321,21 +318,7 @@
                     <td colspan="4">@if($last<0) 负 @endif{{bigRMB(abs($last))}}</td>
                 </tr>
             @endif
-            <tr>
-                <td colspan="8">
-                    <span style="text-align: left;display: block;width: 30%;float: left;">分管领导签字：</span>
-                    <span style="text-align: left;display: block;width: 30%;float: left;">征收股负责人：</span>
-                    <span style="text-align: left;display: block;width: 30%;float: left;">安置股负责人：</span>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="8">
-                    <span style="text-align: left;display: block;width: 25%;float: left;">社稳办负责人：</span>
-                    <span style="text-align: left;display: block;width: 25%;float: left;">复核人：</span>
-                    <span style="text-align: left;display: block;width: 25%;float: left;">经办人：</span>
-                    <span style="text-align: left;display: block;width: 25%;float: left;">被征收人：</span>
-                </td>
-            </tr>
+
             </tbody>
         </table>
     </div>

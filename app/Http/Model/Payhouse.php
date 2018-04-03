@@ -60,7 +60,7 @@ class Payhouse extends Model
         return $this->belongsTo('App\Http\Model\House','house_id','id')->withDefault();
     }
     public function housepluses(){
-        return $this->hasMany('App\Http\Model\Payhouse','house_id','house_id');
+        return $this->hasMany('App\Http\Model\Payhouseplus','house_id','house_id');
     }
 
     public function houseresettle(){

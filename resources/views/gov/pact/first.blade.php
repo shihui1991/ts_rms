@@ -9,6 +9,32 @@
         <a href="javascript:history.back();" class="btn">返回</a>
     </div>
 
+    <form class="form-horizontal" role="form" action="{{route('g_pact_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" method="post">
+        {{csrf_field()}}
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="business_type"> 经营类别： </label>
+            <div class="col-sm-9">
+                <input type="text" id="business_type" name="business_type" value="{{old('business_type')}}" class="col-xs-10 col-sm-5"  required>
+            </div>
+        </div>
+        <div class="space-4"></div>
+
+        <div class="clearfix form-actions">
+            <div class="col-md-offset-3 col-md-9">
+                <button class="btn btn-info" type="button" onclick="sub(this)">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    保存
+                </button>
+                &nbsp;&nbsp;&nbsp;
+                <button class="btn" type="reset">
+                    <i class="ace-icon fa fa-undo bigger-110"></i>
+                    重置
+                </button>
+            </div>
+        </div>
+    </form>
+
     <div class="row">
         <div class="col-sm-6 col-xs-12">
             <div class="widget-container-col ui-sortable">
@@ -124,14 +150,9 @@
                                             @if($sdata['household']->getOriginal('type'))
                                                 <br>
                                                 其中：
-                                                <br>
-                                                【{{$sdata['household']->itemland->adminunit->name}}（公房单位）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay_unit']->amount)}}
-                                                <br>
                                                 【{{$sdata['holder']->name}}（承租人）】所得补偿款：
-                                                <strong>{{number_format($sdata['pay']->total-$sdata['pay_unit']->amount,2)}}</strong>
-                                                人民币（大写）{{bigRMB($sdata['pay']->total-$sdata['pay_unit']->amount)}}
+                                                <strong>{{number_format($sdata['household_total'],2)}}</strong>
+                                                人民币（大写）{{bigRMB($sdata['household_total'])}}
                                             @endif
                                            
                                         </span>
