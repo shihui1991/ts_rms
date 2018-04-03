@@ -496,7 +496,7 @@ class ItemlandController extends BaseitemController
             /*---------是否正在被使用----------*/
             $itempublic = Itempublic::where('land_id',$ids)->count();
             if($itempublic!=0){
-                throw new \Exception('该地块下含有楼栋公共附属物,暂时不能被删除！',404404);
+                throw new \Exception('该地块下含有公共附属物,暂时不能被删除！',404404);
             }
              $landlayout = Landlayout::where('land_id',$ids)->count();
             if($landlayout!=0){

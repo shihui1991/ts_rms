@@ -9,6 +9,7 @@ use App\Http\Model\Buildingstruct;
 use App\Http\Model\Buildinguse;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
+use App\Http\Model\Householdbuildingdeal;
 use App\Http\Model\Landlayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -361,4 +362,51 @@ class HouseholdbuildingController extends BaseitemController
             return response()->json($result);
         }
     }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            $householdbuildingdeal = Householdbuildingdeal::where('household_building_id',$ids)->count();
+            if($householdbuildingdeal!=0){
+                throw new \Exception('该条建筑数据正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------删除建筑----------*/
+            $householdbuilding = Householdbuilding::where('id',$ids)->first();
+            if($householdbuilding->code==91||$householdbuilding->code==90){
+                $householdbuilding = Householdbuilding::where('id',$ids)->delete();
+                if(!$householdbuilding){
+                    throw new \Exception('删除失败',404404);
+                }
+            }else{
+                throw new \Exception('该条建筑数据正在被使用,暂时不能被删除！',404404);
+            }
+
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$householdbuilding;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
+
 }
