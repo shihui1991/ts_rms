@@ -129,7 +129,6 @@ class ComassessController extends BaseitemController
             $url=null;
         }
         DB::commit();
-        dd($households);
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         if($request->ajax()){
