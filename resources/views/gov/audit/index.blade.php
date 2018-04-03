@@ -7,6 +7,12 @@
 
     @if(filled($sdata['audit']))
 
+        @if($sdata['item']->process_id==	45 && $sdata['item']->code=='2')
+        <div class="well">
+            <a data-url="{{route('g_item_end',['item'=>$sdata['item']->id])}}" class="btn btn-danger" onclick="btnAct(this)">项目结束</a>
+        </div>
+        @endif
+
     <div class="widget-container-col ui-sortable">
         <div class="widget-box ui-sortable-handle">
             <div class="widget-header">

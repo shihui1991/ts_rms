@@ -571,6 +571,7 @@ class PactController extends BaseitemController
         }
     }
 
+    /* ========== 重新生成协议 ========== */
     public function reset_pact(Request $request){
         $pact_id=$request->input('pact_id');
         DB::beginTransaction();
@@ -603,17 +604,17 @@ class PactController extends BaseitemController
                     throw new \Exception('兑付数据不存在',404404);
                 }
                 /* ++++++++++ 检查操作权限 ++++++++++ */
-//                $count=Itemuser::sharedLock()
-//                    ->where([
-//                        ['item_id',$this->item_id],
-//                        ['schedule_id',5],
-//                        ['process_id',40],
-//                        ['user_id',session('gov_user.user_id')],
-//                    ])
-//                    ->count();
-//                if(!$count){
-//                    throw new \Exception('您没有执行此操作的权限',404404);
-//                }
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['schedule_id',5],
+                        ['process_id',40],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 /* ++++++++++ 被征收户 ++++++++++ */
                 $household=Household::with(['itemland'=>function($query){
                     $query->with('adminunit')->select(['id','address']);
@@ -844,6 +845,113 @@ class PactController extends BaseitemController
                 $pact->status=0;
                 $pact->save();
             }
+
+            $code='success';
+            $msg='请求成功';
+            $sdata=[
+                'item'=>$this->item,
+                'pact'=>$pact,
+            ];
+            $edata=null;
+            $url=route('g_pay_info',['item'=>$this->item_id,'id'=>$pact->pay_id]);
+
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            DB::rollBack();
+        }
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
+    /* ========== 协议审查 ========== */
+    public function check(Request $request){
+        $pact_id=$request->pact_id;
+        DB::beginTransaction();
+        try{
+            if(!$pact_id){
+                throw new \Exception('错误操作',404404);
+            }
+            $pact=Pact::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['id',$pact_id],
+                ])
+                ->first();
+            if(blank($pact)){
+                throw new \Exception('数据不存在',404404);
+            }
+            if(!in_array($pact->code,['171','172'])){
+                throw new \Exception('协议在【'.$pact->state->name.'】，不能执行此操作',404404);
+            }
+            /* ++++++++++ 是否有工作推送 ++++++++++ */
+            $worknotice=Worknotice::lockForUpdate()
+                ->where([
+                    ['item_id',$this->item->id],
+                    ['process_id',41],
+                    ['url',route('g_pay_info',['item'=>$this->item_id,'id'=>$pact->pay_id,'pact_id'=>$pact_id],false)],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->whereIn('code',['0','20'])
+                ->first();
+            if(blank($worknotice)){
+                throw new \Exception('您没有执行此操作的工作推送',404404);
+            }
+            /* ++++++++++ 下级未完成数 ++++++++++ */
+            $worknotice_subs=Worknotice::sharedLock()
+                ->where([
+                    ['item_id',$this->item->id],
+                    ['process_id',41],
+                    ['url',route('g_pay_info',['item'=>$this->item_id,'id'=>$pact->pay_id,'pact_id'=>$pact_id],false)],
+                    ['parent_id',session('gov_user.role_id')],
+                ])
+                ->whereIn('code',['0','20'])
+                ->count();
+            if($worknotice_subs){
+                throw new \Exception('您的下级未完成此操作，您的操作暂时不能被执行',404404);
+            }
+
+            $pact->code='172';
+            /* ++++++++++ 审查通过 ++++++++++ */
+            if($request->result){
+                $worknotice->code='22';
+                /* ++++++++++ 上级未完成数 ++++++++++ */
+                $worknotice_parents=Worknotice::sharedLock()
+                    ->where([
+                        ['item_id',$this->item->id],
+                        ['process_id',41],
+                        ['url',route('g_pay_info',['item'=>$this->item_id,'id'=>$pact->pay_id,'pact_id'=>$pact_id],false)],
+                        ['role_id',$worknotice->parent_id],
+                    ])
+                    ->whereIn('code',['0','20'])
+                    ->count();
+                if(!$worknotice_parents){
+                    $pact->code='173';
+                    $pact->status=1;
+                }
+            }
+            /* ++++++++++ 审查驳回 ++++++++++ */
+            else{
+                $worknotice->code='23';
+                $pact->code='174';
+                /* ++++++++++ 删除同级工作推送 ++++++++++ */
+                Worknotice::lockForUpdate()
+                    ->where([
+                        ['item_id',$this->item->id],
+                        ['process_id',41],
+                        ['url',route('g_pay_info',['item'=>$this->item_id,'id'=>$pact->pay_id,'pact_id'=>$pact_id],false)],
+                        ['parent_id',$worknotice->parent_id],
+                    ])
+                    ->whereIn('code',['0','20'])
+                    ->delete();
+            }
+            $worknotice->save();
+            $pact->save();
 
             $code='success';
             $msg='请求成功';

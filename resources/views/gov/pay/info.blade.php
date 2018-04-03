@@ -398,6 +398,11 @@
                                         @if(in_array($pact->code,['170','174']))
                                         <a data-url="{{route('g_pact_reset_pact',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" class="btn btn-sm btn-danger" onclick="btnAct(this)">重新生成</a>
                                         @endif
+
+                                        @if(in_array($pact->code,['171','172']))
+                                            <a class="btn btn-sm btn-primary" data-toggle="modal" data-target="#model-pact-check" data-url="{{route('g_pact_check',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" onclick="setUrl(this)">审查</a>
+                                        @endif
+                                        <a class="btn btn-sm btn-primary" data-toggle="modal" data-target="#model-pact-check" data-url="{{route('g_pact_check',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" onclick="setUrl(this)">审查</a>
                                     </div>
 
                                 </td>
@@ -406,6 +411,23 @@
                     @endif
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="model-pact-check" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title center" id="myModalLabel">审查意见</h4>
+                </div>
+                <div class="modal-footer center">
+                    <button type="button" class="btn btn-info btn-check" onclick="pactCheck(this,1)">审查通过</button>
+                    <button type="button" class="btn btn-danger btn-check" onclick="pactCheck(this,0)">审查驳回</button>
+                </div>
             </div>
         </div>
     </div>
@@ -445,6 +467,40 @@
                 ,content: that.data('url')
             });
             layer.full(lay);
+        }
+
+        function setUrl(obj) {
+            $('#model-pact-check').find('button.btn-check').data('url',$(obj).data('url'));
+        }
+        function pactCheck(obj,result) {
+            var btn=$('#model-pact-check').find('button.btn-check');
+            if(btn.data('loading') || btn.hasClass('disabled')){
+                return false;
+            }
+            btn.data('loading',true).addClass('disabled');
+            toastr.info('请稍等！处理中……');
+            ajaxAct($(obj).data('url'),{result:result},'get');
+            if(ajaxResp.code=='success'){
+                toastr.success(ajaxResp.message);
+                if(ajaxResp.url){
+                    setTimeout(function () {
+                        location.href=ajaxResp.url;
+                    },1000);
+                }else{
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            }else{
+                toastr.error(ajaxResp.message);
+                if(ajaxResp.url){
+                    setTimeout(function () {
+                        location.href=ajaxResp.url;
+                    },1000);
+                }else{
+                    btn.data('loading',false).removeClass('disabled');
+                }
+            }
         }
     </script>
 

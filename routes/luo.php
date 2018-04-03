@@ -36,6 +36,10 @@ Route::any('/program_notice_add','NewsController@program_notice_add')->name('g_p
 Route::any('/program_notice_edit','NewsController@program_notice_edit')->name('g_program_notice_edit'); //征收决定 -  修改征收决定公告
 
 Route::any('/pay_start','ItemprocessController@pay_start')->name('g_pay_start'); //项目实施 -  项目开始实施
+Route::any('/pact_check','PactController@check')->name('g_pact_check'); //项目实施 -  协议审查
+Route::any('/pay_end','ItemprocessController@pay_end')->name('g_pay_end'); //项目实施 -  项目实施完成
+
+Route::any('/item_end','ItemprocessController@item_end')->name('g_item_end'); //项目审计 -  项目结束
 
 /*---------- 初步预算 ----------*/
 Route::any('/initbudget','InitbudgetController@index')->name('g_initbudget'); //初步预算

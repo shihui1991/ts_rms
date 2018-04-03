@@ -8,6 +8,7 @@
     @if(filled($sdata['tear']))
     <div class="well">
         <a href="{{route('g_tear_detail_add',['item'=>$sdata['item']->id,'tear_id'=>$sdata['tear']->id])}}" class="btn">添加拆除记录</a>
+        <a data-url="{{route('g_pay_end',['item'=>$sdata['item']->id])}}" class="btn" onclick="btnAct(this)">项目实施完成</a>
     </div>
 
     <div class="widget-container-col ui-sortable">

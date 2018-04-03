@@ -5820,4 +5820,108 @@ class ItemprocessController extends BaseitemController
             return response()->json($result);
         }
     }
+
+    /* ========== 项目实施 - 项目实施完成 ========== */
+    public function pay_end(Request $request){
+        DB::beginTransaction();
+        try{
+            $item=$this->item;
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if($item->schedule_id!=5 || $item->process_id!=39 ||  $item->code!='1'){
+                throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['schedule_id',5],
+                    ['process_id',44],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                throw new \Exception('您没有执行此操作的权限',404404);
+            }
+
+            $item->schedule_id=5;
+            $item->process_id=44;
+            $item->code='2';
+            $item->save();
+
+            $code='success';
+            $msg='操作成功';
+            $sdata=null;
+            $edata=null;
+            $url=route('g_itemprocess',['item'=>$this->item->id]);
+
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            DB::rollBack();
+        }
+
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
+    /* ========== 项目审计 - 项目结束 ========== */
+    public function item_end(Request $request){
+        DB::beginTransaction();
+        try{
+            $item=$this->item;
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if($item->schedule_id!=6 || $item->process_id!=45 ||  $item->code!='2'){
+                throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['schedule_id',6],
+                    ['process_id',46],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                throw new \Exception('您没有执行此操作的权限',404404);
+            }
+
+            $item->schedule_id=6;
+            $item->process_id=46;
+            $item->code='2';
+            $item->save();
+
+            $code='success';
+            $msg='操作成功';
+            $sdata=null;
+            $edata=null;
+            $url=route('g_itemprocess',['item'=>$this->item->id]);
+
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+            $sdata=null;
+            $edata=null;
+            $url=null;
+
+            DB::rollBack();
+        }
+
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
 }
