@@ -6,7 +6,11 @@
 */
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Household;
+use App\Http\Model\Householdassets;
+use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
+use App\Http\Model\Householdmember;
+use App\Http\Model\Householdobject;
 use App\Http\Model\Itemland;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -293,4 +297,71 @@ class HouseholdController extends BaseitemController
             return response()->json($result);
         }
     }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            /*=== 房屋建筑 ===*/
+            $householdbuilding = Householdbuilding::where('household_id',$ids)->count();
+            if($householdbuilding!=0){
+               throw new \Exception('该账号存在房屋建筑,暂时不能被删除！',404404);
+            }
+            /*=== 资产信息 ===*/
+            $householdassets = Householdassets::where('household_id',$ids)->count();
+            if($householdassets){
+                throw new \Exception('该账号存在资产信息,暂时不能被删除！',404404);
+            }
+            /*=== 家庭成员 ===*/
+            $householdmember = Householdmember::where('household_id',$ids)->count();
+            if($householdmember){
+                throw new \Exception('该账号存在家庭成员信息,暂时不能被删除！',404404);
+            }
+            /*=== 其他补偿事项 ===*/
+            $householdobject = Householdobject::where('household_id',$ids)->count();
+            if($householdobject){
+                throw new \Exception('该账号存在其他补偿事项信息,暂时不能被删除！',404404);
+            }
+            /*=== 被征户当前状态 ===*/
+            $household = Household::find($ids);
+            if($household->code>60){
+                throw new \Exception('该账号正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------删除被征户账号----------*/
+            $household = Household::where('id',$ids)->delete();
+            if(!$household){
+                throw new \Exception('删除失败',404404);
+            }
+            /*---------删除被征户详情----------*/
+            $householddetail = Householddetail::where('household_id',$ids)->delete();
+            if(!$householddetail){
+                throw new \Exception('删除失败',404404);
+            }
+
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=['household'=>$household,'householddetail'=>$householddetail];
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
 }

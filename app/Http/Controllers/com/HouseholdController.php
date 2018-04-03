@@ -21,6 +21,7 @@ use App\Http\Model\Householdassets;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Landlayout;
 use App\Http\Model\Layout;
+use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -144,6 +145,9 @@ class HouseholdController extends BaseitemController
                     },
                     'realbuildinguse'=>function($query){
                         $query->select(['id','name']);
+                    },
+                    'state'=>function($query){
+                        $query->select(['id','code','name']);
                     }])
                     ->where('item_id',$item_id)
                     ->where('household_id',$id)
@@ -673,7 +677,6 @@ class HouseholdController extends BaseitemController
         }
     }
 
-
     /* ========== 房屋建筑详情 ========== */
     public function buildinginfo(Request $request){
         $id=$request->input('id');
@@ -742,7 +745,6 @@ class HouseholdController extends BaseitemController
             return view($view)->with($result);
         }
     }
-
 
     /* ========== 修改房屋建筑详情 ========== */
     public function buildingedit(Request $request){
@@ -860,6 +862,48 @@ class HouseholdController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 删除房屋建筑详情 ========== */
+    public function buildingdel(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            /*=== 房屋建筑 ===*/
+            $estatebuilding = Estatebuilding::where('id',$ids)->value('household_building_id');
+            if($estatebuilding!=0){
+                throw new \Exception('该数据正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------删除房屋建筑----------*/
+            $estatebuilding = Estatebuilding::where('id',$ids)->delete();
+            if(!$estatebuilding){
+                throw new \Exception('删除失败',404404);
+            }
+
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata='household';
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
     }
 
 

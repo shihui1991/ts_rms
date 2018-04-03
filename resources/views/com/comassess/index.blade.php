@@ -18,7 +18,7 @@
             @if($code=='success')
                 @if($edata['type']==0)
                     @foreach($sdata as $infos)
-                        @if(filled($infos->household->estates->code)&&$infos->household->estates->code>=130&&$infos->household->estates->code<=132)
+                        @if(filled($infos->household->estates->code)&&$infos->household->estates->code>=130&&$infos->household->estates->code<=136)
                         <tr>
                             <td>{{$loop->iteration}}</td>
                             <td>{{$infos->household->itemland->address}}</td>
@@ -40,7 +40,7 @@
                     @endforeach
                 @else
                     @foreach($sdata as $infos)
-                        @if(filled($infos->household->estates->code)&&$infos->household->estates->code>=130&&$infos->household->estates->code<=132&&$infos->household->estates->getOriginal('has_assets')==1)
+                        @if(filled($infos->household->estates->code)&&$infos->household->estates->code>=130&&$infos->household->estates->code<=136&&$infos->household->estates->getOriginal('has_assets')==1)
                             <tr>
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$infos->household->itemland->address}}</td>

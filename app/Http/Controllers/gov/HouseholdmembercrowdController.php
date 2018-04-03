@@ -8,6 +8,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Crowd;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdmembercrowd;
+use App\Http\Model\Paycrowd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -243,5 +244,42 @@ class HouseholdmembercrowdController extends BaseitemController
         }
     }
 
-
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            $paycrowd = Paycrowd::where('member_crowd_id',$ids)->count();
+            if($paycrowd!=0){
+                throw new \Exception('该数据正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------家庭成员特殊人群----------*/
+            $householdmembercrowd = Householdmembercrowd::where('id',$ids)->delete();
+            if(!$householdmembercrowd){
+                throw new \Exception('删除失败',404404);
+            }
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$householdmembercrowd;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
 }

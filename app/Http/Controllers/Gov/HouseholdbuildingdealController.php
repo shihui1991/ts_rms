@@ -237,7 +237,7 @@ class HouseholdbuildingdealController extends BaseitemController
                 $sdata = null;
                 $edata = $householdbuilding;
                 $url = null;
-                DB::rollback();
+                DB::rollBack();
             }
             /* ++++++++++ 结果 ++++++++++ */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];

@@ -117,26 +117,31 @@ Route::any('/itemland','ItemlandController@index')->name('g_itemland');
 Route::any('/itemland_add','ItemlandController@add')->name('g_itemland_add');
 Route::get('/itemland_info','ItemlandController@info')->name('g_itemland_info');
 Route::any('/itemland_edit','ItemlandController@edit')->name('g_itemland_edit');
+Route::any('/itemland_del','ItemlandController@del')->name('g_itemland_del');
 /*---------- 项目-地块楼栋 ----------*/
 Route::any('/itembuilding','ItembuildingController@index')->name('g_itembuilding');
 Route::any('/itembuilding_add','ItembuildingController@add')->name('g_itembuilding_add');
 Route::get('/itembuilding_info','ItembuildingController@info')->name('g_itembuilding_info');
 Route::any('/itembuilding_edit','ItembuildingController@edit')->name('g_itembuilding_edit');
+Route::any('/itembuilding_del','ItembuildingController@del')->name('g_itembuilding_del');
 /*---------- 项目-公共附属物 ----------*/
 Route::any('/itempublic','ItempublicController@index')->name('g_itempublic');
 Route::any('/itempublic_add','ItempublicController@add')->name('g_itempublic_add');
 Route::get('/itempublic_info','ItempublicController@info')->name('g_itempublic_info');
 Route::any('/itempublic_edit','ItempublicController@edit')->name('g_itempublic_edit');
+Route::any('/itempublic_del','ItempublicController@del')->name('g_itempublic_del');
 /*---------- 项目-地块户型 ----------*/
 Route::any('/landlayout','LandlayoutController@index')->name('g_landlayout');
 Route::any('/landlayout_add','LandlayoutController@add')->name('g_landlayout_add');
 Route::get('/landlayout_info','LandlayoutController@info')->name('g_landlayout_info');
 Route::any('/landlayout_edit','LandlayoutController@edit')->name('g_landlayout_edit');
+Route::any('/landlayout_del','LandlayoutController@del')->name('g_landlayout_del');
 
 /*---------- 项目-被征收户账号 ----------*/
 Route::any('/household','HouseholdController@index')->name('g_household');
 Route::any('/household_add','HouseholdController@add')->name('g_household_add');
 Route::any('/household_edit','HouseholdController@edit')->name('g_household_edit');
+Route::any('/household_del','HouseholdController@del')->name('g_household_del');
 /*---------- 项目-被征收户详细信息 ----------*/
 Route::any('/householddetail','HouseholddetailController@index')->name('g_householddetail');
 Route::any('/householddetail_add','HouseholddetailController@add')->name('g_householddetail_add');
@@ -147,25 +152,30 @@ Route::any('/householdmember','HouseholdmemberController@index')->name('g_househ
 Route::any('/householdmember_add','HouseholdmemberController@add')->name('g_householdmember_add');
 Route::get('/householdmember_info','HouseholdmemberController@info')->name('g_householdmember_info');
 Route::any('/householdmember_edit','HouseholdmemberController@edit')->name('g_householdmember_edit');
+Route::any('/householdmember_del','HouseholdmemberController@del')->name('g_householdmember_del');
 /*---------- 项目-被征户-家庭成员（特殊人群） ----------*/
 Route::any('/householdmembercrowd_add','HouseholdmembercrowdController@add')->name('g_householdmembercrowd_add');
 Route::get('/householdmembercrowd_info','HouseholdmembercrowdController@info')->name('g_householdmembercrowd_info');
 Route::any('/householdmembercrowd_edit','HouseholdmembercrowdController@edit')->name('g_householdmembercrowd_edit');
+Route::any('/householdmembercrowd_del','HouseholdmembercrowdController@del')->name('g_householdmembercrowd_del');
 /*---------- 项目-被征户-其他补偿事项 ----------*/
 Route::any('/householdobject','HouseholdobjectController@index')->name('g_householdobject');
 Route::any('/householdobject_add','HouseholdobjectController@add')->name('g_householdobject_add');
 Route::get('/householdobject_info','HouseholdobjectController@info')->name('g_householdobject_info');
 Route::any('/householdobject_edit','HouseholdobjectController@edit')->name('g_householdobject_edit');
+Route::any('/householdobject_del','HouseholdobjectController@del')->name('g_householdobject_del');
 /*---------- 项目-被征户-房屋建筑 ----------*/
 Route::any('/householdbuilding','HouseholdbuildingController@index')->name('g_householdbuilding');
 Route::any('/householdbuilding_add','HouseholdbuildingController@add')->name('g_householdbuilding_add');
 Route::get('/householdbuilding_info','HouseholdbuildingController@info')->name('g_householdbuilding_info');
 Route::any('/householdbuilding_edit','HouseholdbuildingController@edit')->name('g_householdbuilding_edit');
+Route::any('/householdbuilding_del','HouseholdbuildingController@del')->name('g_householdbuilding_del');
 /*---------- 项目-被征户-资产 ----------*/
 Route::any('/householdassets','HouseholdassetsController@index')->name('g_householdassets');
 Route::any('/householdassets_add','HouseholdassetsController@add')->name('g_householdassets_add');
 Route::get('/householdassets_info','HouseholdassetsController@info')->name('g_householdassets_info');
 Route::any('/householdassets_edit','HouseholdassetsController@edit')->name('g_householdassets_edit');
+Route::any('/householdassets_del','HouseholdassetsController@del')->name('g_householdassets_del');
 
 /*---------- 项目-被征户-产权争议解决 ----------*/
 Route::any('/householdright','HouseholdrightController@index')->name('g_householdright');
