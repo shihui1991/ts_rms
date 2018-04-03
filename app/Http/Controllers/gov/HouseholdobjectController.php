@@ -9,6 +9,7 @@ use App\Http\Model\Household;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Itemobject;
 use App\Http\Model\Objects;
+use App\Http\Model\Payobject;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -45,10 +46,6 @@ class HouseholdobjectController extends BaseitemController
         $model=new Householdobject();
         DB::beginTransaction();
         try{
-            $total=$model->sharedLock()
-                ->where('item_id',$item_id)
-                ->where($where)
-                ->count();
             $householdobjects=$model
                 ->with(['item'=>function($query){
                     $query->select(['id','name']);
@@ -311,6 +308,45 @@ class HouseholdobjectController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            $payobject = Payobject::where('household_obj_id',$ids)->count();
+            if($payobject!=0){
+                throw new \Exception('该其他补偿事项正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------其他补偿事项----------*/
+            $householdobject = Householdobject::where('id',$ids)->delete();
+            if(!$householdobject){
+                throw new \Exception('删除失败',404404);
+            }
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$householdobject;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
     }
 
 }

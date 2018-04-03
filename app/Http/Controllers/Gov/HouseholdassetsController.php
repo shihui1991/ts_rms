@@ -665,4 +665,44 @@ class HouseholdassetsController extends BaseitemController
         }
     }
 
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            $householdassets = Householdassets::where('id',$ids)->first();
+            if($householdassets->number){
+                throw new \Exception('该条资产数据正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------删除资产----------*/
+            $householdassets = Householdassets::where('id',$ids)->delete();
+            if(!$householdassets){
+                throw new \Exception('删除失败',404404);
+            }
+
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$householdassets;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
+
 }

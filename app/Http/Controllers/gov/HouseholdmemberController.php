@@ -10,7 +10,9 @@ use App\Http\Model\Filetable;
 use App\Http\Model\Household;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdmembercrowd;
+use App\Http\Model\Householdright;
 use App\Http\Model\Nation;
+use App\Http\Model\Paycrowd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -434,6 +436,62 @@ class HouseholdmemberController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            /*---------是否正在被使用----------*/
+            $household_id = Householdmember::where('id',$ids)->value('household_id');
+            if($household_id){
+                $householdright = Householdright::where('household_id',$household_id)->count();
+                if($householdright!=0){
+                    throw new \Exception('该家庭成员正在被使用,暂时不能被删除！',404404);
+                }
+            }
+
+            $householdmembercrowd = Householdmembercrowd::where('member_id',$ids)->value('id');
+            if($householdmembercrowd){
+                $paycrowd = Paycrowd::where('member_crowd_id',$householdmembercrowd)->count();
+                if($paycrowd!=0){
+                    throw new \Exception('该家庭成员正在被使用,暂时不能被删除！',404404);
+                }
+            }
+            /*---------删除家庭成员----------*/
+            $householdmember = Householdmember::where('id',$ids)->delete();
+            if(!$householdmember){
+                throw new \Exception('删除失败',404404);
+            }
+            /*---------删除家庭成员下的特殊人群----------*/
+            $householdmembercrowd = Householdmembercrowd::where('member_id',$ids)->delete();
+            if(!$householdmembercrowd){
+                throw new \Exception('删除失败',404404);
+            }
+
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$householdmember;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
     }
 
 
