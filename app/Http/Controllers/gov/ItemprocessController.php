@@ -3232,6 +3232,7 @@ class ItemprocessController extends BaseitemController
                         ['schedule_id',$process->schedule_id],
                         ['process_id',22],
                         ['code','2'],
+                        ['created_at',$worknotice->created_at],
                     ])
                     ->count();
                 if($count_house){
@@ -3343,6 +3344,7 @@ class ItemprocessController extends BaseitemController
                     ['schedule_id',$process->schedule_id],
                     ['process_id',21],
                     ['code','2'],
+                    ['created_at',$worknotice->created_at],
                 ])
                 ->count();
             if($count_funds){
