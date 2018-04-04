@@ -179,7 +179,10 @@ class ItemdraftController extends BaseitemController
                     $query->select(['id','parent_id']);
                 }])
                     ->sharedLock()
-                    ->where('process_id',32)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',32],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 征收意见稿审查 工作提醒推送 ++++++++++ */
@@ -346,7 +349,10 @@ class ItemdraftController extends BaseitemController
                         $query->select(['id','parent_id']);
                     }])
                         ->sharedLock()
-                        ->where('process_id',32)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',32],
+                        ])
                         ->get();
                     $values=[];
                     /* ++++++++++ 征收意见稿审查 工作提醒推送 ++++++++++ */

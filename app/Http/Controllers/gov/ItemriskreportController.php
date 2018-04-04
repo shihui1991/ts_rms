@@ -236,7 +236,10 @@ class ItemriskreportController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',35)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',35],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 风险评估报告审查 工作提醒推送 ++++++++++ */
@@ -404,7 +407,10 @@ class ItemriskreportController extends BaseitemController
                         $query->select(['id','parent_id']);
                     }])
                         ->sharedLock()
-                        ->where('process_id',35)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',35],
+                        ])
                         ->get();
                     $values=[];
                     /* ++++++++++ 风险评估报告审查 工作提醒推送 ++++++++++ */

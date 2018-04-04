@@ -200,7 +200,10 @@ class InitbudgetController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',17)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',17],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 初步预算审查 工作提醒推送 ++++++++++ */
@@ -401,7 +404,10 @@ class InitbudgetController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',17)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',17],
+                        ])
                         ->get();
                     $values=[];
                     /* ++++++++++ 初步预算审查 工作提醒推送 ++++++++++ */

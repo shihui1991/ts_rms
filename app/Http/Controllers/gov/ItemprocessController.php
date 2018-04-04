@@ -2343,23 +2343,26 @@ class ItemprocessController extends BaseitemController
                             $item->code='21';
                         }else{
                             /* ++++++++++ 项目启动 可操作人员 ++++++++++ */
-                            $process=Process::with(['processusers'=>function($query){
-                                $query->with('role');
+                            $itemusers=Itemuser::with(['role'=>function($query){
+                                $query->select(['id','parent_id']);
                             }])
-                                ->select(['id','schedule_id','menu_id'])
-                                ->find(13);
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',13],
+                                ])
+                                ->get();
                             $values=[];
                             /* ++++++++++ 项目启动 工作提醒推送 ++++++++++ */
-                            foreach ($process->processusers as $user){
+                            foreach ($itemusers as $user){
                                 $values[]=[
-                                    'item_id'=>$item->id,
-                                    'schedule_id'=>$process->schedule_id,
-                                    'process_id'=>$process->id,
-                                    'menu_id'=>$process->menu_id,
+                                    'item_id'=>$user->item_id,
+                                    'schedule_id'=>$user->schedule_id,
+                                    'process_id'=>$user->process_id,
+                                    'menu_id'=>$user->menu_id,
                                     'dept_id'=>$user->dept_id,
                                     'parent_id'=>$user->role->parent_id,
                                     'role_id'=>$user->role_id,
-                                    'user_id'=>$user->id,
+                                    'user_id'=>$user->user_id,
                                     'url'=>route('g_check_item_start',['item'=>$this->item->id],false),
                                     'code'=>'0',
                                     'created_at'=>date('Y-m-d H:i:s'),
@@ -2581,7 +2584,10 @@ class ItemprocessController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',14)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',14],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 项目初步预算 工作提醒推送 ++++++++++ */
@@ -2814,7 +2820,10 @@ class ItemprocessController extends BaseitemController
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
-                                ->where('process_id',18)
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',18],
+                                ])
                                 ->get();
                             $values=[];
                             /* ++++++++++ 项目筹备 工作提醒推送 ++++++++++ */
@@ -2873,7 +2882,10 @@ class ItemprocessController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',20)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',20],
+                        ])
                         ->get();
                     /* ++++++++++ 重新预算 工作提醒推送 ++++++++++ */
                     $values=[];
@@ -3031,16 +3043,18 @@ class ItemprocessController extends BaseitemController
                     ->delete();
 
                 /* ++++++++++ 项目筹备 可操作人员 ++++++++++ */
-                $processes=Process::with(['processusers'=>function($query){
-                    $query->with('role');
+                $itemusers=Itemuser::with(['role'=>function($query){
+                    $query->select(['id','parent_id']);
                 }])
-                    ->select(['id','schedule_id','menu_id'])
-                    ->where('parent_id',18)
+                    ->where([
+                        ['item_id',$item->id],
+                    ])
+                    ->whereIn('process_id',[21,22])
                     ->get();
                 /* ++++++++++ 项目筹备 工作提醒推送 ++++++++++ */
                 $values=[];
-                foreach($processes as $process){
-                    switch ($process->id){
+                foreach($itemusers as $user){
+                    switch ($user->process_id){
                         case 21: // 资金
                             $url=route('g_ready_funds',['item'=>$this->item->id],false);
                             break;
@@ -3048,22 +3062,20 @@ class ItemprocessController extends BaseitemController
                             $url=route('g_itemhouse',['item'=>$this->item->id],false);
                             break;
                     }
-                    foreach ($process->processusers as $user){
-                        $values[]=[
-                            'item_id'=>$item->id,
-                            'schedule_id'=>$process->schedule_id,
-                            'process_id'=>$process->id,
-                            'menu_id'=>$process->menu_id,
-                            'dept_id'=>$user->dept_id,
-                            'parent_id'=>$user->role->parent_id,
-                            'role_id'=>$user->role_id,
-                            'user_id'=>$user->id,
-                            'url'=>$url,
-                            'code'=>'0',
-                            'created_at'=>date('Y-m-d H:i:s'),
-                            'updated_at'=>date('Y-m-d H:i:s'),
-                        ];
-                    }
+                    $values[]=[
+                        'item_id'=>$user->item_id,
+                        'schedule_id'=>$user->schedule_id,
+                        'process_id'=>$user->process_id,
+                        'menu_id'=>$user->menu_id,
+                        'dept_id'=>$user->dept_id,
+                        'parent_id'=>$user->role->parent_id,
+                        'role_id'=>$user->role_id,
+                        'user_id'=>$user->user_id,
+                        'url'=>$url,
+                        'code'=>'0',
+                        'created_at'=>date('Y-m-d H:i:s'),
+                        'updated_at'=>date('Y-m-d H:i:s'),
+                    ];
                 }
 
                 $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
@@ -3243,7 +3255,10 @@ class ItemprocessController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',19)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',19],
+                        ])
                         ->get();
                     $values=[];
                     /* ++++++++++ 项目筹备审查 工作提醒推送 ++++++++++ */
@@ -3355,7 +3370,10 @@ class ItemprocessController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',19)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',19],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 项目筹备审查 工作提醒推送 ++++++++++ */
@@ -3619,7 +3637,11 @@ class ItemprocessController extends BaseitemController
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
-                                ->where('process_id',23)
+
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',23],
+                                ])
                                 ->get();
                             $values=[];
                             /* ++++++++++ 征收范围公告 工作提醒推送 ++++++++++ */
@@ -3675,16 +3697,18 @@ class ItemprocessController extends BaseitemController
                         ->delete();
 
                     /* ++++++++++ 项目筹备 可操作人员 ++++++++++ */
-                    $processes=Process::with(['processusers'=>function($query){
-                        $query->with('role');
+                    $itemusers=Itemuser::with(['role'=>function($query){
+                        $query->select(['id','parent_id']);
                     }])
-                        ->select(['id','schedule_id','menu_id'])
-                        ->where('parent_id',18)
+                        ->where([
+                            ['item_id',$item->id],
+                        ])
+                        ->whereIn('process_id',[21,22])
                         ->get();
                     /* ++++++++++ 项目筹备 工作提醒推送 ++++++++++ */
                     $values=[];
-                    foreach($processes as $process){
-                        switch ($process->id){
+                    foreach($itemusers as $user){
+                        switch ($user->process_id){
                             case 21: // 资金
                                 $url=route('g_ready_funds',['item'=>$this->item->id],false);
                                 break;
@@ -3692,23 +3716,22 @@ class ItemprocessController extends BaseitemController
                                 $url=route('g_itemhouse',['item'=>$this->item->id],false);
                                 break;
                         }
-                        foreach ($process->processusers as $user){
-                            $values[]=[
-                                'item_id'=>$item->id,
-                                'schedule_id'=>$process->schedule_id,
-                                'process_id'=>$process->id,
-                                'menu_id'=>$process->menu_id,
-                                'dept_id'=>$user->dept_id,
-                                'parent_id'=>$user->role->parent_id,
-                                'role_id'=>$user->role_id,
-                                'user_id'=>$user->id,
-                                'url'=>$url,
-                                'code'=>'0',
-                                'created_at'=>date('Y-m-d H:i:s'),
-                                'updated_at'=>date('Y-m-d H:i:s'),
-                            ];
-                        }
+                        $values[]=[
+                            'item_id'=>$user->item_id,
+                            'schedule_id'=>$user->schedule_id,
+                            'process_id'=>$user->process_id,
+                            'menu_id'=>$user->menu_id,
+                            'dept_id'=>$user->dept_id,
+                            'parent_id'=>$user->role->parent_id,
+                            'role_id'=>$user->role_id,
+                            'user_id'=>$user->user_id,
+                            'url'=>$url,
+                            'code'=>'0',
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
                     }
+
                     $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
                     $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
                     if(!$sqls){
@@ -3939,7 +3962,10 @@ class ItemprocessController extends BaseitemController
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
-                                ->where('process_id',25)
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',25],
+                                ])
                                 ->get();
                             $values=[];
                             /* ++++++++++ 入户调查 工作提醒推送 ++++++++++ */
@@ -3999,7 +4025,10 @@ class ItemprocessController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',23)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',23],
+                        ])
                         ->get();
                     /* ++++++++++ 征收范围公告 工作提醒推送 ++++++++++ */
                     $values=[];
@@ -4280,7 +4309,10 @@ class ItemprocessController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',30)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',30],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 入户调查数据审查 工作提醒推送 ++++++++++ */
@@ -4589,7 +4621,10 @@ class ItemprocessController extends BaseitemController
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
-                                ->where('process_id',31)
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',31],
+                                ])
                                 ->get();
                             $values=[];
                             /* ++++++++++ 拟定征收意见稿 工作提醒推送 ++++++++++ */
@@ -4648,7 +4683,10 @@ class ItemprocessController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',25)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',25],
+                        ])
                         ->get();
                     /* ++++++++++ 入户调查 工作提醒推送 ++++++++++ */
                     $values=[];
@@ -4881,7 +4919,10 @@ class ItemprocessController extends BaseitemController
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
-                                ->where('process_id',33)
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',33],
+                                ])
                                 ->get();
                             $values=[];
                             /* ++++++++++ 发布征收意见稿  工作提醒推送 ++++++++++ */
@@ -4941,7 +4982,10 @@ class ItemprocessController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',31)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',31],
+                        ])
                         ->get();
                     /* ++++++++++ 拟定征收意见稿 工作提醒推送 ++++++++++ */
                     $values=[];
@@ -5175,7 +5219,10 @@ class ItemprocessController extends BaseitemController
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
-                                ->where('process_id',36)
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',36],
+                                ])
                                 ->get();
                             $values=[];
                             /* ++++++++++ 正式征收方案提交审查  工作提醒推送 ++++++++++ */
@@ -5235,7 +5282,10 @@ class ItemprocessController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',34)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',34],
+                        ])
                         ->get();
                     /* ++++++++++ 社会稳定风险评估 工作提醒推送 ++++++++++ */
                     $values=[];
@@ -5366,7 +5416,10 @@ class ItemprocessController extends BaseitemController
                 $query->select(['id','parent_id']);
             }])
                 ->sharedLock()
-                ->where('process_id',37)
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',37],
+                ])
                 ->get();
             $values=[];
             /* ++++++++++ 正式征收方案审查 工作提醒推送 ++++++++++ */
@@ -5587,7 +5640,10 @@ class ItemprocessController extends BaseitemController
                             $itemusers=Itemuser::with(['role'=>function($query){
                                 $query->select(['id','parent_id']);
                             }])
-                                ->where('process_id',38)
+                                ->where([
+                                    ['item_id',$item->id],
+                                    ['process_id',38],
+                                ])
                                 ->get();
                             $values=[];
                             /* ++++++++++ 发布征收决定公告  工作提醒推送 ++++++++++ */
@@ -5647,7 +5703,10 @@ class ItemprocessController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',36)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',36],
+                        ])
                         ->get();
                     /* ++++++++++ 正式征收方案提交审查 工作提醒推送 ++++++++++ */
                     $values=[];

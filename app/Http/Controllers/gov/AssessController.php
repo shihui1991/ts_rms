@@ -165,7 +165,7 @@ class AssessController extends BaseitemController
                 }
 
                 /* ++++++++++ 检查操作权限 ++++++++++ */
-              /*  $count=Itemuser::sharedLock()
+                $count=Itemuser::sharedLock()
                     ->where([
                         ['item_id',$item->id],
                         ['schedule_id',$item->schedule_id],
@@ -175,7 +175,7 @@ class AssessController extends BaseitemController
                     ->get();
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
-                }*/
+                }
 
                 $household = Household::with(
                     ['item' => function ($query) {
@@ -276,7 +276,10 @@ class AssessController extends BaseitemController
                         $query->select(['id','parent_id']);
                     }])
                         ->sharedLock()
-                        ->where('process_id',35)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',35],
+                        ])
                         ->get();
                     $values=[];
                     /* ++++++++++ 风险评估报告审查 工作提醒推送 ++++++++++ */

@@ -31,6 +31,7 @@ class NewsController extends BaseitemController
         },'state'=>function($query){
             $query->select(['code','name']);
         }])
+            ->where('item_id',$this->item_id)
             ->sharedLock()
             ->orderBy('is_top','desc')
             ->orderBy('release_at','asc')
@@ -211,7 +212,10 @@ class NewsController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',24)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',24],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 征收范围公告审查 工作提醒推送 ++++++++++ */
@@ -458,7 +462,10 @@ class NewsController extends BaseitemController
                     $itemusers=Itemuser::with(['role'=>function($query){
                         $query->select(['id','parent_id']);
                     }])
-                        ->where('process_id',24)
+                        ->where([
+                            ['item_id',$item->id],
+                            ['process_id',24],
+                        ])
                         ->get();
                     $values=[];
                     /* ++++++++++ 征收范围公告审查 工作提醒推送 ++++++++++ */
@@ -680,7 +687,10 @@ class NewsController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',34)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',34],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 社会稳定风险评估 工作提醒推送 ++++++++++ */
@@ -1017,7 +1027,10 @@ class NewsController extends BaseitemController
                 $itemusers=Itemuser::with(['role'=>function($query){
                     $query->select(['id','parent_id']);
                 }])
-                    ->where('process_id',39)
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',39],
+                    ])
                     ->get();
                 $values=[];
                 /* ++++++++++ 项目实施 工作提醒推送 ++++++++++ */
