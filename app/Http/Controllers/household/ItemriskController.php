@@ -28,9 +28,6 @@ class  ItemriskController extends BaseController
 
     public function info(Request $request)
     {
-
-        $item_id = session('household_user.item_id');
-        $household_id = session('household_user.user_id');
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
 
@@ -42,13 +39,13 @@ class  ItemriskController extends BaseController
             }, 'land' => function ($query) {
                 $query->select(['id', 'address']);
             }])
-            ->where('household_id', $household_id)
-            ->where('item_id', $item_id)
+            ->where('household_id', $this->household_id)
+            ->where('item_id', $this->item_id)
             ->sharedLock()
             ->first();
         $itemtopic=Itemrisktopic::sharedLock()
             ->where('risk_id',$itemrisk->id)
-            ->where('item_id',$item_id)
+            ->where('item_id',$this->item_id)
             ->orderBy('topic_id','asc')
             ->get();
         DB::commit();
@@ -83,8 +80,6 @@ class  ItemriskController extends BaseController
     /*社会稳定风险评估-添加页面*/
     public function add(Request $request)
     {
-        $item_id = session('household_user.item_id');
-        $household_id = session('household_user.user_id');
         $land_id = session('household_user.land_id');
         $building_id = session('household_user.building_id');
 
@@ -101,8 +96,8 @@ class  ItemriskController extends BaseController
                     }, 'building' => function ($query) {
                         $query->select(['id', 'building']);
                     }])
-                    ->where('household_id', $household_id)
-                    ->where('item_id', $item_id)
+                    ->where('household_id', $this->household_id)
+                    ->where('item_id', $this->item_id)
                     ->sharedLock()
                     ->first();
                 if (filled($itemrisk)) {
@@ -112,7 +107,7 @@ class  ItemriskController extends BaseController
                $itemtopic=Itemtopic::with(['topic' => function ($query) {
                    $query->select(['id', 'name']);
                     }])
-                   ->where('item_id', $item_id)
+                   ->where('item_id', $this->item_id)
                    ->orderBy('id','asc')
                    ->sharedLock()
                    ->get();
@@ -178,9 +173,9 @@ class  ItemriskController extends BaseController
                 $itemrisk = $model;
                 $itemrisk->fill($request->all());
                 $itemrisk->addOther($request);
-                $itemrisk->item_id = $item_id;
+                $itemrisk->item_id = $this->item_id;
                 $itemrisk->land_id = $land_id;
-                $itemrisk->household_id = $household_id;
+                $itemrisk->household_id = $this->household_id;
                 $itemrisk->building_id = $building_id;
 
                 $itemrisk->save();
@@ -191,7 +186,7 @@ class  ItemriskController extends BaseController
                 /*自选话题*/
                 foreach ($request->input('topic') as $key=>$value){
                     $topic_data[]=[
-                        'item_id'=>$item_id,
+                        'item_id'=>$this->item_id,
                         'risk_id'=>$itemrisk->id,
                         'topic_id'=>$key,
                         'answer'=>$value,
@@ -220,7 +215,7 @@ class  ItemriskController extends BaseController
                 $msg = '添加成功';
                 $sdata = $itemrisk;
                 $edata = null;
-                $url = route('h_itemrisk_info', ['item' => $item_id]);
+                $url = route('h_itemrisk_info', ['item' => $this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
@@ -240,8 +235,6 @@ class  ItemriskController extends BaseController
     public function edit(Request $request)
     {
         $id = $request->input('id');
-        $item_id = session('household_user.item_id');
-        $household_id=session('household_user.user_id');
         if (!$id) {
             $result = ['code' => 'error', 'message' => '请先选择数据', 'sdata' => null, 'edata' => null, 'url' => null];
             if ($request->ajax()) {
@@ -263,7 +256,7 @@ class  ItemriskController extends BaseController
                         $query->select(['id', 'building']);
                     }])
                     ->sharedLock()
-                    ->find($household_id);
+                    ->find($this->household_id);
                 if (blank($household)){
                     throw new \Exception('被征户不存在', 404404);
                 }
@@ -340,11 +333,11 @@ class  ItemriskController extends BaseController
                 }
 
                 /*自选话题*/
-                Itemrisktopic::where([['item_id',$item_id],['risk_id',$id]])
+                Itemrisktopic::where([['item_id',$this->item_id],['risk_id',$id]])
                     ->delete();
                 foreach ($request->input('topic') as $key=>$value){
                     $topic_data[]=[
-                        'item_id'=>$item_id,
+                        'item_id'=>$this->item_id,
                         'risk_id'=>$itemrisk->id,
                         'topic_id'=>$key,
                         'answer'=>$value,
@@ -362,7 +355,7 @@ class  ItemriskController extends BaseController
                 }
 
                 $item_household=Household::sharedLock()
-                                ->find($household_id);
+                                ->find($this->household_id);
                 $item_household->code=67;
                 $item_household->save();
 
