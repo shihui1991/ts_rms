@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\gov;
 
 use App\Http\Model\Audit;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -53,6 +54,26 @@ class AuditController extends BaseitemController
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->process_id!=44 || $item->code != '2'){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',6],
+                        ['process_id',45],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 $audit=Audit::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->first();
@@ -107,6 +128,30 @@ class AuditController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if($item->process_id!=44 || $item->code != '2'){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',6],
+                        ['process_id',45],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->schedule_id=6;
+                $item->process_id=45;
+                $item->code='2';
+                $item->save();
                 $audit=Audit::sharedLock()
                     ->where('item_id',$this->item_id)
                     ->first();
