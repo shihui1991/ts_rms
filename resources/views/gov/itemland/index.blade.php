@@ -143,7 +143,7 @@
                 toastr.error('请选择要删除的数据！');
                 return false;
             }
-            ajaxAct('{{route('g_itemland_del')}}',{ id:del_id,item:'{{$infos->item_id}}'},'post');
+            ajaxAct('{{route('g_itemland_del')}}',{ id:del_id,item:'{{$edata['item_id']}}'},'post');
             if(ajaxResp.code=='success'){
                 toastr.success(ajaxResp.message);
                 if(ajaxResp.url){

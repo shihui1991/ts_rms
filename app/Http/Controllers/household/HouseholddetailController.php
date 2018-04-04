@@ -120,7 +120,7 @@ class  HouseholddetailController extends BaseController
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         try{
-            $data['item_id'] = $item_id;
+            $data['item_id'] = $this->item_id;
             $data['household'] = new Household();
             $data['household_detail'] = Householddetail::with([
                 'defbuildinguse'=>function($query){
@@ -157,7 +157,7 @@ class  HouseholddetailController extends BaseController
                 'nation'=>function($query){
                     $query->select(['id','name']);
                 }])
-                ->where('item_id',$item_id)
+                ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->get();
@@ -171,7 +171,7 @@ class  HouseholddetailController extends BaseController
                 'object'=>function($query){
                     $query->select(['id','name']);
                 }])
-                ->where('item_id',$item_id)
+                ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->get();
@@ -186,11 +186,11 @@ class  HouseholddetailController extends BaseController
                 },'state'=>function($query){
                     $query->select(['code','name']);
                 },])
-                ->where('item_id',$item_id)
+                ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->get();
-            $data['householdassets']=Householdassets::where('item_id',$item_id)
+            $data['householdassets']=Householdassets::where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->where('number','<>',null)
                 ->sharedLock()
@@ -286,9 +286,9 @@ class  HouseholddetailController extends BaseController
                 $itemrisk = $model;
                 $itemrisk->fill($request->all());
                 $itemrisk->addOther($request);
-                $itemrisk->item_id = $item_id;
+                $itemrisk->item_id = $this->item_id;
                 $itemrisk->land_id = $land_id;
-                $itemrisk->household_id = $household_id;
+                $itemrisk->household_id = $this->household_id;
                 $itemrisk->building_id = $building_id;
 
                 $itemrisk->save();
@@ -299,7 +299,7 @@ class  HouseholddetailController extends BaseController
                 $msg = '添加成功';
                 $sdata = $itemrisk;
                 $edata = null;
-                $url = route('h_itemrisk_info', ['item' => $item_id]);
+                $url = route('h_itemrisk_info', ['item' => $this->item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
