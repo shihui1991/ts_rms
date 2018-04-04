@@ -26,9 +26,6 @@ class ItemhouseController extends BaseController{
     }
 
     public function index(Request $request){
-
-
-        $this->item_id=session('household_user.item_id');
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id', $this->item_id];

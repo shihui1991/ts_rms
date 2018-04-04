@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 class AssessController extends BaseController{
 
-    protected $item_id;
+
 
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -27,13 +27,12 @@ class AssessController extends BaseController{
     }
 
     public function info(Request $request){
-        $this->item_id=session('household_user.item_id');
-        $household_id=session('household_user.user_id');
+        
 
         /* ********** 查询条件 ********** */
         $where=[];
         $where[] = ['item_id', $this->item_id];
-        $where[] = ['household_id', $household_id];
+        $where[] = ['household_id', $this->household_id];
 
 
         /* ********** 查询 ********** */
@@ -48,7 +47,7 @@ class AssessController extends BaseController{
             /* ++++++++++ 被征收户 ++++++++++ */
             $household=Household::sharedLock()
                 ->select(['id','item_id','land_id','building_id','unit','floor','number','type'])
-                ->find($household_id);
+                ->find($this->household_id);
             if(blank($item)){
                 throw new \Exception('被征户不存在',404404);
             }
@@ -56,7 +55,7 @@ class AssessController extends BaseController{
             $assess=Assess::sharedLock()
                     ->where([
                         ['item_id', $this->item_id],
-                        ['household_id', $household_id]
+                        ['household_id', $this->household_id]
                     ])
                     ->whereIn('code',['135','133','136','132'])
                     ->first();
