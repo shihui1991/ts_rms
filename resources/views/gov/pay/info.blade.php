@@ -402,7 +402,7 @@
                                         @if(in_array($pact->code,['171','172']))
                                             <a class="btn btn-sm btn-primary" data-toggle="modal" data-target="#model-pact-check" data-url="{{route('g_pact_check',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" onclick="setUrl(this)">审查</a>
                                         @endif
-                                        <a class="btn btn-sm btn-primary" data-toggle="modal" data-target="#model-pact-check" data-url="{{route('g_pact_check',['item'=>$pact->item_id,'pact_id'=>$pact->id])}}" onclick="setUrl(this)">审查</a>
+
                                     </div>
 
                                 </td>
