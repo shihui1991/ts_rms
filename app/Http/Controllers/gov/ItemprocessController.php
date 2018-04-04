@@ -3113,14 +3113,17 @@ class ItemprocessController extends BaseitemController
                 if(blank($item)){
                     throw new \Exception('项目不存在',404404);
                 }
-                /* ++++++++++ 检查项目状态 ++++++++++ */
-                if($item->schedule_id!=2 || $item->process_id!=18 ||  $item->code!='1'){
-                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',21],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
                 }
-                /* ++++++++++ 检查工作推送 ++++++++++ */
-                $result=$this->hasNotice();
-                $process=$result['process'];
-                $worknotice=$result['worknotice'];
                 /* ++++++++++ 初步预算 ++++++++++ */
                 $init_budget=Initbudget::sharedLock()->where('item_id',$this->item_id)->first();
                 /* ++++++++++ 录入明细 ++++++++++ */
@@ -3143,7 +3146,7 @@ class ItemprocessController extends BaseitemController
                     $query->select(['code','name']);
                 }])
                     ->where('item_id',$this->item_id)
-                    ->where('schedule_id',$process->schedule_id)
+                    ->where('schedule_id',2)
                     ->whereNotIn('code',['0','20'])
                     ->orderBy('updated_at','desc')
                     ->orderBy('id','desc')

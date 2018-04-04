@@ -127,8 +127,7 @@ class ItemhouseController extends BaseitemController
                 $count=Itemuser::sharedLock()
                     ->where([
                         ['item_id',$item->id],
-                        ['schedule_id',$item->schedule_id],
-                        ['process_id',$item->process_id],
+                        ['process_id',22],
                         ['user_id',session('gov_user.user_id')],
                     ])
                     ->get();
@@ -188,8 +187,7 @@ class ItemhouseController extends BaseitemController
                 $count=Itemuser::sharedLock()
                     ->where([
                         ['item_id',$item->id],
-                        ['schedule_id',$item->schedule_id],
-                        ['process_id',$item->process_id],
+                        ['process_id',22],
                         ['user_id',session('gov_user.user_id')],
                     ])
                     ->get();
