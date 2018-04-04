@@ -17,6 +17,7 @@ use App\Http\Model\Household;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Householdmember;
+use App\Http\Model\Menu;
 use App\Http\Model\Paytransit;
 use App\Http\Model\Itemprogram;
 use App\Http\Model\Pact;
@@ -32,23 +33,18 @@ use App\Http\Model\Payunit;
 use App\Http\Model\Publicdetail;
 use App\Http\Model\Payhousebak;
 use App\Http\Controllers\Controller;
+use App\Http\Model\Process;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PayController extends BaseController{
-    public $item_id;
-    public $item;
 
     public function info(Request $request){
-        $household_id=session('household_user.user_id');
-        $this->item_id=session('household_user.item_id');
-        $this->item=Item::sharedLock()->find($this->item_id);
-
         $itemrisk = Itemrisk::sharedLock()
             ->where([
                 ['item_id', session('household_user.item_id')],
-                ['household_id', $household_id]
+                ['household_id', $this->household_id]
             ])
             ->first();;
         if (blank($itemrisk)) {
@@ -61,7 +57,7 @@ class PayController extends BaseController{
             ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
             ->where([
                 ['item_id', $this->item_id],
-                ['id', $household_id]
+                ['id', $this->household_id]
             ])
             ->first();
         if (blank($household)) {
@@ -72,7 +68,7 @@ class PayController extends BaseController{
         $household_detail = Householddetail::sharedLock()
             ->where([
                 ['item_id', $this->item_id],
-                ['household_id', $household_id],
+                ['household_id', $this->household_id],
             ])
             ->select(['item_id','household_id','register','has_assets','area_dispute','repay_way','def_use'])
             ->first();
@@ -88,7 +84,7 @@ class PayController extends BaseController{
         $assess = Assess::sharedLock()
             ->where([
                 ['item_id',$this->item_id],
-                ['household_id',$household_id],
+                ['household_id',$this->household_id],
                 ['code','136']
             ])
             ->first();
@@ -103,7 +99,7 @@ class PayController extends BaseController{
         $estate = Estate::sharedLock()
             ->where([
                 ['item_id',$this->item_id],
-                ['household_id',$household_id],
+                ['household_id',$this->household_id],
                 ['assess_id',$assess->id],
                 ['code','136']
             ])
@@ -115,7 +111,7 @@ class PayController extends BaseController{
         }])
             ->where([
                 ['item_id', $this->item_id],
-                ['household_id', $household_id],
+                ['household_id', $this->household_id],
                 ['assess_id', $assess->id],
                 ['estate_id', $estate->id],
             ])
@@ -130,7 +126,7 @@ class PayController extends BaseController{
             $assets = Assets::sharedLock()
                 ->where([
                     ['item_id', $this->item_id],
-                    ['household_id', $household_id],
+                    ['household_id', $this->household_id],
                     ['assess_id', $assess->id],
                 ])
                 ->select(['id', 'item_id', 'household_id', 'assess_id', 'code'])
@@ -197,7 +193,7 @@ class PayController extends BaseController{
                     $query->select(['id', 'building']);
                 }])
                 ->where('item_id',$this->item_id)
-                ->where('household_id',$household_id)
+                ->where('household_id',$this->household_id)
                 ->first();
 
         if (blank($model)){
@@ -206,7 +202,7 @@ class PayController extends BaseController{
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $pay = new Pay();
                 $pay->item_id = $this->item_id;
-                $pay->household_id = $household_id;
+                $pay->household_id = $this->household_id;
                 $pay->land_id = $household->land_id;
                 $pay->building_id = $household->building_id;
                 $pay->repay_way = $itemrisk->getOriginal('repay_way');
@@ -224,7 +220,7 @@ class PayController extends BaseController{
                 foreach ($estatebuildings as $building) {
                     $building_data[]=[
                         'item_id'=>$this->item_id,
-                        'household_id'=>$household_id,
+                        'household_id'=>$this->household_id,
                         'land_id'=>$household->land_id,
                         'building_id'=>$household->building_id,
                         'assess_id'=>$assess->id,
@@ -258,7 +254,7 @@ class PayController extends BaseController{
                 if ($register_total) {
                     $subject_data[] = [
                         'item_id'=>$this->item_id,
-                        'household_id'=>$household_id,
+                        'household_id'=>$this->household_id,
                         'land_id'=>$household->land_id,
                         'building_id'=>$household->building_id,
                         'pay_id'=>$pay->id,
@@ -276,7 +272,7 @@ class PayController extends BaseController{
                 if($legal_total){
                     $subject_data[]=[
                         'item_id'=>$this->item_id,
-                        'household_id'=>$household_id,
+                        'household_id'=>$this->household_id,
                         'land_id'=>$household->land_id,
                         'building_id'=>$household->building_id,
                         'pay_id'=>$pay->id,
@@ -295,7 +291,7 @@ class PayController extends BaseController{
                 if($destroy_total){
                     $subject_data[]=[
                         'item_id'=>$this->item_id,
-                        'household_id'=>$household_id,
+                        'household_id'=>$this->household_id,
                         'land_id'=>$household->land_id,
                         'building_id'=>$household->building_id,
                         'pay_id'=>$pay->id,
@@ -314,7 +310,7 @@ class PayController extends BaseController{
                 if($household_detail->getOriginal('has_assets')){
                     $subject_data[]=[
                         'item_id'=>$this->item_id,
-                        'household_id'=>$household_id,
+                        'household_id'=>$this->household_id,
                         'land_id'=>$household->land_id,
                         'building_id'=>$household->building_id,
                         'pay_id'=>$pay->id,
@@ -410,7 +406,7 @@ class PayController extends BaseController{
                         $unit_total=$public_total*$program->portion_holder/100;
                         $unit_data[]=[
                             'item_id'=>$this->item_id,
-                            'household_id'=>$household_id,
+                            'household_id'=>$this->household_id,
                             'land_id'=>$household->land_id,
                             'unit_id'=>$household->itemland->admin_unit_id,
                             'pay_id'=>$pay->id,
@@ -428,7 +424,7 @@ class PayController extends BaseController{
                     }
                     $subject_data[]=[
                         'item_id'=>$this->item_id,
-                        'household_id'=>$household_id,
+                        'household_id'=>$this->household_id,
                         'land_id'=>$household->land_id,
                         'building_id'=>$household->building_id,
                         'pay_id'=>$pay->id,
@@ -456,7 +452,7 @@ class PayController extends BaseController{
                     ->sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
-                        ['household_id',$household_id],
+                        ['household_id',$this->household_id],
                     ])
                     ->get();
                 $object_total=0;
@@ -468,7 +464,7 @@ class PayController extends BaseController{
 
                         $object_data[]=[
                             'item_id'=>$this->item_id,
-                            'household_id'=>$household_id,
+                            'household_id'=>$this->household_id,
                             'land_id'=>$household->land_id,
                             'building_id'=>$household->building_id,
                             'household_obj_id'=>$object->id,
@@ -497,7 +493,7 @@ class PayController extends BaseController{
                     if($object_total){
                         $subject_data[]=[
                             'item_id'=>$this->item_id,
-                            'household_id'=>$household_id,
+                            'household_id'=>$this->household_id,
                             'land_id'=>$household->land_id,
                             'building_id'=>$household->building_id,
                             'pay_id'=>$pay->id,
@@ -532,7 +528,7 @@ class PayController extends BaseController{
                     $query->select(['id', 'building']);
                 }])
                     ->where('item_id',$this->item_id)
-                    ->where('household_id',$household_id)
+                    ->where('household_id',$this->household_id)
                     ->first();
                 DB::commit();
 
@@ -556,7 +552,7 @@ class PayController extends BaseController{
             try{
                 /* ++++++++++ 签约奖励 ++++++++++ */
                 $pay_reward=Paysubject::sharedLock()
-                            ->where([['item_id',$this->item_id],['household_id',$household_id]])
+                            ->where([['item_id',$this->item_id],['household_id',$this->household_id]])
                             ->whereIn('subject_id',[11,12])
                             ->first();
 
@@ -597,7 +593,7 @@ class PayController extends BaseController{
                     $pay_reward=new Paysubject();
                 }
                 $pay_reward->item_id=$this->item_id;
-                $pay_reward->household_id=$household_id;
+                $pay_reward->household_id=$this->household_id;
                 $pay_reward->land_id=$household->land_id;
                 $pay_reward->building_id=$household->building_id;
                 $pay_reward->pay_id=$model->id;
@@ -676,7 +672,7 @@ class PayController extends BaseController{
                 /* ++++++++++ 安置房 ++++++++++ */
                 $resettles=null;
                 if($model->getOriginal('repay_way')==1){
-                    $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1]])->pluck('house_id')->toArray();
+                    $house_ids=DB::table('pay_house_bak')->where([['household_id',$this->household_id],['house_type',1]])->pluck('house_id')->toArray();
 
                     /* ++++++++++ 产权调换房 ++++++++++ */
                     $houses=House::with(['housecommunity','layout','itemhouseprice'=>function($query){
@@ -705,7 +701,7 @@ class PayController extends BaseController{
                     $resettle_total=Paysubject::sharedLock()
                         ->where([
                             ['item_id',$this->item_id],
-                            ['household_id',$household_id],
+                            ['household_id',$this->household_id],
                             ['pay_id',$model->id],
                         ])
                         ->whereIn('subject_id',[1,2,4,11,12])
@@ -843,7 +839,7 @@ class PayController extends BaseController{
                             }]);
                     }])
                         ->where([
-                            ['household_id',$household_id],
+                            ['household_id',$this->household_id],
                             ['item_id',$this->item_id],
                             ['house_type',2]
                         ])
@@ -900,8 +896,6 @@ class PayController extends BaseController{
     /* ========== 修改兑付方式 ========== */
     public function edit(Request $request){
         $pay_id=$request->input('id');
-        $this->item_id=session('household_user.item_id');
-        $household_id=session('household_user.user_id');
         if(!$pay_id){
             $result=['code'=>'error','message'=>'请选择兑付数据','sdata'=>null,'edata'=>null,'url'=>null];
             if($request->ajax()){
@@ -994,7 +988,7 @@ class PayController extends BaseController{
                     ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
                     ->where([
                         ['item_id', $this->item_id],
-                        ['id', $household_id]
+                        ['id', $this->household_id]
                     ])
                     ->first();
                 if (blank($household)) {
@@ -1004,7 +998,7 @@ class PayController extends BaseController{
                 $household_detail = Householddetail::sharedLock()
                     ->where([
                         ['item_id', $this->item_id],
-                        ['household_id', $household_id],
+                        ['household_id', $this->household_id],
                     ])
                     ->select(['item_id','household_id','register','has_assets','area_dispute','repay_way','def_use'])
                     ->first();
@@ -1016,7 +1010,7 @@ class PayController extends BaseController{
                 $assess = Assess::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
-                        ['household_id',$household_id],
+                        ['household_id',$this->household_id],
                         ['code','136']
                     ])
                     ->first();
@@ -1029,7 +1023,7 @@ class PayController extends BaseController{
                 $estate = Estate::sharedLock()
                     ->where([
                         ['item_id',$this->item_id],
-                        ['household_id',$household_id],
+                        ['household_id',$this->household_id],
                         ['assess_id',$assess->id],
                         ['code','136']
                     ])
@@ -1041,7 +1035,7 @@ class PayController extends BaseController{
                 }])
                     ->where([
                         ['item_id', $this->item_id],
-                        ['household_id', $household_id],
+                        ['household_id', $this->household_id],
                         ['assess_id', $assess->id],
                         ['estate_id', $estate->id],
                     ])
@@ -1055,7 +1049,7 @@ class PayController extends BaseController{
                     $assets = Assets::sharedLock()
                         ->where([
                             ['item_id', $this->item_id],
-                            ['household_id', $household_id],
+                            ['household_id', $this->household_id],
                             ['assess_id', $assess->id],
                         ])
                         ->select(['id', 'item_id', 'household_id', 'assess_id', 'code'])

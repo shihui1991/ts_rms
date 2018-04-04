@@ -26,14 +26,12 @@ class  HouseholddetailController extends BaseController
     }
 
     public function index(Request $request){
-        $item_id=session('household_user.item_id');
-        $household_id=session('household_user.user_id');
         /* ++++++++++ 是否调取接口(分页) ++++++++++ */
         $app = $request->input('app');
         /* ********** 查询条件 ********** */
         $where=[];
-        $where[] = ['item_id',$item_id];
-        $infos['item_id'] = $item_id;
+        $where[] = ['item_id',$this->item_id];
+        $infos['item_id'] = $this->item_id;
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
@@ -119,9 +117,6 @@ class  HouseholddetailController extends BaseController
 
     public function info(Request $request){
 
-        $item_id=session('household_user.item_id');
-        $household_id=session('household_user.user_id');
-
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
         try{
@@ -137,7 +132,7 @@ class  HouseholddetailController extends BaseController
                 'layout'=>function($query){
                     $query->select(['id','name']);
                 }])
-                ->where('household_id',$household_id)
+                ->where('household_id',$this->household_id)
                 ->first();
 
             $household=Household::with([
@@ -151,7 +146,7 @@ class  HouseholddetailController extends BaseController
                     $query->select(['id','building']);
                 }])
                 ->sharedLock()
-                ->find($household_id);
+                ->find($this->household_id);
             $data['householdmember']=Householdmember::with([
                 'itemland'=>function($query){
                     $query->select(['id','address']);
@@ -163,7 +158,7 @@ class  HouseholddetailController extends BaseController
                     $query->select(['id','name']);
                 }])
                 ->where('item_id',$item_id)
-                ->where('household_id',$household_id)
+                ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->get();
             $data['householdobject']=Householdobject::with([
@@ -177,7 +172,7 @@ class  HouseholddetailController extends BaseController
                     $query->select(['id','name']);
                 }])
                 ->where('item_id',$item_id)
-                ->where('household_id',$household_id)
+                ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->get();
             $data['householdbuilding']=Householdbuilding::with(['itemland'=>function($query){
@@ -192,11 +187,11 @@ class  HouseholddetailController extends BaseController
                     $query->select(['code','name']);
                 },])
                 ->where('item_id',$item_id)
-                ->where('household_id',$household_id)
+                ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->get();
             $data['householdassets']=Householdassets::where('item_id',$item_id)
-                ->where('household_id',$household_id)
+                ->where('household_id',$this->household_id)
                 ->where('number','<>',null)
                 ->sharedLock()
                 ->get();
@@ -219,8 +214,6 @@ class  HouseholddetailController extends BaseController
     /*社会稳定风险评估-添加页面*/
     public function add(Request $request)
     {
-        $item_id = session('household_user.item_id');
-        $household_id = session('household_user.user_id');
         $land_id = session('household_user.land_id');
         $building_id = session('household_user.building_id');
 
@@ -236,8 +229,8 @@ class  HouseholddetailController extends BaseController
                 }, 'building' => function ($query) {
                     $query->select(['id', 'building']);
                 }])
-                ->where('household_id', $household_id)
-                ->where('item_id', $item_id)
+                ->where('household_id', $this->household_id)
+                ->where('item_id', $this->item_id)
                 ->sharedLock()
                 ->first();
             DB::commit();
@@ -254,7 +247,7 @@ class  HouseholddetailController extends BaseController
                 }, 'itembuilding' => function ($query) {
                     $query->select(['id', 'building']);
                 }])
-                ->where('item_id', $item_id)
+                ->where('item_id', $this->item_id)
                 ->sharedLock()
                 ->first();
             $model->layout = Layout::pluck('name', 'id');

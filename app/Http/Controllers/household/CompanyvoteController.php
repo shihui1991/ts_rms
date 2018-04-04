@@ -18,8 +18,6 @@ use Illuminate\Support\Facades\Validator;
 
 class  CompanyvoteController extends BaseController
 {
-    protected $item_id;
-    protected $user_id;
 
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
@@ -28,8 +26,6 @@ class  CompanyvoteController extends BaseController
     }
 
     public function index(Request $request){
-        $this->item_id=session('household_user.item_id');
-        $household_id=$this->user_id=session('household_user.user_id');
 
         $per_page=15;
         $page=$request->input('page',1);
@@ -55,7 +51,7 @@ class  CompanyvoteController extends BaseController
             }]);
         }])
             ->where([
-            ['household_id',$household_id],
+            ['household_id',$this->household_id],
             ['item_id',$this->item_id],
         ])
             ->sharedLock()
@@ -92,12 +88,10 @@ class  CompanyvoteController extends BaseController
     }
 
     public function add(Request $request){
-        $this->item_id=session('household_user.item_id');
-        $household_id=session('household_user.user_id');
         DB::beginTransaction();
         try{
             $companyvote=Companyvote::where([
-                ['household_id',$household_id],
+                ['household_id',$this->household_id],
                 ['item_id',$this->item_id],
             ])
                 ->sharedLock()
@@ -109,7 +103,7 @@ class  CompanyvoteController extends BaseController
             $companyvote->fill($request->all());
             $companyvote->addOther($request);
             $companyvote->item_id=$this->item_id;
-            $companyvote->household_id=$household_id;
+            $companyvote->household_id=$this->household_id;
             $companyvote->save();
             if (blank($companyvote)) {
                 throw new \Exception('投票失败', 404404);
@@ -181,8 +175,6 @@ class  CompanyvoteController extends BaseController
     public function edit(Request $request)
     {
         $id = $request->input('id');
-        $item_id = session('household_user.item_id');
-        $household_id = session('household_user.user_id');
 
         if (!$id) {
             $result = ['code' => 'error', 'message' => '请先选择数据', 'sdata' => null, 'edata' => null, 'url' => null];
@@ -255,8 +247,8 @@ class  CompanyvoteController extends BaseController
                 /* ++++++++++ 处理其他数据 ++++++++++ */
                 $model->fill($request->all());
                 $model->editOther($request);
-                $model->item_id = $item_id;
-                $model->household_id = $household_id;
+                $model->item_id = $this->item_id;
+                $model->household_id = $this->household_id;
                 $model->save();
                 if (blank($model)) {
                     throw new \Exception('修改失败', 404404);

@@ -7,15 +7,33 @@
 namespace App\Http\Controllers\household;
 
 use App\Http\Controllers\Controller;
+use App\Http\Model\Item;
 use App\Http\Model\Menu;
+use App\Http\Model\Process;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BaseController extends Controller
 {
+    public $item_id;
+    public $item;
+    public $household_id;
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
         $this->middleware(function ($request,$next){
+            $this->item_id=session('household_user.item_id');
+            $this->household_id=session('household_user.user_id');
+            $this->item=Item::find($this->item_id);
+            if(blank($this->item)){
+                $result=['code'=>'error','message'=>'项目不存在','sdata'=>null,'edata'=>null,'url'=>null];
+                if(request()->ajax()){
+                    return response()->json($result);
+                }else{
+                    return back()->with($result);
+                }
+            }
+
             $url=request()->getPathInfo();
             /* ++++++++++ 当前菜单 ++++++++++ */
             $current_menu=Menu::select('id','parent_id','name','infos','url')->where('url',$url)->sharedLock()->first();
@@ -78,4 +96,40 @@ class BaseController extends Controller
         }
     }
 
+    /* ========== 消息推送至征收管理端 ========== */
+    public function send_work_notice($process_id,$url,$param){
+        /* ++++++++++ 部门审查 可操作人员 ++++++++++ */
+        $process=Process::with(['processusers'=>function($query){
+            $query->with('role');
+        }])
+            ->select(['id','schedule_id','menu_id'])
+            ->find($process_id);
+        $values=[];
+        /* ++++++++++ 部门审查 工作提醒推送 ++++++++++ */
+        foreach ($process->processusers as $user){
+            $values[]=[
+                'item_id'=>$this->item_id,
+                'schedule_id'=>$process->schedule_id,
+                'process_id'=>$process->id,
+                'menu_id'=>$process->menu_id,
+                'dept_id'=>$user->dept_id,
+                'parent_id'=>$user->role->parent_id,
+                'role_id'=>$user->role_id,
+                'user_id'=>$user->id,
+                'url'=>route($url,$param,false),
+                'code'=>'20',
+                'created_at'=>date('Y-m-d H:i:s'),
+                'updated_at'=>date('Y-m-d H:i:s'),
+            ];
+        }
+
+        $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
+        $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
+        if(!$sqls){
+            throw new \Exception('操作失败4',404404);
+        }
+        foreach ($sqls as $sql){
+            DB::statement($sql);
+        }
+    }
 }
