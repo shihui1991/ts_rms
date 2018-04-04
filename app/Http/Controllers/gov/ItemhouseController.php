@@ -123,10 +123,6 @@ class ItemhouseController extends BaseitemController
                 if(blank($item)){
                     throw new \Exception('项目不存在',404404);
                 }
-                /* ++++++++++ 检查项目状态 ++++++++++ */
-                if($item->schedule_id!=2 || $item->process_id!=18 ||  $item->code!='1'){
-                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
-                }
                 /* ++++++++++ 检查操作权限 ++++++++++ */
                 $count=Itemuser::sharedLock()
                     ->where([
@@ -187,10 +183,7 @@ class ItemhouseController extends BaseitemController
             DB::beginTransaction();
             try {
                 $item=$this->item;
-                /* ++++++++++ 检查项目状态 ++++++++++ */
-                if($item->schedule_id!=2 || $item->process_id!=18 ||  $item->code!='1'){
-                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
-                }
+
                 /* ++++++++++ 检查操作权限 ++++++++++ */
                 $count=Itemuser::sharedLock()
                     ->where([

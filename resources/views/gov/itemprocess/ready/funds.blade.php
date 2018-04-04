@@ -147,8 +147,8 @@
                                     </a>
                                 @else
                                     未达到
-                                    <a class="btn" href="{{route('g_funds_add',['item'=>$sdata['item']->id])}}">继续录入项目资金</a>
                                 @endif
+                                    <a class="btn" href="{{route('g_funds_add',['item'=>$sdata['item']->id])}}">继续录入项目资金</a>
                             </span>
                         </div>
                     </div>

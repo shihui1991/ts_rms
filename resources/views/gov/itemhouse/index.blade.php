@@ -47,8 +47,8 @@
                                     </a>
                                 @else
                                     未达到
-                                    <a href="{{route('g_itemhouse_add',['item'=>$sdata['item']->id])}}" class="btn">继续添加房源</a>
                                 @endif
+                                    <a href="{{route('g_itemhouse_add',['item'=>$sdata['item']->id])}}" class="btn">继续添加房源</a>
                             </span>
                         </div>
                     </div>
