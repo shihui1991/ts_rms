@@ -2196,6 +2196,7 @@ class ItemprocessController extends BaseitemController
                 },'role'=>function($query){
                     $query->select(['id','name']);
                 }])
+                    ->where('item_id',$this->item_id)
                     ->sharedLock()
                     ->get();
                 /* ++++++++++ 项目负责人 ++++++++++ */
