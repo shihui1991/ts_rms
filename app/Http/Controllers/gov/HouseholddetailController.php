@@ -90,22 +90,21 @@ class HouseholddetailController extends BaseitemController
                 ->offset($per_page*($page-1))
                 ->limit($per_page)
                 ->get();
-            $households=new LengthAwarePaginator($households,$total,$per_page,$page);
-            $households->withPath(route('g_householddetail',['item'=>$item_id]));
-
             if(blank($households)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
+            $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+            $households->withPath(route('g_householddetail',['item'=>$item_id]));
+
             $code='success';
             $msg='查询成功';
             $sdata=$households;
             $edata=$infos;
             $url=null;
         }catch (\Exception $exception){
-            dd($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
-            $sdata=$exception;
+            $sdata=null;
             $edata=$infos;
             $url=null;
         }
