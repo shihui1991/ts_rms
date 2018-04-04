@@ -17,8 +17,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 class ItemhouseController extends BaseController{
 
-    protected $item_id;
-
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()
     {
