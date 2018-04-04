@@ -22,7 +22,6 @@ class NewsController extends BaseController{
     public $item_id;
 
     public function info(Request $request){
-        $item_id=$this->item_id = session('household_user.item_id');
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error', 'message'=>'错误操作', 'sdata'=>null, 'edata'=>null, 'url'=>null];
@@ -46,7 +45,7 @@ class NewsController extends BaseController{
                 throw new \Exception('该通知公告不存在',404404);
             }
 
-            $item=Item::sharedLock()->find($item_id);
+            $item=Item::sharedLock()->find($this->item_id);
             if (blank($item)){
                 throw new \Exception('该项目不存在',404404);
             }

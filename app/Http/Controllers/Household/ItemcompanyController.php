@@ -22,7 +22,6 @@ class ItemcompanyController extends BaseController{
     }
 
     public function index(Request $request){
-        $this->item_id=session('household_user.item_id');
 
         $per_page=15;
         $page=$request->input('page',1);

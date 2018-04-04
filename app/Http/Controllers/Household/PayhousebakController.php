@@ -25,9 +25,6 @@ class PayhousebakController extends BaseController{
 
     /*选定的安置房缓存表*/
     public function index(Request $request){
-        $household_id=session('household_user.user_id');
-        $item_id=$this->item_id=session('household_user.item_id');
-        $this->item=Item::find($item_id);
         DB::beginTransaction();
         try{
             $allhouse=Payhousebak::with(['house'=>function($query){
@@ -43,8 +40,8 @@ class PayhousebakController extends BaseController{
                         }]);
                 }])
                 ->where([
-                ['household_id',$household_id],
-                ['item_id',$item_id]
+                ['household_id',$this->household_id],
+                ['item_id',$this->item_id]
             ])
                 ->sharedLock()
                 ->get();
@@ -56,7 +53,7 @@ class PayhousebakController extends BaseController{
             $pay=Pay::sharedLock()
                 ->where([
                     ['item_id',$this->item_id],
-                    ['household_id',$household_id],
+                    ['household_id',$this->household_id],
                 ])
                 ->first();
             if(blank($pay)){
@@ -80,8 +77,8 @@ class PayhousebakController extends BaseController{
                         }]);
                 }])
                     ->where([
-                        ['household_id',$household_id],
-                        ['item_id',$item_id],
+                        ['household_id',$this->household_id],
+                        ['item_id',$this->item_id],
                         ['house_type',2]
                     ])
                     ->sharedLock()
@@ -96,7 +93,7 @@ class PayhousebakController extends BaseController{
                 throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
             }
 
-            $house_ids=DB::table('pay_house_bak')->where([['household_id',$household_id],['house_type',1]])->pluck('house_id')->toArray();
+            $house_ids=DB::table('pay_house_bak')->where([['household_id',$this->household_id],['house_type',1]])->pluck('house_id')->toArray();
 
             /* ++++++++++ 产权调换房 ++++++++++ */
             $houses=House::with(['housecommunity','layout','itemhouseprice'=>function($query){
@@ -320,16 +317,13 @@ class PayhousebakController extends BaseController{
 
     /*添加安置房(缓存表)*/
     public function add(Request $request){
-        $household_id=session('household_user.user_id');
-        $item_id=session('household_user.item_id');
-        $this->item=Item::find($item_id);
         DB::beginTransaction();
         try{
             /* ++++++++++ 兑付 ++++++++++ */
             $pay=Pay::sharedLock()
                 ->where([
-                    ['item_id',$item_id],
-                    ['household_id',$household_id],
+                    ['item_id',$this->item_id],
+                    ['household_id',$this->household_id],
                 ])
                 ->first();
             if(blank($pay)){
@@ -351,7 +345,7 @@ class PayhousebakController extends BaseController{
             /* ++++++++++ 选房时间 ++++++++++ */
             $itemctrl=Itemctrl::sharedLock()
                 ->where([
-                    ['item_id',$item_id],
+                    ['item_id',$this->item_id],
                     ['cate_id',3],
                     ['start_at','<=',date('Y-m-d H:i:s')],
                     ['end_at','>=',date('Y-m-d H:i:s')],
@@ -397,7 +391,7 @@ class PayhousebakController extends BaseController{
                     ->where([
                         ['house_type',2],
                         ['item_id',$this->item_id],
-                        ['household_id',$household_id]
+                        ['household_id',$this->household_id]
                     ])
                     ->first();
                 if (filled($payhousebak_transit)){
@@ -406,8 +400,8 @@ class PayhousebakController extends BaseController{
             }
 
             $payhousebak=Payhousebak::where([
-                ['household_id',$household_id],
-                ['item_id',$item_id],
+                ['household_id',$this->household_id],
+                ['item_id',$this->item_id],
                 ['house_id',$request->input('house_id')]
             ])
                 ->sharedLock()
@@ -431,10 +425,10 @@ class PayhousebakController extends BaseController{
                 throw new \Exception('暂无该房源', 404404);
             }
 
-            $payhousebak->item_id=$item_id;
+            $payhousebak->item_id=$this->item_id;
             $payhousebak->house_id=$request->input('house_id');
             $payhousebak->house_type=$request->input('house_type');
-            $payhousebak->household_id=$household_id;
+            $payhousebak->household_id=$this->household_id;
             $payhousebak->land_id=session('household_user.land_id');
             $payhousebak->building_id=session('household_user.building_id');
             $payhousebak->area=$house->area;

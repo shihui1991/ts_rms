@@ -383,7 +383,7 @@
                 请求签约
             </button>
                 @elseif($sdata['household']->code==69 && blank($sdata['pacts']))
-                <button class="btn btn-success" type="button" onclick="" readonly="">
+                <button class="btn btn-success" type="button" onclick="" disabled>
                     <i class="ace-icon fa fa-check bigger-110"></i>
                     签约中
                 </button>

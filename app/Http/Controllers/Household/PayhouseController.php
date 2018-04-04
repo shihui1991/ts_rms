@@ -11,6 +11,7 @@ use App\Http\Model\House;
 use App\Http\Model\Household;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Item;
+use App\Http\Model\Menu;
 use App\Http\Model\Itemctrl;
 use App\Http\Model\Itemhouse;
 use App\Http\Model\Itemhouserate;
@@ -21,6 +22,7 @@ use App\Http\Model\Payreserve;
 use App\Http\Model\Payhousebak;
 use App\Http\Model\Paysubject;
 use App\Http\Model\Payunit;
+use App\Http\Model\Process;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -28,16 +30,13 @@ use Illuminate\Support\Facades\Validator;
 
 class PayhouseController extends BaseController
 {
-    public $item_id;
     public $item;
 
     /* ========== 开始选房 ========== */
     public function add(Request $request)
     {
-        $household_id = session('household_user.user_id');
-        $this->item_id = session('household_user.item_id');
-        $this->item=Item::find($this->item_id);
-        $pay_id = DB::table('pay')->where([['household_id' , $household_id], ['item_id' , $this->item_id]])->value('id');
+
+        $pay_id = DB::table('pay')->where([['household_id' , $this->household_id], ['item_id' , $this->item_id]])->value('id');
         if (!$pay_id) {
             $result = ['code' => 'error', 'message' => '暂无兑付数据', 'sdata' => null, 'edata' => null, 'url' => null];
             if ($request->ajax()) {
@@ -49,6 +48,12 @@ class PayhouseController extends BaseController
 
         DB::beginTransaction();
         try {
+
+            $this->item=Item::find($this->item_id);
+            if(blank($this->item)){
+                throw new \Exception('项目不存在',404404);
+            }
+
             /* ++++++++++ 兑付 ++++++++++ */
             $pay = Pay::sharedLock()
                 ->where([
@@ -63,8 +68,8 @@ class PayhouseController extends BaseController
                 throw new \Exception('选择货币补偿的不能选择安置房', 404404);
             }
 
-            $house_ids = Payhousebak::where([['household_id', $household_id], ['house_type', 1]])->pluck('house_id')->toArray();
-            $transits = Payhousebak::where([['household_id', $household_id], ['house_type', 2]])->pluck('house_id')->toArray();
+            $house_ids = Payhousebak::where([['household_id', $this->household_id], ['house_type', 1]])->pluck('house_id')->toArray();
+            $transits = Payhousebak::where([['household_id', $this->household_id], ['house_type', 2]])->pluck('house_id')->toArray();
             if (blank($house_ids)) {
                 throw new \Exception('暂未选择安置房', 404404);
             }
@@ -89,14 +94,14 @@ class PayhouseController extends BaseController
             $household = Household::sharedLock()
                 ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
                 ->find($pay->household_id);
-            if (!in_array($household->code, ['68', '76'])) {
-                throw new \Exception('被征收户【' . $household->state->name . '】，不能选房', 404404);
+            if (!in_array($household->code, ['68'])) {
+                throw new \Exception('被征收户【' . $household->state->name . '】，不能签约', 404404);
             }
 
             $count = Payhouse::sharedLock()
                 ->where([
                     ['item_id', $pay->item_id],
-                    ['household_id', $household_id],
+                    ['household_id', $this->household_id],
                 ])
                 ->count();
             if ($count) {
@@ -134,16 +139,6 @@ class PayhouseController extends BaseController
                 ])
                 ->whereIn('subject_id', [1, 2, 4, 11, 12])
                 ->sum('total');
-            if ($household->getOriginal('type') == 1) { // 公房
-                $pay_unit = Payunit::sharedLock()
-                    ->where([
-                        ['item_id', $this->item_id],
-                        ['household_id', $household->id],
-                        ['pay_id', $pay_id],
-                    ])
-                    ->first();
-                $resettle_total -= $pay_unit->amount;
-            }
 
             $last_total = $resettle_total; // 产权调换后结余补偿款
             $plus_area = 0; // 上浮累计面积
@@ -323,8 +318,18 @@ class PayhouseController extends BaseController
                     DB::statement($sql);
                 }
             }
-            $fails = array_diff($house_ids, $resettles);
 
+            $household->code=69;
+            $household->save();
+            if(blank($household)){
+                throw new \Exception('保存失败3', 404404);
+            }
+
+            /*消息推送至征收管理端的相关人员*/
+            $param=['item'=>$this->item_id,'id'=>$pay_id];
+            $this->send_work_notice(40,'g_pay_info',$param);
+
+            $fails = array_diff($house_ids, $resettles);
             $code = 'success';
             $msg = '保存成功';
             $sdata = [
