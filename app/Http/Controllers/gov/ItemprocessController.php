@@ -1642,6 +1642,7 @@ class ItemprocessController extends BaseitemController
                     ['schedule_id',$process->schedule_id],
                     ['process_id',9],
                     ['code','2'],
+                    ['created_at',$worknotice->created_at],
                 ])
                 ->count();
             /* ++++++++++ 配置项目时间规划 完成数 ++++++++++ */
@@ -1651,6 +1652,7 @@ class ItemprocessController extends BaseitemController
                     ['schedule_id',$process->schedule_id],
                     ['process_id',10],
                     ['code','2'],
+                    ['created_at',$worknotice->created_at],
                 ])
                 ->count();
 
@@ -1773,6 +1775,7 @@ class ItemprocessController extends BaseitemController
                     ['schedule_id',$process->schedule_id],
                     ['process_id',16],
                     ['code','2'],
+                    ['created_at',$worknotice->created_at],
                 ])
                 ->count();
             /* ++++++++++ 配置项目时间规划 完成数 ++++++++++ */
@@ -1782,6 +1785,7 @@ class ItemprocessController extends BaseitemController
                     ['schedule_id',$process->schedule_id],
                     ['process_id',10],
                     ['code','2'],
+                    ['created_at',$worknotice->created_at],
                 ])
                 ->count();
 
@@ -1904,6 +1908,7 @@ class ItemprocessController extends BaseitemController
                     ['schedule_id',$process->schedule_id],
                     ['process_id',9],
                     ['code','2'],
+                    ['created_at',$worknotice->created_at],
                 ])
                 ->count();
             /* ++++++++++ 配置项目负责人 完成数 ++++++++++ */
@@ -1913,6 +1918,7 @@ class ItemprocessController extends BaseitemController
                     ['schedule_id',$process->schedule_id],
                     ['process_id',16],
                     ['code','2'],
+                    ['created_at',$worknotice->created_at],
                 ])
                 ->count();
 
