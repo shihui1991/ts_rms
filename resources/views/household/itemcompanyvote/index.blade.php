@@ -10,7 +10,7 @@
             @if($code=='success')
                 @if(filled($sdata['companyvote']))
                 <div class="col-xs-6 col-sm-3 pricing-box">
-                    <div class="widget-box widget-color-dark">
+                    <div class="widget-box widget-color-green2">
                         <div class="widget-header">
                             <h5 class="widget-title bigger lighter">我的投票</h5>
                         </div>
@@ -109,7 +109,9 @@
                                 </div>
                                 <div >
                                     @if(filled($sdata['companyvote']) && $sdata['companyvote']->company_id == $company->id)
-                                        已投
+                                        <a href="javascript:;" class="btn btn-block btn-success" >
+                                            <span>已投</span>
+                                        </a>
                                     @else
                                         <a href="javascript:;" onclick="vote({{$company->id}})" class="btn btn-block btn-inverse" >
                                             <span>投票</span>

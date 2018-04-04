@@ -1,7 +1,7 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 入围机构
+| 被征户--入围机构
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 class ItemcompanyController extends BaseController{
-
-    protected $item_id;
 
     /* ++++++++++ 初始化 ++++++++++ */
     public function __construct()

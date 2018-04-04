@@ -89,20 +89,6 @@
                 <span class="editable editable-click">{{$sdata->content}}</span>
             </div>
         </div>
-
-
-        <div class="profile-info-row">
-            <div class="profile-info-name">操作人员： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->companyuser->name}}</span>
-            </div>
-        </div>
-        <div class="profile-info-row">
-            <div class="profile-info-name">操作人员联系方式： </div>
-            <div class="profile-info-value">
-                <span class="editable editable-click">{{$sdata->companyuser->phone}}</span>
-            </div>
-        </div>
     </div>
 @endif
 @endsection

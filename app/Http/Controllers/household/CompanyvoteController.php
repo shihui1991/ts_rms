@@ -1,7 +1,7 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| 项目-社会风险评估
+| 项目-评估公司投票
 |--------------------------------------------------------------------------
 */
 
@@ -90,6 +90,19 @@ class  CompanyvoteController extends BaseController
     public function add(Request $request){
         DB::beginTransaction();
         try{
+            /* ++++++++++ 投票时间 ++++++++++ */
+            $itemctrl=Itemctrl::sharedLock()
+                ->where([
+                    ['item_id',$this->item_id],
+                    ['cate_id',1],
+                    ['start_at','<=',date('Y-m-d H:i:s')],
+                    ['end_at','>=',date('Y-m-d H:i:s')],
+                ])
+                ->first();
+            if(blank($itemctrl)){
+                throw new \Exception('还未到投票时间',404404);
+            }
+
             $companyvote=Companyvote::where([
                 ['household_id',$this->household_id],
                 ['item_id',$this->item_id],
@@ -171,7 +184,7 @@ class  CompanyvoteController extends BaseController
     }
 
 
-    /*社会稳定风险评估-修改页面*/
+    /*-修改页面*/
     public function edit(Request $request)
     {
         $id = $request->input('id');
