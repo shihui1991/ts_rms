@@ -236,6 +236,7 @@
                     <div class="widget-main padding-8">
                         <div class="profile-user-info profile-user-info-striped">
 
+                            @if(filled($sdata['item']->picture))
                             @foreach($sdata['item']->picture as $name=>$pictures)
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> {{$sdata['file_cates'][$name] or '项目审查资料'}}： </div>
@@ -257,6 +258,7 @@
                                     </div>
                                 </div>
                             @endforeach
+                            @endif
 
                         </div>
                     </div>

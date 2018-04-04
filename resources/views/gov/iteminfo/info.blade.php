@@ -85,6 +85,7 @@
             </div>
         </div>
 
+        @if(filled($sdata->picture))
         @foreach($sdata->picture as $name=>$pictures)
             <div class="profile-info-row">
                 <div class="profile-info-name"> {{$edata[$name] or '项目审查资料'}}： </div>
@@ -106,6 +107,7 @@
                 </div>
             </div>
         @endforeach
+        @endif
 
         <div class="profile-info-row">
             <div class="profile-info-name"> 创建时间： </div>

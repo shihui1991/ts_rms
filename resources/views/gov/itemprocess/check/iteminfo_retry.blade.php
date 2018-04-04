@@ -95,6 +95,7 @@
                                     </label>
                                     <div class="col-sm-9">
                                         <ul class="ace-thumbnails clearfix img-content">
+                                            @if(filled($sdata['item']->picture))
                                             @foreach($sdata['item']->picture[$filecate->filename] as $pic)
                                                 <li>
                                                     <div>
@@ -109,6 +110,7 @@
                                                     </div>
                                                 </li>
                                             @endforeach
+                                            @endif
                                         </ul>
                                     </div>
                                 </div>
