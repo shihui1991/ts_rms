@@ -165,19 +165,6 @@ class ItemhouseController extends BaseitemController
         }
         /* ++++++++++ 保存 ++++++++++ */
         else {
-            /* ********** 保存 ********** */
-            /* ++++++++++ 表单验证 ++++++++++ */
-            $rules = [
-                'house_ids'=>'required',
-            ];
-            $messages = [
-                'required' => '请选择 :attribute'
-            ];
-            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
-            if ($validator->fails()) {
-                $result=['code'=>'error','message'=>$validator->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
-            }
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
@@ -196,6 +183,9 @@ class ItemhouseController extends BaseitemController
                 }
                 /* ++++++++++ 获取房源 ++++++++++ */
                 $house_ids = $request->input('house_ids');
+                if(blank($house_ids)){
+                    throw new \Exception('请选择房源',404404);
+                }
                 $house_ids=House::lockForUpdate()->whereIn('id',$house_ids)->where('code',150)->pluck('id');
                 if(blank($house_ids)){
                     throw new \Exception('当前选择中没有空闲的房源，请重新选择',404404);
