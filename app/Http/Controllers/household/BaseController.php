@@ -8,6 +8,7 @@ namespace App\Http\Controllers\household;
 
 use App\Http\Controllers\Controller;
 use App\Http\Model\Item;
+use App\Http\Model\Itemuser;
 use App\Http\Model\Menu;
 use App\Http\Model\Process;
 use Illuminate\Http\Request;
@@ -98,24 +99,27 @@ class BaseController extends Controller
 
     /* ========== 消息推送至征收管理端 ========== */
     public function send_work_notice($process_id,$url,$param){
-        /* ++++++++++ 部门审查 可操作人员 ++++++++++ */
-        $process=Process::with(['processusers'=>function($query){
-            $query->with('role');
+        /* ++++++++++ 协议审查 可操作人员 ++++++++++ */
+        $itemusers=Itemuser::with(['role'=>function($query){
+            $query->select(['id','parent_id']);
         }])
-            ->select(['id','schedule_id','menu_id'])
-            ->find($process_id);
+            ->where([
+                ['item_id',$this->item_id],
+                ['process_id',$process_id],
+            ])
+            ->get();
+        /* ++++++++++ 协议审查 工作提醒推送 ++++++++++ */
         $values=[];
-        /* ++++++++++ 部门审查 工作提醒推送 ++++++++++ */
-        foreach ($process->processusers as $user){
+        foreach ($itemusers as $user){
             $values[]=[
-                'item_id'=>$this->item_id,
-                'schedule_id'=>$process->schedule_id,
-                'process_id'=>$process->id,
-                'menu_id'=>$process->menu_id,
+                'item_id'=>$user->item_id,
+                'schedule_id'=>$user->schedule_id,
+                'process_id'=>$user->process_id,
+                'menu_id'=>$user->menu_id,
                 'dept_id'=>$user->dept_id,
                 'parent_id'=>$user->role->parent_id,
                 'role_id'=>$user->role_id,
-                'user_id'=>$user->id,
+                'user_id'=>$user->user_id,
                 'url'=>route($url,$param,false),
                 'code'=>'20',
                 'created_at'=>date('Y-m-d H:i:s'),
