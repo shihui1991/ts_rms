@@ -353,7 +353,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -2305,7 +2305,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -2773,7 +2773,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -3573,7 +3573,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -3892,7 +3892,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -4543,7 +4543,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -4834,7 +4834,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -5128,7 +5128,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
@@ -5540,7 +5540,7 @@ class ItemprocessController extends BaseitemController
                         ])
                         ->count();
                     /* ++++++++++ 同级完成数达到限制 ++++++++++ */
-                    if($worknotice_sames==$process->number){
+                    if($worknotice_sames>=$process->number){
                         /* ++++++++++ 删除同级工作推送 ++++++++++ */
                         Worknotice::lockForUpdate()
                             ->where([
