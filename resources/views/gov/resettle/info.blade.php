@@ -137,6 +137,11 @@
                                 <td>
                                     <div class="btn-group">
                                         <a href="{{route('g_resettle_edit',['id'=>$house_resettle->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">更新</a>
+                                        @if($house_resettle->notice->id)
+                                            <a data-url="{{route('g_resettle_notice_info',['item'=>$sdata['item']->id,'notice_id'=>$house_resettle->notice->id])}}" class="btn btn-sm btn-info" onclick="layerWin(this)">查看内容</a>
+                                        @else
+                                            <a href="{{route('g_resettle_notice_add',['house_resettle'=>$house_resettle->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm btn-primary">添加入住通知</a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -176,12 +181,12 @@
                                 <td>{{$pay_house->house->is_real}}</td>
                                 <td>{{$pay_house->house->state->name}}</td>
                                 <td>
-                                    @if(blank($pay_house->houseresettle))
-                                        <div class="btn-group">
-                                            <a href="{{route('g_resettle_add',['id'=>$pay_house->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">开始安置</a>
-                                        </div>
-                                    @else
+                                    @if($pay_house->houseresettle->id)
                                         已操作
+                                    @else
+                                        <div class="btn-group">
+                                            <a href="{{route('g_resettle_add',['id'=>$pay_house->id,'item'=>$sdata['item']->id,'household_id'=>$pay_house->household_id])}}" class="btn btn-sm">开始安置</a>
+                                        </div>
                                     @endif
                                 </td>
                             </tr>
@@ -204,5 +209,20 @@
 {{-- 插件 --}}
 @section('js')
     @parent
+    <script src="{{asset('layer/layer.js')}}"></script>
+    <script>
+
+        function layerWin(obj) {
+            var that=$(obj);
+            var lay=layer.open({
+                type: 2
+                ,skin:'layui-layer-lan'
+                ,title:'入住通知单'
+                ,maxmin:true
+                ,content: that.data('url')
+            });
+            layer.full(lay);
+        }
+    </script>
     
 @endsection

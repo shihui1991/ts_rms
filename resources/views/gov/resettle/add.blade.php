@@ -17,6 +17,7 @@
         {{csrf_field()}}
 
         <input type="hidden" name="id" value="{{$sdata['pay_house']->id}}">
+        <input type="hidden" name="household_id" value="{{$sdata['pay_house']->household_id}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="settle_at"> 安置日期： </label>
             <div class="col-sm-9">

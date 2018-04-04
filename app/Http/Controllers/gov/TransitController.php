@@ -190,10 +190,11 @@ class TransitController extends BaseitemController
     /* ========== 开始过渡 ========== */
     public function add(Request $request){
         $id=$request->input('id');
+        $household_id=$request->input('household_id');
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
-                if(!$id){
+                if(!$id || !$household_id){
                     throw new \Exception('错误操作',404404);
                 }
                 $pay_transit=Paytransit::with(['pact'=>function($query){
@@ -207,10 +208,10 @@ class TransitController extends BaseitemController
                         $query->select(['id','name']);
                     },'state'])
                         ->select(['id','company_id','community_id','layout_id','building','unit','floor','number','area','lift','code']);
-                },'housetransit'=>function($query) use ($id){
+                },'housetransit'=>function($query) use ($household_id){
                     $query->where([
                         ['item_id',$this->item_id],
-                        ['household_id',$id],
+                        ['household_id',$household_id],
                     ])
                         ->select(['id','item_id','household_id','house_id']);
                 }])
@@ -221,13 +222,13 @@ class TransitController extends BaseitemController
                         ['pact_id','<>',0],
                     ])
                     ->first();
-                if(filled($pay_transit)){
+                if(blank($pay_transit)){
                     throw new \Exception('数据不存在',404404);
                 }
                 if($pay_transit->pact->getOriginal('status') != 1){
                     throw new \Exception('协议没有生效，不能操作',404404);
                 }
-                if(filled($pay_transit->housetransit)){
+                if($pay_transit->housetransit->id){
                     throw new \Exception('已做处理，请勿重复操作',404404);
                 }
 
@@ -279,15 +280,15 @@ class TransitController extends BaseitemController
             }
             DB::beginTransaction();
             try{
-                if(!$id){
+                if(!$id || !$household_id){
                     throw new \Exception('错误操作',404404);
                 }
                 $pay_transit=Paytransit::with(['pact'=>function($query){
                     $query->select(['id','cate_id','code','status']);
-                },'housetransit'=>function($query) use ($id){
+                },'housetransit'=>function($query) use ($household_id){
                     $query->where([
                         ['item_id',$this->item_id],
-                        ['household_id',$id],
+                        ['household_id',$household_id],
                     ])
                         ->select(['id','item_id','household_id','house_id']);
                 }])
@@ -298,13 +299,13 @@ class TransitController extends BaseitemController
                         ['pact_id','<>',0],
                     ])
                     ->first();
-                if(filled($pay_transit)){
+                if(blank($pay_transit)){
                     throw new \Exception('数据不存在',404404);
                 }
                 if($pay_transit->pact->getOriginal('status') != 1){
                     throw new \Exception('协议没有生效，不能操作',404404);
                 }
-                if(filled($pay_transit->housetransit)){
+                if($pay_transit->housetransit->id){
                     throw new \Exception('已做处理，请勿重复操作',404404);
                 }
                 /* ++++++++++ 赋值 ++++++++++ */
@@ -373,7 +374,7 @@ class TransitController extends BaseitemController
                         ['id',$id],
                     ])
                     ->first();
-                if(filled($house_transit)){
+                if(blank($house_transit)){
                     throw new \Exception('数据不存在',404404);
                 }
 
@@ -435,7 +436,7 @@ class TransitController extends BaseitemController
                         ['id',$id],
                     ])
                     ->first();
-                if(filled($house_transit)){
+                if(blank($house_transit)){
                     throw new \Exception('数据不存在',404404);
                 }
 

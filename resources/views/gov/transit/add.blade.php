@@ -17,6 +17,7 @@
         {{csrf_field()}}
 
         <input type="hidden" name="id" value="{{$sdata['pay_transit']->id}}">
+        <input type="hidden" name="household_id" value="{{$sdata['pay_transit']->household_id}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="start_at"> 开始日期： </label>
             <div class="col-sm-9">

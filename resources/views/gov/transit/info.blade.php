@@ -178,12 +178,12 @@
                                 <td>{{$pay_transit->pact->pactcate->name}}</td>
                                 <td>{{$pay_transit->pact->state->name}}</td>
                                 <td>
-                                    @if(blank($pay_transit->housetransit))
-                                        <div class="btn-group">
-                                            <a href="{{route('g_transit_add',['id'=>$pay_transit->id,'item'=>$sdata['item']->id])}}" class="btn btn-sm">开始过渡</a>
-                                        </div>
-                                    @else
+                                    @if($pay_transit->housetransit->id)
                                         已操作
+                                    @else
+                                        <div class="btn-group">
+                                            <a href="{{route('g_transit_add',['id'=>$pay_transit->id,'item'=>$sdata['item']->id,'household_id'=>$pay_transit->household_id])}}" class="btn btn-sm">开始过渡</a>
+                                        </div>
                                     @endif
                                 </td>
                             </tr>

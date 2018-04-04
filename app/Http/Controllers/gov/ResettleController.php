@@ -119,7 +119,7 @@ class ResettleController extends BaseitemController
                 },'layout'=>function($query){
                     $query->select(['id','name']);
                 },'state'])
-                    ->select(['id','company_id','community_id','layout_id','building','unit','floor','number','code']);
+                    ->select(['id','company_id','community_id','layout_id','building','unit','floor','number','lift','is_real','code']);
             },'houseresettle'=>function($query) use ($id){
                 $query->where([
                     ['item_id',$this->item_id],
@@ -143,6 +143,11 @@ class ResettleController extends BaseitemController
                     $query->select(['id','name']);
                 },'state'])
                     ->select(['id','company_id','community_id','layout_id','building','unit','floor','number','area','lift','is_real','code']);
+            },'notice'=>function($query) use ($id){
+                $query->where([
+                    ['item_id',$this->item_id],
+                    ['household_id',$id],
+                ])->select(['id','item_id','household_id','house_id']);
             }])
                 ->sharedLock()
                 ->where([
@@ -186,10 +191,11 @@ class ResettleController extends BaseitemController
     /* ========== 开始安置 ========== */
     public function add(Request $request){
         $id=$request->input('id');
+        $household_id=$request->input('household_id');
         if($request->isMethod('get')){
             DB::beginTransaction();
             try{
-                if(!$id){
+                if(!$id || !$household_id){
                     throw new \Exception('错误操作',404404);
                 }
                 $pay_house=Payhouse::with(['house'=>function($query){
@@ -201,10 +207,10 @@ class ResettleController extends BaseitemController
                         $query->select(['id','name']);
                     },'state'])
                         ->select(['id','company_id','community_id','layout_id','building','unit','floor','number','area','lift','is_real','code']);
-                },'houseresettle'=>function($query) use ($id){
+                },'houseresettle'=>function($query) use ($household_id){
                     $query->where([
                         ['item_id',$this->item_id],
-                        ['household_id',$id],
+                        ['household_id',$household_id],
                     ])
                         ->select(['id','item_id','household_id','house_id']);
                 }])
@@ -214,10 +220,10 @@ class ResettleController extends BaseitemController
                         ['id',$id],
                     ])
                     ->first();
-                if(filled($pay_house)){
+                if(blank($pay_house)){
                     throw new \Exception('数据不存在',404404);
                 }
-                if(filled($pay_house->houseresettle)){
+                if($pay_house->houseresettle->id){
                     throw new \Exception('已做处理，请勿重复操作',404404);
                 }
 
@@ -269,13 +275,13 @@ class ResettleController extends BaseitemController
             }
             DB::beginTransaction();
             try{
-                if(!$id){
+                if(!$id || !$household_id){
                     throw new \Exception('错误操作',404404);
                 }
-                $pay_house=Payhouse::with(['houseresettle'=>function($query) use ($id){
+                $pay_house=Payhouse::with(['houseresettle'=>function($query) use ($household_id){
                     $query->where([
                         ['item_id',$this->item_id],
-                        ['household_id',$id],
+                        ['household_id',$household_id],
                     ])
                         ->select(['id','item_id','household_id','house_id']);
                 }])
@@ -285,10 +291,10 @@ class ResettleController extends BaseitemController
                         ['id',$id],
                     ])
                     ->first();
-                if(filled($pay_house)){
+                if(blank($pay_house)){
                     throw new \Exception('数据不存在',404404);
                 }
-                if(filled($pay_house->houseresettle)){
+                if($pay_house->houseresettle->id){
                     throw new \Exception('已做处理，请勿重复操作',404404);
                 }
                 /* ++++++++++ 赋值 ++++++++++ */
@@ -356,7 +362,7 @@ class ResettleController extends BaseitemController
                         ['id',$id],
                     ])
                     ->first();
-                if(filled($house_resettle)){
+                if(blank($house_resettle)){
                     throw new \Exception('数据不存在',404404);
                 }
 
@@ -418,7 +424,7 @@ class ResettleController extends BaseitemController
                         ['id',$id],
                     ])
                     ->first();
-                if(filled($house_resettle)){
+                if(blank($house_resettle)){
                     throw new \Exception('数据不存在',404404);
                 }
 
@@ -454,4 +460,13 @@ class ResettleController extends BaseitemController
         }
     }
 
+    /* ========== 添加入住通知 ========== */
+    public function notice_add(){
+
+    }
+
+    /* ========== 入住通知详情 ========== */
+    public function notice_info(){
+
+    }
 }
