@@ -165,8 +165,7 @@ class HouseholddetailController extends BaseitemController
                 'real_use'=>'required',
                 'has_assets'=>'required',
                 'agree'=>'required',
-                'repay_way'=>'required',
-                'sign'=>'required'
+                'repay_way'=>'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
@@ -402,8 +401,7 @@ class HouseholddetailController extends BaseitemController
                 'real_use'=>'required',
                 'has_assets'=>'required',
                 'agree'=>'required',
-                'repay_way'=>'required',
-                'sign'=>'required'
+                'repay_way'=>'required'
             ];
             $messages = [
                 'required' => ':attribute必须填写',
