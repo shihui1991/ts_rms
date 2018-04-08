@@ -18,30 +18,32 @@
                             <div class="profile-user-info profile-user-info-striped">
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 项目： </div>
+                                    <div class="profile-info-name"> 项目：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['item']->name}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 地址： </div>
+                                    <div class="profile-info-name"> 地址：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['household']->itemland->address}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 房号： </div>
+                                    <div class="profile-info-name"> 房号：</div>
                                     <div class="profile-info-value">
                                 <span class="editable editable-click">
-                                    {{$sdata['household']->itembuilding->building}}栋{{$sdata['household']->unit}}单元{{$sdata['household']->floor}}楼{{$sdata['household']->number}}@if(is_numeric($sdata['household']->floor))号@endif
+                                    {{$sdata['household']->itembuilding->building}}栋{{$sdata['household']->unit}}
+                                    单元{{$sdata['household']->floor}}
+                                    楼{{$sdata['household']->number}}@if(is_numeric($sdata['household']->floor))号@endif
                                 </span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 类型： </div>
+                                    <div class="profile-info-name"> 类型：</div>
                                     <div class="profile-info-value">
                                     <span class="editable editable-click">
                                         @if($sdata['household']->getOriginal('type'))
@@ -54,28 +56,30 @@
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name">  @if($sdata['household']->getOriginal('type')) 承租人 @else 产权人 @endif： </div>
+                                    <div class="profile-info-name">  @if($sdata['household']->getOriginal('type'))
+                                            承租人 @else 产权人 @endif：
+                                    </div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['holder']->name}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 状态： </div>
+                                    <div class="profile-info-name"> 状态：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['household']->state->name}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 房屋状况： </div>
+                                    <div class="profile-info-name"> 房屋状况：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['household_detail']->status}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 批准用途： </div>
+                                    <div class="profile-info-name"> 批准用途：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['household_detail']->defbuildinguse->name}}</span>
                                     </div>
@@ -105,28 +109,28 @@
                             <div class="profile-user-info profile-user-info-striped">
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 补偿方式： </div>
+                                    <div class="profile-info-name"> 补偿方式：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['pay']->repay_way}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 过渡方式： </div>
+                                    <div class="profile-info-name"> 过渡方式：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['pay']->transit_way}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 搬迁方式： </div>
+                                    <div class="profile-info-name"> 搬迁方式：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$sdata['pay']->move_way}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
-                                    <div class="profile-info-name"> 补偿总额： </div>
+                                    <div class="profile-info-name"> 补偿总额：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">
                                             <strong>{{number_format($sdata['pay']->total,2)}}</strong>
@@ -150,7 +154,7 @@
 
                                 @if(filled($sdata['pay']->picture))
                                     <div class="profile-info-row">
-                                        <div class="profile-info-name"> 行政征收决定： </div>
+                                        <div class="profile-info-name"> 行政征收决定：</div>
                                         <div class="profile-info-value">
                                             <ul class="ace-thumbnails clearfix img-content">
                                                 @foreach($sdata['pay']->picture as $pic)
@@ -159,7 +163,8 @@
                                                             <img width="120" height="120" src="{{$pic}}" alt="加载失败">
                                                             <div class="text">
                                                                 <div class="inner">
-                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                    <a onclick="preview(this)"><i
+                                                                                class="fa fa-search-plus"></i></a>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -232,7 +237,8 @@
                                 <td>{{$subject->state->name}}</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="{{route('h_paysubject_info',['id'=>$subject->id])}}" class="btn btn-sm">查看详情</a>
+                                        <a href="{{route('h_paysubject_info',['id'=>$subject->id])}}"
+                                           class="btn btn-sm">查看详情</a>
 
                                     </div>
 
@@ -266,7 +272,9 @@
                         @if(filled($sdata['payhouses']))
                             @foreach($sdata['payhouses'] as $house)
                                 <tr data-tt-id="house-{{$house->house_id}}" data-tt-parent-id="house">
-                                    <td>{{$house->housecommunity->name}} {{$house->building}}栋{{$house->unit}}单元{{$house->floor}}楼{{$house->number}}@if(is_numeric($house->number))号@endif</td>
+                                    <td>{{$house->housecommunity->name}} {{$house->building}}栋{{$house->unit}}
+                                        单元{{$house->floor}}楼{{$house->number}}@if(is_numeric($house->number))
+                                            号@endif</td>
                                     <td>{{$house->layout->name}}</td>
                                     <td>{{number_format($house->area,2)}}</td>
                                     <td>{{$house->is_real}}</td>
@@ -278,7 +286,8 @@
                                 </tr>
 
                                 @if(filled($house->housepluses))
-                                    <tr data-tt-id="house-plus-{{$loop->index}}" data-tt-parent-id="house-{{$house->house_id}}">
+                                    <tr data-tt-id="house-plus-{{$loop->index}}"
+                                        data-tt-parent-id="house-{{$house->house_id}}">
                                         <td>上浮房款：</td>
                                         <td colspan="8">
                                             <table class="table table-hover table-bordered">
@@ -335,7 +344,9 @@
                             @foreach($sdata['paytransits'] as $transit)
                                 <tr>
                                     <td>{{$transit->house->housecommunity->address}} {{$transit->house->housecommunity->name}}</td>
-                                    <td>{{$transit->house->building}}栋{{$transit->house->unit}}单元{{$transit->house->floor}}楼{{$transit->house->number}}@if(is_numeric($transit->house->number))号@endif</td>
+                                    <td>{{$transit->house->building}}栋{{$transit->house->unit}}
+                                        单元{{$transit->house->floor}}
+                                        楼{{$transit->house->number}}@if(is_numeric($transit->house->number))号@endif</td>
                                     <td>{{$transit->house->layout->name}}</td>
                                     <td>{{number_format($transit->area,2)}}</td>
                                 </tr>
@@ -377,20 +388,29 @@
     </div>
     <div class="clearfix form-actions">
         <div class="col-md-offset-5 col-md-7">
+
             @if($sdata['household']->code==68)
-            <button class="btn btn-success" type="button" onclick="confirmPay()">
-                <i class="ace-icon fa fa-check bigger-110"></i>
-                请求签约
-            </button>
-                @elseif($sdata['household']->code==69 && blank($sdata['pacts']))
+                <button class="btn btn-success" type="button"
+                        onclick="ajaxAct('{{route('h_payhouse_add')}}',{pay_id:{{$sdata['pay']->id}}},'POST')">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    请求签约
+                </button>
+            @elseif($sdata['household']->code==69)
+                @if(blank($sdata['pacts']))
+                    <button class="btn btn-success" type="button" onclick="" disabled>
+                        <i class="ace-icon fa fa-check bigger-110"></i>
+                        签约中
+                    </button>
+                @else
+                    <button class="btn btn-success" type="button" onclick="ajaxAct('{{route('h_pay_confirm')}}',{pay_id:{{$sdata['pay']->id}}},'POST')">
+                        <i class="ace-icon fa fa-check bigger-110"></i>
+                        确认签约
+                    </button>
+                @endif
+            @elseif($sdata['household']->code==70)
                 <button class="btn btn-success" type="button" onclick="" disabled>
                     <i class="ace-icon fa fa-check bigger-110"></i>
-                    签约中
-                </button>
-            @elseif($sdata['household']->code==69 && filled($sdata['pacts']))
-                <button class="btn btn-success" type="button" onclick="" readonly="">
-                    <i class="ace-icon fa fa-check bigger-110"></i>
-                    确认签约
+                    已签约
                 </button>
             @endif
         </div>
@@ -401,7 +421,7 @@
 {{-- 样式 --}}
 @section('css')
 
-    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('viewer/viewer.min.css')}}"/>
     <link rel="stylesheet" href="{{asset('treetable/jquery.treetable.theme.default.css')}}">
 
 @endsection
@@ -416,30 +436,31 @@
         $('.img-content').viewer();
         $(".treetable").treetable({
             expandable: true // 展示
-            ,initialState :"collapsed"//默认打开所有节点
-            ,stringCollapse:'关闭'
-            ,stringExpand:'展开'});
+            , initialState: "collapsed"//默认打开所有节点
+            , stringCollapse: '关闭'
+            , stringExpand: '展开'
+        });
 
-        function confirmPay() {
-            var data = null;
-            ajaxAct('{{route('h_payhouse_add')}}', data, 'post');
-            console.log(ajaxResp);
-            if (ajaxResp.code == 'success') {
-                toastr.success(ajaxResp.message);
-                if(ajaxResp.url){
-                    setTimeout(function () {
-                        location.href=ajaxResp.url;
-                    },1000);
-                }else{
-                    setTimeout(function () {
-                        location.reload();
-                    },1000);
-                }
-            } else {
-                toastr.error(ajaxResp.message);
-            }
-            return false;
-        }
+        {{--function applyPay() {--}}
+        {{--var data = null;--}}
+        {{--ajaxAct('{{route('h_payhouse_add')}}', data, 'post');--}}
+        {{--console.log(ajaxResp);--}}
+        {{--if (ajaxResp.code == 'success') {--}}
+        {{--toastr.success(ajaxResp.message);--}}
+        {{--if(ajaxResp.url){--}}
+        {{--setTimeout(function () {--}}
+        {{--location.href=ajaxResp.url;--}}
+        {{--},1000);--}}
+        {{--}else{--}}
+        {{--setTimeout(function () {--}}
+        {{--location.reload();--}}
+        {{--},1000);--}}
+        {{--}--}}
+        {{--} else {--}}
+        {{--toastr.error(ajaxResp.message);--}}
+        {{--}--}}
+        {{--return false;--}}
+        {{--}--}}
 
     </script>
 

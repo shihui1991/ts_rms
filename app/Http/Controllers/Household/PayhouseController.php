@@ -35,8 +35,7 @@ class PayhouseController extends BaseController
     /* ========== 开始选房 ========== */
     public function add(Request $request)
     {
-
-        $pay_id = DB::table('pay')->where([['household_id' , $this->household_id], ['item_id' , $this->item_id]])->value('id');
+        $pay_id=$request->input('pay_id');
         if (!$pay_id) {
             $result = ['code' => 'error', 'message' => '暂无兑付数据', 'sdata' => null, 'edata' => null, 'url' => null];
             if ($request->ajax()) {
@@ -48,7 +47,6 @@ class PayhouseController extends BaseController
 
         DB::beginTransaction();
         try {
-
             $this->item=Item::find($this->item_id);
             if(blank($this->item)){
                 throw new \Exception('项目不存在',404404);
@@ -73,16 +71,14 @@ class PayhouseController extends BaseController
             if (blank($house_ids)) {
                 throw new \Exception('暂未选择安置房', 404404);
             }
-            if ($house_ids == $transits) {
+
+           /* if ($house_ids == $transits) {
                 throw new \Exception('暂未选择临时周转房', 404404);
-            }
+            }*/
 
             /* ++++++++++ 临时周转房过渡 ++++++++++ */
-            if ($pay->getOriginal('transit_way')) {
-                if (blank($transits)) {
-                    throw new \Exception('暂未选择临时周转房', 404404);
-                }
-                $house_ids = array_diff($house_ids, $transits);
+            if ($pay->getOriginal('transit_way')  && blank($transits)) {
+                throw new \Exception('暂未选择临时周转房', 404404);
             } /* ++++++++++ 货币过渡 ++++++++++ */
             else {
                 if (filled($transits)) {
@@ -95,7 +91,7 @@ class PayhouseController extends BaseController
                 ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
                 ->find($pay->household_id);
             if (!in_array($household->code, ['68'])) {
-                throw new \Exception('被征收户【' . $household->state->name . '】，不能签约', 404404);
+                throw new \Exception('被征收户【' . $household->state->name . '】，不能请求签约', 404404);
             }
 
             $count = Payhouse::sharedLock()
@@ -133,8 +129,8 @@ class PayhouseController extends BaseController
             /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
             $resettle_total = Paysubject::sharedLock()
                 ->where([
-                    ['item_id', $pay->item_id],
-                    ['household_id', $pay->household_id],
+                    ['item_id', $this->item_id],
+                    ['household_id', $this->household_id],
                     ['pay_id', $pay->id],
                 ])
                 ->whereIn('subject_id', [1, 2, 4, 11, 12])
@@ -312,7 +308,7 @@ class PayhouseController extends BaseController
                 $field = ['item_id', 'household_id', 'land_id', 'building_id', 'pay_id', 'pact_id', 'house_id', 'created_at', 'updated_at'];
                 $sqls = batch_update_or_insert_sql('pay_transit', $field, $transit_data, 'updated_at');
                 if (!$sqls) {
-                    throw new \Exception('保存失败2', 404404);
+                    throw new \Exception('保存失败', 404404);
                 }
                 foreach ($sqls as $sql) {
                     DB::statement($sql);
@@ -322,7 +318,15 @@ class PayhouseController extends BaseController
             $household->code=69;
             $household->save();
             if(blank($household)){
-                throw new \Exception('保存失败3', 404404);
+                throw new \Exception('保存失败', 404404);
+            }
+
+            /*锁定有效选房*/
+            $house_lock=House::lockForUpdate()
+                ->whereIn('id',$resettles)
+                ->update(['code'=>155]);
+            if(blank($house_lock)){
+                throw new \Exception('保存失败', 404404);
             }
 
             /*消息推送至征收管理端的相关人员*/
@@ -351,7 +355,11 @@ class PayhouseController extends BaseController
         }
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
 
-        return response()->json($result);
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view('household.error')->with($result);
+        }
     }
 
 }

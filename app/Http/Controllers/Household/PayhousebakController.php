@@ -85,13 +85,7 @@ class PayhousebakController extends BaseController{
                     ->get();
             }
 
-            /* ++++++++++ 被征收户 ++++++++++ */
-            $household=Household::sharedLock()
-                ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
-                ->find($pay->household_id);
-            if(!in_array($household->code,['68','76'])){
-                throw new \Exception('被征收户【'.$household->state->name.'】，不能选房',404404);
-            }
+
 
             $house_ids=DB::table('pay_house_bak')->where([['household_id',$this->household_id],['house_type',1]])->pluck('house_id')->toArray();
 
@@ -304,7 +298,6 @@ class PayhousebakController extends BaseController{
             $url=null;
             DB::rollBack();
         }
-
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
