@@ -319,6 +319,14 @@ class PayhousebakController extends BaseController{
     public function add(Request $request){
         DB::beginTransaction();
         try{
+            /* ++++++++++ 被征收户 ++++++++++ */
+            $household = Household::sharedLock()
+                ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
+                ->find($this->household_id);
+            if (!in_array($household->code, ['68'])) {
+                throw new \Exception('被征收户【' . $household->state->name . '】，不能选房', 404404);
+            }
+
             /* ++++++++++ 兑付 ++++++++++ */
             $pay=Pay::sharedLock()
                 ->where([
@@ -517,11 +525,19 @@ class PayhousebakController extends BaseController{
         }
         DB::beginTransaction();
         try{
+            /* ++++++++++ 被征收户 ++++++++++ */
+            $household = Household::sharedLock()
+                ->select(['id', 'item_id', 'land_id', 'building_id', 'unit', 'floor', 'number', 'type', 'code'])
+                ->find($this->household_id);
+            if (!in_array($household->code, ['68'])) {
+                throw new \Exception('被征收户【' . $household->state->name . '】，不能选房', 404404);
+            }
+
             $house=Payhousebak::sharedLock()
                 ->where([
                     ['house_id',$id],
-                    ['household_id',session('household_user.user_id')],
-                    ['item_id',session('household_user.item_id')]
+                    ['household_id',$this->household_id],
+                    ['item_id',$this->item_id]
                 ])
                 ->first();
             if (blank($house)){
