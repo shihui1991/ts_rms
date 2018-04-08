@@ -301,7 +301,7 @@
                 @else
                     <div id="householdassets" class="tab-pane fade">
                         @if(filled($edata['householdassets']))
-                            <div class="col-xs-12">
+                            <div class="profile-user-info profile-user-info-striped">
                                 @foreach($edata['householdassets'] as $info)
                                     <div class="col-xs-6 col-sm-3 pricing-box">
                                         <div class="widget-box widget-color-dark">

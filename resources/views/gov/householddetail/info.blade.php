@@ -372,7 +372,9 @@
                             </div>
                         @else
                             <div class="profile-user-info profile-user-info-striped">
-                                <span>暂无详细信息</span>
+                                <span>暂无详细信息</span>&nbsp; <a class="btn" href="{{route('g_householddetail_add',['household_id'=>$sdata->id,'item'=>$sdata->item_id])}}">
+                                    添加详细信息
+                                </a>
                             </div>
                         @endif
                     </div>
@@ -537,31 +539,6 @@
                                                                     <span class="editable editable-click">{{$householdmember->crowd}}</span>
                                                                 </div>
                                                             </div>
-                                                            @if(isset($householdmember->picture))
-                                                                @foreach($householdmember->picture as $names=>$picturepic)
-                                                                    <div class="profile-info-row">
-                                                                        <div class="profile-info-name"> {{$edata['member_filecates'][$names]}}： </div>
-                                                                        <div class="profile-info-value">
-                                                                                <span class="editable editable-click">
-                                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                                         @foreach($picturepic as $pics)
-                                                                                             <li>
-                                                                                                <div>
-                                                                                                    <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
-                                                                                                    <div class="text">
-                                                                                                        <div class="inner">
-                                                                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                             </li>
-                                                                                         @endforeach
-                                                                                    </ul>
-                                                                                </span>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-                                                            @endif
                                                             @if($householdmember->getOriginal('crowd')==1)
                                                                 <br/>
                                                                 @if(filled($householdmember->householdmembercrowds))
@@ -570,28 +547,6 @@
                                                                             <div class="profile-info-name"> 特殊人群信息： </div>
                                                                             <div class="profile-info-value">
                                                                                 <span class="editable editable-click">{{$v->crowd->name}}</span><br/>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="profile-info-row">
-                                                                            <div class="profile-info-name"> 证件： </div>
-                                                                            <div class="profile-info-value">
-                                                                                <span class="editable editable-click">
-                                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                                         @foreach($v->picture as $val)
-                                                                                             <li>
-                                                                                            <div>
-                                                                                                <img width="120" height="120" src="{!! $val !!}" alt="加载失败">
-                                                                                                <div class="text">
-                                                                                                    <div class="inner">
-                                                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                          </li>
-                                                                                         @endforeach
-                                                                                    </ul>
-                                                                                </span>
                                                                             </div>
                                                                         </div>
                                                                     @endforeach
