@@ -11,6 +11,7 @@ use App\Http\Model\Householddetail;
 use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemland;
 use App\Http\Model\Itempublic;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -210,7 +211,9 @@ class ItembuildingController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
-
+                $item->process_id=26;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 楼栋是否存在 ++++++++++ */
                 $building = $request->input('building');
                 $itembuilding = Itembuilding::where('item_id',$item_id)->where('land_id',$land_id)->where('building',$building)->lockForUpdate()->first();
@@ -376,6 +379,9 @@ class ItembuildingController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
+                $item->process_id=26;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $itembuilding=Itembuilding::lockForUpdate()->find($id);
                 if(blank($itembuilding)){

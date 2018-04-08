@@ -9,6 +9,7 @@ use App\Http\Model\Estatebuilding;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Itemland;
+use App\Http\Model\Itemuser;
 use App\Http\Model\Landlayout;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -186,6 +187,9 @@ class LandlayoutController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
+                $item->process_id=26;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 地块户型是否存在 ++++++++++ */
                 $name = $request->input('name');
                 $landlayout = Landlayout::where('item_id',$item_id)->where('land_id',$request->input('land_id'))->where('name',$name)->lockForUpdate()->first();
@@ -357,6 +361,9 @@ class LandlayoutController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
+                $item->process_id=26;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $landlayout=Landlayout::lockForUpdate()->find($id);
                 if(blank($landlayout)){

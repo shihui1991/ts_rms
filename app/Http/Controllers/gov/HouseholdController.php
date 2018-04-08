@@ -159,6 +159,26 @@ class HouseholdController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[26,27]) || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $household = $model;
                 $household->fill($request->all());
