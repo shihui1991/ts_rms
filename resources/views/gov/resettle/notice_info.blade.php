@@ -26,7 +26,7 @@
     <button type="button" class="btn" onclick="print()">打印</button>
 </div>
 
-
+{!! $notice->content !!}
 
 
 <script src="{{asset('js/jquery-1.11.3.min.js')}}"></script>
