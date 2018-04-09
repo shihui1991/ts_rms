@@ -71,6 +71,8 @@ class Itemland extends Model
     public function itempublics(){
         return $this->hasMany('App\Http\Model\Itempublic','land_id','id');
     }
-
+    public function buildingstruct(){
+        return $this->belongsTo('App\Http\Model\Buildingstruct','struct_id','id')->withDefault();
+    }
 
 }

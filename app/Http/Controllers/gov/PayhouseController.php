@@ -15,6 +15,7 @@ use App\Http\Model\Itemhouserate;
 use App\Http\Model\Itemprogram;
 use App\Http\Model\Pay;
 use App\Http\Model\Payhouse;
+use App\Http\Model\Payhouseplus;
 use App\Http\Model\Payreserve;
 use App\Http\Model\Paysubject;
 use App\Http\Model\Payunit;
@@ -272,6 +273,19 @@ class PayhouseController extends BaseitemController
                     return $house->itemhouseprice->price;
                 });
                 $house_rates=Itemhouserate::sharedLock()->where('item_id',$this->item_id)->orderBy('start_area','asc')->get();
+                /* ++++++++++ 删除旧数据 ++++++++++ */
+                Payhouse::lockForUpdate()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                    ])
+                    ->delete();
+                Payhouseplus::lockForUpdate()
+                    ->where([
+                        ['item_id',$pay->item_id],
+                        ['household_id',$pay->household_id],
+                    ])
+                    ->delete();
 
                 /* ++++++++++ 可调换安置房的补偿额 ++++++++++ */
                 $resettle_total=Paysubject::sharedLock()
