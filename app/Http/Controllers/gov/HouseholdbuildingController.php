@@ -170,6 +170,11 @@ class HouseholdbuildingController extends BaseitemController
                 $item->process_id=27;
                 $item->code='1';
                 $item->save();
+
+                if(!in_array($request->input('code'),[90,91])){
+                    $result=['code'=>'error','message'=>'状态数据异常','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
                 /* ++++++++++ 被征户房屋建筑-批量赋值 ++++++++++ */
                 $householdbuilding = $model;
                 $householdbuilding->fill($request->all());
@@ -324,6 +329,10 @@ class HouseholdbuildingController extends BaseitemController
                 return view($view)->with($result);
             }
         }else{
+            if(!in_array($request->input('code'),[90,91])){
+                $result=['code'=>'error','message'=>'状态数据异常','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
             $model=new Household();
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [

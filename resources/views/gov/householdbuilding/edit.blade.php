@@ -22,7 +22,30 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="code"> 状态： </label>
             <div class="col-sm-9 radio">
-                <input type="text" id="code" value="{{$sdata->state->name}}" class="col-xs-10 col-sm-5" disabled >
+                <label>
+                    <input name="status" type="radio" class="ace" value="90" @if(90==$sdata->code) checked @endif >
+                    <span class="lbl">合法登记</span>
+                </label>
+                <label>
+                    <input name="status" type="radio" class="ace" value="91" @if(91==$sdata->code) checked @endif >
+                    <span class="lbl">待认定</span>
+                </label>
+                <label>
+                    <input  type="radio" class="ace" value="92" @if(92==$sdata->code) checked @endif disabled>
+                    <span class="lbl">认定合法</span>
+                </label>
+                <label>
+                    <input  type="radio" class="ace" value="93" @if(93==$sdata->code) checked @endif disabled>
+                    <span class="lbl">认定非法</span>
+                </label>
+                <label>
+                    <input  type="radio" class="ace" value="94" @if(94==$sdata->code) checked @endif disabled>
+                    <span class="lbl">自行拆除</span>
+                </label>
+                <label>
+                    <input type="radio" class="ace" value="95" @if(95==$sdata->code) checked @endif disabled>
+                    <span class="lbl">转为合法</span>
+                </label>
             </div>
         </div>
         <div class="space-4"></div>

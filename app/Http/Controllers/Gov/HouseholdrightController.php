@@ -123,7 +123,7 @@ class HouseholdrightController extends BaseitemController
             $sdata['item'] = $item;
             $sdata['membermodel'] = new Householdmember();
             $sdata['member'] = Householdmember::where('item_id',$item_id)->where('household_id',$household_id)->get();
-            $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $sdata['household'] = Household::select(['id','land_id','building_id','type'])->find($household_id);
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
