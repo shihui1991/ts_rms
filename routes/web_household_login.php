@@ -36,8 +36,11 @@ Route::any('/pay','PayController@index')->name('h_pay');
 Route::any('/pay_info','PayController@info')->name('h_pay_info');
 Route::any('/pay_edit','PayController@edit')->name('h_pay_edit');
 
-/*确认签约*/
+/*请求签约*/
 Route::any('/payhouse_add','PayhouseController@add')->name('h_payhouse_add');
+
+/*确认签约*/
+Route::any('/pay_confirm','PayController@confirm')->name('h_pay_confirm');
 
 Route::any('/paysubject_info','PaysubjectController@info')->name('h_paysubject_info');
 

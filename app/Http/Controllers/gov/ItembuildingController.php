@@ -137,8 +137,6 @@ class ItembuildingController extends BaseitemController
 
         $model=new Itembuilding();
         if($request->isMethod('get')){
-            DB::beginTransaction();
-
             $itemland = Itemland::sharedLock()->find($land_id);
             $buildingstructs=Buildingstruct::sharedLock()->select(['id','name'])->get();
             if(blank($itemland)){
@@ -193,6 +191,26 @@ class ItembuildingController extends BaseitemController
             /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+
                 /* ++++++++++ 楼栋是否存在 ++++++++++ */
                 $building = $request->input('building');
                 $itembuilding = Itembuilding::where('item_id',$item_id)->where('land_id',$land_id)->where('building',$building)->lockForUpdate()->first();
@@ -339,6 +357,25 @@ class ItembuildingController extends BaseitemController
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $itembuilding=Itembuilding::lockForUpdate()->find($id);
                 if(blank($itembuilding)){
@@ -401,6 +438,25 @@ class ItembuildingController extends BaseitemController
         /* ********** 删除数据 ********** */
         DB::beginTransaction();
         try{
+            $item=$this->item;
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',26],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                throw new \Exception('您没有执行此操作的权限',404404);
+            }
             /*---------是否正在被使用----------*/
             $itempublic = Itempublic::where('building_id',$ids)->count();
             if($itempublic!=0){

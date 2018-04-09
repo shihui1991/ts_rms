@@ -19,8 +19,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class NewsController extends BaseController{
-    public $item_id;
-
     public function info(Request $request){
         $id=$request->input('id');
         if(!$id){

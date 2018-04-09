@@ -1099,4 +1099,62 @@ class PayController extends BaseController{
             return response()->json($result);
         }
     }
+
+    /* ========== 确认签约 ========== */
+    public function confirm(Request $request){
+        $pay_id=$request->input('pay_id');
+        if (!$pay_id) {
+            $result = ['code' => 'error', 'message' => '暂无兑付数据', 'sdata' => null, 'edata' => null, 'url' => null];
+            if ($request->ajax()) {
+                return response()->json($result);
+            } else {
+                return view('household.error')->with($result);
+            }
+        }
+        DB::beginTransaction();
+        try {
+            /* ++++++++++ 兑付 ++++++++++ */
+            $pay = Pay::sharedLock()
+                ->find($pay_id);
+            if (blank($pay)) {
+                throw new \Exception('错误操作', 404404);
+            }
+
+            /*修改被征户状态（签约中）*/
+            $household=Household::sharedLock()
+                ->find($this->household_id);
+            $household->code=70;
+            $household->save();
+            if(blank($household)){
+                throw new \Exception('保存失败', 404404);
+            }
+
+            /*消息推送至征收管理端的相关人员*/
+            $param = ['item' => $this->item_id, 'id' => $pay_id];
+            $this->send_work_notice(41, 'g_pact_add', $param);
+
+            $code = 'success';
+            $msg = '提交成功';
+            $sdata = null;
+            $edata = null;
+            $url = null;
+            DB::commit();
+
+        }catch (\Exception $exception) {
+            $code = 'error';
+            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '保存失败';
+            $sdata = null;
+            $edata = null;
+            $url = null;
+
+            DB::rollBack();
+        }
+        $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
+        if($request->ajax()){
+            return response()->json($result);
+        }else{
+            return view('household.error')->with($result);
+        }
+    }
+
 }

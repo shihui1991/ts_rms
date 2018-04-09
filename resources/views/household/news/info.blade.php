@@ -131,7 +131,7 @@
 
                     <div class="widget-body">
                         <div class="widget-main">
-                            <textarea id="content" name="content" style="width:100%;min-height: 360px;">{{$sdata['news']->content}}</textarea>
+                            <textarea id="content"  >{{$sdata['news']->content}}</textarea>
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
 
             <div class="tab-content">
                 <div id="program_content" class="tab-pane active" >
-                        <textarea name="content1" id="content1" style="width:100%;min-height: 360px;">{{$sdata['program']['itemprogram']->content}}</textarea>
+                        <textarea  id="content1">{{$sdata['program']['itemprogram']->content}}</textarea>
                 </div>
 
                 <div id="subject" class="tab-pane" >
@@ -485,7 +485,7 @@
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 内容： </div>
                                     <div class="profile-info-value">
-                                        <textarea name="content2" id="content2" style="width:100%;min-height: 360px;">{{$sdata['itemdraft']->content}}</textarea>
+                                        <textarea  id="content2" >{{$sdata['itemdraft']->content}}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -512,24 +512,9 @@
     <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
     <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>
     <script>
-        var ue = UE.getEditor('content',
-            {
-                readonly:true
-                ,toolbars:null
-                ,wordCount:false
-            });
-        var ue1 = UE.getEditor('content1',
-            {
-                readonly:true
-                ,toolbars:null
-                ,wordCount:false
-            });
-        var ue2 = UE.getEditor('content2',
-            {
-                readonly:true
-                ,toolbars:null
-                ,wordCount:false
-            });
+         UE.getEditor('content', {readonly:true,toolbars:null,wordCount:false});
+         UE.getEditor('content1', {readonly:true,toolbars:null,wordCount:false});
+         UE.getEditor('content2', {readonly:true,toolbars:null,wordCount:false});
         $('.img-content').viewer();
     </script>
 

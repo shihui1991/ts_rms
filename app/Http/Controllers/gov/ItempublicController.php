@@ -197,6 +197,25 @@ class ItempublicController extends BaseitemController
             /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 /* ++++++++++ 公共附属物是否存在 ++++++++++ */
                 $name = $request->input('name');
                 $itempublic = Itempublic::where('item_id',$item_id)->where('land_id',$request->input('land_id'))->where('building_id',$request->input('building_id'))->where('name',$name)->lockForUpdate()->first();
@@ -359,6 +378,25 @@ class ItempublicController extends BaseitemController
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',26],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $itempublic=Itempublic::lockForUpdate()->find($id);
                 if(blank($itempublic)){
@@ -395,6 +433,64 @@ class ItempublicController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            $item=$this->item;
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',26],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                throw new \Exception('您没有执行此操作的权限',404404);
+            }
+            /*---------是否已确认数量----------*/
+            $itempublic = Itempublic::where('id',$ids)->first();
+            if($itempublic->number){
+                throw new \Exception('该公共附属物正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------公共附属物----------*/
+            $itempublic = Itempublic::where('id',$ids)->delete();
+            if(!$itempublic){
+                throw new \Exception('删除失败',404404);
+            }
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$itempublic;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
     }
 
     /* ========== 确认地块附属物 ========== */
@@ -659,42 +755,5 @@ class ItempublicController extends BaseitemController
         }
     }
 
-    /* ========== 删除 ========== */
-    public function del(Request $request){
-        $ids = $request->input('id');
-        if(blank($ids)){
-            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
-            return response()->json($result);
-        }
-        /* ********** 删除数据 ********** */
-        DB::beginTransaction();
-        try{
-            /*---------是否已确认数量----------*/
-            $itempublic = Itempublic::where('id',$ids)->first();
-            if($itempublic->number){
-                throw new \Exception('该公共附属物正在被使用,暂时不能被删除！',404404);
-            }
-            /*---------公共附属物----------*/
-            $itempublic = Itempublic::where('id',$ids)->delete();
-            if(!$itempublic){
-                throw new \Exception('删除失败',404404);
-            }
-            $code='success';
-            $msg='删除成功';
-            $sdata=$ids;
-            $edata=$itempublic;
-            $url=null;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
-            $sdata=$ids;
-            $edata=null;
-            $url=null;
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        return response()->json($result);
-    }
+
 }
