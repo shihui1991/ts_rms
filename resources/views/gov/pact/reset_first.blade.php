@@ -9,9 +9,10 @@
         <a href="javascript:history.back();" class="btn">返回</a>
     </div>
 
-    <form class="form-horizontal" role="form" action="{{route('g_pact_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" method="post">
+    <form class="form-horizontal" role="form" action="{{route('g_pact_reset_pact',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" method="post">
         {{csrf_field()}}
 
+        <input type="hidden" name="pact_id" value="{{$sdata['pact']->id}}">
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="sign_date"> 签约日期： </label>
             <div class="col-sm-9">

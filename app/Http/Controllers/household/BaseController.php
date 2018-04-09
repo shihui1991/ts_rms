@@ -130,7 +130,7 @@ class BaseController extends Controller
         $field=['item_id','schedule_id','process_id','menu_id','dept_id','parent_id','role_id','user_id','url','code','created_at','updated_at'];
         $sqls=batch_update_or_insert_sql('item_work_notice',$field,$values,'updated_at');
         if(!$sqls){
-            throw new \Exception('操作失败4',404404);
+            throw new \Exception('操作失败',404404);
         }
         foreach ($sqls as $sql){
             DB::statement($sql);

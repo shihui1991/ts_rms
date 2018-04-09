@@ -105,6 +105,8 @@ Route::any('/pact','PactController@index')->name('g_pact'); //协议
 Route::any('/pact_add','PactController@add')->name('g_pact_add'); //被征收户 - 生成补偿安置协议
 Route::any('/pact_reset_pact','PactController@reset_pact')->name('g_pact_reset_pact'); //被征收户 - 补偿安置协议 - 重新生成
 Route::any('/pact_info','PactController@info')->name('g_pact_info'); //协议详情
+Route::any('/pay_table','PactController@pay_table')->name('g_pay_table'); //协议 - 兑付表
+Route::any('/assess_pic','PactController@assess_pic')->name('g_assess_pic'); //协议 - 评估报告
 
 /*---------- 腾空搬迁 ----------*/
 Route::any('/move','MoveController@index')->name('g_move'); //腾空搬迁

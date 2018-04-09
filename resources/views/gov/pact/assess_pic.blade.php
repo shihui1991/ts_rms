@@ -24,15 +24,28 @@
 </style>
 <div class="no-print" style="position: fixed;top:20px;left:20px;width: 100px;height: 50px;">
     <button type="button" class="btn" onclick="print()">打印</button>
+
 </div>
 
-{!! $notice->content !!}
+@if(filled($sdata['pact']->content['estate_pic']))
+    @foreach($sdata['pact']->content['estate_pic'] as $estate)
+        <img src="{{$estate}}" alt="">
+    @endforeach
+@endif
+
+@if(filled($sdata['pact']->content['assets_pic']))
+    @foreach($sdata['pact']->content['assets_pic'] as $assets)
+        <img src="{{$assets}}" alt="">
+    @endforeach
+@endif
 
 
 <script src="{{asset('js/jquery-1.11.3.min.js')}}"></script>
 <script src="{{asset('js/jquery.print.min.js')}}"></script>
+
 <script>
     function print() {
         $('document').print({noPrintSelector: ".no-print"});
     }
+
 </script>

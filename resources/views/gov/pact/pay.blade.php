@@ -14,11 +14,11 @@
 
 <body style="position: relative;">
 <!--2480*3508-->
-<div id="one-a4" style="width: 1000px;margin: auto;text-align: center;">
+<div id="one-a4" style="width: 1000px;min-height:1158px;margin: auto;text-align: center;">
     <h2>{{$item->name}} 房屋征收补偿款兑付到户表</h2>
     <div class="title" style="width: 1000px;display: inline-block;height: auto;margin-top: 20px;">
         <p style="float: left;">泰州区房屋征收补偿管理局</p>
-        <p style="float: right;">{{date('Y年m月d日')}}</p>
+        <p style="float: right;">{{date('Y年m月d日',strtotime($sign_date))}}</p>
     </div>
     <div id="title" style="display: block;width: 1000px;height: auto;margin-top: 20px;">
         <table border="1" cellspacing="0" style="width: 100%;line-height: 32px;" id="old-table">
@@ -318,6 +318,21 @@
                     <td colspan="4">@if($last<0) 负 @endif{{bigRMB(abs($last))}}</td>
                 </tr>
             @endif
+            <tr class="one-big-title">
+                <td colspan="8">
+                    <span style="text-align: left;display: block;width: 30%;float: left;">分管领导签字：</span>
+                    <span style="text-align: left;display: block;width: 30%;float: left;">征收股负责人：</span>
+                    <span style="text-align: left;display: block;width: 30%;float: left;">安置股负责人：</span>
+                </td>
+            </tr>
+            <tr class="one-big-title">
+                <td colspan="8">
+                    <span style="text-align: left;display: block;width: 25%;float: left;">社稳办负责人：</span>
+                    <span style="text-align: left;display: block;width: 25%;float: left;">复核人：</span>
+                    <span style="text-align: left;display: block;width: 25%;float: left;">经办人：</span>
+                    <span style="text-align: left;display: block;width: 25%;float: left;">被征收人：</span>
+                </td>
+            </tr>
 
             </tbody>
         </table>

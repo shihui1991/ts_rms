@@ -26,7 +26,7 @@
     <button type="button" class="btn" onclick="print()">打印</button>
 </div>
 
-{!! $notice->content !!}
+{!! $sdata['pact']->content['pay_table'] !!}
 
 
 <script src="{{asset('js/jquery-1.11.3.min.js')}}"></script>
@@ -35,4 +35,5 @@
     function print() {
         $('document').print({noPrintSelector: ".no-print"});
     }
+
 </script>

@@ -10,7 +10,7 @@
             @if($code=='success')
                 @if(filled($sdata['companyvote']))
                 <div class="col-xs-6 col-sm-3 pricing-box">
-                    <div class="widget-box widget-color-green2">
+                    <div class="widget-box widget-color-blue">
                         <div class="widget-header">
                             <h5 class="widget-title bigger lighter">我的投票</h5>
                         </div>
@@ -55,7 +55,7 @@
 
                             </div>
                             <div >
-                                <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" class="btn btn-block btn-inverse" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i></a>
+                                <a href="{{route('h_company_info',['id'=>$sdata['companyvote']->company->id])}}" class="btn btn-block btn-primary" style="font-size: 15px">查看详情 <i class="ace-icon fa fa-chevron-circle-right bigger-110"></i></a>
                             </div>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                 @endif
                 @foreach($edata as $company)
                     <div class="col-xs-6 col-sm-3 pricing-box">
-                        <div class="widget-box widget-color-dark">
+                        <div class="widget-box widget-color-green">
                             <div class="widget-header">
                                 <h5 class="widget-title bigger lighter">{{$company->name}}</h5>
                             </div>

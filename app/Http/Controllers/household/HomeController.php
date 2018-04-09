@@ -28,6 +28,7 @@ class HomeController extends BaseController
             $query->select(['code','name']);
         }])
             ->where('code',22)
+            ->where('item_id',$this->item_id)
             ->sharedLock()
             ->orderBy('is_top','desc')
             ->orderBy('release_at','asc')
