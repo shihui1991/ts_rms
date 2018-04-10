@@ -63,7 +63,7 @@
             <div class="col-sm-9 radio">
                 @foreach($edata['household']->type as $key => $value)
                     <label>
-                        <input name="type" type="radio" class="ace" value="{{$key}}" @if($key==$sdata->type) checked @endif >
+                        <input name="type" type="radio" class="ace" value="{{$key}}" @if($value==$sdata->type) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach

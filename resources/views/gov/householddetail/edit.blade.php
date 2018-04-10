@@ -63,7 +63,7 @@
         <div class="space-4"></div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="state"> 状态： </label>
+            <label class="col-sm-3 control-label no-padding-right" for="status"> 状态： </label>
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->status as $key => $value)
                     <label>

@@ -8,12 +8,14 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Household;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Itemobject;
+use App\Http\Model\Itemuser;
 use App\Http\Model\Objects;
 use App\Http\Model\Payobject;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class HouseholdobjectController extends BaseitemController
 {
@@ -115,7 +117,12 @@ class HouseholdobjectController extends BaseitemController
                 'household_id' => 'required',
                 'land_id' => 'required',
                 'building_id' => 'required',
-                'object_id' => 'required',
+                'object_id' => ['required',Rule::unique('item_household_object')->where(function ($query){
+                    $query->where([
+                        ['household_id',\request()->input('household_id')],
+                        ['object_id',\request()->input('object_id')],
+                    ]);
+                })],
                 'number' => 'required',
                 'picture' => 'required'
             ];
@@ -284,7 +291,13 @@ class HouseholdobjectController extends BaseitemController
             /* ********** 表单验证 ********** */
             $rules = [
                 'household_id' => 'required',
-                'object_id' => 'required',
+                'object_id' => ['required',Rule::unique('item_household_object')->where(function ($query){
+                    $query->where([
+                        ['household_id',\request()->input('household_id')],
+                        ['object_id',\request()->input('object_id')],
+                        ['id','<>',\request()->input('$id')],
+                    ]);
+                })],
                 'number' => 'required',
                 'picture' => 'required'
             ];

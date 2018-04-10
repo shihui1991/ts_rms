@@ -356,6 +356,7 @@ class HouseholdmemberController extends BaseitemController
                 $holder2_count =  Householdmember::where('item_id',$item_ids)
                     ->where('household_id',$household_id)
                     ->where('holder',$holder)
+                    ->where('id','<>',$id)
                     ->count();
                 if($holder2_count){
                     $result=['code'=>'error','message'=>'承租人已经存在','sdata'=>null,'edata'=>null,'url'=>null];

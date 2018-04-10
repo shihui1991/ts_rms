@@ -23,11 +23,11 @@
             <label class="col-sm-3 control-label no-padding-right" for="code"> 状态： </label>
             <div class="col-sm-9 radio">
                 <label>
-                    <input name="status" type="radio" class="ace" value="90" @if(90==$sdata->code) checked @endif >
+                    <input name="code" type="radio" class="ace" value="90" @if(90==$sdata->code) checked @endif >
                     <span class="lbl">合法登记</span>
                 </label>
                 <label>
-                    <input name="status" type="radio" class="ace" value="91" @if(91==$sdata->code) checked @endif >
+                    <input name="code" type="radio" class="ace" value="91" @if(91==$sdata->code) checked @endif >
                     <span class="lbl">待认定</span>
                 </label>
                 <label>

@@ -8,6 +8,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemland;
 use App\Http\Model\Itempublic;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;

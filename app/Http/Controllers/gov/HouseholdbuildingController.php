@@ -10,6 +10,7 @@ use App\Http\Model\Buildinguse;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householdbuildingdeal;
+use App\Http\Model\Itemuser;
 use App\Http\Model\Landlayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

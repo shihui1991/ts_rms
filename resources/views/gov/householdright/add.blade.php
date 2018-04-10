@@ -71,7 +71,7 @@
                         </span>
                     </label>
                     <div class="col-sm-9">
-                        <ul class="ace-thumbnails clearfix img-content viewer">
+                        <ul class="ace-thumbnails clearfix img-content">
 
                         </ul>
                     </div>
@@ -108,8 +108,6 @@
     @parent
     <script src="{{asset('js/func.js')}}"></script>
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
-    <script>
-        $('.img-content').viewer('update');
-    </script>
+
 
 @endsection

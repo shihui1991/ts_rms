@@ -12,6 +12,7 @@ use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Itemland;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;

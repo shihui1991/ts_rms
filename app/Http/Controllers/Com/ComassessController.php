@@ -478,7 +478,7 @@ class ComassessController extends BaseitemController
 
             DB::commit();
         }catch (\Exception $exception){
-            dd($exception);
+
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;

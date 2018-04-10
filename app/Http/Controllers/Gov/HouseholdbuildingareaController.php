@@ -9,6 +9,7 @@ use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdbuildingarea;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
