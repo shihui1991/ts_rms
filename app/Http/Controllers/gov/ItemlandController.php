@@ -223,7 +223,7 @@ class ItemlandController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
-                $item->process_id=26;
+                $item->process_id=25;
                 $item->code='1';
                 $item->save();
                 /* ++++++++++ 地块是否存在 ++++++++++ */
@@ -453,7 +453,7 @@ class ItemlandController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
-                $item->process_id=26;
+                $item->process_id=25;
                 $item->code='1';
                 $item->save();
                 /* ++++++++++ 锁定数据模型 ++++++++++ */

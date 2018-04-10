@@ -211,7 +211,7 @@ class ItembuildingController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
-                $item->process_id=26;
+                $item->process_id=25;
                 $item->code='1';
                 $item->save();
                 /* ++++++++++ 楼栋是否存在 ++++++++++ */
@@ -379,7 +379,7 @@ class ItembuildingController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
-                $item->process_id=26;
+                $item->process_id=25;
                 $item->code='1';
                 $item->save();
                 /* ++++++++++ 锁定数据模型 ++++++++++ */

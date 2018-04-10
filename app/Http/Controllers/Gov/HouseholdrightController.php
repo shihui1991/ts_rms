@@ -139,9 +139,8 @@ class HouseholdrightController extends BaseitemController
                 return response()->json($result);
             }
             /* ++++++++++ 检查项目状态 ++++++++++ */
-            if(!in_array($item->process_id,[27,28]) || ($item->process_id==27 && $item->code!='1')){
-                $result=['code'=>'error','message'=>'当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作','sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
+            if(!in_array($item->process_id,[24,25]) || ($item->process_id==24 && $item->code!='22') || ($item->process_id==25 && $item->code!='1')){
+                throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
             }
             /* ++++++++++ 检查操作权限 ++++++++++ */
             $count=Itemuser::sharedLock()

@@ -67,6 +67,9 @@ class ItemprocessController extends BaseitemController
                     ->whereNotIn('code',['0','20'])
                     ->orderBy('updated_at','desc')
                     ->orderBy('id','desc');
+            },'processes'=>function($query){
+                $query->select(['id','schedule_id','name','sort'])
+                    ->orderBy('sort','asc');
             }])
                 ->orderBy('sort','asc')
                 ->sharedLock()

@@ -28,6 +28,11 @@
                         <div class="center">
                             <h4 class="blue">{{$schedule->name}}</h4>
                         </div>
+                        <p>
+                            @foreach($schedule->processes as $process)
+                            <span class="label label-lg arrowed-in arrowed-right">{{$process->name}}</span>
+                            @endforeach
+                        </p>
                         <div class="widget-box widget-color-blue2">
                             <div class="widget-header">
                                 <h4 class="widget-title lighter smaller">待做事项</h4>

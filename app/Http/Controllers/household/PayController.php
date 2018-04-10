@@ -874,7 +874,7 @@ class PayController extends BaseController{
                 $view='household.pay.info';
                 DB::commit();
             }catch (\Exception $exception){
-                dd($exception);
+
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
                 $sdata=null;
