@@ -223,6 +223,9 @@ class ItemlandController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
+                $item->process_id=26;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 地块是否存在 ++++++++++ */
                 $address = $request->input('address');
                 $itemland = Itemland::where('item_id',$item_id)->where('address',$address)->lockForUpdate()->first();
@@ -450,6 +453,9 @@ class ItemlandController extends BaseitemController
                 if(!$count){
                     throw new \Exception('您没有执行此操作的权限',404404);
                 }
+                $item->process_id=26;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $itemland=Itemland::lockForUpdate()->find($id);
                 if(blank($itemland)){
@@ -512,6 +518,7 @@ class ItemlandController extends BaseitemController
             if(!$count){
                 throw new \Exception('您没有执行此操作的权限',404404);
             }
+
             /*---------是否正在被使用----------*/
             $itempublic = Itempublic::where('land_id',$ids)->count();
             if($itempublic!=0){

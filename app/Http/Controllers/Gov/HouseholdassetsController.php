@@ -145,6 +145,28 @@ class HouseholdassetsController extends BaseitemController
             /* ++++++++++ 赋值 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[26,27]) || ($item->process_id==26 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',27],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->process_id=27;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 资产是否存在 ++++++++++ */
                 $name = $request->input('name');
                 $householdassets = Householdassets::where('item_id',$item_id)->where('land_id',$request->input('land_id'))->where('name',$name)->lockForUpdate()->first();
@@ -306,6 +328,28 @@ class HouseholdassetsController extends BaseitemController
             /* ********** 更新 ********** */
             DB::beginTransaction();
             try{
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[26,27]) || ($item->process_id==26 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',27],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->process_id=27;
+                $item->code='1';
+                $item->save();
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
                 $householdassets=Householdassets::lockForUpdate()->find($id);
                 if(blank($householdassets)){
@@ -337,6 +381,65 @@ class HouseholdassetsController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+    /* ========== 删除 ========== */
+    public function del(Request $request){
+        $ids = $request->input('id');
+        if(blank($ids)){
+            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ********** 删除数据 ********** */
+        DB::beginTransaction();
+        try{
+            $item=$this->item;
+            if(blank($item)){
+                throw new \Exception('项目不存在',404404);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if(!in_array($item->process_id,[26,27]) || ($item->process_id==26 && $item->code!='1')){
+                throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',27],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                throw new \Exception('您没有执行此操作的权限',404404);
+            }
+            /*---------是否正在被使用----------*/
+            $householdassets = Householdassets::where('id',$ids)->first();
+            if($householdassets->number){
+                throw new \Exception('该条资产数据正在被使用,暂时不能被删除！',404404);
+            }
+            /*---------删除资产----------*/
+            $householdassets = Householdassets::where('id',$ids)->delete();
+            if(!$householdassets){
+                throw new \Exception('删除失败',404404);
+            }
+
+            $code='success';
+            $msg='删除成功';
+            $sdata=$ids;
+            $edata=$householdassets;
+            $url=null;
+            DB::commit();
+        }catch (\Exception $exception){
+            $code='error';
+            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
+            $sdata=$ids;
+            $edata=null;
+            $url=null;
+            DB::rollBack();
+        }
+        /* ********** 结果 ********** */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
     }
 
     /* ========== 被征收户列表 ========== */
@@ -539,6 +642,29 @@ class HouseholdassetsController extends BaseitemController
                 return view($view)->with($result);
             }
         }else{
+            $item=$this->item;
+            if(blank($item)){
+                $result=['code'=>'error','message'=>'项目不存在！','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if(!in_array($item->process_id,[27,28]) || ($item->process_id==27 && $item->code!='1')){
+                $result=['code'=>'error','message'=>'当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',28],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                $result=['code'=>'error','message'=>'您没有执行此操作的权限','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+
             $household_id = $request->input('household_id');
             $model=new Householdassets();
             /* ********** 表单验证 ********** */
@@ -665,44 +791,6 @@ class HouseholdassetsController extends BaseitemController
         }
     }
 
-    /* ========== 删除 ========== */
-    public function del(Request $request){
-        $ids = $request->input('id');
-        if(blank($ids)){
-            $result=['code'=>'error','message'=>'请选择要删除的数据！','sdata'=>null,'edata'=>null,'url'=>null];
-            return response()->json($result);
-        }
-        /* ********** 删除数据 ********** */
-        DB::beginTransaction();
-        try{
-            /*---------是否正在被使用----------*/
-            $householdassets = Householdassets::where('id',$ids)->first();
-            if($householdassets->number){
-                throw new \Exception('该条资产数据正在被使用,暂时不能被删除！',404404);
-            }
-            /*---------删除资产----------*/
-            $householdassets = Householdassets::where('id',$ids)->delete();
-            if(!$householdassets){
-                throw new \Exception('删除失败',404404);
-            }
 
-            $code='success';
-            $msg='删除成功';
-            $sdata=$ids;
-            $edata=$householdassets;
-            $url=null;
-            DB::commit();
-        }catch (\Exception $exception){
-            $code='error';
-            $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常,请刷新后重试！';
-            $sdata=$ids;
-            $edata=null;
-            $url=null;
-            DB::rollBack();
-        }
-        /* ********** 结果 ********** */
-        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        return response()->json($result);
-    }
 
 }

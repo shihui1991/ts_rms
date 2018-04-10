@@ -16,6 +16,7 @@ use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdobject;
+use App\Http\Model\Itemuser;
 use App\Http\Model\Layout;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -178,6 +179,28 @@ class HouseholddetailController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[26,27]) || ($item->process_id==26 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',27],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->process_id=27;
+                $item->code='1';
+                $item->save();
                 $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
                 $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
                 $rules=[];
@@ -414,6 +437,28 @@ class HouseholddetailController extends BaseitemController
             /* ++++++++++ 修改 ++++++++++ */
             DB::beginTransaction();
             try {
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查项目状态 ++++++++++ */
+                if(!in_array($item->process_id,[26,27]) || ($item->process_id==26 && $item->code!='1')){
+                    throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',27],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                $item->process_id=27;
+                $item->code='1';
+                $item->save();
                 $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
                 $file_cates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->get();
                 $rules=[];
@@ -635,6 +680,28 @@ class HouseholddetailController extends BaseitemController
                 return view('gov.buildingconfirm.relatedcom')->with($result);
             }
         }else{
+            $item=$this->item;
+            if(blank($item)){
+                $result=['code'=>'error','message'=>'项目不存在！','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if(!in_array($item->process_id,[27,28]) || ($item->process_id==27 && $item->code!='1')){
+                $result=['code'=>'error','message'=>'当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',28],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                $result=['code'=>'error','message'=>'您没有执行此操作的权限','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
             DB::beginTransaction();
             try{
                 $estatebuilding = new Estatebuilding();
@@ -830,6 +897,32 @@ class HouseholddetailController extends BaseitemController
 
     /* ========== 被征收户房产确权状态修改 ========== */
     public function edit_status(Request $request){
+        $item=$this->item;
+        if(blank($item)){
+            $result=['code'=>'error','message'=>'项目不存在！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ++++++++++ 检查项目状态 ++++++++++ */
+        if(!in_array($item->process_id,[27,28]) || ($item->process_id==27 && $item->code!='1')){
+            $result=['code'=>'error','message'=>'当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        /* ++++++++++ 检查操作权限 ++++++++++ */
+        $count=Itemuser::sharedLock()
+            ->where([
+                ['item_id',$item->id],
+                ['process_id',28],
+                ['user_id',session('gov_user.user_id')],
+            ])
+            ->count();
+        if(!$count){
+            $result=['code'=>'error','message'=>'您没有执行此操作的权限','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+        $item->process_id=28;
+        $item->code='1';
+        $item->save();
+
         $item_id =$this->item_id;
         $id = $request->input('gov_id');
         DB::beginTransaction();

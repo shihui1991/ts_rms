@@ -6,6 +6,7 @@
 */
 namespace App\Http\Controllers\com;
 use App\Http\Model\Item;
+use App\Http\Model\Itemcompany;
 use App\Http\Model\Menu;
 use App\Http\Model\Process;
 use App\Http\Model\Worknotice;
@@ -31,7 +32,19 @@ class BaseitemController extends BaseController
                 }
             }
             $this->item_id=$item_id;
+
+            $item_ids=Itemcompany::distinct()->where('company_id',session('com_user.company_id'))->pluck('item_id');
+            if(!in_array($item_id,$item_ids->toArray())){
+                $result=['code'=>'error','message'=>'暂无此征收项目','sdata'=>null,'edata'=>null,'url'=>null];
+                if(request()->ajax()){
+                    return response()->json($result);
+                }else{
+                    return redirect()->route('c_error')->with($result);
+                }
+            }
             $this->item=Item::sharedLock()->find($item_id);
+
+
 
             if(!$request->ajax()){
                 /*===========资产评估机构菜单与房产评估机构菜单============*/

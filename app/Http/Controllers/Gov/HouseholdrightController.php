@@ -9,6 +9,7 @@ use App\Http\Model\Household;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdright;
+use App\Http\Model\Itemuser;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -122,7 +123,7 @@ class HouseholdrightController extends BaseitemController
             $sdata['item'] = $item;
             $sdata['membermodel'] = new Householdmember();
             $sdata['member'] = Householdmember::where('item_id',$item_id)->where('household_id',$household_id)->get();
-            $sdata['household'] = Household::select(['id','land_id','building_id'])->find($household_id);
+            $sdata['household'] = Household::select(['id','land_id','building_id','type'])->find($household_id);
             $result=['code'=>'success','message'=>'请求成功','sdata'=>$sdata,'edata'=>null,'url'=>null];
             if($request->ajax()){
                 return response()->json($result);
@@ -132,6 +133,28 @@ class HouseholdrightController extends BaseitemController
         }
         /* ++++++++++ 保存 ++++++++++ */
         else {
+            $item=$this->item;
+            if(blank($item)){
+                $result=['code'=>'error','message'=>'项目不存在！','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 检查项目状态 ++++++++++ */
+            if(!in_array($item->process_id,[27,28]) || ($item->process_id==27 && $item->code!='1')){
+                $result=['code'=>'error','message'=>'当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',28],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->count();
+            if(!$count){
+                $result=['code'=>'error','message'=>'您没有执行此操作的权限','sdata'=>null,'edata'=>null,'url'=>null];
+                return response()->json($result);
+            }
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
@@ -203,7 +226,6 @@ class HouseholdrightController extends BaseitemController
                 $url = route('g_householdright',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
-                dd($exception);
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
