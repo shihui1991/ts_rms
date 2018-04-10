@@ -56,5 +56,8 @@ class Householdmembercrowd extends Model
     public function crowd(){
         return $this->belongsTo('App\Http\Model\Crowd','crowd_id','id')->withDefault();
     }
+    public function member(){
+        return $this->belongsTo('App\Http\Model\Householdmember','member_id','id')->withDefault();
+    }
 
 }

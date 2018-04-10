@@ -24,8 +24,12 @@
             </a>
         @endif
 
-        <a href="{{route('g_pact_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn">
+        <a href="{{route('g_pact_add',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn btn-primary">
             生成补偿安置协议
+        </a>
+
+        <a href="{{route('g_pact_add2',['item'=>$sdata['item']->id,'pay_id'=>$sdata['pay']->id])}}" class="btn btn-info2">
+            生成安置补充协议
         </a>
     </div>
 

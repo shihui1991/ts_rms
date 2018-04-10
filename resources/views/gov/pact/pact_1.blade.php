@@ -142,7 +142,7 @@
     </div>
 
     <div class="color66" style="line-height: 50px;text-indent: 50px;">根据《国有土地上房屋征收与补偿条例》、《甘肃省实施
-        &lt;国有土地上房屋征收与补偿条例&gt;若干规定》、《国有土地上房屋征收评估办法》及《天水市秦州区人民政府关于天水信号厂片区土地熟化项目二期房屋征收补偿安置实施方案》的规定，甲乙双方本着公平合理、平等协商的原则，就乙方位于该项目规划区域内房屋的征收补偿安置达成如下协议。</div>
+        &lt;国有土地上房屋征收与补偿条例&gt;若干规定》、《国有土地上房屋征收评估办法》及《天水市秦州区人民政府关于{{$item->name}}房屋征收补偿安置实施方案》的规定，甲乙双方本着公平合理、平等协商的原则，就乙方位于该项目规划区域内房屋的征收补偿安置达成如下协议。</div>
     <!--这里是协议内容-->
     <div>
         <!--无列表样式-->
@@ -192,7 +192,7 @@
             @php $house_resettle=0; $subject_total=0;@endphp
             @foreach($pay_subjects as $subject)
                 @php $subject_total += $subject->total; @endphp
-                @if(in_array($subject->subject_id,[])) @php $house_resettle += $subject->total; @endphp @endif
+                @if(in_array($subject->subject_id,[1,2,4,11,12])) @php $house_resettle += $subject->total; @endphp @endif
                 <div>
                     <p class="text_indent50 lineheight50 color66">
                         {{$loop->iteration}}、{{$subject->subject->name}}：

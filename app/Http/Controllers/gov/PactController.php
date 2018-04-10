@@ -20,10 +20,12 @@ use App\Http\Model\Itemuser;
 use App\Http\Model\Pact;
 use App\Http\Model\Pay;
 use App\Http\Model\Paybuilding;
+use App\Http\Model\Paycrowd;
 use App\Http\Model\Payhouse;
 use App\Http\Model\Payobject;
 use App\Http\Model\Paypublic;
 use App\Http\Model\Paysubject;
+use App\Http\Model\Paytransit;
 use App\Http\Model\Payunit;
 use App\Http\Model\Worknotice;
 use Illuminate\Http\Request;
@@ -329,7 +331,7 @@ class PactController extends BaseitemController
                 $pay_subjects=Paysubject::with(['subject','itemsubject'=>function($query){
                     $query->where('item_id',$this->item_id);
                 }])
-                    ->sharedLock()
+                    ->lockForUpdate()
                     ->where([
                         ['item_id',$this->item_id],
                         ['pay_id',$pay_id],
@@ -385,7 +387,7 @@ class PactController extends BaseitemController
                 $pay_houses=null;
                 if($pay->getOriginal('repay_way')==1){
                     $pay_houses=Payhouse::with(['house'=>function($query){
-                        $query->with(['housecommunity','layout','houselayoutimg']);
+                        $query->with(['housecommunity','layout']);
                     },'housepluses'=>function($query) use ($household){
                         $query->where([
                             ['item_id',$household->item_id],
@@ -510,6 +512,18 @@ class PactController extends BaseitemController
                 $pact->code='170';
                 $pact->status=0;
                 $pact->save();
+
+                /* ++++++++++ 补偿科目更新 ++++++++++ */
+                Paysubject::lockForUpdate()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['pay_id',$pay_id],
+                    ])
+                    ->whereIn('subject_id',[1,2,3,4,5,6,7,8,9,10,11,12])
+                    ->update([
+                        'pact_id'=>$pact->id,
+                        'updated_at'=>date('Y-m-d H:i:s')
+                    ]);
 
                 $code='success';
                 $msg='请求成功';
@@ -780,6 +794,85 @@ class PactController extends BaseitemController
                     ];
                     $view='gov.pact.reset_first';
                 }
+                /* ++++++++++ 安置补充协议 ++++++++++ */
+                elseif($pact->cate_id==2){
+                    /* ++++++++++ 兑付汇总 ++++++++++ */
+                    $pay=Pay::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['id',$pact->pay_id],
+                        ])
+                        ->first();
+                    if(blank($pay)){
+                        throw new \Exception('兑付数据不存在',404404);
+                    }
+
+                    /* ++++++++++ 是否有权限 ++++++++++ */
+                    $count=Itemuser::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['schedule_id',5],
+                            ['process_id',40],
+                            ['user_id',session('gov_user.user_id')],
+                        ])
+                        ->count();
+                    if(!$count){
+                        throw new \Exception('您没有执行此操作的权限',404404);
+                    }
+                    /* ++++++++++ 被征收户 ++++++++++ */
+                    $household=Household::with(['itemland'=>function($query){
+                        $query->with('adminunit')->select(['id','address']);
+                    },'itembuilding'=>function($query){
+                        $query->with('buildingstruct')->select(['id','building','total_floor']);
+                    },'state'=>function($query){
+                        $query->select(['code','name']);
+                    }])
+                        ->sharedLock()
+                        ->find($pay->household_id);
+                    /* ++++++++++ 被征收户 - 详情 ++++++++++ */
+                    $household_detail=Householddetail::with(['defbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    },'realbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    }])
+                        ->sharedLock()
+                        ->where('household_id',$pay->household_id)
+                        ->first();
+                    /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
+                    if($household->getOriginal('type')){
+                        $holder_type=2;
+                    }else{
+                        $holder_type=1;
+                    }
+                    $holder=Householdmember::sharedLock()
+                        ->select(['id','item_id','household_id','name','holder','portion','card_num'])
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$household->id],
+                            ['holder',$holder_type],
+                        ])
+                        ->orderBy('portion','desc')
+                        ->first();
+                    $household_total=Paysubject::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['pay_id',$pact->pay_id],
+                        ])
+                        ->sum('total');
+
+
+                    $sdata=[
+                        'item'=>$this->item,
+                        'pact'=>$pact,
+                        'pay'=>$pay,
+                        'household'=>$household,
+                        'household_detail'=>$household_detail,
+                        'household_total'=>$household_total,
+                        'holder'=>$holder,
+                    ];
+
+                    $view='gov.pact.reset_second';
+                }
 
                 $code='success';
                 $msg='请求成功';
@@ -976,7 +1069,7 @@ class PactController extends BaseitemController
                     $pay_houses=null;
                     if($pay->getOriginal('repay_way')==1){
                         $pay_houses=Payhouse::with(['house'=>function($query){
-                            $query->with(['housecommunity','layout','houselayoutimg']);
+                            $query->with(['housecommunity','layout']);
                         },'housepluses'=>function($query) use ($household){
                             $query->where([
                                 ['item_id',$household->item_id],
@@ -1091,6 +1184,212 @@ class PactController extends BaseitemController
                         'estate_pic'=>$estate_pic,
                         'assets_pic'=>$assets_pic,
                     ];
+                    /* ++++++++++ 补偿科目更新 ++++++++++ */
+                    Paysubject::lockForUpdate()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['pay_id',$pact->pay_id],
+                        ])
+                        ->whereIn('subject_id',[1,2,3,4,5,6,7,8,9,10,11,12])
+                        ->update([
+                            'pact_id'=>$pact->id,
+                            'updated_at'=>date('Y-m-d H:i:s')
+                        ]);
+                }
+                /* ++++++++++ 安置补充协议 ++++++++++ */
+                elseif($pact->cate_id==2){
+
+                    if(blank($request->input('sign_date'))){
+                        throw new \Exception('请输入签约日期',404404);
+                    }
+                    /* ++++++++++ 兑付汇总 ++++++++++ */
+                    $pay=Pay::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['id',$pact->pay_id],
+                        ])
+                        ->first();
+                    if(blank($pay)){
+                        throw new \Exception('兑付数据不存在',404404);
+                    }
+
+                    /* ++++++++++ 是否有权限 ++++++++++ */
+                    $count=Itemuser::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['schedule_id',5],
+                            ['process_id',40],
+                            ['user_id',session('gov_user.user_id')],
+                        ])
+                        ->count();
+                    if(!$count){
+                        throw new \Exception('您没有执行此操作的权限',404404);
+                    }
+                    /* ++++++++++ 被征收户 ++++++++++ */
+                    $household=Household::with(['itemland'=>function($query){
+                        $query->with('adminunit')->select(['id','address']);
+                    },'itembuilding'=>function($query){
+                        $query->with('buildingstruct')->select(['id','building','total_floor','struct_id']);
+                    },'state'=>function($query){
+                        $query->select(['code','name']);
+                    }])
+                        ->sharedLock()
+                        ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                        ->find($pay->household_id);
+                    /* ++++++++++ 被征收户 - 详情 ++++++++++ */
+                    $household_detail=Householddetail::with(['defbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    },'realbuildinguse'=>function($query){
+                        $query->select(['id','name']);
+                    }])
+                        ->sharedLock()
+                        ->select(['id','household_id','status','register','reg_outer','def_use','real_use','has_assets','business'])
+                        ->where('household_id',$pay->household_id)
+                        ->first();
+                    /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
+                    if($household->getOriginal('type')){
+                        $holder_type=2;
+                    }else{
+                        $holder_type=1;
+                    }
+                    $holder=Householdmember::sharedLock()
+                        ->select(['id','item_id','household_id','name','holder','portion','card_num'])
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$household->id],
+                            ['holder',$holder_type],
+                        ])
+                        ->orderBy('portion','desc')
+                        ->first();
+                    /* ++++++++++ 正式方案 ++++++++++ */
+                    $program=Itemprogram::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['code','22'],
+                        ])
+                        ->first();
+                    /* ++++++++++ 补偿科目 ++++++++++ */
+                    $pay_subjects=Paysubject::with(['subject','itemsubject'=>function($query){
+                        $query->where('item_id',$this->item_id);
+                    }])
+                        ->sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['pay_id',$pact->pay_id],
+                        ])
+                        ->orderBy('subject_id','asc')
+                        ->whereIn('subject_id',[13,14,15,16])
+                        ->get();
+                    /* ++++++++++ 合法面积、合法补偿总额 ++++++++++ */
+                    $legal=Paybuilding::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$household->id],
+                            ['pay_id',$pay->id],
+                        ])
+                        ->whereIn('code',['90'])
+                        ->select([DB::raw('`real_outer` as `legal_area`'),DB::raw('`amount` as `legal_amount`')])
+                        ->first();
+
+                    $datas=[
+                        'item'=>$this->item,
+                        'pay'=>$pay,
+                        'household'=>$household,
+                        'household_detail'=>$household_detail,
+                        'holder'=>$holder,
+                        'program'=>$program,
+                        'pay_subjects'=>$pay_subjects,
+                        'legal'=>$legal,
+                        'sign_date'=>$request->input('sign_date'),
+                    ];
+
+                    /* ++++++++++ 临时周转房 ++++++++++ */
+                    if($pay->getOriginal('transit_way')==1){
+                        $pay_transits=Paytransit::with(['house'=>function($query){
+                            $query->with(['housecommunity','layout']);
+                        }])
+                            ->where([
+                                ['item_id',$household->item_id],
+                                ['household_id',$household->id],
+                            ])
+                            ->sharedLock()
+                            ->get();
+                        $datas['pay_transits']=$pay_transits;
+                    }
+                    /* ++++++++++ 货币过渡 ++++++++++ */
+                    else{
+                        $pay_transits=null;
+                        /* ++++++++++ 选择的安置房源 ++++++++++ */
+                        $resettle_house_ids=Payhouse::sharedLock()
+                            ->where([
+                                ['item_id',$pay->item_id],
+                                ['household_id',$pay->household_id],
+                            ])
+                            ->pluck('house_id');
+                        if(blank($resettle_house_ids)){
+                            throw new \Exception('请先选择安置房源',404404);
+                        }
+                        /* ++++++++++ 现房数量 ++++++++++ */
+                        $real_count=House::sharedLock()
+                            ->whereIn('id',$resettle_house_ids)
+                            ->where('is_real',1)
+                            ->count();
+                        /* ++++++++++ 临时安置时长 ++++++++++ */
+                        $transit_times=$real_count?$program->transit_real:$program->transit_future;
+                        $transit_end=date('Y-m',strtotime($program->item_end.' +'.$transit_times.' month'));
+                        $transit_at=date('Y-m',$request->sign_date);
+                        $diff_time=date_diff(date_create($transit_at),date_create($transit_end));
+                        $transit_times = $diff_time->format('%m');
+                        /* ++++++++++ 临时安置单价 ++++++++++ */
+                        if($household_detail->def_use==1){
+                            // 住宅
+                            $transit_price=$program->transit_house;
+                        } else{
+                            // 非住宅
+                            $transit_price=$program->transit_other;
+                        }
+                        $price=$legal->legal_area * $transit_price;
+                        if($price>$program->transit_base){
+                            $transit_total=$price * $transit_times;
+                        }else{
+                            $transit_total=$program->transit_base * $transit_times;
+                        }
+                        /* ++++++++++ 特殊人群优惠 ++++++++++ */
+                        $pay_crowds=Paycrowd::with(['membercrowd'=>function($query){
+                            $query->with(['member'=>function($query){
+                                $query->select(['id','name','card_num']);
+                            }])
+                                ->select(['id','member_id']);
+                        },'crowd'])
+                            ->sharedLock()
+                            ->where([
+                                ['item_id',$pay->item_id],
+                                ['household_id',$pay->household_id],
+                                ['pay_id',$pay->id],
+                            ])
+                            ->get();
+
+                        $datas['pay_transits']=$pay_transits;
+                        $datas['transit_times']=$transit_times;
+                        $datas['transit_price']=$transit_price;
+                        $datas['price']=$price;
+                        $datas['transit_total']=$transit_total;
+                        $datas['pay_crowds']=$pay_crowds;
+                    }
+
+                    /* ++++++++++ 补偿科目更新 ++++++++++ */
+                    Paysubject::lockForUpdate()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['pay_id',$pact->pay_id],
+                        ])
+                        ->whereIn('subject_id',[13,14,15,16])
+                        ->update([
+                            'pact_id'=>$pact->id,
+                            'updated_at'=>date('Y-m-d H:i:s')
+                        ]);
+                    $pay_pact=response(view('gov.pact.pact_2')->with($datas))->getContent();// 安置补充协议
+                    $pact->content=$pay_pact;
                 }
                 $pact->save();
 
@@ -1224,5 +1523,373 @@ class PactController extends BaseitemController
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
         return response()->json($result);
+    }
+
+    /* ========== 添加安置补充协议 ========== */
+    public function add2(Request $request){
+        $pay_id=$request->input('pay_id');
+        if($request->isMethod('get')){
+            DB::beginTransaction();
+            try{
+                if(!$pay_id){
+                    throw new \Exception('错误操作',404404);
+                }
+                /* ++++++++++ 兑付汇总 ++++++++++ */
+                $pay=Pay::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$pay_id],
+                    ])
+                    ->first();
+                if(blank($pay)){
+                    throw new \Exception('兑付数据不存在',404404);
+                }
+                $pact=Pact::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$pay->household_id],
+                        ['pay_id',$pay->id],
+                        ['cate_id',2],
+                    ])
+                    ->first();
+                if(filled($pact)){
+                    throw new \Exception('补偿安置协议已存在，请勿重复操作',404404);
+                }
+                $item=$this->item;
+                if(blank($item)){
+                    throw new \Exception('项目不存在',404404);
+                }
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['schedule_id',5],
+                        ['process_id',40],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::with(['itemland'=>function($query){
+                    $query->with('adminunit')->select(['id','address']);
+                },'itembuilding'=>function($query){
+                    $query->with('buildingstruct')->select(['id','building','total_floor']);
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                }])
+                    ->sharedLock()
+                    ->find($pay->household_id);
+                /* ++++++++++ 被征收户 - 详情 ++++++++++ */
+                $household_detail=Householddetail::with(['defbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                },'realbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                    ->sharedLock()
+                    ->where('household_id',$pay->household_id)
+                    ->first();
+                /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
+                if($household->getOriginal('type')){
+                    $holder_type=2;
+                }else{
+                    $holder_type=1;
+                }
+                $holder=Householdmember::sharedLock()
+                    ->select(['id','item_id','household_id','name','holder','portion','card_num'])
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['holder',$holder_type],
+                    ])
+                    ->orderBy('portion','desc')
+                    ->first();
+                $household_total=Paysubject::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['pay_id',$pay_id],
+                    ])
+                    ->sum('total');
+
+                $code='success';
+                $msg='请求成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                    'household'=>$household,
+                    'household_detail'=>$household_detail,
+                    'household_total'=>$household_total,
+                    'holder'=>$holder,
+                ];
+                $edata=null;
+                $url=null;
+
+                $view='gov.pact.second';
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                $view='gov.error';
+            }
+            DB::commit();
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else{
+                return view($view)->with($result);
+            }
+        }
+        /* ++++++++++ 生成协议 ++++++++++ */
+        else{
+            DB::beginTransaction();
+            try{
+                if(!$pay_id){
+                    throw new \Exception('错误操作',404404);
+                }
+                if(blank($request->input('sign_date'))){
+                    throw new \Exception('请输入签约日期',404404);
+                }
+                /* ++++++++++ 兑付汇总 ++++++++++ */
+                $pay=Pay::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['id',$pay_id],
+                    ])
+                    ->first();
+                if(blank($pay)){
+                    throw new \Exception('兑付数据不存在',404404);
+                }
+                $pact=Pact::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$pay->household_id],
+                        ['pay_id',$pay->id],
+                        ['cate_id',2],
+                    ])
+                    ->first();
+                if(filled($pact)){
+                    throw new \Exception('补偿安置协议已存在，请勿重复操作',404404);
+                }
+                /* ++++++++++ 是否有权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['schedule_id',5],
+                        ['process_id',40],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+                /* ++++++++++ 被征收户 ++++++++++ */
+                $household=Household::with(['itemland'=>function($query){
+                    $query->with('adminunit')->select(['id','address']);
+                },'itembuilding'=>function($query){
+                    $query->with('buildingstruct')->select(['id','building','total_floor','struct_id']);
+                },'state'=>function($query){
+                    $query->select(['code','name']);
+                }])
+                    ->sharedLock()
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','type','code'])
+                    ->find($pay->household_id);
+                /* ++++++++++ 被征收户 - 详情 ++++++++++ */
+                $household_detail=Householddetail::with(['defbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                },'realbuildinguse'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                    ->sharedLock()
+                    ->select(['id','household_id','status','register','reg_outer','def_use','real_use','has_assets','business'])
+                    ->where('household_id',$pay->household_id)
+                    ->first();
+                /* ++++++++++ 公房单位、承租人、产权人 ++++++++++ */
+                if($household->getOriginal('type')){
+                    $holder_type=2;
+                }else{
+                    $holder_type=1;
+                }
+                $holder=Householdmember::sharedLock()
+                    ->select(['id','item_id','household_id','name','holder','portion','card_num'])
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['holder',$holder_type],
+                    ])
+                    ->orderBy('portion','desc')
+                    ->first();
+                /* ++++++++++ 正式方案 ++++++++++ */
+                $program=Itemprogram::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['code','22'],
+                    ])
+                    ->first();
+                /* ++++++++++ 补偿科目 ++++++++++ */
+                $pay_subjects=Paysubject::with(['subject','itemsubject'=>function($query){
+                    $query->where('item_id',$this->item_id);
+                }])
+                    ->sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['pay_id',$pay_id],
+                    ])
+                    ->orderBy('subject_id','asc')
+                    ->whereIn('subject_id',[13,14,15,16])
+                    ->get();
+                /* ++++++++++ 合法面积、合法补偿总额 ++++++++++ */
+                $legal=Paybuilding::sharedLock()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['household_id',$household->id],
+                        ['pay_id',$pay->id],
+                    ])
+                    ->whereIn('code',['90'])
+                    ->select([DB::raw('`real_outer` as `legal_area`'),DB::raw('`amount` as `legal_amount`')])
+                    ->first();
+
+                $datas=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                    'household'=>$household,
+                    'household_detail'=>$household_detail,
+                    'holder'=>$holder,
+                    'program'=>$program,
+                    'pay_subjects'=>$pay_subjects,
+                    'legal'=>$legal,
+                    'sign_date'=>$request->input('sign_date'),
+                ];
+
+                /* ++++++++++ 临时周转房 ++++++++++ */
+                if($pay->getOriginal('transit_way')==1){
+                    $pay_transits=Paytransit::with(['house'=>function($query){
+                        $query->with(['housecommunity','layout']);
+                    }])
+                        ->where([
+                            ['item_id',$household->item_id],
+                            ['household_id',$household->id],
+                        ])
+                        ->sharedLock()
+                        ->get();
+                    $datas['pay_transits']=$pay_transits;
+                }
+                /* ++++++++++ 货币过渡 ++++++++++ */
+                else{
+                    $pay_transits=null;
+                    /* ++++++++++ 选择的安置房源 ++++++++++ */
+                    $resettle_house_ids=Payhouse::sharedLock()
+                        ->where([
+                            ['item_id',$pay->item_id],
+                            ['household_id',$pay->household_id],
+                        ])
+                        ->pluck('house_id');
+                    if(blank($resettle_house_ids)){
+                        throw new \Exception('请先选择安置房源',404404);
+                    }
+                    /* ++++++++++ 现房数量 ++++++++++ */
+                    $real_count=House::sharedLock()
+                        ->whereIn('id',$resettle_house_ids)
+                        ->where('is_real',1)
+                        ->count();
+                    /* ++++++++++ 临时安置时长 ++++++++++ */
+                    $transit_times=$real_count?$program->transit_real:$program->transit_future;
+                    $transit_end=date('Y-m',strtotime($program->item_end.' +'.$transit_times.' month'));
+                    $transit_at=date('Y-m',$request->sign_date);
+                    $diff_time=date_diff(date_create($transit_at),date_create($transit_end));
+                    $transit_times = $diff_time->format('%m');
+                    /* ++++++++++ 临时安置单价 ++++++++++ */
+                    if($household_detail->def_use==1){
+                        // 住宅
+                        $transit_price=$program->transit_house;
+                    } else{
+                        // 非住宅
+                        $transit_price=$program->transit_other;
+                    }
+                    $price=$legal->legal_area * $transit_price;
+                    if($price>$program->transit_base){
+                        $transit_total=$price * $transit_times;
+                    }else{
+                        $transit_total=$program->transit_base * $transit_times;
+                    }
+                    /* ++++++++++ 特殊人群优惠 ++++++++++ */
+                    $pay_crowds=Paycrowd::with(['membercrowd'=>function($query){
+                        $query->with(['member'=>function($query){
+                            $query->select(['id','name','card_num']);
+                        }])
+                            ->select(['id','member_id']);
+                    },'crowd'])
+                        ->sharedLock()
+                        ->where([
+                            ['item_id',$pay->item_id],
+                            ['household_id',$pay->household_id],
+                            ['pay_id',$pay->id],
+                        ])
+                        ->get();
+
+                    $datas['pay_transits']=$pay_transits;
+                    $datas['transit_times']=$transit_times;
+                    $datas['transit_price']=$transit_price;
+                    $datas['price']=$price;
+                    $datas['transit_total']=$transit_total;
+                    $datas['pay_crowds']=$pay_crowds;
+                }
+
+                $pay_pact=response(view('gov.pact.pact_2')->with($datas))->getContent();// 安置补充协议
+
+                $pact=new Pact();
+                $pact->item_id=$pay->item_id;
+                $pact->household_id=$pay->household_id;
+                $pact->land_id=$pay->land_id;
+                $pact->building_id=$pay->building_id;
+                $pact->pay_id=$pay->id;
+                $pact->cate_id=2;
+                $pact->content=$pay_pact;
+                $pact->code='170';
+                $pact->status=0;
+                $pact->save();
+
+                /* ++++++++++ 补偿科目更新 ++++++++++ */
+                Paysubject::lockForUpdate()
+                    ->where([
+                        ['item_id',$this->item_id],
+                        ['pay_id',$pact->pay_id],
+                    ])
+                    ->whereIn('subject_id',[13,14,15,16])
+                    ->update([
+                        'pact_id'=>$pact->id,
+                        'updated_at'=>date('Y-m-d H:i:s')
+                    ]);
+
+                $code='success';
+                $msg='请求成功';
+                $sdata=[
+                    'item'=>$this->item,
+                    'pay'=>$pay,
+                    'household'=>$household,
+                    'household_detail'=>$household_detail,
+                    'holder'=>$holder,
+                    'pact'=>$pact,
+                ];
+                $edata=null;
+                $url=route('g_pay_info',['item'=>$this->item_id,'id'=>$pay_id]);
+
+                DB::commit();
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络错误';
+                $sdata=null;
+                $edata=null;
+                $url=null;
+
+                DB::rollBack();
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
     }
 }
