@@ -240,6 +240,7 @@ Route::any('/itemnotice_edit','ItemnoticeController@edit')->name('g_itemnotice_e
 /*---------- 项目-冻结房源 ----------*/
 Route::any('/itemhouse','ItemhouseController@index')->name('g_itemhouse');
 Route::any('/itemhouse_add','ItemhouseController@add')->name('g_itemhouse_add');
+Route::any('/itemhouse_del','ItemhouseController@del')->name('g_itemhouse_del');  // 释放房源
 
 /*+++++++++++++++ 【入围机构】 ++++++++++++++++*/
 /*---------- 项目-选定评估机构 ----------*/

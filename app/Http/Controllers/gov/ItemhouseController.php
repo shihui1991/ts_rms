@@ -233,6 +233,66 @@ class ItemhouseController extends BaseitemController
         }
     }
 
+    /* ========== 释放房源 ========== */
+    public function del(Request $request){
+        DB::beginTransaction();
+        try {
+            $item=$this->item;
 
+            /* ++++++++++ 检查操作权限 ++++++++++ */
+            $count=Itemuser::sharedLock()
+                ->where([
+                    ['item_id',$item->id],
+                    ['process_id',22],
+                    ['user_id',session('gov_user.user_id')],
+                ])
+                ->get();
+            if(!$count){
+                throw new \Exception('您没有执行此操作的权限',404404);
+            }
+            /* ++++++++++ 获取房源 ++++++++++ */
+            $house_ids = $request->input('house_ids');
+            if(blank($house_ids)){
+                throw new \Exception('请选择房源',404404);
+            }
+            if($house_ids=='all'){
+                $house_ids=Itemhouse::lockForUpdate()
+                    ->where('item_id',$this->item_id)
+                    ->pluck('house_id');
+            }else{
+                $house_ids=Itemhouse::lockForUpdate()
+                    ->where('item_id',$this->item_id)
+                    ->whereIn('house_id',$house_ids)
+                    ->pluck('house_id');
+            }
 
+            if(blank($house_ids)){
+                throw new \Exception('房源已处理',404404);
+            }
+            /* ++++++++++ 释放房源 ++++++++++ */
+            Itemhouse::query()->lockForUpdate()
+                ->where('item_id',$this->item_id)
+                ->whereIn('house_id',$house_ids)
+                ->forceDelete();
+            /* ++++++++++ 修改房源状态 ++++++++++ */
+            House::whereIn('id',$house_ids)->update(['code'=>'150','updated_at'=>date('Y-m-d H:i:s')]);
+
+            $code = 'success';
+            $msg = '添加成功';
+            $sdata = null;
+            $edata = null;
+            $url = route('g_itemhouse',['item'=>$this->item_id]);
+            DB::commit();
+        } catch (\Exception $exception) {
+            $code = 'error';
+            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+            $sdata = null;
+            $edata = null;
+            $url = null;
+            DB::rollBack();
+        }
+        /* ++++++++++ 结果 ++++++++++ */
+        $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+        return response()->json($result);
+    }
 }
