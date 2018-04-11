@@ -41,10 +41,10 @@
                     <td>房屋类型</td>
                     <td>房屋结构</td>
                     <td>面积（㎡）</td>
-                    <td>评估单价（元/㎡）</td>
+                    <td>评估单价<br/>（元/㎡）</td>
                     <td>评估总价（元）</td>
                     <td>补偿金额（元）</td>
-                    <td>补偿小计 @if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
+                    <td>补偿小计 <br/>@if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
                     @foreach($register_buildings as $register_building)
                         <tr>
                             <td>{{$register_building->realuse->name}}</td>
@@ -77,7 +77,7 @@
                         <td>结构</td>
                         <td>修建时间</td>
                         <td>建筑面积（㎡>）</td>
-                        <td>补偿单价（元/㎡>）</td>
+                        <td>补偿单价<br/>（元/㎡>）</td>
                         <td>补偿金额（元）</td>
                         <td colspan="2">补偿小计（元）</td>
                     </tr>
@@ -106,7 +106,7 @@
                         <td>结构</td>
                         <td>修建时间</td>
                         <td>建筑面积（㎡>）</td>
-                        <td>补助单价（元/㎡>）</td>
+                        <td>补助单价<br/>（元/㎡>）</td>
                         <td>补助金额（元）</td>
                         <td colspan="2">补助小计（元）</td>
                     </tr>
@@ -212,8 +212,8 @@
                         <td rowspan="2" colspan="2">
                             {{$loop->iteration}}.{{$subject->subject->name}}
                         </td>
-                        <td>合法房屋面积（㎡）</td>
-                        <td>补助单价（元/㎡）</td>
+                        <td>合法房屋面积<br/>（㎡）</td>
+                        <td>补助单价<br/>（元/㎡）</td>
                         <td>补助次数</td>
                         <td>补助金额（元）</td>
                         <td colspan="2">补助小计@if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
@@ -253,7 +253,7 @@
                         <td colspan="2">合法房屋补偿总价</td>
                         <td>奖励比例（%）</td>
                         <td colspan="2">奖励金额（元）</td>
-                        <td colspan="2">奖励小计@if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
+                        <td colspan="2">奖励小计<br/>@if($household->getOriginal('type')==1)（公房承租人占{{$program->portion_renter}}%）@endif（元）</td>
                     </tr>
                     <tr>
                         <td colspan="2">{{number_format($legal_amount,2)}}</td>

@@ -270,7 +270,7 @@ class ItemhouseController extends BaseitemController
                 throw new \Exception('房源已处理',404404);
             }
             /* ++++++++++ 释放房源 ++++++++++ */
-            Itemhouse::query()->lockForUpdate()
+            Itemhouse::lockForUpdate()
                 ->where('item_id',$this->item_id)
                 ->whereIn('house_id',$house_ids)
                 ->forceDelete();
@@ -278,14 +278,14 @@ class ItemhouseController extends BaseitemController
             House::whereIn('id',$house_ids)->update(['code'=>'150','updated_at'=>date('Y-m-d H:i:s')]);
 
             $code = 'success';
-            $msg = '添加成功';
+            $msg = '操作成功';
             $sdata = null;
             $edata = null;
             $url = route('g_itemhouse',['item'=>$this->item_id]);
             DB::commit();
         } catch (\Exception $exception) {
             $code = 'error';
-            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+            $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '操作失败';
             $sdata = null;
             $edata = null;
             $url = null;
