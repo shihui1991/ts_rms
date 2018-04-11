@@ -621,7 +621,6 @@ class HouseholdController extends BaseitemController
                 'building_id' => 'required',
                 'code' => 'required',
                 'reg_outer' => 'required',
-                'balcony' => 'required',
                 'real_outer' => 'required',
                 'def_use' => 'required',
                 'real_use' => 'required',
@@ -808,7 +807,6 @@ class HouseholdController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'reg_outer' => 'required',
-                'balcony' => 'required',
                 'real_outer' => 'required',
                 'def_use' => 'required',
                 'real_use' => 'required',
@@ -838,6 +836,7 @@ class HouseholdController extends BaseitemController
                 /* ++++++++++ 被征户房屋建筑-处理其他数据 ++++++++++ */
                 $estatebuilding->fill($request->all());
                 $estatebuilding->editOther($request);
+                $estatebuilding->code=$request->code;
                 $estatebuilding->save();
                 if(blank($estatebuilding)){
                     throw new \Exception('修改失败',404404);

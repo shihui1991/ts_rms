@@ -21,8 +21,11 @@
 
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="code"> 状态： </label>
-            <div class="col-sm-9 radio">
-                <input type="text" id="code" value="{{$sdata->state->name}}" class="col-xs-10 col-sm-5" disabled >
+            <div class="col-sm-9">
+                <select name="code" id="code" class="col-xs-10 col-sm-5">
+                    <option value="90" @if($sdata->code==90) selected @endif>合法登记</option>
+                    <option value="91" @if($sdata->code==91) selected @endif>待认定</option>
+                </select>
             </div>
         </div>
         <div class="space-4"></div>

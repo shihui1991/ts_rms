@@ -743,16 +743,14 @@ class HouseholddetailController extends BaseitemController
             $code = 'error';
             $msg = '数据不存在';
             $sdata = null;
-            $edata = ['item'=>$item,'item_id'=>$item_id,'household_id'=>$household_id];
-            $url = null;
+
         }else{
             $code = 'success';
             $msg = '查询成功';
             $sdata = $estatebuilding;
-            $edata = ['item'=>$item,'item_id'=>$item_id,'household_id'=>$household_id];
-            $url = null;
         }
-
+        $edata = ['item'=>$item,'item_id'=>$item_id,'household_id'=>$household_id,'id'=>$id];
+        $url = null;
         if($code == 'error'){
             $view = 'gov.error';
         }else{

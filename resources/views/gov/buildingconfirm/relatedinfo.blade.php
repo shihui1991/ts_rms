@@ -4,7 +4,7 @@
 {{-- 页面内容 --}}
 @section('content')
     <div class="well well-sm">
-        <a class="btn" href="{{route('g_buildingrelated',['item'=>$edata['item']->id,'household_id'=>$edata['item']])}}">
+        <a class="btn" href="{{route('g_buildingrelated',['item'=>$edata['item']->id,'household_id'=>$edata['household_id']])}}">
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
