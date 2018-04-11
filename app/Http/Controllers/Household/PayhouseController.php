@@ -18,6 +18,7 @@ use App\Http\Model\Itemhouserate;
 use App\Http\Model\Itemprogram;
 use App\Http\Model\Pay;
 use App\Http\Model\Payhouse;
+use App\Http\Model\Payhouseplus;
 use App\Http\Model\Payreserve;
 use App\Http\Model\Payhousebak;
 use App\Http\Model\Paysubject;
@@ -71,6 +72,41 @@ class PayhouseController extends BaseController
             if (blank($house_ids)) {
                 throw new \Exception('暂未选择安置房', 404404);
             }
+
+            /*删除旧的选房*/
+            $pay_house=Payhouse::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$this->household_id]
+                        ])
+                        ->get();
+            if(filled($pay_house)){
+                $re=Payhouse::where([
+                    ['household_id',$this->household_id],
+                    ['item_id',$this->item_id]
+                ])
+                    ->delete();
+                if($re===false) throw new \Exception('操作失败，请稍后重试!',404404);
+            }
+
+            /*删除旧的选房上浮数据*/
+            $pay_house_plus=Payhouseplus::sharedLock()
+                        ->whereIn('house_id',$house_ids)
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['household_id',$this->household_id]
+                        ])
+                        ->get();
+            if(filled($pay_house_plus)){
+                $re=Payhouseplus::where([
+                    ['household_id',$this->household_id],
+                    ['item_id',$this->item_id]
+                ])
+                    ->whereIn('house_id',$house_ids)
+                    ->delete();
+                if($re===false) throw new \Exception('操作失败，请稍后重试!',404404);
+            }
+
 
            /* if ($house_ids == $transits) {
                 throw new \Exception('暂未选择临时周转房', 404404);
