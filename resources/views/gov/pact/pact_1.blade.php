@@ -456,14 +456,14 @@
                             @break
                         @endswitch
                         <div class="text_indent50 color66">
-                            经核定，乙方应得征收补偿款共计<div class="width200 height36 div_border_bot">{{number_format($subject->total,2)}}</div> 元
-                            （大写：<div class="width200 height36 div_border_bot">{{bigRMB($subject->total)}}</div>）。
+                            经核定，乙方应得征收补偿款共计<div class="width200 height36 div_border_bot">{{$subject->total?number_format($subject->total,2):'--'}}</div> 元
+                            （大写：<div class="width200 height36 div_border_bot">{{$subject->total?bigRMB($subject->total):'--'}}</div>）。
                         </div>
                     </div>
                 @endforeach
                 <div class="text_indent50 lineheight50 color66">
-                    综合以上所述，乙方应得补偿资金共计：<div class="width200 height40 div_border_bot">{{number_format($subject_total,2)}}</div> 元
-                    （大写：<div class="width200 height40 div_border_bot">{{bigRMB($subject_total)}}</div>）。
+                    综合以上所述，乙方应得补偿资金共计：<div class="width200 height40 div_border_bot">{{$subject_total?number_format($subject_total,2):'--'}}</div> 元
+                    （大写：<div class="width200 height40 div_border_bot">{{$subject_total?bigRMB($subject_total):'--'}}</div>）。
                 </div>
             </div>
             <div>
@@ -507,8 +507,8 @@
                 @if($pay->getOriginal('repay_way'))
                     <div class="text_indent50 lineheight50 color66">
                         乙方所得补偿资金之中，可调换安置房面积的资金 = 合法房屋及附属物 + 合法临建 + 公共附属物 + 签约奖励，共计：
-                        <div class="width200 height40 div_border_bot">{{number_format($house_resettle,2)}}</div> 元
-                        （大写：<div class="width200 height40 div_border_bot">{{bigRMB($house_resettle)}}</div>）
+                        <div class="width200 height40 div_border_bot">{{$house_resettle?number_format($house_resettle,2):'--'}}</div> 元
+                        （大写：<div class="width200 height40 div_border_bot">{{$house_resettle?bigRMB($house_resettle):'--'}}</div>）
                     </div>
                     <table class="table_a color66" border="1" cellspacing="0" style="width: 100%;">
                         <tbody>
@@ -576,25 +576,25 @@
                     </table>
                     <div class="text_indent50 lineheight50 color66">
                         综合以上统计，乙方须交纳房款共计
-                        <div class="width200 height40 div_border_bot">{{number_format($house_total,2)}}</div> 元
-                        （大写：<div class="width200 height40 div_border_bot">{{bigRMB($house_total)}}</div>）。
+                        <div class="width200 height40 div_border_bot">{{$house_total?number_format($house_total,2):'--'}}</div> 元
+                        （大写：<div class="width200 height40 div_border_bot">{{$house_total?bigRMB($house_total):'--'}}</div>）。
                         @php $last = $subject_total-$house_total;@endphp
                         上述房款和上浮款在乙方应得补偿资金中直接抵扣，抵扣后
                         @if($last>=0)
                             甲方付给乙方补偿资金
-                            <div class="width200 height40 div_border_bot">{{number_format($last,2)}}</div> 元
-                            （大写：<div class="width200 height40 div_border_bot">{{bigRMB($last)}}</div>）。
+                            <div class="width200 height40 div_border_bot">{{$last?number_format($last,2):'--'}}</div> 元
+                            （大写：<div class="width200 height40 div_border_bot">{{$last?bigRMB($last):'--'}}</div>）。
                         @elseif($last<0)
                             乙方须向甲方补交
-                            <div class="width200 height40 div_border_bot">{{number_format(abs($last),2)}}</div> 元
-                            （大写：<div class="width200 height40 div_border_bot">{{bigRMB(abs($last))}}</div>）。
+                            <div class="width200 height40 div_border_bot">{{$last?number_format(abs($last),2):'--'}}</div> 元
+                            （大写：<div class="width200 height40 div_border_bot">{{$last?bigRMB(abs($last)):'--'}}</div>）。
                         @endif
                     </div>
                 @else
                     <div class="text_indent50 lineheight50 color66">
                         乙方选择“货币补偿”的补偿方式，甲方应付乙方补偿资金
-                        <div class="width200 height40 div_border_bot">{{number_format($subject_total,2)}}</div> 元
-                        （大写：<div class="width200 height40 div_border_bot">{{bigRMB($subject_total)}}</div>）。
+                        <div class="width200 height40 div_border_bot">{{$subject_total?number_format($subject_total,2):'--'}}</div> 元
+                        （大写：<div class="width200 height40 div_border_bot">{{$subject_total?bigRMB($subject_total):'--'}}</div>）。
                     </div>
                 @endif
             </div>

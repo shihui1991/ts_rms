@@ -730,17 +730,17 @@ class PactController extends BaseitemController
                         throw new \Exception('兑付数据不存在',404404);
                     }
                     /* ++++++++++ 检查操作权限 ++++++++++ */
-//                    $count=Itemuser::sharedLock()
-//                        ->where([
-//                            ['item_id',$this->item_id],
-//                            ['schedule_id',5],
-//                            ['process_id',40],
-//                            ['user_id',session('gov_user.user_id')],
-//                        ])
-//                        ->count();
-//                    if(!$count){
-//                        throw new \Exception('您没有执行此操作的权限',404404);
-//                    }
+                    $count=Itemuser::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['schedule_id',5],
+                            ['process_id',40],
+                            ['user_id',session('gov_user.user_id')],
+                        ])
+                        ->count();
+                    if(!$count){
+                        throw new \Exception('您没有执行此操作的权限',404404);
+                    }
 
                     /* ++++++++++ 被征收户 ++++++++++ */
                     $household=Household::with(['itemland'=>function($query){
@@ -937,17 +937,17 @@ class PactController extends BaseitemController
                         throw new \Exception('兑付数据不存在',404404);
                     }
                     /* ++++++++++ 检查操作权限 ++++++++++ */
-//                    $count=Itemuser::sharedLock()
-//                        ->where([
-//                            ['item_id',$this->item_id],
-//                            ['schedule_id',5],
-//                            ['process_id',40],
-//                            ['user_id',session('gov_user.user_id')],
-//                        ])
-//                        ->count();
-//                    if(!$count){
-//                        throw new \Exception('您没有执行此操作的权限',404404);
-//                    }
+                    $count=Itemuser::sharedLock()
+                        ->where([
+                            ['item_id',$this->item_id],
+                            ['schedule_id',5],
+                            ['process_id',40],
+                            ['user_id',session('gov_user.user_id')],
+                        ])
+                        ->count();
+                    if(!$count){
+                        throw new \Exception('您没有执行此操作的权限',404404);
+                    }
 
                     /* ++++++++++ 被征收户 ++++++++++ */
                     $household=Household::with(['itemland'=>function($query){
