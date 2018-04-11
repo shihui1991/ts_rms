@@ -72,6 +72,9 @@ class AssessController extends BaseController{
                 ->sharedLock()
                 ->where([['assess_id',$assess->id]])
                 ->first();
+            if(blank($estate)){
+                throw new \Exception('暂无有效评估数据',404404);
+            }
 
             $assets=Assets::with(['company'=>function($query){
                 $query->select(['id','name']);

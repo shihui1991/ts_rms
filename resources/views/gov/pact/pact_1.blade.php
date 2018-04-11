@@ -487,7 +487,7 @@
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$rate->start_area}}</td>
-                                    <td colspan="2">（超出部门按评估市场价结算）</td>
+                                    <td colspan="2">（超出部分按评估市场价结算）</td>
                                 </tr>
                             @else
                                 <tr>

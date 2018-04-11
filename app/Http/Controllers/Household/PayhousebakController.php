@@ -290,6 +290,8 @@ class PayhousebakController extends BaseController{
             $edata=$fails;
             $url=null;
             DB::commit();
+
+            $view='household.payhousebak.index';
         }catch (\Exception $exception){
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
@@ -297,6 +299,8 @@ class PayhousebakController extends BaseController{
             $edata=null;
             $url=null;
             DB::rollBack();
+
+            $view='household.error';
         }
 
         /* ********** 结果 ********** */
@@ -304,7 +308,7 @@ class PayhousebakController extends BaseController{
         if($request->ajax()){
             return response()->json($result);
         }else {
-            return view('household.payhousebak.index')->with($result);
+            return view($view)->with($result);
         }
     }
 

@@ -90,13 +90,16 @@
                 <a data-toggle="tab" href="#pay_subject" aria-expanded="true">房产评估明细</a>
             </li>
 
+                @if(filled($sdata['assets']))
             <li class="">
                 <a data-toggle="tab" href="#pay_building" aria-expanded="false">资产评估明细</a>
             </li>
+                @endif
 
         </ul>
 
         <div class="tab-content">
+
             <div id="pay_subject" class="tab-pane active">
 
                 <div class="widget-body">
@@ -150,9 +153,7 @@
             </div>
 
             <div id="pay_building" class="tab-pane">
-                <div id="accordion" class="accordion-style1 panel-group">
-
-
+                @if(filled($sdata['assets']))
                     <div class="widget-body">
                         <div class="widget-main">
                             <div class="profile-user-info profile-user-info-striped">
@@ -187,19 +188,19 @@
                                         <div class="ace-thumbnails clearfix img-content">
                                             <ul class="ace-thumbnails clearfix img-content">
                                                 @if(filled($sdata['estate']->picture))
-                                                @foreach($sdata['estate']->picture as $pic)
-                                                    <li>
-                                                        <div>
-                                                            <img width="120" height="120" src="{{$pic}}" alt="加载失败">
-                                                            <div class="text">
-                                                                <div class="inner">
-                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                    @foreach($sdata['estate']->picture as $pic)
+                                                        <li>
+                                                            <div>
+                                                                <img width="120" height="120" src="{{$pic}}" alt="加载失败">
+                                                                <div class="text">
+                                                                    <div class="inner">
+                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </li>
-                                                @endforeach
-                                                 @endif
+                                                        </li>
+                                                    @endforeach
+                                                @endif
                                             </ul>
 
                                         </div>
@@ -208,7 +209,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
 
         </div>

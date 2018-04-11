@@ -74,7 +74,7 @@
         </div>
         <div class="space-4"></div>
 
-        <div class="form-group dispute_state">
+        <div class="form-group ">
             <label class="col-sm-3 control-label no-padding-right" for="real_outer"> 实际建筑面积： </label>
             <div class="col-sm-9">
                 <input type="text" id="real_outer" name="real_outer" value="{{old('real_outer')}}" class="col-xs-10 col-sm-5"  placeholder="请输入实际建筑面积" required>
