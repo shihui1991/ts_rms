@@ -41,13 +41,14 @@
                             <span class="editable editable-click">
                                 @if($sdata['itemhouses']->total()>=$sdata['init_budget']->house)
                                     达到
+
+                                @else
+                                    未达到
+                                @endif
                                     <a class="btn btn-primary" onclick="btnAct(this)" data-url="{{route('g_ready_house',['item'=>$sdata['item']->id])}}" data-method="post">
                                         <i class="ace-icon fa fa-check bigger-110"></i>
                                         提交准备完毕
                                     </a>
-                                @else
-                                    未达到
-                                @endif
                                     <a href="{{route('g_itemhouse_add',['item'=>$sdata['item']->id])}}" class="btn">继续添加房源</a>
                                 <a data-url="{{route('g_itemhouse_del',['item'=>$sdata['item']->id,'house_ids'=>'all'])}}" class="btn btn-danger " onclick="btnAct(this)">释放所有冻结房源</a>
                             </span>

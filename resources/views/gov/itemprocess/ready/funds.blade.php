@@ -141,13 +141,14 @@
                             <span class="editable editable-click">
                                 @if($funds_total>=$sdata['init_budget']->money)
                                     达到
+
+                                @else
+                                    未达到
+                                @endif
                                     <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_ready_funds',['item'=>$sdata['item']->id])}}" data-method="post">
                                         <i class="ace-icon fa fa-check bigger-110"></i>
                                         提交准备完毕
                                     </a>
-                                @else
-                                    未达到
-                                @endif
                                     <a class="btn" href="{{route('g_funds_add',['item'=>$sdata['item']->id])}}">继续录入项目资金</a>
                             </span>
                         </div>
