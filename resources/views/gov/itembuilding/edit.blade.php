@@ -28,7 +28,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="building"> 楼栋号： </label>
             <div class="col-sm-9">
-                <input type="number" id="building" name="building" value="{{$sdata['itembuilding']->building}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋号" required>
+                <input type="text" id="building" name="building" value="{{$sdata['itembuilding']->building}}" class="col-xs-10 col-sm-5"  placeholder="请输入楼栋号" required>
             </div>
         </div>
         <div class="space-4"></div>
