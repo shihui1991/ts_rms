@@ -318,7 +318,7 @@ class HouseholdmembercrowdController extends BaseitemController
                 throw new \Exception('该数据正在被使用,暂时不能被删除！',404404);
             }
             /*---------家庭成员特殊人群----------*/
-            $householdmembercrowd = Householdmembercrowd::where('id',$ids)->delete();
+            $householdmembercrowd = Householdmembercrowd::where('id',$ids)->forceDelete();
             if(!$householdmembercrowd){
                 throw new \Exception('删除失败',404404);
             }

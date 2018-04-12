@@ -452,7 +452,7 @@ class HouseholdbuildingController extends BaseitemController
             /*---------删除建筑----------*/
             $householdbuilding = Householdbuilding::where('id',$ids)->first();
             if($householdbuilding->code==91||$householdbuilding->code==90){
-                $householdbuilding = Householdbuilding::where('id',$ids)->delete();
+                $householdbuilding = Householdbuilding::where('id',$ids)->forceDelete();
                 if(!$householdbuilding){
                     throw new \Exception('删除失败',404404);
                 }

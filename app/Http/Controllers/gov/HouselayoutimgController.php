@@ -332,7 +332,7 @@ class HouselayoutimgController extends BaseauthController
                 throw new \Exception('本条数据正在被房源使用,暂时不能被删除！',404404);
             }
 
-            $houselayoutimg = Houselayoutimg::where('id',$ids)->delete();
+            $houselayoutimg = Houselayoutimg::where('id',$ids)->forceDelete();
             if(!$houselayoutimg){
                 throw new \Exception('删除失败',404404);
             }

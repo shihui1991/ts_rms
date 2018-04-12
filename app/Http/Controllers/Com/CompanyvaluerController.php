@@ -337,7 +337,7 @@ class CompanyvaluerController extends BaseauthController
                 throw new \Exception('当前账号存在相关数据，暂不能被删除！',404404);
             }
             /*---------删除评估师----------*/
-            $companyvaluer = Companyvaluer::where('id',$ids)->delete();
+            $companyvaluer = Companyvaluer::where('id',$ids)->forceDelete();
             if(!$companyvaluer){
                 throw new \Exception('删除失败',404404);
             }

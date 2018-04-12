@@ -322,7 +322,7 @@ class HousecommunityController extends BaseauthController
                 throw new \Exception('本条数据正在被房源使用,暂时不能被删除！',404404);
             }
 
-            $house_community = Housecommunity::where('id',$ids)->delete();
+            $house_community = Housecommunity::where('id',$ids)->forceDelete();
             if(!$house_community){
                 throw new \Exception('删除失败',404404);
             }

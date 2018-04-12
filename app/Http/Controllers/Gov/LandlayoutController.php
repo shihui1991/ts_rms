@@ -443,7 +443,7 @@ class LandlayoutController extends BaseitemController
                 throw new \Exception('该地块户型正在被使用,暂时不能被删除！',404404);
             }
             /*---------地块户型----------*/
-            $landlayout = Landlayout::where('id',$ids)->delete();
+            $landlayout = Landlayout::where('id',$ids)->forceDelete();
             if(!$landlayout){
                 throw new \Exception('删除失败',404404);
             }

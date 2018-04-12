@@ -432,7 +432,7 @@ class ComassessController extends BaseitemController
                     }
                 }
                 /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
-                $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('estate_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
+                $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('estate_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->forceDelete();
                 if(blank($comassessvaluers)){
                     throw new \Exception('数据错误', 404404);
                 }
@@ -458,7 +458,7 @@ class ComassessController extends BaseitemController
                     }
                 }
                 /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
-                $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('assets_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
+                $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('assets_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->forceDelete();
                 if(blank($comassessvaluers)){
                     throw new \Exception('数据错误', 404404);
                 }
@@ -804,7 +804,7 @@ class ComassessController extends BaseitemController
                     }
 
                     /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
-                    $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('estate_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
+                    $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('estate_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->forceDelete();
                     if(blank($comassessvaluers)){
                         throw new \Exception('数据错误', 404404);
                     }
@@ -834,7 +834,7 @@ class ComassessController extends BaseitemController
                         }
                     }
                     /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */
-                    $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('assets_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->delete();
+                    $comassessvaluers = Comassessvaluer::where('household_id',$household_id)->where('assets_id','<>','0')->where('item_id',$item_id)->where('company_id',$company_id)->forceDelete();
                     if(blank($comassessvaluers)){
                         throw new \Exception('数据错误', 404404);
                     }

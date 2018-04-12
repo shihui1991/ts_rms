@@ -333,7 +333,7 @@ class CompanyuserController extends BaseauthController
             }
 
             /*---------删除操作员----------*/
-            $companyuser = Companyuser::where('id',$ids)->delete();
+            $companyuser = Companyuser::where('id',$ids)->forceDelete();
             if(!$companyuser){
                 throw new \Exception('删除失败',404404);
             }

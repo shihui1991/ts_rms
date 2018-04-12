@@ -880,7 +880,7 @@ class HouseholdController extends BaseitemController
                 throw new \Exception('该数据正在被使用,暂时不能被删除！',404404);
             }
             /*---------删除房屋建筑----------*/
-            $estatebuilding = Estatebuilding::where('id',$ids)->delete();
+            $estatebuilding = Estatebuilding::where('id',$ids)->forceDelete();
             if(!$estatebuilding){
                 throw new \Exception('删除失败',404404);
             }

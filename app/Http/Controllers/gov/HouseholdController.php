@@ -399,12 +399,12 @@ class HouseholdController extends BaseitemController
                 throw new \Exception('该账号正在被使用,暂时不能被删除！',404404);
             }
             /*---------删除被征户账号----------*/
-            $household = Household::where('id',$ids)->delete();
+            $household = Household::where('id',$ids)->forceDelete();
             if(!$household){
                 throw new \Exception('删除失败',404404);
             }
             /*---------删除被征户详情----------*/
-            $householddetail = Householddetail::where('household_id',$ids)->delete();
+            $householddetail = Householddetail::where('household_id',$ids)->forceDelete();
             if(!$householddetail){
                 throw new \Exception('删除失败',404404);
             }

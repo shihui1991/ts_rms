@@ -366,14 +366,14 @@ class CompanyController extends BaseauthController
                 throw new \Exception('该评估机构正在被使用,暂时不能被删除！',404404);
             }
             /*---------评估机构----------*/
-            $company = Company::where('id',$ids)->delete();
+            $company = Company::where('id',$ids)->forceDelete();
             if(!$company){
                 throw new \Exception('删除失败',404404);
             }
             /*---------评估机构-操作员----------*/
             $companyuser = Companyuser::where('company_id',$ids)->pluck('id');
             if(filled($companyuser)){
-                $companyuser = Companyuser::where('company_id',$ids)->delete();
+                $companyuser = Companyuser::where('company_id',$ids)->forceDelete();
                 if(!$companyuser){
                     throw new \Exception('删除失败',404404);
                 }
@@ -381,7 +381,7 @@ class CompanyController extends BaseauthController
             /*---------评估机构-评估师----------*/
             $companyvaluer = Companyvaluer::where('company_id',$ids)->pluck('id');
             if(filled($companyvaluer)){
-                $companyvaluer = Companyvaluer::where('company_id',$ids)->delete();
+                $companyvaluer = Companyvaluer::where('company_id',$ids)->forceDelete();
                 if(!$companyvaluer){
                     throw new \Exception('删除失败',404404);
                 }

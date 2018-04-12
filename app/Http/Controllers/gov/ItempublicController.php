@@ -478,7 +478,7 @@ class ItempublicController extends BaseitemController
                 throw new \Exception('该公共附属物正在被使用,暂时不能被删除！',404404);
             }
             /*---------公共附属物----------*/
-            $itempublic = Itempublic::where('id',$ids)->delete();
+            $itempublic = Itempublic::where('id',$ids)->forceDelete();
             if(!$itempublic){
                 throw new \Exception('删除失败',404404);
             }

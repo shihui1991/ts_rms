@@ -402,7 +402,7 @@ class HouseholdobjectController extends BaseitemController
                 throw new \Exception('该其他补偿事项正在被使用,暂时不能被删除！',404404);
             }
             /*---------其他补偿事项----------*/
-            $householdobject = Householdobject::where('id',$ids)->delete();
+            $householdobject = Householdobject::where('id',$ids)->forceDelete();
             if(!$householdobject){
                 throw new \Exception('删除失败',404404);
             }

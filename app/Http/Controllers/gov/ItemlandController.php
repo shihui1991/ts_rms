@@ -536,8 +536,8 @@ class ItemlandController extends BaseitemController
             if($household!=0){
                 throw new \Exception('该地块正在被使用,暂时不能被删除！',404404);
             }
-            /*---------公共附属物----------*/
-            $itemland = Itemland::where('id',$ids)->delete();
+            /*---------地快----------*/
+            $itemland = Itemland::where('id',$ids)->forceDelete();
             if(!$itemland){
                 throw new \Exception('删除失败',404404);
             }

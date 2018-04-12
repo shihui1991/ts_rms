@@ -419,7 +419,7 @@ class HouseholdassetsController extends BaseitemController
                 throw new \Exception('该条资产数据正在被使用,暂时不能被删除！',404404);
             }
             /*---------删除资产----------*/
-            $householdassets = Householdassets::where('id',$ids)->delete();
+            $householdassets = Householdassets::where('id',$ids)->forceDelete();
             if(!$householdassets){
                 throw new \Exception('删除失败',404404);
             }

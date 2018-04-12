@@ -295,7 +295,7 @@ class HousecompanyController extends BaseauthController
                 throw new \Exception('本条数据正在被房源使用,暂时不能被删除！',404404);
             }
 
-            $housecompany = Housecompany::where('id',$ids)->delete();
+            $housecompany = Housecompany::where('id',$ids)->forceDelete();
             if(!$housecompany){
                 throw new \Exception('删除失败',404404);
             }

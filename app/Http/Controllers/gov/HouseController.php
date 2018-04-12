@@ -442,14 +442,14 @@ class HouseController extends BaseauthController
                 throw new \Exception('该房源正在被使用,暂时不能被删除！',404404);
             }
             /*---------房源----------*/
-            $house = House::where('id',$ids)->delete();
+            $house = House::where('id',$ids)->forceDelete();
             if(!$house){
                 throw new \Exception('删除失败',404404);
             }
             /*---------房源购置管理费单价----------*/
             $housemanageprice = Housemanageprice::where('house_id',$ids)->pluck('id');
             if(filled($housemanageprice)){
-                $housemanageprice = Housemanageprice::where('house_id',$ids)->delete();
+                $housemanageprice = Housemanageprice::where('house_id',$ids)->forceDelete();
                 if(!$housemanageprice){
                     throw new \Exception('删除失败',404404);
                 }
@@ -457,7 +457,7 @@ class HouseController extends BaseauthController
             /*---------房源评估单价----------*/
             $houseprice = Houseprice::where('house_id',$ids)->pluck('id');
             if(filled($houseprice)){
-                $houseprice = Houseprice::where('house_id',$ids)->delete();
+                $houseprice = Houseprice::where('house_id',$ids)->forceDelete();
                 if(!$houseprice){
                     throw new \Exception('删除失败',404404);
                 }
@@ -465,7 +465,7 @@ class HouseController extends BaseauthController
             /*---------房源购置管理费----------*/
             $housemanagefee = Housemanagefee::where('house_id',$ids)->pluck('id');
             if(filled($housemanagefee)){
-                $housemanagefee = Housemanagefee::where('house_id',$ids)->delete();
+                $housemanagefee = Housemanagefee::where('house_id',$ids)->forceDelete();
                 if(!$housemanagefee){
                     throw new \Exception('删除失败',404404);
                 }
