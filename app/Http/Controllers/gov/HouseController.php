@@ -188,21 +188,24 @@ class HouseController extends BaseauthController
                 $result=['code'=>'error','message'=>$validator1->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
-            /*----- 房源-购置管理费单价 -----*/
-            $housemanageprice_model = new Housemanageprice();
-            $rules2 = [
-                'start_at' => 'required',
-                'end_at' => 'required',
-                'manage_price' => 'required'
-            ];
-            $messages2 = [
-                'required' => ':attribute 为必须项'
-            ];
-            $validator2 = Validator::make($request->all(), $rules2, $messages2, $housemanageprice_model->columns);
-            if ($validator2->fails()) {
-                $result=['code'=>'error','message'=>$validator2->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
-                return response()->json($result);
+            if($request->input('is_buy')==1){
+                /*----- 房源-购置管理费单价 -----*/
+                $housemanageprice_model = new Housemanageprice();
+                $rules2 = [
+                    'start_at' => 'required',
+                    'end_at' => 'required',
+                    'manage_price' => 'required'
+                ];
+                $messages2 = [
+                    'required' => ':attribute 为必须项'
+                ];
+                $validator2 = Validator::make($request->all(), $rules2, $messages2, $housemanageprice_model->columns);
+                if ($validator2->fails()) {
+                    $result=['code'=>'error','message'=>$validator2->errors()->first(),'sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
             }
+
 
 
             /* ++++++++++ 新增 ++++++++++ */
@@ -226,13 +229,16 @@ class HouseController extends BaseauthController
                 if (blank($houseprice)) {
                     throw  new \Exception('添加失败', 404404);
                 }
-                /*----- 房源-购置管理费单价添加 -----*/
-                $housemanageprice = $housemanageprice_model;
-                $housemanageprice->fill($request->input());
-                $housemanageprice->house_id = $house->id;
-                $housemanageprice->save();
-                if (blank($housemanageprice)) {
-                    throw  new \Exception('添加失败', 404404);
+
+                if($request->input('is_buy')==1) {
+                    /*----- 房源-购置管理费单价添加 -----*/
+                    $housemanageprice = $housemanageprice_model;
+                    $housemanageprice->fill($request->input());
+                    $housemanageprice->house_id = $house->id;
+                    $housemanageprice->save();
+                    if (blank($housemanageprice)) {
+                        throw  new \Exception('添加失败', 404404);
+                    }
                 }
 
                 $code = 'success';

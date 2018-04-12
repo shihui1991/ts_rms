@@ -50,7 +50,7 @@
                             <div class="btn-group">
                                 <a href="{{route('g_house_info',['id'=>$infos->id])}}" class="btn btn-sm">查看详情</a>
                                 <a href="{{route('g_houseprice',['house_id'=>$infos->id])}}" class="btn btn-sm">价格趋势</a>
-                                <a href="{{route('g_housemanageprice',['house_id'=>$infos->id])}}" class="btn btn-sm">管理费单价</a>
+                               @if($infos->getOriginal('is_buy')==1) <a href="{{route('g_housemanageprice',['house_id'=>$infos->id])}}" class="btn btn-sm">管理费单价</a>@endif
                                 <a class="btn btn-sm" data-toggle="modal" onclick="del_data({{$infos->id}})" data-target="#myModal">删除</a>
                             </div>
                         </td>

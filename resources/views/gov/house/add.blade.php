@@ -150,7 +150,7 @@
             <div class="col-sm-9 radio">
                 @foreach($edata->is_buy as $key => $value)
                     <label>
-                        <input name="is_buy" type="radio" class="ace" value="{{$key}}" @if($key==0) checked @endif >
+                        <input name="is_buy" type="radio" onclick="buystatus(this)" class="ace" value="{{$key}}" @if($key==0) checked @endif >
                         <span class="lbl">{{$value}}</span>
                     </label>
                 @endforeach
@@ -255,13 +255,13 @@
         </div>
         <div class="space-4"></div><br/>
 
-        <div class="form-group">
+        <div class="form-group buy_status" style="display: none;">
             <label class="col-sm-3 control-label no-padding-right"> 【购置管理费单价】 </label>
             <div class="col-sm-9"></div>
         </div>
         <div class="space-4"></div>
 
-        <div class="form-group">
+        <div class="form-group buy_status" style="display: none;">
             <label class="col-sm-3 control-label no-padding-right" for="manage_price">  月管理费： </label>
             <div class="col-sm-9">
                 <input type="number" id="manage_price" name="manage_price" value="{{old('manage_price')}}" class="col-xs-10 col-sm-5"  placeholder="请输入月管理费" required>
@@ -269,7 +269,7 @@
         </div>
         <div class="space-4"></div>
 
-        <div class="form-group">
+        <div class="form-group buy_status" style="display: none;">
             <label class="col-sm-3 control-label no-padding-right" for="start_at"> 开始时间： </label>
             <div class="col-sm-9">
                 <input type="text" id="start_at" name="start_at" data-type="year" data-format="yyyy" value="{{old('start_at')}}" class="col-xs-10 col-sm-5 laydate"  placeholder="请输入开始时间" required>
@@ -277,7 +277,7 @@
         </div>
         <div class="space-4"></div>
 
-        <div class="form-group">
+        <div class="form-group buy_status" style="display: none;">
             <label class="col-sm-3 control-label no-padding-right" for="end_at"> 结束时间： </label>
             <div class="col-sm-9">
                 <input type="text" id="end_at" name="end_at" data-type="year" data-format="yyyy" value="{{old('end_at')}}" class="col-xs-10 col-sm-5 laydate"  placeholder="请输入结束时间" required>
@@ -424,7 +424,17 @@
                 '                                </li>');
             $('.img-content').viewer('update');
             $('#myModal').modal('hide');
-        })
+        });
+
+        /*---------购置管理费单价的显示状态----------*/
+        function buystatus(obj){
+            var _this = $(obj).val();
+            if(_this==1){
+                $(".buy_status").css('display','block');
+            }else{
+                $(".buy_status").css('display','none');
+            }
+        }
     </script>
 
 @endsection
