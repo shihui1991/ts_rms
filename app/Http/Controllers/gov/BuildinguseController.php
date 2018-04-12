@@ -143,7 +143,7 @@ class BuildinguseController extends BaseauthController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $building_use;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }

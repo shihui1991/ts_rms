@@ -12,6 +12,7 @@ use App\Http\Model\Layout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class HouselayoutimgController extends BaseauthController
 {
@@ -125,8 +126,12 @@ class HouselayoutimgController extends BaseauthController
         else {
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
+            $community_id = $request->input('community_id');
+            $layout_id = $request->input('layout_id');
             $rules = [
-                'name' => 'required|unique:house_layout_img',
+                'name' => ['required',Rule::unique('house_layout_img')->where(function ($query) use($community_id,$layout_id){
+                    $query->where('community_id', $community_id)->where('layout_id',$layout_id);
+                })],
                 'picture' => 'required',
             ];
             $messages = [
@@ -160,7 +165,7 @@ class HouselayoutimgController extends BaseauthController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $houselayoutimg;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
@@ -265,10 +270,14 @@ class HouselayoutimgController extends BaseauthController
                 return view($view)->with($result);
             }
         }else{
+            $community_id = $request->input('community_id');
+            $layout_id = $request->input('layout_id');
             $model=new Houselayoutimg();
             /* ********** 表单验证 ********** */
             $rules=[
-                'name'=>'required|unique:house_layout_img,name,'.$id.',id',
+                'name' => ['required',Rule::unique('house_layout_img')->where(function ($query) use($community_id,$layout_id,$id){
+                $query->where('community_id', $community_id)->where('layout_id',$layout_id)->where('id','<>',$id);
+            })],
                 'picture' => 'required',
             ];
             $messages=[

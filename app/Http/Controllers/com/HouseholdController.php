@@ -302,7 +302,7 @@ class HouseholdController extends BaseitemController
                     $code = 'error';
                     $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                     $sdata = null;
-                    $edata = $household;
+                    $edata = null;
                     $url = null;
                     DB::rollBack();
                 }
@@ -359,7 +359,7 @@ class HouseholdController extends BaseitemController
                     $code = 'error';
                     $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                     $sdata = null;
-                    $edata = $householdassets;
+                    $edata = null;
                     $url = null;
                     DB::rollBack();
                 }
@@ -527,7 +527,7 @@ class HouseholdController extends BaseitemController
                     $code = 'error';
                     $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '修改失败';
                     $sdata = null;
-                    $edata = $estate;
+                    $edata = null;
                     $url = null;
                     DB::rollBack();
                 }
@@ -662,11 +662,10 @@ class HouseholdController extends BaseitemController
                 $url = route('c_household_info',['id'=>$household_id,'item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
-
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $householdbuilding;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }

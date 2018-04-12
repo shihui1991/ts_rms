@@ -164,7 +164,7 @@ class CompanyvaluerController extends BaseauthController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $companyvaluer;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
