@@ -3215,18 +3215,18 @@ class ItemprocessController extends BaseitemController
                 $result=$this->hasNotice();
                 $process=$result['process'];
                 $worknotice=$result['worknotice'];
-                /* ++++++++++ 初步预算 ++++++++++ */
-                $init_amount=Initbudget::sharedLock()->where('item_id',$this->item_id)->value('money');
-                /* ++++++++++ 录入资金 ++++++++++ */
-                $funds_amount=Funds::sharedLock()
-                    ->where([
-                        ['item_id',$this->item_id],
-                        ['cate_id',1],
-                    ])
-                    ->sum('amount');
-                if(!$funds_amount || $funds_amount<$init_amount){
-                    throw new \Exception('当前项目资金未达到初步预算的资金总额',404404);
-                }
+//                /* ++++++++++ 初步预算 ++++++++++ */
+//                $init_amount=Initbudget::sharedLock()->where('item_id',$this->item_id)->value('money');
+//                /* ++++++++++ 录入资金 ++++++++++ */
+//                $funds_amount=Funds::sharedLock()
+//                    ->where([
+//                        ['item_id',$this->item_id],
+//                        ['cate_id',1],
+//                    ])
+//                    ->sum('amount');
+//                if(!$funds_amount || $funds_amount<$init_amount){
+//                    throw new \Exception('当前项目资金未达到初步预算的资金总额',404404);
+//                }
 
                 $worknotice->code='2';
                 $worknotice->save();
@@ -3335,13 +3335,13 @@ class ItemprocessController extends BaseitemController
             $result=$this->hasNotice();
             $process=$result['process'];
             $worknotice=$result['worknotice'];
-            /* ++++++++++ 初步预算 ++++++++++ */
-            $init_amount=Initbudget::sharedLock()->where('item_id',$this->item_id)->value('house');
-            /* ++++++++++ 冻结房源 ++++++++++ */
-            $house_count=Itemhouse::sharedLock()->where('item_id',$this->item_id)->count();
-            if(!$house_count || $house_count<$init_amount){
-                throw new \Exception('当前冻结房源未达到初步预算的房源总数',404404);
-            }
+//            /* ++++++++++ 初步预算 ++++++++++ */
+//            $init_amount=Initbudget::sharedLock()->where('item_id',$this->item_id)->value('house');
+//            /* ++++++++++ 冻结房源 ++++++++++ */
+//            $house_count=Itemhouse::sharedLock()->where('item_id',$this->item_id)->count();
+//            if(!$house_count || $house_count<$init_amount){
+//                throw new \Exception('当前冻结房源未达到初步预算的房源总数',404404);
+//            }
 
             $worknotice->code='2';
             $worknotice->save();
@@ -3489,15 +3489,15 @@ class ItemprocessController extends BaseitemController
                     ->sum('amount');
                 /* ++++++++++ 冻结房源 ++++++++++ */
                 $house_count=Itemhouse::sharedLock()->where('item_id',$this->item_id)->count();
-                if(blank($init_budget)){
-                    throw new \Exception('初步预算报告还未添加',404404);
-                }
-                if(!$funds_amount || $funds_amount<$init_budget->money){
-                    throw new \Exception('当前项目资金未达到初步预算的资金总额',404404);
-                }
-                if(!$house_count || $house_count<$init_budget->house){
-                    throw new \Exception('当前冻结房源未达到初步预算的房源总数',404404);
-                }
+//                if(blank($init_budget)){
+//                    throw new \Exception('初步预算报告还未添加',404404);
+//                }
+//                if(!$funds_amount || $funds_amount<$init_budget->money){
+//                    throw new \Exception('当前项目资金未达到初步预算的资金总额',404404);
+//                }
+//                if(!$house_count || $house_count<$init_budget->house){
+//                    throw new \Exception('当前冻结房源未达到初步预算的房源总数',404404);
+//                }
 
                 $code='success';
                 $msg='查询成功';
@@ -3543,27 +3543,27 @@ class ItemprocessController extends BaseitemController
                 if($item->schedule_id!=2 || !in_array($item->process_id,[18,19]) || ($item->process_id==18 && $item->code!='2') || ($item->process_id==19 && $item->code!='21')){
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
-                /* ++++++++++ 初步预算 ++++++++++ */
-                $init_budget=Initbudget::sharedLock()->where('item_id',$this->item_id)->first();
-                /* ++++++++++ 录入资金 ++++++++++ */
-                $funds_amount=Funds::with('bank')
-                    ->sharedLock()
-                    ->where([
-                        ['item_id',$this->item_id],
-                        ['cate_id',1],
-                    ])
-                    ->sum('amount');
-                /* ++++++++++ 冻结房源 ++++++++++ */
-                $house_count=Itemhouse::sharedLock()->where('item_id',$this->item_id)->count();
-                if(blank($init_budget)){
-                    throw new \Exception('初步预算报告还未添加',404404);
-                }
-                if(!$funds_amount || $funds_amount<$init_budget->money){
-                    throw new \Exception('当前项目资金未达到初步预算的资金总额',404404);
-                }
-                if(!$house_count || $house_count<$init_budget->house){
-                    throw new \Exception('当前冻结房源未达到初步预算的房源总数',404404);
-                }
+//                /* ++++++++++ 初步预算 ++++++++++ */
+//                $init_budget=Initbudget::sharedLock()->where('item_id',$this->item_id)->first();
+//                /* ++++++++++ 录入资金 ++++++++++ */
+//                $funds_amount=Funds::with('bank')
+//                    ->sharedLock()
+//                    ->where([
+//                        ['item_id',$this->item_id],
+//                        ['cate_id',1],
+//                    ])
+//                    ->sum('amount');
+//                /* ++++++++++ 冻结房源 ++++++++++ */
+//                $house_count=Itemhouse::sharedLock()->where('item_id',$this->item_id)->count();
+//                if(blank($init_budget)){
+//                    throw new \Exception('初步预算报告还未添加',404404);
+//                }
+//                if(!$funds_amount || $funds_amount<$init_budget->money){
+//                    throw new \Exception('当前项目资金未达到初步预算的资金总额',404404);
+//                }
+//                if(!$house_count || $house_count<$init_budget->house){
+//                    throw new \Exception('当前冻结房源未达到初步预算的房源总数',404404);
+//                }
 
                 $result=$this->hasNotice();
                 $process=$result['process'];
